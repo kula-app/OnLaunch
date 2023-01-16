@@ -10,17 +10,30 @@ export default async function handler(
 ) {
     switch (req.method) {
         case 'GET':
-            const allMessages = await prisma.message.findMany({
-                include: {
-                    actions: true
+            const message = await prisma.message.findUnique({
+                where: {
+                    id: Number(req.query.messageId)
                 }
             })
 
-            res.status(200).json(allMessages)
+            res.status(200).json(message)
             break
 
-        case 'POST':
-            const message = await prisma.message.create({
+        case 'DELETE':
+            const deletedMessage = await prisma.message.delete({
+                where: {
+                    id: Number(req.query.messageId)
+                }
+            })
+
+            res.status(200).json(deletedMessage)
+            break
+
+        case 'PUT':
+            const updatedMessage = await prisma.message.update({
+                where: {
+                  id: Number(req.query.messageId)
+                },
                 data: {
                     blocking: req.body.blocking,
                     title: req.body.title,
@@ -30,7 +43,7 @@ export default async function handler(
                     appId: req.body.appId
                 }
             })
-            res.status(201).json(message)
+            res.status(201).json(updatedMessage)
             break
 
         default:
