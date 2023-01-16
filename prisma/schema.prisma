@@ -21,6 +21,8 @@ model Action {
   title      String
   Message    Message?   @relation(fields: [messageId], references: [id])
   messageId  Int?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Message {
@@ -31,6 +33,16 @@ model Message {
   actions   Action[]
   startDate DateTime
   endDate 	DateTime
+  App       App?     @relation(fields: [appId], references: [id])
+  appId     Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model App {
+  id        Int      @id @default(autoincrement())
+  name      String
+  messages  Message[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
