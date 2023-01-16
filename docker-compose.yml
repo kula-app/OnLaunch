@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: onlaunch
+      POSTGRES_USER: onlaunch
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
