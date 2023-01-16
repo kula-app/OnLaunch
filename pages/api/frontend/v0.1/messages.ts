@@ -22,7 +22,11 @@ export default async function handler(
     console.log('url is ', req.url)
     switch (req.method) {
         case 'GET':
-            const allMessages = await prisma.message.findMany()
+            const allMessages = await prisma.message.findMany({
+                include: {
+                    actions: true
+                }
+            })
 
             res.status(200).json(allMessages)
             break

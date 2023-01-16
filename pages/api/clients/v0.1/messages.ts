@@ -4,11 +4,22 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+enum ActionType {
+    Button = "BUTTON",
+    DismissButton = "DISMISS_BUTTON"
+}
+
+type ActionDto = {
+    actionType: ActionType,
+    title: string
+}
+
 type ResponseDto = {
     id: number,
     blocking: boolean,
     title: string,
-    body: string
+    body: string,
+    actions: ActionDto[]
 }
 
 
@@ -20,6 +31,9 @@ export default async function handler(
     switch (req.method) {
         case 'GET':
             const allMessages = await prisma.message.findMany({
+                include: {
+                  actions: true
+                },
                 where: {
                     AND: [
                         {
@@ -41,7 +55,13 @@ export default async function handler(
                     id: message.id,
                     blocking: message.blocking,
                     title: message.title,
-                    body: message.body
+                    body: message.body,
+                    actions: message.actions.map((action): ActionDto => {
+                        return {
+                            actionType: action.actionType,
+                            title: action.title
+                        }
+                    })
                 }
             }))
             break
