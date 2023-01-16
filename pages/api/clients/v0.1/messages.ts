@@ -27,7 +27,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseDto[]>
 ) {
-    console.log('url is ', req.url)
     switch (req.method) {
         case 'GET':
             const allMessages = await prisma.message.findMany({
