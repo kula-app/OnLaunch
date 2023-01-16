@@ -19,7 +19,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseDto[]>
 ) {
-    console.log('url is ', req.url)
     switch (req.method) {
         case 'GET':
             const allMessages = await prisma.message.findMany({
@@ -29,6 +28,20 @@ export default async function handler(
             })
 
             res.status(200).json(allMessages)
+            break
+
+        case 'POST':
+            const message = await prisma.message.create({
+                data: {
+                    blocking: req.body.blocking,
+                    title: req.body.title,
+                    body: req.body.body,
+                    startDate: new Date(req.body.startDate),
+                    endDate: new Date(req.body.endDate),
+                    appId: req.body.appId
+                }
+            })
+            res.status(201).json(message)
             break
 
         default:
