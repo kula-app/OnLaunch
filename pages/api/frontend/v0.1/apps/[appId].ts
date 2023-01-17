@@ -11,6 +11,9 @@ export default async function handler(
     switch (req.method) {
         case 'GET':
             const app = await prisma.app.findUnique({
+                include: {
+                    messages: true
+                },
                 where: {
                     id: Number(req.query.appId)
                 }
