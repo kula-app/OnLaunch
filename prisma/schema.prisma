@@ -11,7 +11,7 @@ datasource db {
 }
 
 enum ActionType {
-  BUTTON @map("button")
+  BUTTON         @map("button")
   DISMISS_BUTTON @map("dismiss_button")
 }
 
@@ -32,7 +32,7 @@ model Message {
   body      String
   actions   Action[]
   startDate DateTime
-  endDate 	DateTime
+  endDate   DateTime
   App       App?     @relation(fields: [appId], references: [id])
   appId     Int?
   createdAt DateTime @default(now())
@@ -40,9 +40,9 @@ model Message {
 }
 
 model App {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   messages  Message[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
