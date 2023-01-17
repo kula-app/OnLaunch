@@ -4,22 +4,24 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-type ResponseDto = {
-    id: number,
-    name: string
-
-}
-
-
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ResponseDto[]>
+    res: NextApiResponse
 ) {
     switch (req.method) {
         case 'GET':
             const allApps = await prisma.app.findMany()
 
             res.status(200).json(allApps)
+            break
+
+        case 'POST':
+            const app = await prisma.app.create({
+                data: {
+                    name: req.body.name
+                }
+            })
+            res.status(201).json(app)
             break
 
         default:
