@@ -72,7 +72,6 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Lint
-        working-directory: backend
         run: yarn lint
 
   test:
