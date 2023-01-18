@@ -14,8 +14,7 @@ automerge_label = "🚀 automerge"
 # only auto merge "minor" and "patch" version upgrades.
 # do not automerge "major" version upgrades.
 versions = ["minor", "patch"]
-# do not automerge by anyone
-usernames = []
+usernames = ["dependabot", "renovate"]
 
 [merge.message]
 title = "pull_request_title"
