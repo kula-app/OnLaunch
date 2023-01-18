@@ -16,7 +16,7 @@ concurrency:
 jobs:
   build-publish-image:
     name: Build & Publish Image
-    runs-on: [self-hosted, linux, docker]
+    runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
       - name: Checkout Repository
@@ -53,7 +53,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            kula/hermes
+            kula/onlaunch
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -63,8 +63,8 @@ jobs:
       - name: Build And Push Image
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=registry,ref=ghcr.io/kula-app/hermes/hermes:buildcache
-          cache-to: type=registry,ref=ghcr.io/kula-app/hermes/hermes:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/kula-app/onlaunch/onlaunch:buildcache
+          cache-to: type=registry,ref=ghcr.io/kula-app/onlaunch/onlaunch:buildcache,mode=max
           context: .
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
