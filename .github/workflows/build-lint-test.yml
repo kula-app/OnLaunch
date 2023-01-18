@@ -114,11 +114,21 @@ jobs:
   test-e2e:
     name: Test E2E
     runs-on: ubuntu-22.04
-    container:
-      image: cypress/browsers:node18.12.0-chrome103-ff107
+    # Service containers to run with `container-job`
     services:
+      # Label used to access the service container
       postgres:
+        # Docker Hub image
         image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -143,11 +153,13 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Install cypress
-        run: yarn cypress install
-
-      - name: Build app used in E2E tests
-        run: yarn build
-
-      - name: Run Tests
-        run: yarn test:e2e:ci
+      - name: Cypress run
+        uses: cypress-io/github-action@v3
+        with:
+          project: ./
+          browser: chrome
+          build: yarn build
+          start: yarn start
+          wait-on: "http://localhost:3000"
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
