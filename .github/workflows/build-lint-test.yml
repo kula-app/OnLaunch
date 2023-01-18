@@ -104,13 +104,13 @@ jobs:
       - name: Run Tests
         run: yarn test:ci
 
-      - name: Upload Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v3
         with:
-          name: JEST Results
-          path: reports/jest-junit.xml
-          reporter: jest-junit
+          files: ./coverage/lcov.info
+          name: codecov-umbrella
+          flags: unittests
+          fail_ci_if_error: true
 
   test-e2e:
     name: Test E2E
