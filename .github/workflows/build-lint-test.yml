@@ -107,7 +107,6 @@ jobs:
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./coverage/lcov.info
           name: codecov-umbrella
           flags: unittests
           fail_ci_if_error: true
