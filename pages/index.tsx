@@ -1,6 +1,8 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import useSWR from 'swr'
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
+import useSWR from 'swr';
+import Link from 'next/link';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,10 +11,18 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
+
+
 
 export default function Home() {
-  const { data, error } = useSWR('/api/frontend/v0.1/apps', fetcher)
+  const router = useRouter();
+
+  function navigateOnClick(id) {
+    router.push(`/apps/${id}/messages`);
+  }
+  
+  const fetcher = (...args) => fetch(...args).then((res) => res.json());
+  const { data, error } = useSWR('/api/frontend/v0.1/apps', fetcher);
   if (error) return <div>Failed to load</div>
   if (!data) return <div>Loading...</div>
 
@@ -26,28 +36,28 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <h1>Apps</h1>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                  <TableCell>App Name</TableCell>
-                  <TableCell></TableCell>
-              </TableHead>
-              <TableBody>
-                  {
-                      data.map((app, index) => {
-                          return (
-                              <TableRow key={index}>
+        <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
+            <TableHead>
+                <TableCell><strong>ID</strong></TableCell>
+                <TableCell><strong>App Name</strong></TableCell>
+            </TableHead>
+            <TableBody>
+                {
+                    data.map((app, index) => {
+                        return (
+                              <TableRow key={index} onClick={() => navigateOnClick(app.id)}>
                                   <TableCell>
-                                      {app.name}
+                                    {app.id}
                                   </TableCell>
                                   <TableCell>
-                                      {index}
+                                    {app.name}
                                   </TableCell>
                               </TableRow>
-                          )
-                      })
-                  }
-              </TableBody>
-          </Table>
+                        )
+                    })
+                }
+            </TableBody>
+        </Table>
 
       </main>
     </>
