@@ -3,6 +3,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import useSWR from 'swr';
 import Link from 'next/link';
+import Navbar from "../components/Navbar";
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -34,6 +35,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Navbar />
       <main className={styles.main}>
         <h1>Apps</h1>
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">

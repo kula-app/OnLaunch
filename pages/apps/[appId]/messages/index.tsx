@@ -4,6 +4,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import Moment from 'moment';
+import Navbar from "../../../../components/Navbar";
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -54,10 +55,6 @@ export default function MessagesOfAppPage() {
             .then((data) => { setMessages(data.messages), setAppName(data.name) });
         }
     }, [router.isReady]);
-
-    function navigateOnClick(id) {
-        router.push(`/apps/${router.query.appId}/messages/new`);
-    }
 
     function deleteMessage(id) {
         fetch(MESSAGES_API_URL + id, {
@@ -145,6 +142,7 @@ export default function MessagesOfAppPage() {
     return (
         <>
             <div>
+				<Navbar />
                 <main className={styles.main}>
                     <h1>{appName}</h1>
                     <Table sx={{ minWidth: 650, maxWidth: 1300 }} aria-label="simple table" className="messageTable">
