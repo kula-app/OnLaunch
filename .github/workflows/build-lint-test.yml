@@ -154,6 +154,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Reset the database
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
         run: yarn prisma migrate reset -f
 
       - name: Cypress run
