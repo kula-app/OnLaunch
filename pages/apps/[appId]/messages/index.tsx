@@ -71,7 +71,7 @@ export default function MessagesOfAppPage() {
         event.preventDefault();
 
         // load data from form
-        const message = {
+        let message = {
             id: messageId,
             title: titleInputRef.current.value,
             body: bodyInputRef.current.value,
@@ -103,6 +103,7 @@ export default function MessagesOfAppPage() {
         } 
         // make POST http request
         else {
+			console.log('message id before is ' + message.id);
             fetch(MESSAGES_API_URL, {
                 method: 'POST',
                 body: JSON.stringify(message),
@@ -111,7 +112,9 @@ export default function MessagesOfAppPage() {
                 }
             })
             .then((response) => response.json())
-
+			.then(response => message.id = response.id);
+			
+			console.log('message id is ' + message.id);
             setAlertMessage('Message successfully created!');
             setShowSuccessAlert(true);
             resetForm();
