@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:18 AS base
+FROM node:19 AS base
 # install additional dependencies
 # --> noop
 
@@ -60,7 +60,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:18 AS release
+FROM node:19 AS release
 # install additional dependencies
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
