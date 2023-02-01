@@ -40,6 +40,7 @@ RUN yarn install \
 FROM project_setup AS build_setup
 # copy app sources
 COPY prisma ./prisma
+COPY components  ./components
 COPY pages  ./pages
 COPY public ./public
 COPY styles ./styles
