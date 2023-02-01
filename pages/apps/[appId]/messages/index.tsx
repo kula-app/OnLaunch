@@ -111,10 +111,8 @@ export default function MessagesOfAppPage() {
                     'Content-Type': 'application/json'
                 }
             })
-            .then((response) => response.json())
-			.then(response => message.id = response.id);
+            .then((response) => response.json());
 			
-			console.log('message id is ' + message.id);
             setAlertMessage('Message successfully created!');
             setShowSuccessAlert(true);
             resetForm();
