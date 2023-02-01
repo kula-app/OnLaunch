@@ -153,6 +153,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Reset the database
+        run: yarn prisma reset -f
+
       - name: Cypress run
         uses: cypress-io/github-action@v3
         with:
