@@ -127,7 +127,7 @@ jobs:
           POSTGRES_DB: onlaunch
         # exposing ports for application to use
         ports:
-          - 5432:5432
+          - 5432/tcp
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -161,7 +161,7 @@ jobs:
 
       - name: Reset the database
         env:
-          DATABASE_URL: "postgresql://pguser:password@postgres/onlaunch?schema=public"
+          DATABASE_URL: "postgresql://pguser:password@localhost:${{ job.services.postgres.ports[5432] }}/onlaunch?schema=public"
         run: yarn prisma migrate reset -f
 
       - name: Cypress run
@@ -173,4 +173,4 @@ jobs:
           start: yarn start
           wait-on: "http://localhost:3000"
         env:
-          DATABASE_URL: "postgresql://pguser:password@postgres/onlaunch?schema=public"
+          DATABASE_URL: "postgresql://pguser:password@localhost:${{ job.services.postgres.ports[5432] }}/onlaunch?schema=public"
