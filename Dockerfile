@@ -51,7 +51,7 @@ COPY styles ./styles
 # build development server
 FROM build_setup AS build_development
 # copy node_modules with all build tools included
-COPY --from=dependencies /home/node/app/node_modules ./node_modules
+# COPY --from=dependencies /home/node/app/node_modules ./node_modules
 
 # ---- Production ----
 # build production server
