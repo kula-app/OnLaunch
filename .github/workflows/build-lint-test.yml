@@ -122,7 +122,12 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: onlaunch
+        # exposing ports for application to use
+        ports:
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -154,10 +159,10 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
-      # - name: Reset the database
-      #   env:
-      #     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
-      #   run: yarn prisma migrate reset -f
+      - name: Reset the database
+        env:
+          DATABASE_URL: "postgresql://pguser:password@postgres:5432/onlaunch?schema=public"
+        run: yarn prisma migrate reset -f
 
       - name: Cypress run
         uses: cypress-io/github-action@v3
@@ -168,4 +173,4 @@ jobs:
           start: yarn start
           wait-on: "http://localhost:3000"
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres?schema=public"
+          DATABASE_URL: "postgresql://pguser:password@postgres:5432/onlaunch?schema=public"
