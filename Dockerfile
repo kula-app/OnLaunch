@@ -30,11 +30,11 @@ RUN yarn install \
   --production
 # copy production node_modules aside to cache them for the final build
 RUN cp -R node_modules          prod_node_modules
-# install ALL node_modules, including 'devDependencies'
-RUN yarn install \
-  --frozen-lockfile \
-  --ignore-scripts \
-  --no-progress
+# # install ALL node_modules, including 'devDependencies'
+# RUN yarn install \
+#   --frozen-lockfile \
+#   --ignore-scripts \
+#   --no-progress
 
 # ---- Build Setup ----
 FROM project_setup AS build_setup
@@ -56,7 +56,7 @@ FROM build_setup AS build_development
 FROM build_development AS build_production
 # build the server
 ENV NEXT_TELEMETRY_DISABLED 1
-# RUN yarn prisma generate
+RUN yarn prisma generate
 # RUN yarn build
 
 # # ---- Release ----
@@ -74,7 +74,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # Change runtime working directory
 WORKDIR /home/node/app/
 # copy production dependencies
-# COPY --from=dependencies      /home/node/app/prod_node_modules  ./node_modules
+COPY --from=dependencies      /home/node/app/prod_node_modules  ./node_modules
 # # copy build output
 COPY --from=build_production  /home/node/app/public             ./public
 # COPY --from=build_production  /home/node/app/.next              ./.next
