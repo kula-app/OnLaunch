@@ -27,14 +27,16 @@ RUN yarn install \
   --frozen-lockfile \
   --no-progress \
   --ignore-scripts \
-  --production
+  --production \
+  --verbose
 # copy production node_modules aside to cache them for the final build
 RUN cp -R node_modules          prod_node_modules
 # install ALL node_modules, including 'devDependencies'
 RUN yarn install \
   --frozen-lockfile \
   --ignore-scripts \
-  --no-progress
+  --no-progress \
+  --verbose
 
 # ---- Build Setup ----
 FROM project_setup AS build_setup
