@@ -1,31 +1,33 @@
-import { useRouter } from 'next/router';
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import useSWR from 'swr';
-import Link from 'next/link';
+import { useRouter } from "next/router";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import useSWR from "swr";
+import Link from "next/link";
 import Navbar from "../components/Navbar";
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
-
-
-
+interface App {
+  name: string;
+  id: number;
+}
 
 export default function Home() {
   const router = useRouter();
 
-  function navigateOnClick(id) {
+  function navigateOnClick(id: number) {
     router.push(`/apps/${id}/messages`);
   }
-  
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
-  const { data, error } = useSWR('/api/frontend/v0.1/apps', fetcher);
-  if (error) return <div>Failed to load</div>
-  if (!data) return <div>Loading...</div>
+
+  // @ts-ignore
+  const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
+  const { data, error } = useSWR<App[]>("/api/frontend/v0.1/apps", fetcher);
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <div>Loading...</div>;
 
   return (
     <>
@@ -39,29 +41,26 @@ export default function Home() {
       <main className={styles.main}>
         <h1>Apps</h1>
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
-            <TableHead>
-                <TableCell><strong>ID</strong></TableCell>
-                <TableCell><strong>App Name</strong></TableCell>
-            </TableHead>
-            <TableBody>
-                {
-                    data.map((app, index) => {
-                        return (
-                              <TableRow key={index} onClick={() => navigateOnClick(app.id)}>
-                                  <TableCell>
-                                    {app.id}
-                                  </TableCell>
-                                  <TableCell>
-                                    {app.name}
-                                  </TableCell>
-                              </TableRow>
-                        )
-                    })
-                }
-            </TableBody>
+          <TableHead>
+            <TableCell>
+              <strong>ID</strong>
+            </TableCell>
+            <TableCell>
+              <strong>App Name</strong>
+            </TableCell>
+          </TableHead>
+          <TableBody>
+            {data.map((app, index) => {
+              return (
+                <TableRow key={index} onClick={() => navigateOnClick(app.id)}>
+                  <TableCell>{app.id}</TableCell>
+                  <TableCell>{app.name}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
         </Table>
-
       </main>
     </>
-  )
+  );
 }
