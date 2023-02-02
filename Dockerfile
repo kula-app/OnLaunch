@@ -27,14 +27,15 @@ RUN yarn install \
   --frozen-lockfile \
   --no-progress \
   --ignore-scripts \
+  --network-timeout 100000 \
   --production
 # copy production node_modules aside to cache them for the final build
 RUN cp -R node_modules          prod_node_modules
-# install ALL node_modules, including 'devDependencies'
-RUN yarn install \
-  --frozen-lockfile \
-  --ignore-scripts \
-  --no-progress
+# # install ALL node_modules, including 'devDependencies'
+# RUN yarn install \
+#   --frozen-lockfile \
+#   --ignore-scripts \
+#   --no-progress
 
 # ---- Build Setup ----
 FROM project_setup AS build_setup
@@ -56,8 +57,8 @@ COPY --from=dependencies /home/node/app/node_modules ./node_modules
 FROM build_development AS build_production
 # build the server
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN yarn prisma generate
-RUN yarn build
+# RUN yarn prisma generate
+# RUN yarn build
 
 # # ---- Release ----
 # build production ready image
@@ -77,7 +78,7 @@ WORKDIR /home/node/app/
 COPY --from=dependencies      /home/node/app/prod_node_modules  ./node_modules
 # # copy build output
 COPY --from=build_production  /home/node/app/public             ./public
-COPY --from=build_production  /home/node/app/.next              ./.next
+# COPY --from=build_production  /home/node/app/.next              ./.next
 
 # select user
 USER node
