@@ -161,7 +161,7 @@ jobs:
 
       - name: Reset the database
         env:
-          DATABASE_URL: "postgresql://pguser:password@postgres:5432/onlaunch?schema=public"
+          DATABASE_URL: "postgresql://pguser:password@postgres/onlaunch?schema=public"
         run: yarn prisma migrate reset -f
 
       - name: Cypress run
@@ -173,4 +173,4 @@ jobs:
           start: yarn start
           wait-on: "http://localhost:3000"
         env:
-          DATABASE_URL: "postgresql://pguser:password@postgres:5432/onlaunch?schema=public"
+          DATABASE_URL: "postgresql://pguser:password@postgres/onlaunch?schema=public"
