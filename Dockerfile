@@ -23,12 +23,11 @@ COPY tsconfig.json .
 # Node --     Install Production & Development Node Dependencies
 FROM project_setup AS dependencies
 # install project node libs in production mode
-# RUN yarn install \
-#   --frozen-lockfile \
-#   --no-progress \
-#   --ignore-scripts \
-#   --production \
-#   --verbose
+RUN yarn install \
+  --frozen-lockfile \
+  --no-progress \
+  --ignore-scripts \
+  --production
 # # copy production node_modules aside to cache them for the final build
 # RUN cp -R node_modules          prod_node_modules
 # # install ALL node_modules, including 'devDependencies'
