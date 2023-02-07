@@ -43,7 +43,14 @@ export default function MessagesOfAppPage() {
     if (!router.isReady) return;
 
     fetch(MESSAGES_API_URL + messageId)
-    .then((res) => res.json())
+    .then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        return response.json();
+    })
     .then((data) => {
         let msg: Message = {
         id: data.id,
@@ -56,6 +63,11 @@ export default function MessagesOfAppPage() {
         };
 
         fillForm(msg);
+    })
+    .catch(error => {
+        setAlertMessage(`Error while fetching message: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
     });
   }, [router.isReady]);
 
@@ -80,11 +92,27 @@ export default function MessagesOfAppPage() {
     headers: {
         "Content-Type": "application/json",
     },
-    }).then((response) => response.json());
+    }).then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
 
-    setAlertMessage("Message successfully updated!");
-    setShowAlert(true);
-    navigateToAppMessagesPage();
+        setAlertMessage("Message edited successfully!");
+        setAlertSeverity("success");
+        setShowAlert(true);
+
+        navigateToAppMessagesPage();
+  
+        return response.json();
+    })
+    .catch(error => {
+        setAlertMessage(`Error while editing message: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    }); 
+
   }
   
   function navigateToAppMessagesPage() {
