@@ -41,12 +41,6 @@ export default function MessagesOfAppPage() {
   const [appName, setAppName] = useState("");
   const { appId } = router.query;
 
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const bodyInputRef = useRef<HTMLTextAreaElement>(null);
-  const blockingInputRef = useRef<HTMLButtonElement>(null);
-  const startInputRef = useRef<HTMLInputElement>(null);
-  const endInputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (!router.isReady) return;
 

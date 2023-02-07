@@ -1,7 +1,8 @@
+import Moment from "moment";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import Navbar from "../../../../components/Navbar";
-import styles from "../../../../styles/Home.module.css";
+import Navbar from "../../../../../components/Navbar";
+import styles from "../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -16,7 +17,7 @@ interface Message {
   blocking: boolean;
   body: string;
   title: string;
-  id?: number;
+  id: number;
   appId: number;
 }
 
@@ -30,64 +31,78 @@ export default function MessagesOfAppPage() {
   const [alertMessage, setAlertMessage] = useState("");
 
   const [switchValue, setSwitchValue] = useState(false);
+  const { appId } = router.query;
+  const { messageId } = router.query;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
   const bodyInputRef = useRef<HTMLTextAreaElement>(null);
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
 
-  function navigateToAppMessagesPage() {
-    router.push(`/apps/${router.query.appId}/messages/`);
-  } 
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    fetch(MESSAGES_API_URL + messageId)
+    .then((res) => res.json())
+    .then((data) => {
+        let msg: Message = {
+        id: data.id,
+        title: data.title,
+        body: data.body,
+        blocking: data.blocking,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        appId: data.appId,
+        };
+
+        fillForm(msg);
+    });
+  }, [router.isReady]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
     let message: Message = {
-        title: titleInputRef.current!.value,
-        body: bodyInputRef.current!.value,
-        blocking: switchValue,
-        startDate: startInputRef.current!.value,
-        endDate: endInputRef.current!.value,
-        appId: Number(router.query.appId),
+      id: Number(router.query.messageId),
+      title: titleInputRef.current!.value,
+      body: bodyInputRef.current!.value,
+      blocking: switchValue,
+      startDate: startInputRef.current!.value,
+      endDate: endInputRef.current!.value,
+      appId: Number(router.query.appId),
     };
 
-    // make POST http request
-    fetch(MESSAGES_API_URL, {
-        method: "POST",
-        body: JSON.stringify(message),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    // make PUT http request
+    fetch(MESSAGES_API_URL + messageId, {
+    method: "PUT",
+    body: JSON.stringify(message),
+    headers: {
+        "Content-Type": "application/json",
+    },
+    }).then((response) => response.json());
 
-        setAlertMessage("Message created successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
-
-        resetForm(); 
-        navigateToAppMessagesPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while creating new message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });  
-       
+    setAlertMessage("Message successfully updated!");
+    setShowAlert(true);
+    navigateToAppMessagesPage();
   }
+  
+  function navigateToAppMessagesPage() {
+    router.push(`/apps/${router.query.appId}/messages/`);
+  } 
 
-  function resetForm() {
-    (document.getElementById("messageForm") as HTMLFormElement)?.reset();
-    setSwitchValue(false);
+  function fillForm(msg: Message) {
+
+    // fill the form
+    titleInputRef.current!.value = msg.title;
+    bodyInputRef.current!.value = msg.body;
+    setSwitchValue(msg.blocking);
+    startInputRef.current!.value = Moment(msg.startDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    endInputRef.current!.value = Moment(msg.endDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
   }
 
   return (
@@ -95,7 +110,7 @@ export default function MessagesOfAppPage() {
       <div>
         <Navbar />
         <main className={styles.main}>
-          <h1>New Message</h1>
+          <h1>Edit Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
             <label htmlFor="title">Title</label>
             <input type="text" id="title" name="title" ref={titleInputRef} />
@@ -121,7 +136,7 @@ export default function MessagesOfAppPage() {
               ref={endInputRef}
             />
             <Button variant="contained" type="submit">
-              save
+              update
             </Button>
           </form>
           {showAlert && (
