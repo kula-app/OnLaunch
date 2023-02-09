@@ -4,6 +4,18 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+enum ActionType {
+    Button = "BUTTON",
+    DismissButton = "DISMISS_BUTTON",
+}
+
+type Action = {
+    id: number;
+    actionType: ActionType;
+    title: string;
+    messageId: number;
+};
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -27,9 +39,20 @@ export default async function handler(
                     body: req.body.body,
                     startDate: new Date(req.body.startDate),
                     endDate: new Date(req.body.endDate),
-                    appId: req.body.appId
+                    appId: req.body.appId,
                 }
-            })
+            });
+
+            if (req.body.actions.length > 0) {
+                const actions: Action[] = req.body.actions;
+                actions.forEach(action => {
+                    action.messageId = message.id
+                })
+                const savedActions = await prisma.action.createMany({
+                    data: req.body.actions
+                });
+            }
+
             res.status(201).json(message)
             break
 

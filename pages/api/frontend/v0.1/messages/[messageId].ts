@@ -4,6 +4,18 @@ import {PrismaClient, Prisma} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+enum ActionType {
+    Button = "BUTTON",
+    DismissButton = "DISMISS_BUTTON",
+}
+
+type Action = {
+    id: number;
+    actionType: ActionType;
+    title: string;
+    messageId: number;
+};
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -28,6 +40,12 @@ export default async function handler(
 
         case 'DELETE':
             try {
+                const deletedActions = await prisma.action.deleteMany({
+                    where: {
+                        messageId: Number(req.query.messageId)
+                    }
+                })
+
                 const deletedMessage = await prisma.message.delete({
                     where: {
                         id: Number(req.query.messageId)
@@ -57,6 +75,22 @@ export default async function handler(
                         appId: req.body.appId
                     }
                 })
+
+                const deletedActions = await prisma.action.deleteMany({
+                    where: {
+                        messageId: Number(req.query.messageId)
+                    }
+                })
+
+                if (req.body.actions.length > 0) {
+                    const actions: Action[] = req.body.actions;
+                    actions.forEach(action => {
+                        action.messageId = Number(req.query.messageId);
+                    })
+                    const savedActions = await prisma.action.createMany({
+                        data: req.body.actions
+                    });
+                }
 
                 res.status(201).json(updatedMessage)
             } catch(e) {

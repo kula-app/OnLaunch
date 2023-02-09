@@ -114,6 +114,12 @@ body {
 
 .addButton {
   margin-bottom: 32px;
+  margin-top: 32px;
+}
+
+.centeredElement {
+  display: flex;
+  justify-content: center;
 }
 
 input, textarea {
