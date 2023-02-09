@@ -163,6 +163,7 @@ export default function MessagesOfAppPage() {
           )}
           {showAlert && (
             <Alert
+              className="marginTopMedium"
               severity={alertSeverity}
               action={
                 <IconButton

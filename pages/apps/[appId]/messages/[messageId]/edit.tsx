@@ -21,7 +21,7 @@ interface Message {
   appId: number;
 }
 
-export default function MessagesOfAppPage() {
+export default function EditMessageOfAppPage() {
   const router = useRouter();
 
   const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
