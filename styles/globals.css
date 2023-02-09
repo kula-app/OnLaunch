@@ -119,3 +119,7 @@ body {
 input, textarea {
   margin-bottom: 16px;
 }
+
+.marginTopMedium {
+  margin-top: 32px;
+}

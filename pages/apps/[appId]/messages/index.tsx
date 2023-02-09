@@ -158,6 +158,9 @@ export default function MessagesOfAppPage() {
               })}
             </TableBody>
           </Table>
+          {messages.length == 0 && (
+            <p className="marginTopMedium">no data to show</p>
+          )}
           {showAlert && (
             <Alert
               severity={alertSeverity}
