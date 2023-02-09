@@ -247,9 +247,9 @@ export default function EditMessageOfAppPage() {
                           value={action.actionType}
                           onChange={event => handleActionTypeChange(index, event)}
                         >
-                          {Object.values(ActionType).map(value => {
+                          {Object.values(ActionType).map((value, index) => {
                             return (
-                              <MenuItem value={value}>{value}</MenuItem>
+                              <MenuItem key={index} value={value}>{value}</MenuItem>
                             )
                           })}
                         </Select>
