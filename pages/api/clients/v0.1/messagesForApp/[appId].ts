@@ -56,13 +56,13 @@ export default async function handler(
       });
 
       res.status(200).json(
-        allMessages.map((message: ResponseDto): ResponseDto => {
+        allMessages.map((message): ResponseDto => {
           return {
             id: message.id,
             blocking: message.blocking,
             title: message.title,
             body: message.body,
-            actions: message.actions.map((action: ActionDto): ActionDto => {
+            actions: message.actions.map((action): ActionDto => {
               return {
                 actionType: action.actionType as ActionType,
                 title: action.title,
