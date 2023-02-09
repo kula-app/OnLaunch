@@ -1,6 +1,7 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import useSWR, { mutate } from "swr";
 import Navbar from "../../../../components/Navbar";
 import styles from "../../../../styles/Home.module.css";
 
@@ -27,6 +28,12 @@ interface Message {
   appId: number;
 }
 
+interface App {
+  name: string;
+  id: number;
+  messages: Message[];
+}
+
 export default function MessagesOfAppPage() {
   const router = useRouter();
 
@@ -37,21 +44,12 @@ export default function MessagesOfAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const [messages, setMessages] = useState(Array<Message>());
-  const [appName, setAppName] = useState("");
   const { appId } = router.query;
 
-  useEffect(() => {
-    if (!router.isReady) return;
-
-    if (appId) {
-      fetch(APPS_API_URL + appId)
-        .then((res) => res.json())
-        .then((data) => {
-          setMessages(data.messages), setAppName(data.name);
-        });
-    }
-  }, [router.isReady]);
+  const fetcher = (...args: any) => fetch(args).then((res) => res.json());
+  const { data, error, mutate } = useSWR<App>(appId ? APPS_API_URL + appId : null, fetcher);
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <div>Loading...</div>;
 
   function navigateToEditMessagePage(id: number) {
     router.push(`/apps/${router.query.appId}/messages/${id}/edit`);
@@ -71,10 +69,11 @@ export default function MessagesOfAppPage() {
         });
       }
       
+      mutate();
+
       setAlertMessage(`Message with id '${id}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
-      setMessages(messages.filter((message) => message.id !== id));
 
       return response.json();
     })
@@ -90,7 +89,7 @@ export default function MessagesOfAppPage() {
       <div>
         <Navbar />
         <main className={styles.main}>
-          <h1>{appName}</h1>
+          <h1>{data.name}</h1>
           <div className="addButton">
             <Button
               variant="contained"
@@ -130,7 +129,7 @@ export default function MessagesOfAppPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {messages.map((message, index) => {
+              {data.messages.map((message: Message, index: number) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{message.id}</TableCell>
@@ -158,7 +157,7 @@ export default function MessagesOfAppPage() {
               })}
             </TableBody>
           </Table>
-          {messages.length == 0 && (
+          {data.messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
           {showAlert && (
