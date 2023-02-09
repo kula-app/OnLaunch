@@ -18,6 +18,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import type { AlertColor } from '@mui/material/Alert';
 
+interface Action {
+  title: string;
+}
 interface Message {
   endDate: string;
   startDate: string;
@@ -26,6 +29,7 @@ interface Message {
   title: string;
   id: number;
   appId: number;
+  actions: Action[];
 }
 
 interface App {
@@ -125,6 +129,9 @@ export default function MessagesOfAppPage() {
                 <TableCell>
                   <strong>End Date</strong>
                 </TableCell>
+                <TableCell>
+                  <strong># Actions</strong>
+                </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -132,15 +139,20 @@ export default function MessagesOfAppPage() {
               {data.messages.map((message: Message, index: number) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell>{message.id}</TableCell>
+                    <TableCell className="centeredText">{message.id}</TableCell>
                     <TableCell>{message.title}</TableCell>
                     <TableCell>{message.body}</TableCell>
-                    <TableCell>{String(message.blocking)}</TableCell>
+                    <TableCell className="centeredText">
+                        {String(message.blocking)}
+                    </TableCell>
                     <TableCell>
                       {Moment(message.startDate).format("DD.MM.YYYY HH:mm:ss")}
                     </TableCell>
                     <TableCell>
                       {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
+                    </TableCell>
+                    <TableCell className="centeredText">
+                      {message.actions.length}
                     </TableCell>
                     <TableCell>
                       <div className="hiddenTableElement">

@@ -10,7 +10,11 @@ export default async function handler(
 ) {
     switch (req.method) {
         case 'GET':
-            const allApps = await prisma.app.findMany()
+            const allApps = await prisma.app.findMany({
+                orderBy: {
+                    id: 'asc'
+                }
+            })
 
             res.status(200).json(allApps)
             break

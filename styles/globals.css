@@ -123,3 +123,7 @@ input, textarea {
 .marginTopMedium {
   margin-top: 32px;
 }
+
+td.centeredText {
+  text-align: center;
+}
