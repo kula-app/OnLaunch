@@ -8,6 +8,7 @@ import styles from "../../../../styles/Home.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
+import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -49,6 +50,8 @@ export default function MessagesOfAppPage() {
   const [alertMessage, setAlertMessage] = useState("");
 
   const { appId } = router.query;
+
+  const now = Moment.now();
 
   const fetcher = (...args: any) => fetch(args).then((res) => res.json());
   const { data, error, mutate } = useSWR<App>(appId ? APPS_API_URL + appId : null, fetcher);
@@ -111,16 +114,17 @@ export default function MessagesOfAppPage() {
           >
             <TableHead>
               <TableRow>
-                <TableCell>
+                <TableCell className="centeredText">
                   <strong>ID</strong>
                 </TableCell>
+                <TableCell></TableCell>
                 <TableCell>
                   <strong>Title</strong>
                 </TableCell>
                 <TableCell>
                   <strong>Body</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell className="centeredText">
                   <strong>Blocking</strong>
                 </TableCell>
                 <TableCell>
@@ -129,7 +133,7 @@ export default function MessagesOfAppPage() {
                 <TableCell>
                   <strong>End Date</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell className="centeredText">
                   <strong># Actions</strong>
                 </TableCell>
                 <TableCell></TableCell>
@@ -139,9 +143,20 @@ export default function MessagesOfAppPage() {
               {data.messages.map((message: Message, index: number) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell className="centeredText">{message.id}</TableCell>
-                    <TableCell>{message.title}</TableCell>
-                    <TableCell>{message.body}</TableCell>
+                    <TableCell className="centeredText">
+                      {message.id}
+                    </TableCell>
+                    <TableCell>
+                      { Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now) && (
+                        <CircleNotificationsIcon />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {message.title}
+                    </TableCell>
+                    <TableCell>
+                      {message.body}
+                    </TableCell>
                     <TableCell className="centeredText">
                         {String(message.blocking)}
                     </TableCell>

@@ -100,21 +100,25 @@ export default function Home() {
           </div>
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
           <TableHead>
-            <TableCell>
+            <TableCell width="5%">
               <strong>ID</strong>
             </TableCell>
             <TableCell>
               <strong>App Name</strong>
             </TableCell>
-            <TableCell></TableCell>
+            <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
             {data.map((app, index) => {
               return (
                 <TableRow key={index} >
-                  <TableCell>{app.id}</TableCell>
-                  <TableCell>{app.name}</TableCell>
+                  <TableCell width="5%">
+                    {app.id}
+                  </TableCell>
                   <TableCell>
+                    {app.name}
+                  </TableCell>
+                  <TableCell width="5%">
                       <div className="hiddenTableElement">
                         <IconButton onClick={() => navigateToMessagesPage(app.id)}>
                           <VisibilityIcon />
