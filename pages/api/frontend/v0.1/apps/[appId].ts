@@ -15,7 +15,15 @@ export default async function handler(
                     messages: {
                         include: {
                             actions: true
-                        }
+                        },
+                        orderBy: [
+                            {
+                                startDate: 'asc'
+                            }, 
+                            {
+                                endDate: 'asc'
+                            }
+                        ]
                     }
                 },
                 where: {
