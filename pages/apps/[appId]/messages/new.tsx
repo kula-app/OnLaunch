@@ -4,11 +4,30 @@ import Navbar from "../../../../components/Navbar";
 import styles from "../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Switch from "@mui/material/Switch";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
+
+enum ActionType {
+  Button = "BUTTON",
+  DismissButton = "DISMISS_BUTTON",
+}
+
+type Action = {
+  actionType: ActionType;
+  title: string;
+};
 
 interface Message {
   endDate: string;
@@ -18,6 +37,7 @@ interface Message {
   title: string;
   id?: number;
   appId: number;
+  actions?: Action[];
 }
 
 export default function NewMessageForAppPage() {
@@ -28,6 +48,8 @@ export default function NewMessageForAppPage() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [actions, setActions] = useState<Action[]>([]);
 
   const [switchValue, setSwitchValue] = useState(false);
 
@@ -51,6 +73,7 @@ export default function NewMessageForAppPage() {
         startDate: startInputRef.current!.value,
         endDate: endInputRef.current!.value,
         appId: Number(router.query.appId),
+        actions: actions,
     };
 
     // make POST http request
@@ -90,6 +113,36 @@ export default function NewMessageForAppPage() {
     setSwitchValue(false);
   }
 
+  function addAction() {
+    setActions(oldActions => [...oldActions, { actionType: ActionType.Button, title: "" }]);
+  }
+
+  function deleteAction(index: number) {
+    const newActions = [...actions];
+    newActions.splice(index, 1);
+    setActions(newActions);
+  }
+
+  function getActionTypeFromValue(value: string) {
+    switch(value) {
+      case "DISMISS_BUTTON":
+        return "DismissButton";
+    }
+    return "Button";
+  }
+
+  function handleActionTitleChange(index: number, event: React.ChangeEvent<HTMLInputElement>) {
+    let data = [...actions];
+    data[index]["title"] = event.target.value;
+    setActions(data);
+  }
+
+  function handleActionTypeChange(index: number, event: SelectChangeEvent<unknown>) {
+    let data = [...actions];
+    data[index]["actionType"] = ActionType[getActionTypeFromValue(event.target.value as string)];
+    setActions(data);
+  }
+
   return (
     <>
       <div>
@@ -120,6 +173,70 @@ export default function NewMessageForAppPage() {
               name="endDate"
               ref={endInputRef}
             />
+            <h3 className="centeredElement">Actions</h3>
+            <Table
+            sx={{ minWidth: 650, maxWidth: 1300 }}
+            aria-label="simple table"
+            className="messageTable"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <strong>Type</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Title</strong>
+                  </TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {actions && actions.map((action: Action, index: number) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Select 
+                          label="ActionType"
+                          value={action.actionType}
+                          onChange={event => handleActionTypeChange(index, event)}
+                        >
+                          {Object.values(ActionType).map(value => {
+                            return (
+                              <MenuItem value={value}>{value}</MenuItem>
+                            )
+                          })}
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <input type="text" 
+                          name="actionTitle" 
+                          value={action.title} 
+                          onChange={event => handleActionTitleChange(index, event)}
+                          />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => deleteAction(index)}>
+                          <DeleteForeverIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            {actions.length == 0 && (
+              <p className="marginTopMedium centeredElement">no actions added</p>
+            )}
+            <div className="addButton centeredElement">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  addAction();
+                }}
+              >
+                New Action
+                </Button>
+            </div>
             <Button variant="contained" type="submit">
               save
             </Button>
