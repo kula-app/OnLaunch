@@ -130,6 +130,10 @@ input, textarea {
   margin-top: 32px;
 }
 
+.marginTopSmall {
+  margin-top: 16px;
+}
+
 td.centeredText, th.centeredText {
   text-align: center;
 }
