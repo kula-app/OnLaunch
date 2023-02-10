@@ -18,6 +18,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
+import Tooltip from '@mui/material/Tooltip';
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -121,15 +122,21 @@ export default function Home() {
                   </TableCell>
                   <TableCell width="5%">
                       <div className="hiddenTableElement">
-                        <IconButton onClick={() => navigateToMessagesPage(app.id)}>
-                          <VisibilityIcon />
-                        </IconButton>
-                        <IconButton onClick={() => navigateToEditAppPage(app.id)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => deleteApp(app.id)}>
-                          <DeleteForeverIcon />
-                        </IconButton>
+                      <Tooltip title="view messages" >
+                          <IconButton onClick={() => navigateToMessagesPage(app.id)}>
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="edit" >
+                          <IconButton onClick={() => navigateToEditAppPage(app.id)}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="delete" >
+                          <IconButton onClick={() => deleteApp(app.id)}>
+                            <DeleteForeverIcon />
+                          </IconButton>
+                        </Tooltip>
                       </div>
                     </TableCell>
                 </TableRow>

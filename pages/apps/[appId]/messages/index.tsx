@@ -1,14 +1,13 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import useSWR, { mutate } from "swr";
+import { useState } from "react";
+import useSWR from "swr";
 import Navbar from "../../../../components/Navbar";
 import styles from "../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -19,6 +18,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
 import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
 import type { AlertColor } from '@mui/material/Alert';
 
 interface Action {
@@ -151,13 +151,19 @@ export default function MessagesOfAppPage() {
                     <TableCell>
                       <div className="centeredElement">
                         { Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now) && (
-                            <Chip label="active" color="success" size="small" />
+                            <Tooltip title="this message is currently displayed in apps" >
+                                <Chip label="active" color="success" size="small" />
+                            </Tooltip>
                         )}
                         { Moment(message.endDate).isBefore(now) && (
-                            <Chip label="past" size="small" variant="outlined" />
+                            <Tooltip title="this message will not be displayed again in apps" >
+                                <Chip label="past" size="small" variant="outlined" />
+                            </Tooltip>
                         )}
                         { Moment(message.startDate).isAfter(now) && (
-                            <Chip label="upcoming" color="secondary" size="small" variant="outlined" />
+                            <Tooltip title="this message will be displayed in apps in the future" >
+                                <Chip label="upcoming" color="secondary" size="small" variant="outlined" />
+                            </Tooltip>
                         )}
                       </div>
                     </TableCell>
@@ -181,12 +187,16 @@ export default function MessagesOfAppPage() {
                     </TableCell>
                     <TableCell>
                       <div className="hiddenTableElement">
-                        <IconButton onClick={() => navigateToEditMessagePage(message.id)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => deleteMessage(message.id)}>
-                          <DeleteForeverIcon />
-                        </IconButton>
+                        <Tooltip title="edit" >
+                            <IconButton onClick={() => navigateToEditMessagePage(message.id)}>
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="delete" >
+                            <IconButton onClick={() => deleteMessage(message.id)}>
+                                <DeleteForeverIcon />
+                            </IconButton>
+                        </Tooltip>
                       </div>
                     </TableCell>
                   </TableRow>
