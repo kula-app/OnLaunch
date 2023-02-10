@@ -16,6 +16,7 @@ import TableRow from "@mui/material/TableRow";
 import Switch from "@mui/material/Switch";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Snackbar from "@mui/material/Snackbar";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 
@@ -241,7 +242,12 @@ export default function NewMessageForAppPage() {
               save
             </Button>
           </form>
-          {showAlert && (
+          <Snackbar 
+            open={showAlert} 
+            autoHideDuration={6000} 
+            onClose={() => setShowAlert(false)}
+            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+            >
             <Alert
               severity={alertSeverity}
               action={
@@ -259,7 +265,7 @@ export default function NewMessageForAppPage() {
             >
               {alertMessage}
             </Alert>
-          )}
+          </Snackbar>
         </main>
       </div>
     </>

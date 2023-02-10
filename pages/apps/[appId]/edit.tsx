@@ -1,4 +1,3 @@
-import Moment from "moment";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Navbar from "../../../components/Navbar";
@@ -8,7 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import Switch from "@mui/material/Switch";
+import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -119,7 +118,12 @@ export default function EditAppPage() {
               update
             </Button>
           </form>
-          {showAlert && (
+          <Snackbar 
+            open={showAlert} 
+            autoHideDuration={6000} 
+            onClose={() => setShowAlert(false)}
+            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+            >
             <Alert
               severity={alertSeverity}
               action={
@@ -137,7 +141,7 @@ export default function EditAppPage() {
             >
               {alertMessage}
             </Alert>
-          )}
+          </Snackbar>
         </main>
       </div>
     </>
