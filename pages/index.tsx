@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 
@@ -17,6 +17,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -139,7 +140,12 @@ export default function Home() {
         {data.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
-        {showAlert && (
+        <Snackbar 
+            open={showAlert} 
+            autoHideDuration={6000} 
+            onClose={() => setShowAlert(false)}
+            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+            >
             <Alert
               className="marginTopMedium"
               severity={alertSeverity}
@@ -158,7 +164,7 @@ export default function Home() {
             >
               {alertMessage}
             </Alert>
-          )}  
+          </Snackbar> 
       </main>
     </>
   );
