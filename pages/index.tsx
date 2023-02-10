@@ -19,6 +19,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
 import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -34,6 +39,9 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [appId, setAppId] = useState(-1);
 
   function navigateToMessagesPage(id: number) {
     router.push(`/apps/${id}/messages`);
@@ -52,6 +60,11 @@ export default function Home() {
 
   function navigateToNewAppPage() {
     router.push(`/apps/new`);
+  }
+
+  function handleDelete(id: number) {
+    setAppId(id);
+    setShowDeleteDialog(true);
   }
 
   function deleteApp(id: number) {
@@ -133,7 +146,7 @@ export default function Home() {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="delete" >
-                          <IconButton onClick={() => deleteApp(app.id)}>
+                          <IconButton onClick={() => handleDelete(app.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>
@@ -172,6 +185,26 @@ export default function Home() {
               {alertMessage}
             </Alert>
           </Snackbar> 
+          <Dialog
+            open={showDeleteDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {`Delete App with id '${appId}?`}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                This cannot be undone.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+              <Button onClick={() => {setShowDeleteDialog(false); deleteApp(appId)}} autoFocus>
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
       </main>
     </>
   );
