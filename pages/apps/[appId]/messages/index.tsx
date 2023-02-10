@@ -19,6 +19,11 @@ import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 
 interface Action {
@@ -51,6 +56,9 @@ export default function MessagesOfAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [messageId, setMessageId] = useState(-1);
+
   const { appId } = router.query;
 
   const now = Moment.now();
@@ -66,6 +74,16 @@ export default function MessagesOfAppPage() {
 
   function navigateToNewMessagePage() {
     router.push(`/apps/${router.query.appId}/messages/new`);
+  }
+
+  function handleDelete(id: number) {
+    setMessageId(id);
+    const message = data?.messages.find(x => x.id == id);
+    if ( message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
+        setShowDeleteDialog(true);
+    } else {
+        deleteMessage(id);
+    }
   }
 
   function deleteMessage(id: number) {
@@ -193,7 +211,7 @@ export default function MessagesOfAppPage() {
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="delete" >
-                            <IconButton onClick={() => deleteMessage(message.id)}>
+                            <IconButton onClick={() => handleDelete(message.id)}>
                                 <DeleteForeverIcon />
                             </IconButton>
                         </Tooltip>
@@ -232,6 +250,26 @@ export default function MessagesOfAppPage() {
               {alertMessage}
             </Alert>
           </Snackbar>
+          <Dialog
+            open={showDeleteDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            >
+            <DialogTitle id="alert-dialog-title">
+              {`Delete currently active Message with id '${messageId}?`}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                This message is currently displayed in apps. Deletion cannot be undone.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+              <Button onClick={() => {setShowDeleteDialog(false); deleteMessage(messageId)}} autoFocus>
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
         </main>
       </div>
     </>
