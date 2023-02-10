@@ -18,6 +18,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
+import Chip from '@mui/material/Chip';
 import type { AlertColor } from '@mui/material/Alert';
 
 interface Action {
@@ -148,9 +149,17 @@ export default function MessagesOfAppPage() {
                       {message.id}
                     </TableCell>
                     <TableCell>
-                      { Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now) && (
-                        <CircleNotificationsIcon />
-                      )}
+                      <div className="centeredElement">
+                        { Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now) && (
+                            <Chip label="active" color="success" size="small" />
+                        )}
+                        { Moment(message.endDate).isBefore(now) && (
+                            <Chip label="past" size="small" variant="outlined" />
+                        )}
+                        { Moment(message.startDate).isAfter(now) && (
+                            <Chip label="upcoming" color="secondary" size="small" variant="outlined" />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {message.title}
