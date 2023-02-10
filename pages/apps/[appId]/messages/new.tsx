@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import Navbar from "../../../../components/Navbar";
 import styles from "../../../../styles/Home.module.css";
 
@@ -17,6 +17,8 @@ import Switch from "@mui/material/Switch";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 
@@ -54,10 +56,10 @@ export default function NewMessageForAppPage() {
 
   const [switchValue, setSwitchValue] = useState(false);
 
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const bodyInputRef = useRef<HTMLTextAreaElement>(null);
-  const startInputRef = useRef<HTMLInputElement>(null);
-  const endInputRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   function navigateToAppMessagesPage() {
     router.push(`/apps/${router.query.appId}/messages/`);
@@ -68,11 +70,11 @@ export default function NewMessageForAppPage() {
 
     // load data from form
     let message: Message = {
-        title: titleInputRef.current!.value,
-        body: bodyInputRef.current!.value,
+        title: title,
+        body: body,
         blocking: switchValue,
-        startDate: startInputRef.current!.value,
-        endDate: endInputRef.current!.value,
+        startDate: startDate,
+        endDate: endDate,
         appId: Number(router.query.appId),
         actions: actions,
     };
@@ -132,7 +134,7 @@ export default function NewMessageForAppPage() {
     return "Button";
   }
 
-  function handleActionTitleChange(index: number, event: React.ChangeEvent<HTMLInputElement>) {
+  function handleActionTitleChange(index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     let data = [...actions];
     data[index]["title"] = event.target.value;
     setActions(data);
@@ -151,30 +153,60 @@ export default function NewMessageForAppPage() {
         <main className={styles.main}>
           <h1>New Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
-            <label htmlFor="title">Title</label>
-            <input type="text" id="title" name="title" ref={titleInputRef} />
-            <label htmlFor="body">Body</label>
-            <textarea id="body" name="body" ref={bodyInputRef} rows={10} />
-            <label htmlFor="blocking">Blocking</label>
-            <Switch
-              checked={switchValue}
-              onChange={() => setSwitchValue(!switchValue)}
-            ></Switch>
-            <label htmlFor="startDate">Start Date</label>
-            <input
+            <TextField 
+              required 
+              label="Title" 
+              id="title" 
+              variant="outlined" 
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+            <TextField 
+              required
+              multiline 
+              label="Body" 
+              minRows={10} 
+              maxRows={10} 
+              id="body" 
+              className="marginTopMedium"
+              value={body}
+              onChange={(event) => setBody(event.target.value)}
+            />
+            <div>
+              <FormControlLabel 
+                control=
+                  {
+                    <Switch
+                      checked={switchValue}
+                      onChange={() => setSwitchValue(!switchValue)}
+                    ></Switch>
+                  }
+                label="Blocking"
+                labelPlacement="start"
+                sx={{ marginLeft: 0 }}
+                className="marginTopMedium"
+              />
+            </div>
+            <TextField
+              label="Start Date"
               type="datetime-local"
               id="startDate"
-              name="startDate"
-              ref={startInputRef}
+              InputLabelProps={{ shrink: true }}
+              className="marginTopMedium"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
             />
-            <label htmlFor="endDate">End Date</label>
-            <input
+            <TextField
+              required
+              label="End Date"
               type="datetime-local"
               id="endDate"
-              name="endDate"
-              ref={endInputRef}
+              InputLabelProps={{ shrink: true }}
+              className="marginTopMedium"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
             />
-            <h3 className="centeredElement">Actions</h3>
+            <h3 className="marginTopMedium centeredElement">Actions</h3>
             <Table
             sx={{ minWidth: 650, maxWidth: 1300 }}
             aria-label="simple table"
@@ -209,7 +241,7 @@ export default function NewMessageForAppPage() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                        <input type="text" 
+                      <TextField type="text" 
                           name="actionTitle" 
                           value={action.title} 
                           onChange={event => handleActionTitleChange(index, event)}
@@ -226,7 +258,7 @@ export default function NewMessageForAppPage() {
               </TableBody>
             </Table>
             {actions.length == 0 && (
-              <p className="marginTopMedium centeredElement">no actions added</p>
+              <p className="marginTopSmall centeredElement">no actions added</p>
             )}
             <div className="addButton centeredElement">
               <Button

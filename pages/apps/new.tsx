@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/Home.module.css";
 
@@ -8,6 +8,7 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -23,8 +24,8 @@ export default function NewAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const[appName, setAppName] = useState("");
 
-  const nameInputRef = useRef<HTMLInputElement>(null);
 
   function navigateToAppsPage() {
     router.push(`/`);
@@ -35,7 +36,7 @@ export default function NewAppPage() {
 
     // load data from form
     let app: App = {
-        name: nameInputRef.current!.value,
+        name: appName,
     };
 
     // make POST http request
@@ -80,10 +81,21 @@ export default function NewAppPage() {
         <Navbar />
         <main className={styles.main}>
           <h1>New App</h1>
-          <form id="appForm" onSubmit={submitHandler} className="column">
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" ref={nameInputRef} />
-            <Button variant="contained" type="submit">
+          <form id="appForm" 
+            onSubmit={submitHandler} 
+            className="column"
+          >
+            <TextField 
+              required 
+              label="Name"
+              id="name" 
+              onChange={(event) => setAppName(event.target.value)}
+            />
+            <Button 
+              variant="contained" 
+              type="submit"
+              className="marginTopMedium"
+            >
               save
             </Button>
           </form>

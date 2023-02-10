@@ -8,6 +8,7 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 
 interface App {
@@ -24,10 +25,9 @@ export default function EditAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const [switchValue, setSwitchValue] = useState(false);
-  const { appId } = router.query;
+  const[appName, setAppName] = useState("");
 
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const { appId } = router.query;
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -62,7 +62,7 @@ export default function EditAppPage() {
     // load data from form
     let newApp: App = {
       id: Number(router.query.appId),
-      name: nameInputRef.current!.value,
+      name: appName,
     };
 
     // make PUT http request
@@ -102,7 +102,7 @@ export default function EditAppPage() {
   function fillForm(app: App) {
 
     // fill the form
-    nameInputRef.current!.value = app.name;
+    setAppName(app.name);
   }
 
   return (
@@ -111,9 +111,18 @@ export default function EditAppPage() {
         <Navbar />
         <main className={styles.main}>
           <h1>Edit App</h1>
-          <form id="appForm" onSubmit={submitHandler} className="column">
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" ref={nameInputRef} />
+          <form 
+            id="appForm" 
+            onSubmit={submitHandler} 
+            className="column"
+          >
+            <TextField 
+              required 
+              label="Name"
+              id="name" 
+              value={appName}
+              onChange={(event) => setAppName(event.target.value)}
+            />
             <Button variant="contained" type="submit">
               update
             </Button>
