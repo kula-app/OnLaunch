@@ -17,7 +17,7 @@ jobs:
   build-publish-image:
     name: Build & Publish Image
     runs-on: ubuntu-22.04
-    timeout-minutes: 60
+    timeout-minutes: 240
     env:
       is_publishing: ${{ startsWith(github.ref, 'refs/tags/v') }}
     steps:
