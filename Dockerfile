@@ -23,11 +23,11 @@ COPY tsconfig.json .
 # Node --     Install Production & Development Node Dependencies
 FROM project_setup AS dependencies
 # install project node libs in production mode
-RUN yarn install --production
+RUN yarn install --production  --network-timeout 1000000
 # copy production node_modules aside to cache them for the final build
 RUN cp -R node_modules          prod_node_modules
 # install ALL node_modules, including 'devDependencies'
-RUN yarn install
+RUN yarn install --network-timeout 1000000
 
 # ---- Build Setup ----
 FROM project_setup AS build_setup
