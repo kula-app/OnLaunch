@@ -31,7 +31,7 @@ export default NextAuth({
                 if (!user) {
                     return;
                 } else {
-                    const isValid = await verifyPassword(credentials.password, user.password);
+                    const isValid = await verifyPassword(credentials.password.concat(user.salt), user.password);
                     
                     if (!isValid) {
                         throw new Error('Wrong credentials!');
