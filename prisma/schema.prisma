@@ -15,6 +15,11 @@ enum ActionType {
   DISMISS_BUTTON @map("dismiss_button")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Action {
   id         Int        @id @default(autoincrement())
   actionType ActionType
@@ -43,6 +48,15 @@ model App {
   id        Int       @id @default(autoincrement())
   name      String
   messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String
+  password  String
+  salt      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
