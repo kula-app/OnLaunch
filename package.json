@@ -21,6 +21,7 @@
     "@mui/material": "^5.11.4",
     "@next/font": "13.2.3",
     "@prisma/client": "^4.9.0",
+    "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
     "moment": "^2.29.4",
     "next": "13.2.3",
