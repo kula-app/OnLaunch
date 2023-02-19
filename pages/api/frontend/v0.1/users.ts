@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import { hashPassword, validatePassword } from '../../../../util/auth';
+import { hashAndSaltPassword, validatePassword } from '../../../../util/auth';
 
 const prisma = new PrismaClient()
 
@@ -42,12 +42,12 @@ export default async function handler(
                 return;
             }
 
-            const hashedPassword = await hashPassword(password);
+            const { hashedSaltedPassword, salt } = await hashAndSaltPassword(password);
             const user = await prisma.user.create({
                 data: {
                     email: email,
-                    password: hashedPassword,
-                    salt: "",
+                    password: hashedSaltedPassword,
+                    salt: salt,
                 }
             });
 
