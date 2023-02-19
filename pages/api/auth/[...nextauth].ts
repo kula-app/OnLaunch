@@ -29,7 +29,7 @@ export default NextAuth({
                 });
 
                 if (!user) {
-                    return;
+                    throw new Error('Wrong credentials!');
                 } else {
                     const isValid = await verifyPassword(credentials.password.concat(user.salt), user.password);
                     
