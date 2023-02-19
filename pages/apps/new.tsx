@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession } from 'next-auth/react';
 
 interface App {
   name: string;
@@ -17,6 +18,9 @@ interface App {
 
 export default function NewAppPage() {
   const router = useRouter();
+
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
   const APPS_API_URL = "/api/frontend/v0.1/apps/";
 
@@ -78,7 +82,7 @@ export default function NewAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={session ? true : false} />
         <main className={styles.main}>
           <h1>New App</h1>
           <form id="appForm" 

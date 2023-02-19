@@ -25,6 +25,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession } from 'next-auth/react';
 
 interface Action {
   title: string;
@@ -48,6 +49,9 @@ interface App {
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
+  
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
   const APPS_API_URL = "/api/frontend/v0.1/apps/";
   const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
@@ -114,7 +118,7 @@ export default function MessagesOfAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={session ? true : false} />
         <main className={styles.main}>
           <h1>{data.name}</h1>
           <div className="addButton">

@@ -3,6 +3,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import useSWR from "swr";
 import { useState } from "react";
+import { useSession } from 'next-auth/react';
 import Navbar from "../components/Navbar";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -42,6 +43,9 @@ export default function Home() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [appId, setAppId] = useState(-1);
+
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
   function navigateToMessagesPage(id: number) {
     router.push(`/apps/${id}/messages`);
@@ -100,7 +104,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Navbar />
+      <Navbar hasSession={session ? true : false} />
       <main className={styles.main}>
         <h1>Apps</h1>
         <div className="addButton">

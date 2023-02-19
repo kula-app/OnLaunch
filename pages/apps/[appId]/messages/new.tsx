@@ -21,6 +21,7 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession } from 'next-auth/react';
 
 enum ActionType {
   Button = "BUTTON",
@@ -45,6 +46,9 @@ interface Message {
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
+  
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
   const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
 
@@ -149,7 +153,7 @@ export default function NewMessageForAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={session ? true : false} />
         <main className={styles.main}>
           <h1>New Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
