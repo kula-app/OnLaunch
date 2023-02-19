@@ -9,21 +9,28 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
+import Button from "@mui/material/Button";
+import { signOut } from 'next-auth/react';
+import { useRouter } from "next/router";
 
 interface Props {
   /**
    * Injected by the documentation to work in an iframe.
    * You won't need it on your project.
    */
-  window?: () => Window;
+  hasSession: boolean;
 }
 
 const drawerWidth = 240;
 const navItems = [{ id: "home", link: "/", label: "Home" }];
 
 export default function Navbar(props: Props) {
-  const { window } = props;
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  function navigateToAuthPage() {
+    router.push(`/auth`);
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -35,16 +42,19 @@ export default function Navbar(props: Props) {
         OnLaunch
       </Typography>
       <Divider />
-      {navItems.map((item) => (
+      {props.hasSession && navItems.map((item) => (
         <Link key={item.id} href={item.link}>
           {item.label}
         </Link>
       ))}
+      {props.hasSession && 
+        <Link key={navItems.length} href="/auth">
+          Login
+        </Link>}
     </Box>
   );
-
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  console.log("hasSession = " + String(props.hasSession));
+  console.log("!hasSession = " + String(!props.hasSession));
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -67,18 +77,41 @@ export default function Navbar(props: Props) {
           >
             OnLaunch
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          {props.hasSession && <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
               <Link key={item.id} href={item.link} style={{ color: "#fff" }}>
                 {item.label}
               </Link>
             ))}
-          </Box>
+          </Box>}
+          {props.hasSession && 
+              <Button
+                variant="outlined"
+                color="info"
+                onClick={() => {
+                  signOut({
+                    redirect: false
+                  });
+                  navigateToAuthPage();
+                }}
+              >
+                logout
+              </Button>
+            }
+            {(!props.hasSession) && 
+              <Button
+                variant="outlined"
+                color="info"
+                onClick={() => navigateToAuthPage()}
+              >
+                login
+              </Button>
+            }
         </Toolbar>
       </AppBar>
       <Box component="nav">
         <Drawer
-          container={container}
+          container={undefined}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}

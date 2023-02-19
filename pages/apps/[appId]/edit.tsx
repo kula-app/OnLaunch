@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession } from 'next-auth/react';
 
 interface App {
   name: string;
@@ -18,6 +19,9 @@ interface App {
 
 export default function EditAppPage() {
   const router = useRouter();
+  
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
   const APPS_API_URL = "/api/frontend/v0.1/apps/";
 
@@ -108,7 +112,7 @@ export default function EditAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={session ? true : false} />
         <main className={styles.main}>
           <h1>Edit App</h1>
           <form 
@@ -123,7 +127,11 @@ export default function EditAppPage() {
               value={appName}
               onChange={(event) => setAppName(event.target.value)}
             />
-            <Button variant="contained" type="submit">
+            <Button 
+              variant="contained" 
+              type="submit"
+              className="marginTopMedium"
+            >
               update
             </Button>
           </form>
