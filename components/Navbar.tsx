@@ -53,9 +53,7 @@ export default function Navbar(props: Props) {
         </Link>}
     </Box>
   );
-  console.log("hasSession = " + String(props.hasSession));
-  console.log("!hasSession = " + String(!props.hasSession));
-
+  
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -82,7 +80,7 @@ export default function Navbar(props: Props) {
               <Link 
                 key={item.id} 
                 href={item.link} 
-                style={{ color: "#fff", marginRight: 2 }}>
+                style={{ color: "#fff", marginRight: 20 }}>
                 {item.label}
               </Link>
             ))}
@@ -106,7 +104,7 @@ export default function Navbar(props: Props) {
               <Button
                 variant="outlined"
                 color="info"
-                sx={{ backgroundColor: "white", marginLeft: 20 }}
+                sx={{ backgroundColor: "white" }}
                 onClick={() => navigateToAuthPage()}
               >
                 login
