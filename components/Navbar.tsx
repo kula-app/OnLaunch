@@ -82,7 +82,7 @@ export default function Navbar(props: Props) {
               <Link 
                 key={item.id} 
                 href={item.link} 
-                style={{ color: "#fff", marginRight: 20 }}>
+                style={{ color: "#fff", marginRight: 2 }}>
                 {item.label}
               </Link>
             ))}
