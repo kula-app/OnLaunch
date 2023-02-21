@@ -118,7 +118,7 @@ export default function MessagesOfAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={session ? true : false} />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>{data.name}</h1>
           <div className="addButton">

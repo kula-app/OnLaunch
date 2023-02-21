@@ -79,7 +79,10 @@ export default function Navbar(props: Props) {
           </Typography>
           {props.hasSession && <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
-              <Link key={item.id} href={item.link} style={{ color: "#fff" }}>
+              <Link 
+                key={item.id} 
+                href={item.link} 
+                style={{ color: "#fff", marginRight: 20 }}>
                 {item.label}
               </Link>
             ))}
@@ -88,6 +91,7 @@ export default function Navbar(props: Props) {
               <Button
                 variant="outlined"
                 color="info"
+                sx={{ backgroundColor: "white" }}
                 onClick={() => {
                   signOut({
                     redirect: false
@@ -102,6 +106,7 @@ export default function Navbar(props: Props) {
               <Button
                 variant="outlined"
                 color="info"
+                sx={{ backgroundColor: "white", marginLeft: 20 }}
                 onClick={() => navigateToAuthPage()}
               >
                 login
