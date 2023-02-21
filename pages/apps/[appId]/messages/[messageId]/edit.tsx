@@ -199,7 +199,7 @@ export default function EditMessageOfAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={session ? true : false} />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">

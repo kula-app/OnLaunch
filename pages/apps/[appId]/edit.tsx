@@ -112,7 +112,7 @@ export default function EditAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={session ? true : false} />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit App</h1>
           <form 

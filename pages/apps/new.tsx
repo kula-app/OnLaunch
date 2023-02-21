@@ -82,7 +82,7 @@ export default function NewAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={session ? true : false} />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>New App</h1>
           <form id="appForm" 

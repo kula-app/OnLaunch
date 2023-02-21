@@ -153,7 +153,7 @@ export default function NewMessageForAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={session ? true : false} />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>New Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
