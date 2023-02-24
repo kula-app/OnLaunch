@@ -11,8 +11,8 @@ datasource db {
 }
 
 enum ActionType {
-  BUTTON         @map("button")
-  DISMISS_BUTTON @map("dismiss_button")
+  BUTTON          @map("button")
+  DISMISS_BUTTON  @map("dismiss_button")
 }
 
 enum Role {
@@ -21,42 +21,56 @@ enum Role {
 }
 
 model Action {
-  id         Int        @id @default(autoincrement())
-  actionType ActionType
-  title      String
-  Message    Message?   @relation(fields: [messageId], references: [id])
-  messageId  Int?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id          Int          @id @default(autoincrement())
+  actionType  ActionType
+  title       String
+  Message     Message?     @relation(fields: [messageId], references: [id])
+  messageId   Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  blocking  Boolean
-  title     String
-  body      String
-  actions   Action[]
-  startDate DateTime
-  endDate   DateTime
-  App       App?     @relation(fields: [appId], references: [id])
-  appId     Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int         @id @default(autoincrement())
+  blocking    Boolean
+  title       String
+  body        String
+  actions     Action[]
+  startDate   DateTime
+  endDate     DateTime
+  App         App?        @relation(fields: [appId], references: [id])
+  appId       Int?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model App {
-  id        Int       @id @default(autoincrement())
-  name      String
-  messages  Message[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          Int         @id @default(autoincrement())
+  name        String
+  messages    Message[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String
-  password  String
-  salt      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          Int         @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String
+  password    String
+  salt        String
+  isVerified  Boolean
+  token       VerificationToken?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model VerificationToken {
+  id          Int         @id @default(autoincrement())
+  token       String
+  expiryDate  DateTime  
+  User        User       @relation(fields: [userId], references: [id])
+  userId      Int        @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
