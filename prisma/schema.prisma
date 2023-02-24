@@ -69,6 +69,7 @@ model VerificationToken {
   id          Int         @id @default(autoincrement())
   token       String
   expiryDate  DateTime  
+  isArchived  Boolean
   User        User       @relation(fields: [userId], references: [id])
   userId      Int        @unique
   createdAt   DateTime    @default(now())
