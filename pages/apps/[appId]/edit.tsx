@@ -123,7 +123,11 @@ export default function EditAppPage() {
               value={appName}
               onChange={(event) => setAppName(event.target.value)}
             />
-            <Button variant="contained" type="submit">
+            <Button 
+              variant="contained" 
+              type="submit"
+              className="marginTopMedium"
+            >
               update
             </Button>
           </form>
