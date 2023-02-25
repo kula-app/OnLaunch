@@ -82,7 +82,7 @@ model UsersInOrganisations {
   orgId       Int
   user        User        @relation(fields: [userId], references: [id])
   userId      Int
-  name        String
+  role        Role
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   @@id([orgId, userId])
@@ -93,8 +93,8 @@ model VerificationToken {
   token       String
   expiryDate  DateTime  
   isArchived  Boolean
-  User        User       @relation(fields: [userId], references: [id])
-  userId      Int        @unique
+  User        User        @relation(fields: [userId], references: [id])
+  userId      Int         @unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
