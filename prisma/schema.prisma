@@ -48,6 +48,8 @@ model App {
   id          Int         @id @default(autoincrement())
   name        String
   messages    Message[]
+  Organisation  Organisation?        @relation(fields: [orgId], references: [id])
+  orgId       Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -61,8 +63,29 @@ model User {
   salt        String
   isVerified  Boolean
   token       VerificationToken?
+  orgs        UsersInOrganisations[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+}
+
+model Organisation {
+  id          Int         @id @default(autoincrement())
+  name        String
+  apps        App[]
+  users       UsersInOrganisations[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model UsersInOrganisations {
+  org         Organisation    @relation(fields: [orgId], references: [id])
+  orgId       Int
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@id([orgId, userId])
 }
 
 model VerificationToken {
