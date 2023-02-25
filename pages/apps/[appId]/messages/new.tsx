@@ -21,7 +21,7 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
-import { useSession } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 
 enum ActionType {
   Button = "BUTTON",
@@ -306,4 +306,21 @@ export default function NewMessageForAppPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }

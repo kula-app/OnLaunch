@@ -48,11 +48,11 @@ export default function AuthForm() {
     }
     
     function navigateToAppsPage() {
-        router.push(`/`);
+        router.replace(`/`);
     } 
     
     function navigateToVerifyPage() {
-        router.push(`/verify?signup=true`);
+        router.replace(`/verify?signup=true`);
     } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -65,6 +65,9 @@ export default function AuthForm() {
                 password: password,
             })
             if (result && result.error) {
+                if (result.error === "Verify account!") {
+                    navigateToVerifyPage();
+                }
                 setAlertMessage(`Error while logging in: ${result.error}`);
                 setAlertSeverity("error");
                 setShowAlert(true);
