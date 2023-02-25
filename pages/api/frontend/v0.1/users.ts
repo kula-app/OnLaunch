@@ -2,8 +2,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { hashAndSaltPassword, validatePassword } from '../../../../util/auth';
+import Moment from "moment";
 
 const prisma = new PrismaClient()
+
+const nodemailer = require("nodemailer");
+var crypto = require('crypto');
+var base64url = require('base64url');
+require('dotenv').config();
 
 export default async function handler(
     req: NextApiRequest,
@@ -13,7 +19,7 @@ export default async function handler(
         case 'POST':
             const data = req.body;
 
-            const { email, password } = data;
+            const { email, password, firstName, lastName } = data;
 
             if (!email || !email.includes('@')) {
                 res
@@ -48,7 +54,40 @@ export default async function handler(
                     email: email,
                     password: hashedSaltedPassword,
                     salt: salt,
+                    firstName: firstName,
+                    lastName: lastName,
+                    isVerified: false,
                 }
+            });
+
+            const generatedToken = base64url(crypto.randomBytes(32));
+            var expiryDate = new Date();
+            // set expiryDate one week from now
+            expiryDate.setDate(expiryDate.getDate() + 7);
+            const verificationToken = await prisma.verificationToken.create({
+                data: {
+                    userId: user.id,
+                    token: generatedToken,
+                    expiryDate: expiryDate,
+                    isArchived: false,
+                }
+            });
+
+            let transporter = nodemailer.createTransport({
+                host: "sandbox.smtp.mailtrap.io",
+                port: 2525,
+                auth: {
+                  user: `${process.env.MAILTRAP_USER}`,
+                  pass: `${process.env.MAILTRAP_PASS}`,
+                }
+            });
+
+            let info = await transporter.sendMail({
+                from: '"Flo Ho" <flo@onlaunch.com>',
+                to: `${user.email}`,
+                subject: 'Verify your OnLaunch account',
+                text: `Servas ${user.firstName}, please verify your OnLaunch account: <a href='localhost:3000/verify?token=${verificationToken.token}'>verify now</a>`,
+                html: `Servas <b>${user.firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='localhost:3000/verify?token=${verificationToken.token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
             });
 
             res.status(201).json(user);
