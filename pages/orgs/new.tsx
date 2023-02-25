@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import Navbar from "../../../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import styles from "../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -12,41 +12,41 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
-interface App {
+interface Org {
   name: string;
 }
 
-export default function NewAppPage() {
+export default function NewOrgPage() {
   const router = useRouter();
 
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
+  const[orgName, setOrgName] = useState("");
 
 
-  function navigateToAppsPage() {
-    router.push(`/`);
+  function navigateToDashboardPage() {
+    router.push(`/dashboard`);
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
-    let app: App = {
-        name: appName,
+    let org: Org = {
+        name: orgName,
     };
 
     // make POST http request
-    fetch(APPS_API_URL, {
+    fetch(ORGS_API_URL, {
         method: "POST",
-        body: JSON.stringify(app),
+        body: JSON.stringify(org),
         headers: {
             "Content-Type": "application/json",
         },
@@ -58,17 +58,17 @@ export default function NewAppPage() {
             });
         }
 
-        setAlertMessage("App created successfully!");
+        setAlertMessage("Org created successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
 
         resetForm(); 
-        navigateToAppsPage();
+        navigateToDashboardPage();
   
         return response.json();
     })
     .catch(error => {
-        setAlertMessage(`Error while creating new app: ${error.message}`);
+        setAlertMessage(`Error while creating new org: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
     });  
@@ -76,7 +76,7 @@ export default function NewAppPage() {
   }
 
   function resetForm() {
-    (document.getElementById("appForm") as HTMLFormElement)?.reset();
+    (document.getElementById("orgForm") as HTMLFormElement)?.reset();
   }
 
   return (
@@ -84,8 +84,8 @@ export default function NewAppPage() {
       <div>
         <Navbar hasSession={!!session} />
         <main className={styles.main}>
-          <h1>New App</h1>
-          <form id="appForm" 
+          <h1>New Organisation</h1>
+          <form id="orgForm" 
             onSubmit={submitHandler} 
             className="column"
           >
@@ -93,7 +93,7 @@ export default function NewAppPage() {
               required 
               label="Name"
               id="name" 
-              onChange={(event) => setAppName(event.target.value)}
+              onChange={(event) => setOrgName(event.target.value)}
             />
             <Button 
               variant="contained" 

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import Navbar from "../../../../components/Navbar";
-import styles from "../../styles/Home.module.css";
+import { FormEvent, useEffect, useState } from "react";
+import Navbar from "../../../components/Navbar";
+import styles from "../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -12,71 +12,101 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
-interface App {
+interface Org {
   name: string;
+  id: number;
 }
 
-export default function NewAppPage() {
+export default function EditOrgPage() {
   const router = useRouter();
-
+  
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
+  const[orgName, setOrgName] = useState("");
 
+  const { orgId } = router.query;
 
-  function navigateToAppsPage() {
-    router.push(`/`);
-  } 
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    fetch(ORGS_API_URL + orgId)
+    .then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        return response.json();
+    })
+    .then((data) => {
+        let org: Org = {
+          id: data.id,
+          name: data.name,
+        };
+
+        fillForm(org);
+    })
+    .catch(error => {
+        setAlertMessage(`Error while fetching message: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    });
+  }, [router.isReady]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
-    let app: App = {
-        name: appName,
+    let newOrg: Org = {
+      id: Number(router.query.orgId),
+      name: orgName,
     };
 
-    // make POST http request
-    fetch(APPS_API_URL, {
-        method: "POST",
-        body: JSON.stringify(app),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
+    // make PUT http request
+    fetch(ORGS_API_URL + orgId, {
+    method: "PUT",
+    body: JSON.stringify(newOrg),
+    headers: {
+        "Content-Type": "application/json",
+    },
+    }).then((response) => {
         if(!response.ok) {
             return response.json().then(error => {
                 throw new Error(error.message);
             });
         }
 
-        setAlertMessage("App created successfully!");
+        setAlertMessage("Org edited successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
 
-        resetForm(); 
-        navigateToAppsPage();
+        navigateToDashboardPage();
   
         return response.json();
     })
     .catch(error => {
-        setAlertMessage(`Error while creating new app: ${error.message}`);
+        setAlertMessage(`Error while editing org: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
-    });  
-       
-  }
+    }); 
 
-  function resetForm() {
-    (document.getElementById("appForm") as HTMLFormElement)?.reset();
+  }
+  
+  function navigateToDashboardPage() {
+    router.push(`/dashboard`);
+  } 
+
+  function fillForm(org: Org) {
+
+    // fill the form
+    setOrgName(org.name);
   }
 
   return (
@@ -84,8 +114,9 @@ export default function NewAppPage() {
       <div>
         <Navbar hasSession={!!session} />
         <main className={styles.main}>
-          <h1>New App</h1>
-          <form id="appForm" 
+          <h1>Edit Organisation</h1>
+          <form 
+            id="orgForm" 
             onSubmit={submitHandler} 
             className="column"
           >
@@ -93,14 +124,15 @@ export default function NewAppPage() {
               required 
               label="Name"
               id="name" 
-              onChange={(event) => setAppName(event.target.value)}
+              value={orgName}
+              onChange={(event) => setOrgName(event.target.value)}
             />
             <Button 
               variant="contained" 
               type="submit"
               className="marginTopMedium"
             >
-              save
+              update
             </Button>
           </form>
           <Snackbar 
