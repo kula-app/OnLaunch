@@ -12,10 +12,10 @@ import { useRouter } from "next/router";
 
 const USER_API_URL = "/api/frontend/v0.1/users/";
 
-async function createUser(email: string, password: string) {
+async function createUser(email: string, password: string, firstName: string, lastName: string) {
     const response = await fetch(USER_API_URL, {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, firstName, lastName }),
         headers: {
             'Content-Type':  'application/json'
         }
@@ -35,6 +35,8 @@ export default function AuthForm() {
     
     const [isLoginMode, setIsLoginMode] = useState(true);
     const[email, setEmail] = useState("");
+    const[firstName, setFirstName] = useState("");
+    const[lastName, setLastName] = useState("");
     const[password, setPassword] = useState("");
 
     const [showAlert, setShowAlert] = useState(false);
@@ -47,6 +49,10 @@ export default function AuthForm() {
     
     function navigateToAppsPage() {
         router.push(`/`);
+    } 
+    
+    function navigateToVerifyPage() {
+        router.push(`/verify?signup=true`);
     } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -67,9 +73,11 @@ export default function AuthForm() {
             }
         } else {
             try {
-                const result = await createUser(email, password);
+                const result = await createUser(email, password, firstName, lastName);
 
-                navigateToAppsPage();
+                navigateToVerifyPage();
+                
+                
             } catch (error) {
                 setAlertMessage(`Error while creating user: ${error}`);
                 setAlertSeverity("error");
@@ -100,6 +108,22 @@ export default function AuthForm() {
                         className="marginTopMedium"
                         onChange={(event) => setPassword(event.target.value)}
                     />
+                    { !isLoginMode && <TextField 
+                        required 
+                        label="First name"
+                        id="firstName" 
+                        className="marginTopMedium"
+                        onChange={(event) => setFirstName(event.target.value)}
+                    /> 
+                    }
+                    { !isLoginMode && <TextField 
+                        required 
+                        label="Last name"
+                        id="lastName" 
+                        className="marginTopMedium"
+                        onChange={(event) => setLastName(event.target.value)}
+                    /> 
+                    }
                     <Button 
                         variant="contained" 
                         type="submit"
