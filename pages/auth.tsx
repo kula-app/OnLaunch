@@ -1,7 +1,6 @@
 import Navbar from "../components/Navbar";
 import AuthForm from "../components/AuthForm";
 import { getSession, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 
 export default function Auth() {
     const { data: session, status } = useSession();

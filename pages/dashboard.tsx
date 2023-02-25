@@ -1,17 +1,16 @@
-import { useRouter } from "next/router";
+import styles from "../styles/Home.module.css";
+import Navbar from "../components/Navbar";
+
 import { getSession } from 'next-auth/react';
 
-export default function IndexPage() {
-  const router = useRouter();
-
-  navigateToDashboardPage();
-
-  function navigateToDashboardPage() {
-    router.push(`/dashboard`);
-  }
+export default function DashboardPage() {
 
   return (
     <>
+      <Navbar hasSession={true} />
+      <main className={styles.main}>
+        <h1>Organisations</h1>
+      </main>
     </>
   );
 }
