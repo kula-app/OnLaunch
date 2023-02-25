@@ -1,4 +1,6 @@
 import { hash, genSalt, compare } from 'bcrypt';
+var crypto = require('crypto');
+var base64url = require('base64url');
 
 export async function hashAndSaltPassword(password: string) {
     const saltRounds = 10;
@@ -19,4 +21,8 @@ export async function validatePassword(password: string) {
 export async function verifyPassword(saltedPassword: string, hashedPassword: string) {
     const isValid = await compare(saltedPassword, hashedPassword);
     return isValid;
+}
+
+export function generateToken() {
+    return base64url(crypto.randomBytes(32));
 }

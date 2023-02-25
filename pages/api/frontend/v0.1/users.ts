@@ -2,13 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { hashAndSaltPassword, validatePassword } from '../../../../util/auth';
-import Moment from "moment";
+import { generateToken } from '../../../../util/auth';
 
 const prisma = new PrismaClient()
 
 const nodemailer = require("nodemailer");
-var crypto = require('crypto');
-var base64url = require('base64url');
 require('dotenv').config();
 
 export default async function handler(
@@ -20,6 +18,13 @@ export default async function handler(
             const data = req.body;
 
             const { email, password, firstName, lastName } = data;
+
+            if (process.env.SIGNUPS_ENABLED === "false") {
+                res
+                    .status(405)
+                    .json({ message: 'Not allowed - signups are currently disabled!'});
+                return;
+            }
 
             if (!email || !email.includes('@')) {
                 res
@@ -60,10 +65,12 @@ export default async function handler(
                 }
             });
 
-            const generatedToken = base64url(crypto.randomBytes(32));
+            const generatedToken = generateToken();
+
             var expiryDate = new Date();
             // set expiryDate one week from now
             expiryDate.setDate(expiryDate.getDate() + 7);
+
             const verificationToken = await prisma.verificationToken.create({
                 data: {
                     userId: user.id,
