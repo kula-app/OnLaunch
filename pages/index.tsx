@@ -3,7 +3,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import useSWR from "swr";
 import { useState } from "react";
-import { useSession } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 import Navbar from "../components/Navbar";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -212,4 +212,21 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }

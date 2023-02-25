@@ -36,6 +36,10 @@ export default NextAuth({
                     if (!isValid) {
                         throw new Error('Wrong credentials!');
                     }
+
+                    if (!user.isVerified) {
+                        throw new Error('Verify account!');
+                    }
                     
                     return { email: user.email } as any;
                 }
