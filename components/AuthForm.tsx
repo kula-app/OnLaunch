@@ -10,10 +10,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 
-const USER_API_URL = "/api/frontend/v0.1/users/";
+const USERS_API_URL = "/api/frontend/v0.1/users/";
 
 async function createUser(email: string, password: string, firstName: string, lastName: string) {
-    const response = await fetch(USER_API_URL, {
+    const response = await fetch(USERS_API_URL, {
         method: 'POST',
         body: JSON.stringify({ email, password, firstName, lastName }),
         headers: {
@@ -47,7 +47,7 @@ export default function AuthForm() {
         setIsLoginMode((prevState) => !prevState);
     }
     
-    function navigateToAppsPage() {
+    function navigateToHomePage() {
         router.replace(`/`);
     } 
     
@@ -72,12 +72,11 @@ export default function AuthForm() {
                 setAlertSeverity("error");
                 setShowAlert(true);
             } else {
-                navigateToAppsPage();
+                navigateToHomePage();
             }
         } else {
             try {
                 const result = await createUser(email, password, firstName, lastName);
-
                 navigateToVerifyPage();
                 
                 

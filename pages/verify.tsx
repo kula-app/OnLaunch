@@ -26,12 +26,12 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
-      submitHandler();
+      tokenHandler();
     }
 
   }, [router.isReady]);
   
-  function submitHandler() {
+  function tokenHandler() {
     
     fetch(TOKEN_API_URL, {
       method: "PUT",
