@@ -56,7 +56,7 @@ export default async function handler(
     });
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-        // if user has no business with this organisation, return a 404
+        // if user has no business here, return a 404
         res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
         return;
     }
