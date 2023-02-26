@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import Navbar from "../../../../components/Navbar";
-import styles from "../../../../styles/Home.module.css";
+import Navbar from "../../../../../../components/Navbar";
+import styles from "../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -50,7 +50,10 @@ export default function NewMessageForAppPage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
+  const orgId = router.query.orgId;
+  const appId = router.query.appId;
+  
+  const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -66,7 +69,7 @@ export default function NewMessageForAppPage() {
   const [endDate, setEndDate] = useState("");
 
   function navigateToAppMessagesPage() {
-    router.push(`/apps/${router.query.appId}/messages/`);
+    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/`);
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {

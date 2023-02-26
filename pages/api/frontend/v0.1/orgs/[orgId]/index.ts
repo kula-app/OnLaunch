@@ -5,6 +5,12 @@ import { getSession } from 'next-auth/react';
 
 const prisma = new PrismaClient()
 
+type OrganisationDto = {
+    id: number;
+    name: string;
+    role: string;
+};
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -45,7 +51,8 @@ export default async function handler(
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
         // if user has no business with this organisation, return a 404
-        res.status(404).end('no organisation found with id ' + req.query.orgId);
+        res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
+        return;
     }
 
     switch (req.method) {
@@ -53,39 +60,51 @@ export default async function handler(
             const org = await prisma.organisation.findUnique({
                 where: {
                     id: Number(req.query.orgId)
+                },
+                include: {
+                    apps: true
                 }
             })
 
             if (org == null) {
-                res.status(404).end('no organisation found with id ' + req.query.orgId);
+                res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
+                return;
             }
 
-            res.status(200).json(org)
-            break
+            res.status(200).json(org);
+            break;
 
         case 'DELETE':
             try {
+                if (userInOrg?.role === "USER") {
+                    res.status(403).json({ message: 'you are not allowed to delete organisation with id ' + req.query.orgId });
+                    return;
+                }
                 const deletedUsersInOrgs = await prisma.usersInOrganisations.deleteMany({
                     where: {
                         orgId: Number(req.query.orgId)
                     }
-                })
+                });
                 const deletedOrg = await prisma.organisation.delete({
                     where: {
                         id: Number(req.query.orgId)
                     }
-                })
+                });
 
                 res.status(200).json(deletedOrg)
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).end('no org found with id ' + req.query.orgId)
+                    res.status(404).json({ message: 'no org found with id ' + req.query.orgId })
+                    return;
                 }
             }
-            break
+            break;
 
         case 'PUT':
             try {
+                if (userInOrg?.role === "USER") {
+                    res.status(403).json({ message: 'you are not allowed to update organisation with id ' + req.query.orgId });
+                }
                 const updatedOrg = await prisma.organisation.update({
                     where: {
                         id: Number(req.query.orgId)
@@ -93,18 +112,19 @@ export default async function handler(
                     data: {
                         name: req.body.name
                     }
-                })
+                });
 
                 res.status(201).json(updatedOrg)
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).end('no org found with id ' + req.query.orgId)
+                    res.status(404).json({ message: 'no org found with id ' + req.query.orgId });
                 }
             }
-            break
+            break;
 
         default:
-            res.status(405).end('method not allowed')
-            break
+            res.status(405).json({ message: 'method not allowed' });
+            return;
     }
 }
+

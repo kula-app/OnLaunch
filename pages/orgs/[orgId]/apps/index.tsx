@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import styles from "../../../../styles/Home.module.css";
 import useSWR from "swr";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, getSession } from 'next-auth/react';
 import Navbar from "../../../../components/Navbar";
 
@@ -30,12 +30,15 @@ import type { AlertColor } from '@mui/material/Alert';
 interface App {
   name: string;
   id: number;
+  role: string;
 }
 
 export default function AppsPage() {
   const router = useRouter();
+  
+  const orgId = router.query.orgId;
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -48,22 +51,22 @@ export default function AppsPage() {
   const loading = status === "loading";
 
   function navigateToMessagesPage(id: number) {
-    router.push(`/apps/${id}/messages`);
+    router.push(`/orgs/${orgId}/apps/${id}/messages`);
   }
 
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<App[]>(APPS_API_URL, fetcher);
+  const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
 
   
   function navigateToEditAppPage(id: number) {
-    router.push(`/apps/${id}/edit`);
+    router.push(`/orgs/${orgId}/apps/${id}/edit`);
   }
 
   function navigateToNewAppPage() {
-    router.push(`/apps/new`);
+    router.push(`/orgs/${orgId}/apps/new`);
   }
 
   function handleDelete(id: number) {
@@ -107,7 +110,7 @@ export default function AppsPage() {
       <Navbar hasSession={!!session} />
       <main className={styles.main}>
         <h1>Apps</h1>
-        <div className="addButton">
+          <div className="addButton">
             <Button
               variant="contained"
               onClick={() => {
@@ -144,16 +147,18 @@ export default function AppsPage() {
                             <VisibilityIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="edit" >
+                        {app.role === "ADMIN" && <Tooltip title="edit" >
                           <IconButton onClick={() => navigateToEditAppPage(app.id)}>
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="delete" >
+                        }
+                        {app.role === "ADMIN" && <Tooltip title="delete" >
                           <IconButton onClick={() => handleDelete(app.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>
+                        }
                       </div>
                     </TableCell>
                 </TableRow>
