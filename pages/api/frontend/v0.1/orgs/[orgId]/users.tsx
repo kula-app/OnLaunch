@@ -5,6 +5,13 @@ import { getSession } from 'next-auth/react';
 
 const prisma = new PrismaClient()
 
+interface UserDto {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -43,83 +50,77 @@ export default async function handler(
         }
     });
 
-    if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-        // if user has no business here, return a 404
+    if (userInOrg?.role !== "ADMIN") {
+        // if user has no business with this organisation, return a 404
         res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
         return;
     }
 
     switch (req.method) {
         case 'GET':
-            const app = await prisma.app.findFirst({
+            const usersInOrg = await prisma.usersInOrganisations.findMany({
                 include: {
-                    messages: {
-                        include: {
-                            actions: true
-                        },
-                        orderBy: [
-                            {
-                                startDate: 'asc'
-                            }, 
-                            {
-                                endDate: 'asc'
-                            }
-                        ]
-                    }
+                    user: true
                 },
                 where: {
-                    id: Number(req.query.appId),
                     orgId: Number(req.query.orgId),
                 }
             })
 
-            if (app == null) {
-                res.status(404).json({ message: 'no app found with id ' + req.query.appId });
+            if (usersInOrg == null) {
+                res.status(404).json({ message: 'no users found in organisation with id ' + req.query.orgId });
                 return;
             }
 
-            res.status(200).json(app);
+            res.status(200).json(
+                usersInOrg.map((userInOrg): UserDto => {
+                  return {
+                    firstName: userInOrg.user.firstName,
+                    lastName: userInOrg.user.lastName,
+                    email: userInOrg.user.email,
+                    role: userInOrg.role,
+                  };
+                })
+              );
             break;
 
         case 'DELETE':
             try {
-                if (userInOrg?.role === "USER") {
-                    res.status(403).json({ message: 'you are not allowed to delete app with id ' + req.query.orgId });
-                    return;
-                }
-                const deletedApp = await prisma.app.delete({
+                const deletedUserInOrg = await prisma.usersInOrganisations.delete({
                     where: {
-                        id: Number(req.query.appId)
+                        orgId_userId: {
+                            userId: Number(req.query.userId),
+                            orgId: Number(req.query.orgId),
+                        }
                     }
                 })
 
-                res.status(200).json(deletedApp)
+                res.status(200).json(deletedUserInOrg)
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).json({ message: 'no app found with id ' + req.query.appId });
+                    res.status(404).json({ message: 'no user with id ' + req.query.userId + ' found in organisation with id ' + req.query.appId });
                 }
             }
             break;
 
         case 'PUT':
             try {
-                if (userInOrg?.role === "USER") {
-                    res.status(403).json({ message: 'you are not allowed to update app with id ' + req.query.orgId });
-                    return;
-                }
-                const updatedApp = await prisma.app.update({
+                const updatedApp = await prisma.usersInOrganisations.update({
                     where: {
-                        id: Number(req.query.appId)
+                        orgId_userId: {
+                            userId: Number(req.query.userId),
+                            orgId: Number(req.query.orgId),
+                        }
                     },
                     data: {
-                        name: req.body.name
+                        role: req.body.role
                     }
                 });
 
                 res.status(201).json(updatedApp)
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).json({ message: 'no app found with id ' + req.query.appId });
+                    res.status(404).json({ message: 'no user with id ' + req.query.userId + ' found in organisation with id ' + req.query.appId });
                 }
             }
             break;

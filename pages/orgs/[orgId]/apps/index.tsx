@@ -33,12 +33,20 @@ interface App {
   role: string;
 }
 
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
+
 export default function AppsPage() {
   const router = useRouter();
   
   const orgId = router.query.orgId;
 
   const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
+  const ORG_USERS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/users/`;
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -57,8 +65,9 @@ export default function AppsPage() {
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
   const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
+  if (error || userError) return <div>Failed to load</div>;
+  if (!data || !userData) return <div>Loading...</div>;
 
   
   function navigateToEditAppPage(id: number) {
@@ -169,6 +178,50 @@ export default function AppsPage() {
         {data.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
+        <div className={styles.main}>
+          <h1>Users</h1>
+            <div className="addButton">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigateToNewAppPage();
+                }}
+              >
+                Add User
+              </Button>
+            </div>
+          <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
+            <TableHead>
+              <TableCell>
+                <strong>Name</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Email</strong>
+              </TableCell>
+              <TableCell><strong>Role</strong></TableCell>
+            </TableHead>
+            <TableBody>
+              {userData.map((user, index) => {
+                return (
+                  <TableRow key={index} >
+                    <TableCell >
+                      {user.firstName + " " + user.lastName}
+                    </TableCell>
+                    <TableCell>
+                      {user.email}
+                    </TableCell>
+                    <TableCell>
+                        {user.role}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {data.length == 0 && (
+            <p className="marginTopMedium">no data to show</p>
+          )}
+        </div>
         <Snackbar 
             open={showAlert} 
             autoHideDuration={6000} 
