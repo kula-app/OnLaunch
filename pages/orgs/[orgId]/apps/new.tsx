@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import Navbar from "../../../../components/Navbar";
-import styles from "../../styles/Home.module.css";
+import styles from "../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -14,6 +14,7 @@ import { useSession, getSession } from 'next-auth/react';
 
 interface App {
   name: string;
+  orgId: number;
 }
 
 export default function NewAppPage() {
@@ -22,7 +23,9 @@ export default function NewAppPage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const orgId = router.query.orgId;
+
+  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -32,7 +35,7 @@ export default function NewAppPage() {
 
 
   function navigateToAppsPage() {
-    router.push(`/`);
+    router.push(`/orgs/${orgId}/apps/`);
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -41,6 +44,7 @@ export default function NewAppPage() {
     // load data from form
     let app: App = {
         name: appName,
+        orgId: Number(orgId),
     };
 
     // make POST http request

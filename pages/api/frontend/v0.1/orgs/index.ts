@@ -80,7 +80,7 @@ export default async function handler(
             break;
 
         default:
-            res.status(405).end('method not allowed');
-            break;
+            res.status(405).json({ message: 'method not allowed' });
+            return;
     }
 }

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../components/Navbar";
-import styles from "../../../styles/Home.module.css";
+import Navbar from "../../../../../components/Navbar";
+import styles from "../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -22,8 +22,10 @@ export default function EditAppPage() {
   
   const { data: session, status } = useSession();
   const loading = status === "loading";
+  
+  const orgId = router.query.orgId;
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -100,7 +102,7 @@ export default function EditAppPage() {
   }
   
   function navigateToAppsPage() {
-    router.push(`/`);
+    router.push(`/orgs/${orgId}/apps/`);
   } 
 
   function fillForm(app: App) {

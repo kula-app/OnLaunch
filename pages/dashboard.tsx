@@ -30,6 +30,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 interface Organisation {
   name: string;
   id: number;
+  role: string;
 }
 
 export default function DashboardPage() {
@@ -137,16 +138,18 @@ export default function DashboardPage() {
                             <VisibilityIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="edit" >
+                        {org.role === "ADMIN" && <Tooltip title="edit" >
                           <IconButton onClick={() => navigateToEditOrgPage(org.id)}>
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="delete" >
+                        }
+                        {org.role === "ADMIN" && <Tooltip title="delete" >
                           <IconButton onClick={() => handleDelete(org.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>
+                        } 
                       </div>
                     </TableCell>
                 </TableRow>
