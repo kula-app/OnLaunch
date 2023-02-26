@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import styles from "../../../../styles/Home.module.css";
 import useSWR from "swr";
-import { useState, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useSession, getSession } from 'next-auth/react';
 import Navbar from "../../../../components/Navbar";
 
@@ -26,6 +26,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
+import TextField from "@mui/material/TextField";
 
 interface App {
   name: string;
@@ -54,6 +55,7 @@ export default function AppsPage() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [appId, setAppId] = useState(-1);
+  const [userEmail, setUserEmail] = useState("");
 
   const { data: session, status } = useSession();
   const loading = status === "loading";
@@ -68,6 +70,8 @@ export default function AppsPage() {
   const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
   if (error || userError) return <div>Failed to load</div>;
   if (!data || !userData) return <div>Loading...</div>;
+
+  const userRole = userData.find(i => i.email === session?.user?.email)?.role;
 
   
   function navigateToEditAppPage(id: number) {
@@ -106,6 +110,38 @@ export default function AppsPage() {
       setAlertSeverity("error");
       setShowAlert(true);
     });    
+  }
+
+  function submitHandler(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+  // make POST http request
+  fetch(ORG_USERS_API_URL, {
+      method: "POST",
+      body: JSON.stringify({ email: userEmail }),
+      headers: {
+          "Content-Type": "application/json",
+      },
+  })
+  .then(response => {
+      if(!response.ok) {
+          return response.json().then(error => {
+              throw new Error(error.message);
+          });
+      }
+
+      setAlertMessage("User added successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
+
+      return response.json();
+  })
+  .catch(error => {
+      setAlertMessage(`Error while adding new user: ${error.message}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+  }); 
+
   }
 
   return (
@@ -180,16 +216,25 @@ export default function AppsPage() {
         )}
         <div className={styles.main}>
           <h1>Users</h1>
-            <div className="addButton">
-              <Button
-                variant="contained"
-                onClick={() => {
-                  navigateToNewAppPage();
-                }}
-              >
-                Add User
-              </Button>
-            </div>
+            {userRole === "ADMIN" && <form id="emailForm" 
+              onSubmit={submitHandler} 
+            >
+              <TextField 
+                required 
+                label="Email"
+                id="email" 
+                onChange={(event) => setUserEmail(event.target.value)}
+              />
+              <div className="addButton">
+                <Button
+                  variant="contained"
+                  type="submit"
+                >
+                  Add User
+                </Button>
+              </div>
+            </form>
+            }
           <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
             <TableHead>
               <TableCell>
@@ -198,7 +243,10 @@ export default function AppsPage() {
               <TableCell>
                 <strong>Email</strong>
               </TableCell>
-              <TableCell><strong>Role</strong></TableCell>
+              <TableCell>
+                <strong>Role</strong>
+              </TableCell>
+              <TableCell></TableCell>
             </TableHead>
             <TableBody>
               {userData.map((user, index) => {
@@ -211,7 +259,10 @@ export default function AppsPage() {
                       {user.email}
                     </TableCell>
                     <TableCell>
-                        {user.role}
+                      {userRole === "ADMIN" && <div>asd</div>}
+                      {userRole === "USER" && <div>{user.role.toLowerCase()}</div> }
+                    </TableCell>
+                    <TableCell>
                     </TableCell>
                   </TableRow>
                 );
