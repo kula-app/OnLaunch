@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Navbar from "../../../components/Navbar";
 import styles from "../../../styles/Home.module.css";
 
@@ -10,29 +10,33 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
 
-interface App {
+interface Org {
   name: string;
   id: number;
 }
 
-export default function EditAppPage() {
+export default function EditOrgPage() {
   const router = useRouter();
+  
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
+  const[orgName, setOrgName] = useState("");
 
-  const { appId } = router.query;
+  const { orgId } = router.query;
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(APPS_API_URL + appId)
+    fetch(ORGS_API_URL + orgId)
     .then((response) => {
         if(!response.ok) {
             return response.json().then(error => {
@@ -42,33 +46,33 @@ export default function EditAppPage() {
         return response.json();
     })
     .then((data) => {
-        let app: App = {
-        id: data.id,
-        name: data.name,
+        let org: Org = {
+          id: data.id,
+          name: data.name,
         };
 
-        fillForm(app);
+        fillForm(org);
     })
     .catch(error => {
         setAlertMessage(`Error while fetching message: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
     });
-  }, [router.isReady]);
+  }, [router.isReady, orgId]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
-    let newApp: App = {
-      id: Number(router.query.appId),
-      name: appName,
+    let newOrg: Org = {
+      id: Number(router.query.orgId),
+      name: orgName,
     };
 
     // make PUT http request
-    fetch(APPS_API_URL + appId, {
+    fetch(ORGS_API_URL + orgId, {
     method: "PUT",
-    body: JSON.stringify(newApp),
+    body: JSON.stringify(newOrg),
     headers: {
         "Content-Type": "application/json",
     },
@@ -79,40 +83,40 @@ export default function EditAppPage() {
             });
         }
 
-        setAlertMessage("App edited successfully!");
+        setAlertMessage("Org edited successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
 
-        navigateToAppsPage();
+        navigateToDashboardPage();
   
         return response.json();
     })
     .catch(error => {
-        setAlertMessage(`Error while editing app: ${error.message}`);
+        setAlertMessage(`Error while editing org: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
     }); 
 
   }
   
-  function navigateToAppsPage() {
-    router.push(`/`);
+  function navigateToDashboardPage() {
+    router.push(`/dashboard`);
   } 
 
-  function fillForm(app: App) {
+  function fillForm(org: Org) {
 
     // fill the form
-    setAppName(app.name);
+    setOrgName(org.name);
   }
 
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
-          <h1>Edit App</h1>
+          <h1>Edit Organisation</h1>
           <form 
-            id="appForm" 
+            id="orgForm" 
             onSubmit={submitHandler} 
             className="column"
           >
@@ -120,8 +124,8 @@ export default function EditAppPage() {
               required 
               label="Name"
               id="name" 
-              value={appName}
-              onChange={(event) => setAppName(event.target.value)}
+              value={orgName}
+              onChange={(event) => setOrgName(event.target.value)}
             />
             <Button 
               variant="contained" 
@@ -159,4 +163,21 @@ export default function EditAppPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }

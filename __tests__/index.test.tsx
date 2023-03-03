@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import Home from "../pages/index";
+import { SessionProvider } from "next-auth/react";
+import Home from "../pages/verify";
 
 jest.mock("next/router", () => require("next-router-mock"));
 
-describe("Home", () => {
-  it("renders a heading", () => {
+describe("Verify Page", () => {
+  it("renders the verify page", () => {
     render(<Home />);
 
     // const heading = screen.getByRole("heading", {

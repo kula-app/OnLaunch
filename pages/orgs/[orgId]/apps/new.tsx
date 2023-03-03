@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import Navbar from "../../components/Navbar";
-import styles from "../../styles/Home.module.css";
+import Navbar from "../../../../components/Navbar";
+import styles from "../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -10,15 +10,22 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
 
 interface App {
   name: string;
+  orgId: number;
 }
 
 export default function NewAppPage() {
   const router = useRouter();
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
+
+  const orgId = router.query.orgId;
+
+  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -28,7 +35,7 @@ export default function NewAppPage() {
 
 
   function navigateToAppsPage() {
-    router.push(`/`);
+    router.push(`/orgs/${orgId}/apps/`);
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -37,6 +44,7 @@ export default function NewAppPage() {
     // load data from form
     let app: App = {
         name: appName,
+        orgId: Number(orgId),
     };
 
     // make POST http request
@@ -78,7 +86,7 @@ export default function NewAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>New App</h1>
           <form id="appForm" 
@@ -127,4 +135,21 @@ export default function NewAppPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }

@@ -1,7 +1,8 @@
+import Moment from "moment";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import Navbar from "../../../../components/Navbar";
-import styles from "../../../../styles/Home.module.css";
+import { FormEvent, useEffect, useState } from "react";
+import Navbar from "../../../../../../../components/Navbar";
+import styles from "../../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -21,6 +22,7 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
 
 enum ActionType {
   Button = "BUTTON",
@@ -38,84 +40,134 @@ interface Message {
   blocking: boolean;
   body: string;
   title: string;
-  id?: number;
+  id: number;
   appId: number;
-  actions?: Action[];
+  actions: Action[];
 }
 
-export default function NewMessageForAppPage() {
+export default function EditMessageOfAppPage() {
   const router = useRouter();
 
-  const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
+
+  const orgId = router.query.orgId;
+  const appId = router.query.appId;
+
+  const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
-
+  
   const [actions, setActions] = useState<Action[]>([]);
 
   const [switchValue, setSwitchValue] = useState(false);
+  const messageId  = router.query.messageId;
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  function navigateToAppMessagesPage() {
-    router.push(`/apps/${router.query.appId}/messages/`);
-  } 
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    fetch(MESSAGES_API_URL + messageId)
+    .then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        return response.json();
+    })
+    .then((data) => {
+        let msg: Message = {
+        id: data.id,
+        title: data.title,
+        body: data.body,
+        blocking: data.blocking,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        appId: data.appId,
+        actions: data.actions,
+        };
+
+        fillForm(msg);
+    })
+    .catch(error => {
+        setAlertMessage(`Error while fetching message: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    });
+  }, [router.isReady]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
     let message: Message = {
-        title: title,
-        body: body,
-        blocking: switchValue,
-        startDate: startDate,
-        endDate: endDate,
-        appId: Number(router.query.appId),
-        actions: actions,
+      id: Number(router.query.messageId),
+      title: title,
+      body: body,
+      blocking: switchValue,
+      startDate: startDate,
+      endDate: endDate,
+      appId: Number(router.query.appId),
+      actions: actions,
     };
 
-    // make POST http request
-    fetch(MESSAGES_API_URL, {
-        method: "POST",
-        body: JSON.stringify(message),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
+    // make PUT http request
+    fetch(MESSAGES_API_URL + messageId, {
+    method: "PUT",
+    body: JSON.stringify(message),
+    headers: {
+        "Content-Type": "application/json",
+    },
+    }).then((response) => {
         if(!response.ok) {
             return response.json().then(error => {
                 throw new Error(error.message);
             });
         }
 
-        setAlertMessage("Message created successfully!");
+        setAlertMessage("Message edited successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
 
-        resetForm(); 
         navigateToAppMessagesPage();
   
         return response.json();
     })
     .catch(error => {
-        setAlertMessage(`Error while creating new message: ${error.message}`);
+        setAlertMessage(`Error while editing message: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
-    });  
-       
+    }); 
+
+  }
+  
+  function navigateToAppMessagesPage() {
+    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/`);
+  } 
+
+  function fillForm(msg: Message) {
+
+    // fill the form
+    setTitle(msg.title);
+    setBody(msg.body);
+    setSwitchValue(msg.blocking);
+    setStartDate(Moment(msg.startDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    ));
+    setEndDate(Moment(msg.endDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    ));
+    setActions(msg.actions);
   }
 
-  function resetForm() {
-    (document.getElementById("messageForm") as HTMLFormElement)?.reset();
-    setSwitchValue(false);
-  }
-
+  
   function addAction() {
     setActions(oldActions => [...oldActions, { actionType: ActionType.Button, title: "" }]);
   }
@@ -149,11 +201,11 @@ export default function NewMessageForAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
-          <h1>New Message</h1>
+          <h1>Edit Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
-            <TextField 
+          <TextField 
               required 
               label="Title" 
               id="title" 
@@ -208,9 +260,9 @@ export default function NewMessageForAppPage() {
             />
             <h3 className="marginTopMedium centeredElement">Actions</h3>
             <Table
-            sx={{ minWidth: 650, maxWidth: 1300 }}
-            aria-label="simple table"
-            className="messageTable"
+              sx={{ minWidth: 650, maxWidth: 1300 }}
+              aria-label="simple table"
+              className="messageTable"
             >
               <TableHead>
                 <TableRow>
@@ -241,13 +293,13 @@ export default function NewMessageForAppPage() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                      <TextField type="text" 
+                        <TextField type="text" 
                           name="actionTitle" 
                           value={action.title} 
                           onChange={event => handleActionTitleChange(index, event)}
                           />
                       </TableCell>
-                      <TableCell>
+                      <TableCell width="5%">
                         <IconButton onClick={() => deleteAction(index)}>
                           <DeleteForeverIcon />
                         </IconButton>
@@ -271,7 +323,7 @@ export default function NewMessageForAppPage() {
                 </Button>
             </div>
             <Button variant="contained" type="submit">
-              save
+              update
             </Button>
           </form>
           <Snackbar 
@@ -302,4 +354,21 @@ export default function NewMessageForAppPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }

@@ -46,6 +46,7 @@ COPY components  ./components
 COPY pages  ./pages
 COPY public ./public
 COPY styles ./styles
+COPY util ./util
 
 # ---- Development ----
 # build development server

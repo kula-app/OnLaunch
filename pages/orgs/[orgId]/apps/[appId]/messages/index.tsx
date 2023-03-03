@@ -2,8 +2,8 @@ import Moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useSWR from "swr";
-import Navbar from "../../../../components/Navbar";
-import styles from "../../../../styles/Home.module.css";
+import Navbar from "../../../../../../components/Navbar";
+import styles from "../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -25,6 +25,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
+import { getSession, useSession } from 'next-auth/react';
 
 interface Action {
   title: string;
@@ -48,9 +49,15 @@ interface App {
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
+  
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
+  
+  const orgId = router.query.orgId;
+  const appId = router.query.appId;
 
-  const APPS_API_URL = "/api/frontend/v0.1/apps/";
-  const MESSAGES_API_URL = "/api/frontend/v0.1/messages/";
+  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
+  const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -58,8 +65,6 @@ export default function MessagesOfAppPage() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [messageId, setMessageId] = useState(-1);
-
-  const { appId } = router.query;
 
   const now = Moment.now();
 
@@ -69,11 +74,11 @@ export default function MessagesOfAppPage() {
   if (!data) return <div>Loading...</div>;
 
   function navigateToEditMessagePage(id: number) {
-    router.push(`/apps/${router.query.appId}/messages/${id}/edit`);
+    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/${id}/edit`);
   }
 
   function navigateToNewMessagePage() {
-    router.push(`/apps/${router.query.appId}/messages/new`);
+    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/new`);
   }
 
   function handleDelete(id: number) {
@@ -114,7 +119,7 @@ export default function MessagesOfAppPage() {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>{data.name}</h1>
           <div className="addButton">
@@ -274,4 +279,21 @@ export default function MessagesOfAppPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: { session },
+  };
 }
