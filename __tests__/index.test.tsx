@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react";
+import { SessionProvider } from "next-auth/react";
 import Home from "../pages/orgs/[orgId]/apps/index";
 
 jest.mock("next/router", () => require("next-router-mock"));
 
 describe("Home", () => {
   it("renders a heading", () => {
-    render(<Home />);
+    render(<SessionProvider><Home /></SessionProvider>);
 
     // const heading = screen.getByRole("heading", {
     //   name: /Apps/i,
