@@ -112,6 +112,12 @@ body {
   flex-direction: column;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .addButton {
   margin-bottom: 32px;
   margin-top: 32px;
