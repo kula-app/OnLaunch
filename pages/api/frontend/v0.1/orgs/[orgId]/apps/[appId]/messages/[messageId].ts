@@ -82,10 +82,6 @@ export default async function handler(
 
         case 'DELETE':
             try {
-                if (userInOrg?.role === "USER") {
-                    res.status(403).json({ message: 'you are not allowed to delete message with id ' + req.query.orgId });
-                    return;
-                }
                 const deletedActions = await prisma.action.deleteMany({
                     where: {
                         messageId: Number(req.query.messageId)
@@ -109,10 +105,6 @@ export default async function handler(
 
         case 'PUT':
             try {
-                if (userInOrg?.role === "USER") {
-                    res.status(403).json({ message: 'you are not allowed to update message with id ' + req.query.orgId });
-                    return;
-                }
                 const updatedMessage = await prisma.message.update({
                     where: {
                         id: Number(req.query.messageId)
