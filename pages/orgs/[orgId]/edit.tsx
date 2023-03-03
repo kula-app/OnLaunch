@@ -58,7 +58,7 @@ export default function EditOrgPage() {
         setAlertSeverity("error");
         setShowAlert(true);
     });
-  }, [router.isReady]);
+  }, [router.isReady, orgId]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
