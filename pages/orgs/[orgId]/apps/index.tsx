@@ -155,7 +155,7 @@ export default function AppsPage() {
       <Navbar hasSession={!!session} />
       <main className={styles.main}>
         <h1>Apps</h1>
-          <div className="addButton">
+        {userRole === "ADMIN" && <div className="addButton">
             <Button
               variant="contained"
               onClick={() => {
@@ -165,6 +165,7 @@ export default function AppsPage() {
               New App
             </Button>
           </div>
+          }
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
           <TableHead>
             <TableCell width="5%">
@@ -218,6 +219,7 @@ export default function AppsPage() {
           <h1>Users</h1>
             {userRole === "ADMIN" && <form id="emailForm" 
               onSubmit={submitHandler} 
+              className="row"
             >
               <TextField 
                 required 
@@ -229,6 +231,7 @@ export default function AppsPage() {
                 <Button
                   variant="contained"
                   type="submit"
+                  sx={{ marginLeft: 5 }}
                 >
                   Add User
                 </Button>
@@ -259,7 +262,7 @@ export default function AppsPage() {
                       {user.email}
                     </TableCell>
                     <TableCell>
-                      {userRole === "ADMIN" && <div>asd</div>}
+                      {userRole === "ADMIN" && <div>{user.role.toLowerCase()}</div>}
                       {userRole === "USER" && <div>{user.role.toLowerCase()}</div> }
                     </TableCell>
                     <TableCell>
