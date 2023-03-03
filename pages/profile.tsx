@@ -25,92 +25,20 @@ export default function ProfilePage() {
   const [alertMessage, setAlertMessage] = useState("");
   
 
-  useEffect(() => {
-    if (!router.isReady) return;
-
-    fetch(MESSAGES_API_URL + messageId)
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let msg: Message = {
-        id: data.id,
-        title: data.title,
-        body: data.body,
-        blocking: data.blocking,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        appId: data.appId,
-        actions: data.actions,
-        };
-
-        fillForm(msg);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
-  }, [router.isReady]);
 
 
 
 
 
-
-
-
-
-
-
-  useEffect(() => {
-    if (!router.isReady) return;
-    if (!!token) {
-      submitHandler();
-    }
-
-  }, [router.isReady]);
   
   function submitHandler() {
     
-    fetch(TOKEN_API_URL, {
-      method: "PUT",
-      body: JSON.stringify({ token: token }),
-      headers: {
-          "Content-Type": "application/json",
-      },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-
-        setVerified(true);
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while verifying: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
-  }
-    
-  function navigateToAuthPage() {
-    router.push(`/auth`);
-  }
 
   return (
     <>
       <Navbar hasSession={!!session} />
       <main className={styles.main}>
-        <h1>Welcome back, {session?.user?.firstName}!</h1>
+        
       </main>
       <Snackbar 
         open={showAlert} 
@@ -138,6 +66,7 @@ export default function ProfilePage() {
       </Snackbar>
     </>
   );
+  }
 }
 
 export async function getServerSideProps(context: any) {
