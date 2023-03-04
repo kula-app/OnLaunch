@@ -22,7 +22,8 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = [{ id: "home", link: "/", label: "Home" }];
+const navItems = [{ id: "home", link: "/", label: "Home" },
+                  { id: "profile", link: "/profile", label: "Profile"}];
 
 export default function Navbar(props: Props) {
   const router = useRouter();

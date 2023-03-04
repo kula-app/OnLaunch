@@ -100,6 +100,7 @@ export default async function handler(
             await prisma.passwordResetToken.updateMany({
                 where: {
                     userId: user.id,
+                    isObsolete: false,
                 },
                 data: {
                     isObsolete: true,

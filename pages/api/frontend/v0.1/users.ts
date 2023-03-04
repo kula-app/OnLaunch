@@ -1,23 +1,22 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import { hashAndSaltPassword, validatePassword } from '../../../../util/auth';
-import { generateToken, sendTokenPerMail } from '../../../../util/auth';
+import { hashAndSaltPassword, validatePassword, verifyPassword } from '../../../../util/auth';
+import { getSession } from 'next-auth/react';
 
 const prisma = new PrismaClient()
-
-const nodemailer = require("nodemailer");
-require('dotenv').config();
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    
+    const data = req.body;
+
+    const { email, password, passwordOld, firstName, lastName } = data;
+
     switch(req.method) {
         case 'POST':
-            const data = req.body;
-
-            const { email, password, firstName, lastName } = data;
 
             if (process.env.SIGNUPS_ENABLED === "false") {
                 res
@@ -54,7 +53,7 @@ export default async function handler(
             }
 
             const { hashedSaltedPassword, salt } = await hashAndSaltPassword(password);
-            const user = await prisma.user.create({
+            await prisma.user.create({
                 data: {
                     email: email,
                     password: hashedSaltedPassword,
@@ -65,29 +64,36 @@ export default async function handler(
                 }
             });
 
-            const generatedToken = generateToken();
+            res.status(201).json(email);
+            break;
 
-            var expiryDate = new Date();
-            // set expiryDate one week from now
-            expiryDate.setDate(expiryDate.getDate() + 7);
+        case 'GET':
+            const session = await getSession({ req: req });
 
-            const verificationToken = await prisma.verificationToken.create({
-                data: {
-                    userId: user.id,
-                    token: generatedToken,
-                    expiryDate: expiryDate,
-                    isArchived: false,
+            if (!session) {
+                res.status(401).json({ message: 'Not authorized!' });
+                return;
+            }
+
+            const userEmail = session.user?.email as string;
+
+            const userFromDb = await prisma.user.findFirst({
+                where: {
+                    email: userEmail
                 }
             });
-            
-            sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY");
 
-            res.status(201).json(user);
-            break
+            if (!userFromDb || ( userFromDb && !userFromDb.id)) {
+                res.status(400).json({ message: 'User not found!' });
+                return;
+            }
+            
+            res.status(201).json({ email: userEmail, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
+            break;
 
         default:
             res.status(405).end('method not allowed');
-            break
+            break;
     }
         
 }

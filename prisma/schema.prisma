@@ -69,6 +69,7 @@ model User {
   isVerified  Boolean
   token       VerificationToken[]
   passwordToken       PasswordResetToken[]
+  emailChangeToken    EmailChangeToken[]
   orgs        UsersInOrganisations[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -110,6 +111,19 @@ model PasswordResetToken {
   id          Int         @id @default(autoincrement())
   token       String      @unique
   expiryDate  DateTime  
+  isArchived  Boolean     @default(false)
+  isObsolete  Boolean     @default(false)
+  User        User        @relation(fields: [userId], references: [id])
+  userId      Int         
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model EmailChangeToken {
+  id          Int         @id @default(autoincrement())
+  token       String      @unique
+  expiryDate  DateTime  
+  newEmail    String
   isArchived  Boolean     @default(false)
   isObsolete  Boolean     @default(false)
   User        User        @relation(fields: [userId], references: [id])

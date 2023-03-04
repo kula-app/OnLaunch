@@ -66,6 +66,7 @@ export default async function handler(
                 await prisma.verificationToken.updateMany({
                     where: {
                         userId: lookupToken.userId,
+                        isObsolete: false,
                     },
                     data: {
                         isObsolete: true,
