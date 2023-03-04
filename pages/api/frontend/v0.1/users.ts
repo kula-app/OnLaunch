@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { hashAndSaltPassword, validatePassword } from '../../../../util/auth';
-import { generateToken } from '../../../../util/auth';
+import { generateToken, sendTokenPerMail } from '../../../../util/auth';
 
 const prisma = new PrismaClient()
 
@@ -79,23 +79,8 @@ export default async function handler(
                     isArchived: false,
                 }
             });
-
-            let transporter = nodemailer.createTransport({
-                host: "sandbox.smtp.mailtrap.io",
-                port: 2525,
-                auth: {
-                  user: `${process.env.MAILTRAP_USER}`,
-                  pass: `${process.env.MAILTRAP_PASS}`,
-                }
-            });
-
-            let info = await transporter.sendMail({
-                from: '"Flo Ho" <flo@onlaunch.com>',
-                to: `${user.email}`,
-                subject: 'Verify your OnLaunch account',
-                text: `Servas ${user.firstName}, please verify your OnLaunch account: <a href='localhost:3000/verify?token=${verificationToken.token}'>verify now</a>`,
-                html: `Servas <b>${user.firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='localhost:3000/verify?token=${verificationToken.token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
-            });
+            
+            sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY");
 
             res.status(201).json(user);
             break

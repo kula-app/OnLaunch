@@ -51,6 +51,10 @@ export default function AuthForm() {
         router.replace(`/`);
     } 
     
+    function navigateToPasswordResetPage() {
+        router.replace(`/reset`);
+    } 
+    
     function navigateToVerifyPage() {
         router.replace(`/verify?signup=true`);
     } 
@@ -141,6 +145,13 @@ export default function AuthForm() {
                     >
                         {isLoginMode ? 'create new account' : 'log in with existing account'}
                     </Button>
+                    {isLoginMode && <Button 
+                        variant="text" 
+                        type="button"
+                        onClick={() => navigateToPasswordResetPage()}
+                    >
+                        Forgot Password
+                    </Button>}
                     
                 </form>
                 <Snackbar 

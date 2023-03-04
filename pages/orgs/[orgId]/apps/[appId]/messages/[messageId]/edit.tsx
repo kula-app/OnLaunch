@@ -264,6 +264,9 @@ export default function EditMessageOfAppPage() {
               <TableHead>
                 <TableRow>
                   <TableCell>
+                    <strong>Design</strong>
+                  </TableCell>
+                  <TableCell>
                     <strong>Type</strong>
                   </TableCell>
                   <TableCell>
