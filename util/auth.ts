@@ -15,7 +15,7 @@ export async function hashAndSaltPassword(password: string) {
 }
 
 export async function validatePassword(password: string) {
-    return password && password.trim().length > 8;
+    return password && password.trim().length >= 8;
 }
 
 export async function verifyPassword(saltedPassword: string, hashedPassword: string) {
