@@ -11,8 +11,12 @@ datasource db {
 }
 
 enum ActionType {
-  BUTTON          @map("button")
-  DISMISS_BUTTON  @map("dismiss_button")
+  DISMISS  @map("dismiss")
+}
+
+enum ButtonDesign {
+  TEXT        @map("text")
+  FILLED      @map("filled")
 }
 
 enum Role {
@@ -23,6 +27,7 @@ enum Role {
 model Action {
   id          Int          @id @default(autoincrement())
   actionType  ActionType
+  buttonDesign    ButtonDesign
   title       String
   Message     Message?     @relation(fields: [messageId], references: [id])
   messageId   Int?

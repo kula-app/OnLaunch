@@ -6,13 +6,19 @@ import { getSession } from 'next-auth/react';
 const prisma = new PrismaClient()
 
 enum ActionType {
-    Button = "BUTTON",
-    DismissButton = "DISMISS_BUTTON",
+    Dismiss = "DISMISS",
 }
+
+enum ButtonDesign {
+  Text = "TEXT",
+  Filled = "FILLED",
+}
+
 
 type Action = {
     id: number;
     actionType: ActionType;
+    buttonDesign: ButtonDesign;
     title: string;
     messageId: number;
 };

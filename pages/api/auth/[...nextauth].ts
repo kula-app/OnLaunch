@@ -40,10 +40,10 @@ export default NextAuth({
                     if (!user.isVerified) {
                         throw new Error('Verify account!');
                     }
-                    
-                    return { email: user.email } as any;
+
+                    return { id: user.id, email: user.email } as any;
                 }
-            }
+            },
         })
     ],
 });

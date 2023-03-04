@@ -8,7 +8,7 @@ export default function Auth() {
 
   return (
     <>
-      <Navbar hasSession={session ? true : false} />
+      <Navbar hasSession={!!session} />
       <AuthForm />
     </>
   );

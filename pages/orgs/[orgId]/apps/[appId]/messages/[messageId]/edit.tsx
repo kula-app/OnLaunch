@@ -24,13 +24,9 @@ import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
-enum ActionType {
-  Button = "BUTTON",
-  DismissButton = "DISMISS_BUTTON",
-}
-
 type Action = {
-  actionType: ActionType;
+  actionType: string;
+  buttonDesign: string;
   title: string;
 };
 
@@ -50,6 +46,9 @@ export default function EditMessageOfAppPage() {
 
   const { data: session, status } = useSession();
   const loading = status === "loading";
+
+  const actionTypes = ["DISMISS"];
+  const buttonDesigns = ["TEXT", "FILLED"];
 
   const orgId = router.query.orgId;
   const appId = router.query.appId;
@@ -101,7 +100,7 @@ export default function EditMessageOfAppPage() {
         setAlertSeverity("error");
         setShowAlert(true);
     });
-  }, [router.isReady]);
+  }, [router.isReady, MESSAGES_API_URL, messageId]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -169,21 +168,13 @@ export default function EditMessageOfAppPage() {
 
   
   function addAction() {
-    setActions(oldActions => [...oldActions, { actionType: ActionType.Button, title: "" }]);
+    setActions(oldActions => [...oldActions, { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" }]);
   }
 
   function deleteAction(index: number) {
     const newActions = [...actions];
     newActions.splice(index, 1);
     setActions(newActions);
-  }
-
-  function getActionTypeFromValue(value: string) {
-    switch(value) {
-      case "DISMISS_BUTTON":
-        return "DismissButton";
-    }
-    return "Button";
   }
 
   function handleActionTitleChange(index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -194,7 +185,13 @@ export default function EditMessageOfAppPage() {
 
   function handleActionTypeChange(index: number, event: SelectChangeEvent<unknown>) {
     let data = [...actions];
-    data[index]["actionType"] = ActionType[getActionTypeFromValue(event.target.value as string)];
+    data[index]["actionType"] = event.target.value as string;
+    setActions(data);
+  }
+
+  function handleButtonDesignChange(index: number, event: SelectChangeEvent<unknown>) {
+    let data = [...actions];
+    data[index]["buttonDesign"] = event.target.value as string;
     setActions(data);
   }
 
@@ -281,11 +278,24 @@ export default function EditMessageOfAppPage() {
                     <TableRow key={index}>
                       <TableCell>
                         <Select 
+                          label="ButtonDesign"
+                          value={action.buttonDesign}
+                          onChange={event => handleButtonDesignChange(index, event)}
+                        >
+                          {buttonDesigns.map((value, index) => {
+                            return (
+                              <MenuItem key={index} value={value}>{value}</MenuItem>
+                            )
+                          })}
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Select 
                           label="ActionType"
                           value={action.actionType}
                           onChange={event => handleActionTypeChange(index, event)}
                         >
-                          {Object.values(ActionType).map((value, index) => {
+                          {actionTypes.map((value, index) => {
                             return (
                               <MenuItem key={index} value={value}>{value}</MenuItem>
                             )
