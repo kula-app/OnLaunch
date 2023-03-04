@@ -36,7 +36,7 @@ export default async function handler(
             if (!(await validatePassword(password))) {
                 res
                     .status(422)
-                    .json({ message: 'Invalid data - password not valid'});
+                    .json({ message: 'Invalid data - password consists of less than 8 characters'});
                 return;
             }
 

@@ -116,7 +116,7 @@ export default function EditMessageOfAppPage() {
       appId: Number(router.query.appId),
       actions: actions,
     };
-
+    
     // make PUT http request
     fetch(MESSAGES_API_URL + messageId, {
     method: "PUT",

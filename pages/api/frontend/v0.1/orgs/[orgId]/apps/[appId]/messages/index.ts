@@ -82,6 +82,11 @@ export default async function handler(
             break;
 
         case 'POST':
+            if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
+                res.status(400).json({ message: 'start date has to be before end date' });
+                return;
+            }
+
             const message = await prisma.message.create({
                 data: {
                     blocking: req.body.blocking,

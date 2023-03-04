@@ -105,6 +105,11 @@ export default async function handler(
 
         case 'PUT':
             try {
+                if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
+                    res.status(400).json({ message: 'start date has to be before end date' });
+                    return;
+                }
+
                 const updatedMessage = await prisma.message.update({
                     where: {
                         id: Number(req.query.messageId)
