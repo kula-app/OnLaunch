@@ -25,12 +25,16 @@ export default function ProfilePage() {
 
   const USERS_API_URL = "/api/frontend/v0.1/users/";
   const PASSWORD_API_URL = "/api/frontend/v0.1/users/passwordChange";
+  const EMAIL_API_URL = "/api/frontend/v0.1/users/emailChange";
   
   const [user, setUser] = useState<User>();
 
   const [passwordOld, setPasswordOld] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+
+  const [emailNew, setEmailNew] = useState("");
+  const [displayEmailMessage, setDisplayEmailMessage] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -102,6 +106,42 @@ export default function ProfilePage() {
       setShowAlert(true);
     }
   }
+  
+  function sendNewEmail() {
+    if (user?.email === emailNew) {
+      setAlertMessage('This is the same as your current email address!');
+      setAlertSeverity("error");
+      setShowAlert(true);
+    } else {
+      fetch(EMAIL_API_URL, {
+        method: "POST",
+        body: JSON.stringify({ emailNew: emailNew }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        
+        setEmailNew("");
+        setDisplayEmailMessage(true);
+
+        setAlertMessage("You have got mail!");
+        setAlertSeverity("success");
+        setShowAlert(true);
+    
+        return response.json();
+      })
+      .catch(error => {
+        setAlertMessage(`Error while sending request: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }); 
+    }
+  } 
     
   return (
     <>
@@ -111,12 +151,32 @@ export default function ProfilePage() {
         <div className="marginTopMedium column">
           <h2 >Change email</h2>
           
+          <TextField 
+            required 
+            label="Email"
+            id="email" 
+            className="marginTopMedium"
+            value={emailNew}
+            onChange={(event) => setEmailNew(event.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="info"
+            sx={{ marginTop: 5 }}
+            onClick={() => sendNewEmail()}
+          >
+            change email
+          </Button>
+          {displayEmailMessage && <div className="marginTopMedium">
+            We have sent a mail <br/>to your new email <br/>address, please check <br/>and verify your <br/>new address!
+          </div>
+          }
         </div>
         <div className="marginTopMedium column">
           <h2>Change password</h2>
           <TextField 
               required 
-              label="Old Password"
+              label="Current Password"
               id="passwordOld"
               type="password" 
               value={passwordOld}
@@ -125,7 +185,7 @@ export default function ProfilePage() {
           />
           <TextField 
               required 
-              label="Password"
+              label="New Password"
               id="password"
               type="password" 
               value={password}
@@ -134,7 +194,7 @@ export default function ProfilePage() {
           />
           <TextField 
               required 
-              label="Password (repeat)"
+              label="New Password (repeat)"
               id="password2"
               type="password" 
               value={password2}
@@ -142,14 +202,14 @@ export default function ProfilePage() {
               onChange={(event) => setPassword2(event.target.value)}
           />
           <Button
-              variant="contained"
-              color="info"
-              sx={{ marginTop: 5 }}
-              onClick={() => sendNewPassword()}
-              
-            >
-              change password
-            </Button>
+            variant="contained"
+            color="info"
+            sx={{ marginTop: 5 }}
+            onClick={() => sendNewPassword()}
+            
+          >
+            change password
+          </Button>
         </div>
         <div className="marginTopMedium">
           <h2 >Delete profile</h2>
@@ -183,7 +243,6 @@ export default function ProfilePage() {
     </>
   );
 }
-
 
 export async function getServerSideProps(context: any) {
   const session = await getSession({ req: context.req });

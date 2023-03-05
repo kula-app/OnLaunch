@@ -3,9 +3,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail, hashAndSaltPassword, validatePassword } from '../../../../../util/auth';
 
-const nodemailer = require("nodemailer");
-require('dotenv').config();
-
 const prisma = new PrismaClient()
 
 

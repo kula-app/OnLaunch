@@ -12,7 +12,7 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
 
-export default function VerifyPage() {
+export default function ResetPasswordPage() {
   const router = useRouter();
 
   const { token } = router.query;

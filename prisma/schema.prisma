@@ -124,6 +124,7 @@ model EmailChangeToken {
   token       String      @unique
   expiryDate  DateTime  
   newEmail    String
+  currentEmail    String
   isArchived  Boolean     @default(false)
   isObsolete  Boolean     @default(false)
   User        User        @relation(fields: [userId], references: [id])
