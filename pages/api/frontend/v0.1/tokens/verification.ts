@@ -87,8 +87,8 @@ export default async function handler(
                         id: lookupToken.userId
                     }
                 });
-        
-                sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY");
+                
+                sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY", "");
                 
                 res
                     .status(400)
