@@ -90,29 +90,6 @@ export default async function handler(
               );
             break;
 
-        case 'DELETE':
-            try {
-                if (userInOrg?.role === "USER") {
-                    res.status(403).json({ message: 'you are not allowed to delete user with id ' + req.query.userId + ' from organisation with id ' + req.query.orgId });
-                    return;
-                }
-                const deletedUserInOrg = await prisma.usersInOrganisations.delete({
-                    where: {
-                        orgId_userId: {
-                            userId: Number(req.query.userId),
-                            orgId: Number(req.query.orgId),
-                        }
-                    }
-                })
-
-                res.status(200).json(deletedUserInOrg)
-            } catch(e) {
-                if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).json({ message: 'no user with id ' + req.query.userId + ' found in organisation with id ' + req.query.appId });
-                }
-            }
-            break;
-
             case 'PUT':
                 try {
                     if (userInOrg?.role === "USER") {

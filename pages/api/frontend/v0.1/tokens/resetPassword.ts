@@ -115,7 +115,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "RESET_PASSWORD");
+            sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "RESET_PASSWORD", "");
             
             res.status(200).json(user);
             break;

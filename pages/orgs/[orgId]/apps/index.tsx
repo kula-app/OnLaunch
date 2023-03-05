@@ -84,14 +84,20 @@ export default function AppsPage() {
   const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
   const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
   const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ORG_API_URL + orgId : undefined, fetcher);
- if (error || userError) return <div>Failed to load</div>;
-  if (!data || !userData) return <div>Loading...</div>;
+  if (error || userError || orgError) return <div>Failed to load</div>;
+  if (!data || !userData || !orgData) return <div>Loading...</div>;
 
-  const userRole = userData.find(i => i.email === session?.user?.email)?.role;
-
+  let userRole = "";
+  if (!!userData) {
+    userRole = userData.find(i => i.email === session?.user?.email)?.role as string;
+  }
   
   function navigateToEditAppPage(id: number) {
     router.push(`/orgs/${orgId}/apps/${id}/edit`);
+  }
+
+  function navigateToHome() {
+    router.push("/");
   }
 
   function navigateToNewAppPage() {
@@ -123,6 +129,36 @@ export default function AppsPage() {
     })
     .catch(error => {
       setAlertMessage(`Error while deleting app with id ${id}: ${error.message}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    });    
+  }
+
+  function removeUser(id: number) {
+    fetch(ORG_USERS_API_URL + id, {
+      method: "DELETE",
+    }).then(response => {
+      if (!response.ok) {
+        return response.json().then(error => {
+          throw new Error(error.message);
+        });
+      }
+    
+      if (id === Number(userData?.find(i => i.email === session?.user.email)?.id)) {
+        navigateToHome();
+      } else {
+
+        userMutate();
+        
+        setAlertMessage(`User successfully removed from organisation!`);
+        setAlertSeverity("success");
+        setShowAlert(true);
+      }
+
+      return response.json();
+    })
+    .catch(error => {
+      setAlertMessage(`Error while removing user: ${error.message}`);
       setAlertSeverity("error");
       setShowAlert(true);
     });    
@@ -187,15 +223,12 @@ export default function AppsPage() {
   }
 
   function handleRoleChange(index: number, event: SelectChangeEvent<unknown>) {
-
     if (!userData) {
       return;
     }
+
     let users = [... userData];
     let user = users[index];
-
-    console.log("user => " + JSON.stringify(user));
-    console.log("role => " + event.target.value);
 
     fetch(ORG_USERS_API_URL, {
       method: "PUT",
@@ -390,8 +423,22 @@ export default function AppsPage() {
                             )
                           })}
                         </Select>  
+                        <Tooltip title={user.email === session?.user.email ? "leave organisation" : "remove from organisation"} >
+                          <IconButton onClick={() => removeUser(user.id)}>
+                            <DeleteForeverIcon />
+                          </IconButton>
+                        </Tooltip>
                       </div>}
-                      {userRole === "USER" && <div>{user.role.toLowerCase()}</div> }
+                      {userRole === "USER" && 
+                        <div>
+                          {user.role.toLowerCase()}
+                          
+                        {user.email === session?.user.email && <Tooltip title="leave organisation" >
+                          <IconButton onClick={() => removeUser(user.id)}>
+                            <DeleteForeverIcon />
+                          </IconButton>
+                        </Tooltip>}
+                        </div> }
                     </TableCell>
                     <TableCell>
                     </TableCell>
