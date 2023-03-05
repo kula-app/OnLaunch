@@ -85,6 +85,14 @@ export default async function handler(
                         orgId: Number(req.query.orgId)
                     }
                 });
+
+                // remove relationships between the to-be-deleted organisation and its users
+                await prisma.usersInOrganisations.deleteMany({
+                    where: {
+                        orgId: Number(req.query.orgId)
+                    }
+                });
+                
                 const deletedOrg = await prisma.organisation.delete({
                     where: {
                         id: Number(req.query.orgId)

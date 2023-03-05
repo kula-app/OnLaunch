@@ -61,12 +61,13 @@ model App {
 
 model User {
   id          Int         @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String
-  password    String
-  salt        String
+  firstName   String?
+  lastName    String?
+  email       String?
+  password    String?
+  salt        String?
   isVerified  Boolean
+  isDeleted   Boolean     @default(false)
   token       VerificationToken[]
   passwordToken       PasswordResetToken[]
   emailChangeToken    EmailChangeToken[]

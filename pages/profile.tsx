@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from 'react';
 import styles from "../styles/Home.module.css";
 import Navbar from "../components/Navbar";
-import { useSession, getSession } from 'next-auth/react';
+import { useSession, getSession, signOut } from 'next-auth/react';
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -11,6 +11,11 @@ import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 interface User {
   email: string;
@@ -40,6 +45,7 @@ export default function ProfilePage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
   
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -142,6 +148,34 @@ export default function ProfilePage() {
       }); 
     }
   } 
+
+  function openDeleteDialog() {
+    setShowDeleteDialog(true);
+  }
+
+  function sendDeleteProfile() {
+    fetch(USERS_API_URL, {
+      method: "DELETE",
+      headers: {
+          "Content-Type": "application/json",
+      },
+    }).then(async (response) => {
+      if(!response.ok) {
+          return response.json().then(error => {
+              throw new Error(error.message);
+          });
+      }
+
+      signOut();
+
+      return response.json();
+    })
+    .catch(error => {
+      setAlertMessage(`Error while sending request: ${error.message}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }); 
+  }
     
   return (
     <>
@@ -149,8 +183,8 @@ export default function ProfilePage() {
       <main className={styles.main}>
         <h1>Hello, {user?.firstName}!</h1>
         <div className="marginTopMedium column">
-          <h2 >Change email</h2>
-          
+          <h2 className="centeredElement">Change email</h2>
+          <div className="marginTopMedium centeredElement">Your email: {user?.email}</div>
           <TextField 
             required 
             label="Email"
@@ -216,7 +250,7 @@ export default function ProfilePage() {
             variant="contained"
             color="error"
             sx={{ marginTop: 5 }}
-            onClick={() => sendNewPassword()}
+            onClick={() => openDeleteDialog()}
           >
             delete
           </Button>
@@ -246,6 +280,26 @@ export default function ProfilePage() {
           {alertMessage}
         </Alert>
       </Snackbar>
+      <Dialog
+        open={showDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">
+          {'Deletion of your profile'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Deletion cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+          <Button onClick={() => {setShowDeleteDialog(false); sendDeleteProfile()}} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
