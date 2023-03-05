@@ -55,6 +55,7 @@ model App {
   messages    Message[]
   Organisation  Organisation?        @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId       Int?
+  publicKey   String      @unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }

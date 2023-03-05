@@ -26,6 +26,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession, useSession } from 'next-auth/react';
+import { TextField } from "@mui/material";
 
 interface Action {
   title: string;
@@ -44,6 +45,8 @@ interface Message {
 interface App {
   name: string;
   id: number;
+  role: string;
+  publicKey: string;
   messages: Message[];
 }
 
@@ -122,7 +125,28 @@ export default function MessagesOfAppPage() {
         <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>{data.name}</h1>
-          <div className="addButton">
+          {data.role === "ADMIN" && <div className="row">
+            <TextField 
+              disabled 
+              label="Public Key for Clients"
+              id="publicKey" 
+              value={data.publicKey}
+            />
+            <Button
+              variant="contained"
+              sx={{ marginLeft: 2 }}
+              onClick={() => {
+                navigator.clipboard.writeText(data.publicKey);
+                setAlertMessage("Public key copied to clipboard");
+                setAlertSeverity("success");
+                setShowAlert(true);
+              }}
+            >
+              copy
+            </Button>
+          </div>
+          }
+          <div className="addButton marginTopLarge">
             <Button
               variant="contained"
               onClick={() => {

@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import { getSession } from 'next-auth/react';
+import { generateToken } from '../../../../../../../util/auth';
 
 const prisma = new PrismaClient()
 
@@ -81,10 +82,13 @@ export default async function handler(
             break;
 
         case 'POST':
+            const generatedToken = generateToken();
+
             const app = await prisma.app.create({
                 data: {
                     name: req.body.name,
                     orgId: req.body.orgId,
+                    publicKey: generatedToken,
                 }
             })
             res.status(201).json(app);

@@ -81,7 +81,12 @@ export default async function handler(
                 return;
             }
 
-            res.status(200).json(app);
+            res.status(200).json({ 
+                role: userInOrg?.role, 
+                publicKey: (userInOrg?.role === "ADMIN" ? app.publicKey : ""), 
+                name: app.name,
+                messages: app.messages 
+            });
             break;
 
         case 'DELETE':

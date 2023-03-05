@@ -32,6 +32,24 @@ export default async function handler(
   
   switch (req.method) {
     case "GET":
+      const publicKey = req.headers.publickey;
+      
+      if (!publicKey) {
+        res.status(400).end("no publicKey provided");
+        return;
+      }
+      
+      const app = await prisma.app.findFirst({
+        where: {
+          publicKey: publicKey as string
+        }
+      });
+
+      if (!app) {
+        res.status(400).end("wrong publicKey provided");
+        return;
+      }
+
       const allMessages = await prisma.message.findMany({
         include: {
           actions: true,
