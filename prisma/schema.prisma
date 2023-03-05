@@ -29,7 +29,7 @@ model Action {
   actionType  ActionType
   buttonDesign    ButtonDesign
   title       String
-  Message     Message?     @relation(fields: [messageId], references: [id])
+  Message     Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
   messageId   Int?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -43,7 +43,7 @@ model Message {
   actions     Action[]
   startDate   DateTime
   endDate     DateTime
-  App         App?        @relation(fields: [appId], references: [id])
+  App         App?        @relation(fields: [appId], references: [id], onDelete: Cascade)
   appId       Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -53,7 +53,7 @@ model App {
   id          Int         @id @default(autoincrement())
   name        String
   messages    Message[]
-  Organisation  Organisation?        @relation(fields: [orgId], references: [id])
+  Organisation  Organisation?        @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId       Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

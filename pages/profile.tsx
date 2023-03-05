@@ -172,7 +172,7 @@ export default function ProfilePage() {
           </div>
           }
         </div>
-        <div className="marginTopMedium column">
+        <div className="marginTopLarge column">
           <h2>Change password</h2>
           <TextField 
               required 
@@ -206,14 +206,20 @@ export default function ProfilePage() {
             color="info"
             sx={{ marginTop: 5 }}
             onClick={() => sendNewPassword()}
-            
           >
             change password
           </Button>
         </div>
-        <div className="marginTopMedium">
+        <div className="marginTopLarge column">
           <h2 >Delete profile</h2>
-
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ marginTop: 5 }}
+            onClick={() => sendNewPassword()}
+          >
+            delete
+          </Button>
         </div>
       </main>
       <Snackbar 

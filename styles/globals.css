@@ -132,6 +132,10 @@ input, textarea {
   margin-bottom: 16px;
 }
 
+.marginTopLarge {
+  margin-top: 64px;
+}
+
 .marginTopMedium {
   margin-top: 32px;
 }

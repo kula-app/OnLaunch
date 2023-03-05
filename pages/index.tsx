@@ -8,13 +8,12 @@ export default function IndexPage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    navigateToDashboardPage();
-  }, [router.isReady]);
-  
+    function navigateToDashboardPage() {
+      router.push(`/dashboard`);
+    }
 
-  function navigateToDashboardPage() {
-    router.push(`/dashboard`);
-  }
+    navigateToDashboardPage();
+  }, [router.isReady, router]);
 
   return (
     <>
