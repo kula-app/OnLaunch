@@ -30,7 +30,7 @@ export function generateToken() {
     return base64url(crypto.randomBytes(32));
 }
 
-export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string) {
+export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string, misc: string) {
     let transporter = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
         port: 2525,
@@ -61,25 +61,35 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
                 });
                 break;
 
-                case 'CHANGE_EMAIL':
-                    transporter.sendMail({
-                        from: '"Flo Ho" <flo@onlaunch.com>',
-                        to: email,
-                        subject: 'Verify your new OnLaunch email address',
-                        text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='localhost:3000/resetPassword?token=${token}'>verify now</a>`,
-                        html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='localhost:3000/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
-                    });
-                    break;
+            case 'CHANGE_EMAIL':
+                transporter.sendMail({
+                    from: '"Flo Ho" <flo@onlaunch.com>',
+                    to: email,
+                    subject: 'Verify your new OnLaunch email address',
+                    text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='localhost:3000/resetPassword?token=${token}'>verify now</a>`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='localhost:3000/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+                });
+                break;
 
-                case 'MAIL_CHANGED':
-                    transporter.sendMail({
-                        from: '"Flo Ho" <flo@onlaunch.com>',
-                        to: email,
-                        subject: 'Your email address has been changed',
-                        text: `Servas ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
-                        html: `Servas <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
-                    });
-                    break;
+            case 'MAIL_CHANGED':
+                transporter.sendMail({
+                    from: '"Flo Ho" <flo@onlaunch.com>',
+                    to: email,
+                    subject: 'Your email address has been changed',
+                    text: `Servas ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+                });
+                break;
+
+            case 'DIRECT_INVITE':
+                transporter.sendMail({
+                    from: '"Flo Ho" <flo@onlaunch.com>',
+                    to: email,
+                    subject: 'You have a new invitation',
+                    text: `Servas ${firstName}, you are now invited to an organisation`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='localhost:3000/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
+                });
+                break;
     }
     
 }

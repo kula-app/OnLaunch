@@ -14,7 +14,7 @@ export default async function handler(
     const data = req.query;
 
     const { token } = data;
-    
+
     const session = await getSession({ req: req });
 
     if (!session) {
@@ -38,14 +38,30 @@ export default async function handler(
         return;
     }
 
-    const organisation = await prisma.organisation.findFirst({
+    const userInvitationToken = await prisma.userInvitationToken.findFirst({
         where: {
-            invitationToken: token as string
+            token: token as string
         }
     });
     
+    if (!userInvitationToken) {
+        res.status(400).json({ message: `No user invitation token found with ${token}!` });
+        return;
+    }
+
+    if (userInvitationToken.isArchived || userInvitationToken.isObsolete || userInvitationToken.expiryDate < new Date()) {
+        res.status(400).json({ message: `User invitation token is obsolete!` });
+        return;
+    }
+
+    const organisation = await prisma.organisation.findFirst({
+        where: {
+            id: userInvitationToken.orgId
+        }
+    });
+
     if (!organisation) {
-        res.status(400).json({ message: `No organisation found with invite ${token}!` });
+        res.status(400).json({ message: `No organisation found with id ${userInvitationToken.orgId}!` });
         return;
     }
 
@@ -54,7 +70,7 @@ export default async function handler(
             res.status(200).json({
                 id: organisation.id,
                 name: organisation.name,
-                invitationToken: organisation.invitationToken,
+                invitationToken: userInvitationToken.token,
             });
 
             break;
@@ -68,27 +84,21 @@ export default async function handler(
                         role: "USER",
                     }
                 });
+
+                await prisma.userInvitationToken.update({
+                    where: {
+                        token: userInvitationToken.token
+                    }, 
+                    data: {
+                        isArchived: true
+                    }
+                });
             } catch (error) {
                 res.status(400).json({ message: `User already in organisation!` });
                 return;
             }
 
             res.status(200).json({ message: `User joined organisation!` });
-            break;
-
-        case 'PUT':
-            const generatedToken = generateToken();
-
-            await prisma.organisation.update({
-                where: {
-                    id: organisation.id,
-                },
-                data: {
-                    invitationToken: generatedToken,
-                }
-            });
-
-            res.status(200).json({ message: `Updated organisation!` });
             break;
 
         default:

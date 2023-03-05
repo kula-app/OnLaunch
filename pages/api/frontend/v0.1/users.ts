@@ -82,7 +82,7 @@ export default async function handler(
                 }
             });
     
-            sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY");
+            sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY", "");
             
 
             res.status(201).json(email);

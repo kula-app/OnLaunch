@@ -2,10 +2,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, Prisma } from '@prisma/client'
 import { getSession } from 'next-auth/react';
+import { generateToken, sendTokenPerMail } from '../../../../../../util/auth';
 
 const prisma = new PrismaClient()
 
 interface UserDto {
+    id: number;
     firstName: string;
     lastName: string;
     email: string;
@@ -47,9 +49,6 @@ export default async function handler(
             org: {
                 id: Number(req.query.orgId)
             },
-        },
-        select: {
-            role: true
         }
     });
 
@@ -67,6 +66,9 @@ export default async function handler(
                 },
                 where: {
                     orgId: Number(req.query.orgId),
+                },
+                orderBy: {
+                    createdAt: 'asc'
                 }
             })
 
@@ -78,6 +80,7 @@ export default async function handler(
             res.status(200).json(
                 usersInOrg.map((userInOrg): UserDto => {
                   return {
+                    id: userInOrg.userId,
                     firstName: userInOrg.user.firstName as string,
                     lastName: userInOrg.user.lastName as string,
                     email: userInOrg.user.email as string,
@@ -116,11 +119,17 @@ export default async function handler(
                         res.status(403).json({ message: 'you are not allowed to update user with id ' + req.query.userId + ' from organisation with id ' + req.query.orgId });
                         return;
                     }
+
+                    if (userInOrg.userId === req.body.userId) {
+                        res.status(400).json({ message: 'you cannot change your own role!' });
+                        return;
+                    }
+
                     const updatedApp = await prisma.usersInOrganisations.update({
                         where: {
                             orgId_userId: {
-                                userId: Number(req.query.userId),
-                                orgId: Number(req.query.orgId),
+                                userId: Number(req.body.userId),
+                                orgId: Number(req.body.orgId),
                             }
                         },
                         data: {
@@ -128,7 +137,8 @@ export default async function handler(
                         }
                     });
     
-                    res.status(201).json(updatedApp)
+                    res.status(201).json(updatedApp);
+                    return; 
                 } catch(e) {
                     if (e instanceof Prisma.PrismaClientKnownRequestError) {
                         res.status(404).json({ message: 'no user with id ' + req.query.userId + ' found in organisation with id ' + req.query.appId });
@@ -153,24 +163,37 @@ export default async function handler(
                     });
 
                     if (user && user.id) {
-                        const org = await prisma.usersInOrganisations.create({
+                        await prisma.userInvitationToken.updateMany({
+                            where: {
+                                userId: userInOrg?.userId,
+                                isObsolete: false,
+                            },
                             data: {
-                                user: {
-                                    connect: {
-                                        id: user.id
-                                    }
-                                },
-                                role: 'USER',
-                                org: {
-                                    create: {
-                                        name: req.body.name
-                                    }
-                                }
+                                isObsolete: true,
                             }
-                        })
-                        res.status(201).json(org);
+                        });
+
+                        const generatedToken = generateToken();
+
+                        var expiryDate = new Date();
+                        // set expiryDate one hour from now
+                        expiryDate.setTime(expiryDate.getTime() + (60*60*1000));
+
+                        const uit = await prisma.userInvitationToken.create({
+                            data: {
+                                token: generatedToken,
+                                orgId: userInOrg?.orgId,
+                                userId: userInOrg?.userId,
+                                expiryDate: expiryDate, 
+                            }
+                        });
+
+                        sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "DIRECT_INVITE", "");
+
+                        res.status(201).json(uit);
                         return;
                     }
+
                     res.status(400).json({ message: 'no user found for email' });
                     return;
                     

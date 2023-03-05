@@ -44,16 +44,19 @@ export default function DashboardPage() {
 
   const { data: session } = useSession();
 
-  const { invite } = router.query;
+  const { invite, directinvite } = router.query;
 
   const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
   const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
+  const DIRECT_INVITE_API_URL = "/api/frontend/v0.1/tokens/directInvitation/";
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const [token, setToken] = useState("");
   const [orgInvite, setOrgInvite] = useState<OrgInvite>();
+  const [tokenUrl, setTokenUrl] = useState(ORG_INVITE_API_URL);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [orgId, setOrgId] = useState(-1);
@@ -61,11 +64,17 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!invite) {
+      setToken(invite as string);
+      setTokenUrl(ORG_INVITE_API_URL);
+      inviteHandler();
+    } else if (!!directinvite) {
+      setToken(directinvite as string);
+      setTokenUrl(DIRECT_INVITE_API_URL);
       inviteHandler();
     }
 
     function inviteHandler() {
-      fetch(ORG_INVITE_API_URL + invite, {
+      fetch(tokenUrl + token, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -89,7 +98,7 @@ export default function DashboardPage() {
         setShowAlert(true); 
       }); 
     }
-  }, [router.isReady, invite]);
+  }, [router.isReady, invite, directinvite, token, tokenUrl]);
 
   function navigateToAppsPage(id: number) {
     router.push(`/orgs/${id}/apps`);
@@ -142,8 +151,9 @@ export default function DashboardPage() {
       setShowAlert(true);
     });    
   }
+
   function joinOrg(id: number) {
-    fetch(ORG_INVITE_API_URL + invite, {
+    fetch(tokenUrl + token, {
       method: "POST",
     }).then(response => {
       if (!response.ok) {
@@ -152,7 +162,7 @@ export default function DashboardPage() {
         });
       }
 
-      setAlertMessage(`Successfully joind organisation with id ${id}!`);
+      setAlertMessage(`Successfully joined organisation with id ${id}!`);
       setAlertSeverity("success");
       setShowAlert(true);
 

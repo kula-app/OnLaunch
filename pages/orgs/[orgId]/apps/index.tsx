@@ -20,6 +20,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar from "@mui/material/Snackbar";
 import Tooltip from '@mui/material/Tooltip';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -27,6 +29,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 import TextField from "@mui/material/TextField";
+import { SelectChangeEvent } from "@mui/material";
 
 interface App {
   name: string;
@@ -35,6 +38,7 @@ interface App {
 }
 
 interface User {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -51,6 +55,9 @@ export default function AppsPage() {
   const router = useRouter();
   
   const orgId = router.query.orgId;
+
+  
+  const roles = ["ADMIN", "USER"];
 
   const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
   const ORG_USERS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/users/`;
@@ -77,7 +84,7 @@ export default function AppsPage() {
   const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
   const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
   const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ORG_API_URL + orgId : undefined, fetcher);
-  if (error || userError) return <div>Failed to load</div>;
+ if (error || userError) return <div>Failed to load</div>;
   if (!data || !userData) return <div>Loading...</div>;
 
   const userRole = userData.find(i => i.email === session?.user?.email)?.role;
@@ -166,7 +173,7 @@ export default function AppsPage() {
             });
         }
 
-        setAlertMessage("User added successfully!");
+        setAlertMessage("User invited successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
 
@@ -177,7 +184,46 @@ export default function AppsPage() {
         setAlertSeverity("error");
         setShowAlert(true);
     }); 
+  }
 
+  function handleRoleChange(index: number, event: SelectChangeEvent<unknown>) {
+
+    if (!userData) {
+      return;
+    }
+    let users = [... userData];
+    let user = users[index];
+
+    console.log("user => " + JSON.stringify(user));
+    console.log("role => " + event.target.value);
+
+    fetch(ORG_USERS_API_URL, {
+      method: "PUT",
+      body: JSON.stringify({ role: event.target.value, userId: user.id, orgId: orgId }),
+      headers: {
+          "Content-Type": "application/json",
+      },
+    })
+    .then(response => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+
+        userMutate();
+
+        setAlertMessage(`User with email ${user.email} is now ${event.target.value}`);
+        setAlertSeverity("success");
+        setShowAlert(true);
+
+        return response.json();
+    })
+    .catch(error => {
+        setAlertMessage(`Error while updating user role: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    }); 
   }
 
   return (
@@ -264,7 +310,7 @@ export default function AppsPage() {
             <div className="column">
               <Button
                 variant="contained"
-                sx={{ marginLeft: 2 }}
+                sx={{ marginLeft: 5 }}
                 onClick={() => {
                   navigator.clipboard.writeText("localhost:3000/dashboard?invite="+(orgData?.invitationToken as string));
                   setAlertMessage("Public key copied to clipboard");
@@ -276,7 +322,7 @@ export default function AppsPage() {
               </Button>
               <Button
                 variant="contained"
-                sx={{ marginLeft: 2, marginTop: 1 }}
+                sx={{ marginLeft: 5, marginTop: 1 }}
                 onClick={() => {
                   resetInvitation();
                 }}
@@ -302,7 +348,7 @@ export default function AppsPage() {
                   type="submit"
                   sx={{ marginLeft: 5 }}
                 >
-                  Add User
+                  Invite User
                 </Button>
               </div>
             </form>
@@ -331,7 +377,20 @@ export default function AppsPage() {
                       {user.email}
                     </TableCell>
                     <TableCell>
-                      {userRole === "ADMIN" && <div>{user.role.toLowerCase()}</div>}
+                      {userRole === "ADMIN" && <div>
+                        <Select 
+                          disabled={user.email === session?.user.email}
+                          label="Role"
+                          value={user.role}
+                          onChange={event => handleRoleChange(index, event)}
+                        >
+                          {roles.map((value, index) => {
+                            return (
+                              <MenuItem key={index} value={value}>{value}</MenuItem>
+                            )
+                          })}
+                        </Select>  
+                      </div>}
                       {userRole === "USER" && <div>{user.role.toLowerCase()}</div> }
                     </TableCell>
                     <TableCell>

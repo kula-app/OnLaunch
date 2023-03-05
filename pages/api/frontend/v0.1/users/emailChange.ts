@@ -87,7 +87,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(emailToken.newEmail as string, user.firstName as string, generatedToken, "CHANGE_EMAIL");
+            sendTokenPerMail(emailToken.newEmail as string, user.firstName as string, generatedToken, "CHANGE_EMAIL", "");
 
             res.status(201).json(user.email);
             break;
@@ -122,7 +122,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(lookupToken.currentEmail as string, "OnLaunch user", "", "MAIL_CHANGED");
+            sendTokenPerMail(lookupToken.currentEmail as string, "OnLaunch user", "", "MAIL_CHANGED", "");
 
             await prisma.emailChangeToken.update({
                 where: {
