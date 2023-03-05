@@ -74,7 +74,11 @@ export default async function handler(
                 return;
             }
 
-            res.status(200).json(org);
+            res.status(200).json({
+                name: org.name,
+                apps: org.apps,
+                invitationToken: (userInOrg?.role === "ADMIN" ? org.invitationToken : "" )
+            });
             break;
 
         case 'DELETE':

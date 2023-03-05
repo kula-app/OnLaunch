@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import { getSession } from 'next-auth/react';
+import { generateToken } from '../../../../../util/auth';
 
 const prisma = new PrismaClient()
 
@@ -64,6 +65,8 @@ export default async function handler(
             break;
 
         case 'POST':
+            const generatedToken = generateToken();
+            
             const org = await prisma.usersInOrganisations.create({
                 data: {
                     user: {
@@ -74,7 +77,8 @@ export default async function handler(
                     role: 'ADMIN',
                     org: {
                         create: {
-                            name: req.body.name
+                            name: req.body.name,
+                            invitationToken: generatedToken,
                         }
                     }
                 }

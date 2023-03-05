@@ -80,6 +80,7 @@ model User {
 model Organisation {
   id          Int         @id @default(autoincrement())
   name        String
+  invitationToken   String?    @unique
   apps        App[]
   users       UsersInOrganisations[]
   createdAt   DateTime    @default(now())

@@ -33,20 +33,63 @@ interface Organisation {
   role: string;
 }
 
+interface OrgInvite {
+  id: number;
+  name: string;
+  invitationToken: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
 
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
+
+  const { invite } = router.query;
 
   const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
+  const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const [orgInvite, setOrgInvite] = useState<OrgInvite>();
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [orgId, setOrgId] = useState(-1);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (!!invite) {
+      inviteHandler();
+    }
+
+    function inviteHandler() {
+      fetch(ORG_INVITE_API_URL + invite, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        
+        return response.json();
+      })
+      .then((data) => {
+        setOrgInvite(data);
+        setShowInviteDialog(true);
+      })
+      .catch(error => {
+        setAlertMessage(`Error while joining organisation: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true); 
+      }); 
+    }
+  }, [router.isReady, invite]);
 
   function navigateToAppsPage(id: number) {
     router.push(`/orgs/${id}/apps`);
@@ -64,6 +107,10 @@ export default function DashboardPage() {
 
   function navigateToNewOrgPage() {
     router.push(`/orgs/new`);
+  }
+
+  function navigateToOrgPage(id: number) {
+    router.push(`/orgs/${id}/apps`);
   }
 
   function handleDelete(id: number) {
@@ -91,6 +138,30 @@ export default function DashboardPage() {
     })
     .catch(error => {
       setAlertMessage(`Error while deleting org with id ${id}: ${error.message}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    });    
+  }
+  function joinOrg(id: number) {
+    fetch(ORG_INVITE_API_URL + invite, {
+      method: "POST",
+    }).then(response => {
+      if (!response.ok) {
+        return response.json().then(error => {
+          throw new Error(error.message);
+        });
+      }
+
+      setAlertMessage(`Successfully joind organisation with id ${id}!`);
+      setAlertSeverity("success");
+      setShowAlert(true);
+
+      navigateToOrgPage(id);
+
+      return response.json();
+    })
+    .catch(error => {
+      setAlertMessage(`Error while joining: ${error.message}`);
       setAlertSeverity("error");
       setShowAlert(true);
     });    
@@ -201,6 +272,26 @@ export default function DashboardPage() {
             <DialogActions>
               <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
               <Button onClick={() => {setShowDeleteDialog(false); deleteOrg(orgId)}} autoFocus>
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={showInviteDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {`Join Organisation '${orgInvite?.name}?'`}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                You can leave any time.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowInviteDialog(false)}>Cancel</Button>
+              <Button onClick={() => {setShowInviteDialog(false); joinOrg(Number(orgInvite?.id))}} autoFocus>
                 Agree
               </Button>
             </DialogActions>

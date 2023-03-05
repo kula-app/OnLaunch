@@ -41,6 +41,12 @@ interface User {
   role: string;
 }
 
+interface Org {
+  invitationToken: string;
+  name: string;
+  role: string;
+}
+
 export default function AppsPage() {
   const router = useRouter();
   
@@ -48,6 +54,8 @@ export default function AppsPage() {
 
   const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
   const ORG_USERS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/users/`;
+  const ORG_API_URL = `/api/frontend/v0.1/orgs/`;
+  const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -68,6 +76,7 @@ export default function AppsPage() {
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
   const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
   const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
+  const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ORG_API_URL + orgId : undefined, fetcher);
   if (error || userError) return <div>Failed to load</div>;
   if (!data || !userData) return <div>Loading...</div>;
 
@@ -112,35 +121,62 @@ export default function AppsPage() {
     });    
   }
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-  // make POST http request
-  fetch(ORG_USERS_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ email: userEmail }),
+  function resetInvitation() {
+    fetch(ORG_INVITE_API_URL + orgData?.invitationToken, {
+      method: "PUT",
       headers: {
           "Content-Type": "application/json",
       },
-  })
-  .then(response => {
-      if(!response.ok) {
-          return response.json().then(error => {
-              throw new Error(error.message);
-          });
-      }
+    })
+    .then(response => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
 
-      setAlertMessage("User added successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+        setAlertMessage("Invitation link changed successfully!");
+        setAlertSeverity("success");
+        setShowAlert(true);
 
-      return response.json();
-  })
-  .catch(error => {
-      setAlertMessage(`Error while adding new user: ${error.message}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-  }); 
+        return response.json();
+    })
+    .catch(error => {
+        setAlertMessage(`Error while changing invitation link: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    }); 
+  }
+
+  function submitHandler(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    // make POST http request
+    fetch(ORG_USERS_API_URL, {
+        method: "POST",
+        body: JSON.stringify({ email: userEmail }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+
+        setAlertMessage("User added successfully!");
+        setAlertSeverity("success");
+        setShowAlert(true);
+
+        return response.json();
+    })
+    .catch(error => {
+        setAlertMessage(`Error while adding new user: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+    }); 
 
   }
 
@@ -154,6 +190,7 @@ export default function AppsPage() {
       </Head>
       <Navbar hasSession={!!session} />
       <main className={styles.main}>
+        <h1>Organisation {orgData?.name}</h1>
         <h1>Apps</h1>
         {userRole === "ADMIN" && <div className="addButton">
             <Button
@@ -217,9 +254,41 @@ export default function AppsPage() {
         )}
         <div className={styles.main}>
           <h1>Users</h1>
+          {userRole === "ADMIN" && <div className="row">
+            <TextField 
+              disabled 
+              label="Invitation link"
+              id="invite" 
+              value={"localhost:3000/dashboard?invite=" + orgData?.invitationToken}
+            />
+            <div className="column">
+              <Button
+                variant="contained"
+                sx={{ marginLeft: 2 }}
+                onClick={() => {
+                  navigator.clipboard.writeText("localhost:3000/dashboard?invite="+(orgData?.invitationToken as string));
+                  setAlertMessage("Public key copied to clipboard");
+                  setAlertSeverity("success");
+                  setShowAlert(true);
+                }}
+              >
+                copy
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ marginLeft: 2, marginTop: 1 }}
+                onClick={() => {
+                  resetInvitation();
+                }}
+              >
+                reset
+              </Button>
+            </div>
+          </div>
+          }
             {userRole === "ADMIN" && <form id="emailForm" 
               onSubmit={submitHandler} 
-              className="row"
+              className="row marginTopMedium"
             >
               <TextField 
                 required 
@@ -272,7 +341,7 @@ export default function AppsPage() {
               })}
             </TableBody>
           </Table>
-          {data.length == 0 && (
+          {userData.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
         </div>
