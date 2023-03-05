@@ -13,7 +13,7 @@ export default async function handler(
     
     const data = req.body;
 
-    const { email, password, passwordOld, firstName, lastName } = data;
+    const { email, password, firstName, lastName } = data;
 
     switch(req.method) {
         case 'POST':
@@ -41,7 +41,10 @@ export default async function handler(
 
             const lookupUser = await prisma.user.findFirst({
                 where: {
-                    email: email
+                    email: email,
+                    NOT: {
+                        isDeleted: true,
+                    }
                 }
             });
             
@@ -97,7 +100,10 @@ export default async function handler(
 
             const userFromDb = await prisma.user.findFirst({
                 where: {
-                    email: userEmail
+                    email: userEmail,
+                    NOT: {
+                        isDeleted: true,
+                    }
                 }
             });
 

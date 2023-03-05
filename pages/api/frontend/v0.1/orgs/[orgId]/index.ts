@@ -26,7 +26,10 @@ export default async function handler(
 
     const user = await prisma.user.findFirst({
         where: {
-            email: email
+            email: email,
+            NOT: {
+                isDeleted: true,
+            }
         }
     });
 
@@ -92,7 +95,7 @@ export default async function handler(
                         orgId: Number(req.query.orgId)
                     }
                 });
-                
+
                 const deletedOrg = await prisma.organisation.delete({
                     where: {
                         id: Number(req.query.orgId)

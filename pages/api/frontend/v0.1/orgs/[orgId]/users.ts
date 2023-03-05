@@ -27,7 +27,10 @@ export default async function handler(
 
     const user = await prisma.user.findFirst({
         where: {
-            email: email
+            email: email,
+            NOT: {
+                isDeleted: true,
+            }
         }
     });
 
@@ -75,9 +78,9 @@ export default async function handler(
             res.status(200).json(
                 usersInOrg.map((userInOrg): UserDto => {
                   return {
-                    firstName: userInOrg.user.firstName,
-                    lastName: userInOrg.user.lastName,
-                    email: userInOrg.user.email,
+                    firstName: userInOrg.user.firstName as string,
+                    lastName: userInOrg.user.lastName as string,
+                    email: userInOrg.user.email as string,
                     role: userInOrg.role,
                   };
                 })
@@ -142,7 +145,10 @@ export default async function handler(
 
                     const user = await prisma.user.findFirst({
                         where: {
-                            email: req.body.email
+                            email: req.body.email,
+                            NOT: {
+                                isDeleted: true,
+                            }
                         }
                     });
 

@@ -35,7 +35,10 @@ export default async function handler(
 
             const user = await prisma.user.findFirst({
                 where: {
-                    email: userEmail
+                    email: userEmail,
+                    NOT: {
+                        isDeleted: true,
+                    }
                 }
             });
                 
@@ -46,7 +49,10 @@ export default async function handler(
 
             const userWithNewEmail = await prisma.user.findFirst({
                 where: {
-                    email: emailNew
+                    email: emailNew,
+                    NOT: {
+                        isDeleted: true,
+                    }
                 }
             });
                 

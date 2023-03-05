@@ -24,14 +24,17 @@ export default NextAuth({
 
                 const user = await prisma.user.findFirst({
                     where: {
-                        email: credentials.email
+                        email: credentials.email,
+                        NOT: {
+                            isDeleted: true,
+                        }
                     }
                 });
 
                 if (!user) {
                     throw new Error('Wrong credentials!');
                 } else {
-                    const isValid = await verifyPassword(credentials.password.concat(user.salt), user.password);
+                    const isValid = await verifyPassword(credentials.password.concat(user.salt as string), user.password as string);
                     
                     if (!isValid) {
                         throw new Error('Wrong credentials!');

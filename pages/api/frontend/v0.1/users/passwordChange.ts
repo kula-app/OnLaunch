@@ -35,7 +35,10 @@ export default async function handler(
                 
             const user = await prisma.user.findFirst({
                 where: {
-                    email: userEmail
+                    email: userEmail,
+                    NOT: {
+                        isDeleted: true,
+                    }
                 }
             });
                 
@@ -44,7 +47,7 @@ export default async function handler(
                 return;
             }
 
-            if (!(await verifyPassword(passwordOld.concat(user.salt), user.password))) {
+            if (!(await verifyPassword(passwordOld.concat(user.salt), user.password as string))) {
                 res.status(400).json({ message: 'Current password is wrong!' });
                 return;
             }
