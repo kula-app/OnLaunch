@@ -144,7 +144,7 @@ export default function AppsPage() {
         });
       }
     
-      if (id === Number(userData?.find(i => i.email === session?.user.email)?.id)) {
+      if (id === Number(userData?.find(i => i.email === session?.user?.email)?.id)) {
         navigateToHome();
       } else {
 
@@ -412,7 +412,7 @@ export default function AppsPage() {
                     <TableCell>
                       {userRole === "ADMIN" && <div>
                         <Select 
-                          disabled={user.email === session?.user.email}
+                          disabled={user.email === session?.user?.email}
                           label="Role"
                           value={user.role}
                           onChange={event => handleRoleChange(index, event)}
@@ -423,7 +423,7 @@ export default function AppsPage() {
                             )
                           })}
                         </Select>  
-                        <Tooltip title={user.email === session?.user.email ? "leave organisation" : "remove from organisation"} >
+                        <Tooltip title={user.email === session?.user?.email ? "leave organisation" : "remove from organisation"} >
                           <IconButton onClick={() => removeUser(user.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
@@ -433,7 +433,7 @@ export default function AppsPage() {
                         <div>
                           {user.role.toLowerCase()}
                           
-                        {user.email === session?.user.email && <Tooltip title="leave organisation" >
+                        {user.email === session?.user?.email && <Tooltip title="leave organisation" >
                           <IconButton onClick={() => removeUser(user.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
