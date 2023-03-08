@@ -47,6 +47,7 @@ COPY pages  ./pages
 COPY public ./public
 COPY styles ./styles
 COPY util ./util
+COPY types ./types
 
 # ---- Development ----
 # build development server
