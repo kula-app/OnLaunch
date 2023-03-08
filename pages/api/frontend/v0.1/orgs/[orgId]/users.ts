@@ -25,26 +25,12 @@ export default async function handler(
         return;
     }
 
-    const email = session.user?.email as string;
-
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            NOT: {
-                isDeleted: true,
-            }
-        }
-    });
-
-    if (!user || ( user && !user.id)) {
-        res.status(400).json({ message: 'User not found!' });
-        return;
-    }
+    const id = session.user?.id;
     
     const userInOrg = await prisma.usersInOrganisations.findFirst({
         where: {
             user: {
-                id: user.id
+                id: Number(id)
             },
             org: {
                 id: Number(req.query.orgId)
@@ -140,6 +126,18 @@ export default async function handler(
                     });
 
                     if (user && user.id) {
+                        const searchUserAlreadyInOrganisation = await prisma.usersInOrganisations.findFirst({
+                            where: {
+                                userId: user.id,
+                                orgId: userInOrg?.orgId,
+                            }
+                        });
+
+                        if (searchUserAlreadyInOrganisation) {
+                            res.status(400).json({ message: 'user already in organisation!' });
+                            return;
+                        }
+
                         await prisma.userInvitationToken.updateMany({
                             where: {
                                 userId: userInOrg?.userId,

@@ -10,13 +10,11 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    
-    const data = req.body;
-
-    const { email, password, firstName, lastName } = data;
-
     switch(req.method) {
         case 'POST':
+            const data = req.body;
+
+            const { email, password, firstName, lastName } = data;
 
             if (process.env.SIGNUPS_ENABLED === "false") {
                 res
@@ -56,6 +54,7 @@ export default async function handler(
             }
 
             const { hashedSaltedPassword, salt } = await hashAndSaltPassword(password);
+
             const createdUser = await prisma.user.create({
                 data: {
                     email: email,
@@ -84,7 +83,6 @@ export default async function handler(
     
             sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY", "");
             
-
             res.status(201).json(email);
             break;
 
@@ -96,11 +94,9 @@ export default async function handler(
                 return;
             }
 
-            const userEmail = session.user?.email as string;
-
             const userFromDb = await prisma.user.findFirst({
                 where: {
-                    email: userEmail,
+                    id: Number(session.user.id),
                     NOT: {
                         isDeleted: true,
                     }
@@ -112,7 +108,7 @@ export default async function handler(
                 return;
             }
 
-            res.status(201).json({ email: userEmail, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
+            res.status(201).json({ email: userFromDb.email, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
             break;
         
         case 'DELETE':
@@ -200,6 +196,5 @@ export default async function handler(
         default:
             res.status(405).end('method not allowed');
             break;
-    }
-        
+    }   
 }

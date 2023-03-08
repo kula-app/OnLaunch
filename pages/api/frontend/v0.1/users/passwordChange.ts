@@ -24,7 +24,7 @@ export default async function handler(
                 return;
             }
 
-            const userEmail = session.user?.email as string;
+            const id = session.user?.id;
 
             if (!(await validatePassword(password))) {
                 res
@@ -35,7 +35,7 @@ export default async function handler(
                 
             const user = await prisma.user.findFirst({
                 where: {
-                    email: userEmail,
+                    id: Number(id),
                     NOT: {
                         isDeleted: true,
                     }

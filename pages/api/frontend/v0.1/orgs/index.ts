@@ -23,29 +23,14 @@ export default async function handler(
         return;
     }
     
-    const email = session.user?.email as string;
-
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            NOT: {
-                isDeleted: true,
-            }
-        }
-    });
-
-    if (!user || ( user && !user.id)) {
-        res.status(400).json({ message: 'User not found!' });
-        return;
-    }
+    const id = session.user?.id;
 
     switch (req.method) {
         case 'GET':
-
             const orgsForUser = await prisma.usersInOrganisations.findMany({
                 where: {
                     user: {
-                        id: user.id
+                        id: Number(id)
                     }
                 },
                 include: {
@@ -71,7 +56,7 @@ export default async function handler(
                 data: {
                     user: {
                         connect: {
-                            id: user.id
+                            id: Number(id)
                         }
                     },
                     role: 'ADMIN',

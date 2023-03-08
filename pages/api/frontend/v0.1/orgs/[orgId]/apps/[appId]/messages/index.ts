@@ -14,7 +14,6 @@ enum ButtonDesign {
   Filled = "FILLED",
 }
 
-
 type Action = {
     id: number;
     actionType: ActionType;
@@ -34,26 +33,12 @@ export default async function handler(
         return;
     }
 
-    const email = session.user?.email as string;
+    const id = session.user?.id;
 
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            NOT: {
-                isDeleted: true,
-            }
-        }
-    });
-
-    if (!user || ( user && !user.id)) {
-        res.status(400).json({ message: 'User not found!' });
-        return;
-    }
-    
     const userInOrg = await prisma.usersInOrganisations.findFirst({
         where: {
             user: {
-                id: user.id
+                id: Number(id)
             },
             org: {
                 id: Number(req.query.orgId)
@@ -66,7 +51,7 @@ export default async function handler(
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
         // if user has no business here, return a 404
-        res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
+        res.status(404).json({ message: 'organisation not found' });
         return;
     }
     

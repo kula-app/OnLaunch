@@ -12,6 +12,12 @@ export default NextAuth({
     pages: {
         signIn: '/auth',
     },
+    callbacks: {
+        async session({ session, token }) {
+              session.user.id = token.sub;
+              return session;
+        },
+    },
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -46,7 +52,7 @@ export default NextAuth({
 
                     return { id: user.id, email: user.email } as any;
                 }
-            },
+            }
         })
     ],
 });

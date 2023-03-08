@@ -22,21 +22,7 @@ export default async function handler(
         return;
     }
     
-    const email = session.user?.email as string;
-
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            NOT: {
-                isDeleted: true,
-            }
-        }
-    });
-
-    if (!user || ( user && !user.id)) {
-        res.status(400).json({ message: 'User not found!' });
-        return;
-    }
+    const id = session.user?.id;
 
     const organisation = await prisma.organisation.findFirst({
         where: {
@@ -63,7 +49,7 @@ export default async function handler(
             try {
                 await prisma.usersInOrganisations.create({
                     data: {
-                        userId: user.id,
+                        userId: id,
                         orgId: organisation.id,
                         role: "USER",
                     }

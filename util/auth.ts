@@ -1,5 +1,8 @@
 import { hash, genSalt, compare } from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { NextApiRequest } from 'next';
+import { getSession } from 'next-auth/react';
+
 var crypto = require('crypto');
 var base64url = require('base64url');
 
@@ -31,14 +34,6 @@ export async function verifyPassword(saltedPassword: string, hashedPassword: str
 
 export function generateToken() {
     return base64url(crypto.randomBytes(32));
-}
-
-export function checkIfUserInOrgIsUserOrAdmin() {
-    
-}
-
-export function checkIfUserHasSession() {
-    
 }
 
 export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string, misc: string) {

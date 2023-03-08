@@ -10,11 +10,9 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    
     const data = req.body;
 
     const { token, email, password } = data;
-
 
     switch(req.method) {
         case 'PUT':
