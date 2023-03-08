@@ -1,9 +1,12 @@
 import { hash, genSalt, compare } from 'bcrypt';
+import { PrismaClient } from '@prisma/client';
 var crypto = require('crypto');
 var base64url = require('base64url');
 
 const nodemailer = require("nodemailer");
 require('dotenv').config();
+
+const prisma = new PrismaClient()
 
 export async function hashAndSaltPassword(password: string) {
     const saltRounds = 10;
@@ -30,6 +33,14 @@ export function generateToken() {
     return base64url(crypto.randomBytes(32));
 }
 
+export function checkIfUserInOrgIsUserOrAdmin() {
+    
+}
+
+export function checkIfUserHasSession() {
+    
+}
+
 export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string, misc: string) {
     let transporter = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
@@ -40,14 +51,16 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
         }
     });
 
+    let baseUrl = process.env.NEXTAUTH_URL as string;
+
     switch (mailType) {
         case 'VERIFY':
             transporter.sendMail({
                 from: '"Flo Ho" <flo@onlaunch.com>',
                 to: email,
                 subject: 'Verify your OnLaunch account',
-                text: `Servas ${firstName}, please verify your OnLaunch account: <a href='localhost:3000/verify?token=${token}'>verify now</a>`,
-                html: `Servas <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='localhost:3000/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
+                text: `Servas ${firstName}, please verify your OnLaunch account: <a href='${baseUrl}/verify?token=${token}'>verify now</a>`,
+                html: `Servas <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='${baseUrl}/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
             });
             break;
 
@@ -56,8 +69,8 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
                     from: '"Flo Ho" <flo@onlaunch.com>',
                     to: email,
                     subject: 'Reset your OnLaunch password',
-                    text: `Servas ${firstName}, use this link to change your password within the next hour: <a href='localhost:3000/resetPassword?token=${token}'>reset now</a>`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='localhost:3000/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
+                    text: `Servas ${firstName}, use this link to change your password within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a>`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
                 });
                 break;
 
@@ -66,8 +79,8 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
                     from: '"Flo Ho" <flo@onlaunch.com>',
                     to: email,
                     subject: 'Verify your new OnLaunch email address',
-                    text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='localhost:3000/resetPassword?token=${token}'>verify now</a>`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='localhost:3000/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+                    text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>verify now</a>`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='${baseUrl}/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
                 });
                 break;
 
@@ -87,7 +100,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
                     to: email,
                     subject: 'You have a new invitation',
                     text: `Servas ${firstName}, you are now invited to an organisation`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='localhost:3000/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
+                    html: `Servas <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='${baseUrl}/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
                 });
                 break;
     }

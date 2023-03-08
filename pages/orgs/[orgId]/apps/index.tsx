@@ -91,6 +91,8 @@ export default function AppsPage() {
   if (!!userData) {
     userRole = userData.find(i => i.email === session?.user?.email)?.role as string;
   }
+
+  const baseUrl = window.location.origin;
   
   function navigateToEditAppPage(id: number) {
     router.push(`/orgs/${orgId}/apps/${id}/edit`);
@@ -212,6 +214,8 @@ export default function AppsPage() {
         setAlertMessage("User invited successfully!");
         setAlertSeverity("success");
         setShowAlert(true);
+
+        setUserEmail("");
 
         return response.json();
     })
@@ -338,15 +342,15 @@ export default function AppsPage() {
               disabled 
               label="Invitation link"
               id="invite" 
-              value={"localhost:3000/dashboard?invite=" + orgData?.invitationToken}
+              value={baseUrl + "/dashboard?invite=" + orgData?.invitationToken}
             />
             <div className="column">
               <Button
                 variant="contained"
                 sx={{ marginLeft: 5 }}
                 onClick={() => {
-                  navigator.clipboard.writeText("localhost:3000/dashboard?invite="+(orgData?.invitationToken as string));
-                  setAlertMessage("Public key copied to clipboard");
+                  navigator.clipboard.writeText(baseUrl + "/dashboard?invite="+(orgData?.invitationToken as string));
+                  setAlertMessage("Invitation link copied to clipboard");
                   setAlertSeverity("success");
                   setShowAlert(true);
                 }}
@@ -373,6 +377,7 @@ export default function AppsPage() {
                 required 
                 label="Email"
                 id="email" 
+                value={userEmail}
                 onChange={(event) => setUserEmail(event.target.value)}
               />
               <div className="addButton">
