@@ -1,6 +1,42 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// TODO: As we are going to release a new version of this schema, it is probably a good idea to squash all the migrations into a single one.
+//       Therefore delete the folder `migrations` and recreate it using the prisma commands.
+
+// TODO: In general add more documentation on what the fields are for.
+//       Example:
+// model VerificationToken {
+//      ...
+//      // Indicates that this token has been replaced with a newer one and therefore is invalid
+//      isObsolete Boolean  @default(false)
+//      ...
+// }
+
+// TODO: Personal opinion as a reference:
+// I tend to organise fields of a model by their purpose and general occurance.
+// e.g. `id`, `createdAt` and `updatedAt` are fields which are always there, therefore I group them at the beginning of the model.
+// Furthermore I group fields by their purpose, e.g. `firstName`, `lastName` and `birthday` are all fields related to user data, 
+// while `email`, `password` and `salt` are related to login.
+//
+// This helps to get an easier overview of a model. 
+//
+// Example:
+// 
+// model User {
+//   id: ...
+//   createdAt: ...
+//   updatedAt: ... 
+// 
+//   firstName: ...
+//   lastName: ...
+//   birthday: ...
+//
+//   email: ...
+//   password: ...
+//   salt: ...
+// }
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,12 +47,12 @@ datasource db {
 }
 
 enum ActionType {
-  DISMISS  @map("dismiss")
+  DISMISS @map("dismiss")
 }
 
 enum ButtonDesign {
-  TEXT        @map("text")
-  FILLED      @map("filled")
+  TEXT   @map("text")
+  FILLED @map("filled")
 }
 
 enum Role {
@@ -25,129 +61,138 @@ enum Role {
 }
 
 model Action {
-  id          Int          @id @default(autoincrement())
-  actionType  ActionType
-  buttonDesign    ButtonDesign
-  title       String
-  Message     Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  messageId   Int?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id           Int          @id @default(autoincrement())
+  actionType   ActionType
+  buttonDesign ButtonDesign
+  title        String
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  Message      Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId    Int?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Message {
-  id          Int         @id @default(autoincrement())
-  blocking    Boolean
-  title       String
-  body        String
-  actions     Action[]
-  startDate   DateTime
-  endDate     DateTime
-  App         App?        @relation(fields: [appId], references: [id], onDelete: Cascade)
-  appId       Int?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  blocking  Boolean
+  title     String
+  body      String
+  actions   Action[]
+  startDate DateTime
+  endDate   DateTime
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  App       App?     @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId     Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model App {
-  id          Int         @id @default(autoincrement())
-  name        String
-  messages    Message[]
-  Organisation  Organisation?        @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  orgId       Int?
-  publicKey   String      @unique
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           Int           @id @default(autoincrement())
+  name         String
+  messages     Message[]
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  Organisation Organisation? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId        Int?
+  publicKey    String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model User {
-  id          Int         @id @default(autoincrement())
-  firstName   String?
-  lastName    String?
-  email       String?
-  password    String?
-  salt        String?
-  isVerified  Boolean
-  isDeleted   Boolean     @default(false)
-  token       VerificationToken[]
+  id                  Int                    @id @default(autoincrement())
+  firstName           String?
+  lastName            String?
+  email               String?
+  password            String?
+  salt                String?
+  isVerified          Boolean
+  isDeleted           Boolean                @default(false)
+  token               VerificationToken[]
   passwordToken       PasswordResetToken[]
   emailChangeToken    EmailChangeToken[]
-  userInvitationToken     UserInvitationToken[]
-  orgs        UsersInOrganisations[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  userInvitationToken UserInvitationToken[]
+  orgs                UsersInOrganisations[]
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
 }
 
 model Organisation {
-  id          Int         @id @default(autoincrement())
-  name        String
-  invitationToken   String?    @unique
-  apps        App[]
-  users       UsersInOrganisations[]
-  userInvitationToken     UserInvitationToken[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                  Int                    @id @default(autoincrement())
+  name                String
+  // TODO: Why is the invitation token nullable?
+  invitationToken     String?                @unique
+  apps                App[]
+  users               UsersInOrganisations[]
+  userInvitationToken UserInvitationToken[]
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
 }
 
 model UsersInOrganisations {
-  org         Organisation    @relation(fields: [orgId], references: [id])
-  orgId       Int
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  role        Role
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  org       Organisation @relation(fields: [orgId], references: [id])
+  orgId     Int
+  user      User         @relation(fields: [userId], references: [id])
+  userId    Int
+  role      Role
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
   @@id([orgId, userId])
 }
 
 model VerificationToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  expiryDate DateTime
+  isArchived Boolean  @default(false)
+  isObsolete Boolean  @default(false)
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  User       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model PasswordResetToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  expiryDate DateTime
+  isArchived Boolean  @default(false)
+  isObsolete Boolean  @default(false)
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  User       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model EmailChangeToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  newEmail    String
-  currentEmail    String
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           Int      @id @default(autoincrement())
+  token        String   @unique
+  expiryDate   DateTime
+  newEmail     String
+  currentEmail String
+  isArchived   Boolean  @default(false)
+  isObsolete   Boolean  @default(false)
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  User         User     @relation(fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model UserInvitationToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  Organisation    Organisation    @relation(fields: [orgId], references: [id])
-  orgId       Int
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           Int          @id @default(autoincrement())
+  token        String       @unique
+  expiryDate   DateTime
+  isArchived   Boolean      @default(false)
+  isObsolete   Boolean      @default(false)
+  // TODO: all field types are lowercase, this one is PascalCase, change it to lowercase for consistency
+  Organisation Organisation @relation(fields: [orgId], references: [id])
+  orgId        Int
+  User         User         @relation(fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
