@@ -4,6 +4,7 @@ import { getSession, useSession } from 'next-auth/react';
 
 export default function Auth() {
     const { data: session, status } = useSession();
+    // TODO: loading is unused
     const loading = status === "loading";
 
   return (

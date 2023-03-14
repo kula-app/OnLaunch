@@ -12,6 +12,8 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
 
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+
 export default function ResetPasswordPage() {
   const router = useRouter();
 
@@ -22,6 +24,7 @@ export default function ResetPasswordPage() {
   const [validToken, setValidToken] = useState(false);
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
+  // TODO: use a clean variable name, like `confirmationPassword`
   const [password2, setPassword2] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
@@ -35,7 +38,6 @@ export default function ResetPasswordPage() {
     }
 
     function tokenHandler() {
-    
       fetch(RESET_TOKEN_API_URL + token, {
         method: "GET",
         headers: {
@@ -54,6 +56,7 @@ export default function ResetPasswordPage() {
           return response.json();
       })
       .catch(error => {
+        // TODO: error is not processed or displated
           setLoading(false);
       }); 
     }

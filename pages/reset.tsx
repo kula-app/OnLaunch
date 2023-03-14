@@ -12,6 +12,8 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+
 const PASSWORD_TOKEN_API_URL = "/api/frontend/v0.1/tokens/resetPassword/";
 
 async function passwordResetRequest(email: string) {
@@ -52,6 +54,7 @@ export default function ResetPage() {
     event.preventDefault();
 
     try {
+        // TODO: remove unused variables
         const result = await passwordResetRequest(email);
         
         setSentMail(true);

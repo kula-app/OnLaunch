@@ -12,9 +12,13 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
+// TODO: move shared interfaces to own files.
+//       As this is a partial interface of the full Org interface (ie. only name without anything else), consider using the type `Partial<Org>` instead of creating a different interface
 interface Org {
   name: string;
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function NewOrgPage() {
   const router = useRouter();

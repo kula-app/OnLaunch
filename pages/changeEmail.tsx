@@ -9,7 +9,10 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
+// TODO: getSession is unused
 import { useSession, signOut, getSession } from 'next-auth/react';
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -31,6 +34,7 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token && !loading) {
+      // TODO: why is tokenHandler nested in a function?
       tokenHandler();
     }
 

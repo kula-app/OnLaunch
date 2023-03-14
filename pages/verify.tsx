@@ -11,6 +11,8 @@ import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
 
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+
 export default function VerifyPage() {
   const router = useRouter();
 
@@ -29,6 +31,7 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
+      // TODO: why is tokenHandler nested in a function?
       tokenHandler();
     }
 

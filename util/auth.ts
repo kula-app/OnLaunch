@@ -38,6 +38,7 @@ export function generateToken() {
     return base64url(crypto.randomBytes(32));
 }
 
+// TODO: create an enum for the `mailType`
 export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string, misc: string) {
     let transporter = nodemailer.createTransport({
         // TODO: This value must be configurable via the environment

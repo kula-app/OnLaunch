@@ -10,7 +10,7 @@ export default async function handler(
 ) {
     switch (req.method) {
         case 'GET':
-            
+            // TODO: how is this validating the token? 
             const resetToken = await prisma.passwordResetToken.findFirst({
                 where: {
                     token: req.query.token as string

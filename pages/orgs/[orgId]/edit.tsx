@@ -12,10 +12,13 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
+// TODO: See `new.tsx` about partial types
 interface Org {
   name: string;
   id: number;
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -38,6 +41,7 @@ export default function EditOrgPage() {
 
     fetch(ORGS_API_URL + orgId)
     .then((response) => {
+        // TODO: unify duplicate code `response.json()`
         if(!response.ok) {
             return response.json().then(error => {
                 throw new Error(error.message);
@@ -77,6 +81,7 @@ export default function EditOrgPage() {
         "Content-Type": "application/json",
     },
     }).then((response) => {
+        // TODO: unify duplicate code `response.json()`
         if(!response.ok) {
             return response.json().then(error => {
                 throw new Error(error.message);

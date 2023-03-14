@@ -31,6 +31,8 @@ import type { AlertColor } from '@mui/material/Alert';
 import TextField from "@mui/material/TextField";
 import { SelectChangeEvent } from "@mui/material";
 
+// TODO: see org/new.tsx about partial types
+
 interface App {
   name: string;
   id: number;
@@ -50,6 +52,8 @@ interface Org {
   name: string;
   role: string;
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function AppsPage() {
   const router = useRouter();

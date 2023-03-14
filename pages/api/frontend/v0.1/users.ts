@@ -10,12 +10,16 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    // TODO: remove duplicate code, e.g. `const session = await getSession({ ... })`
+    
     switch(req.method) {
+        // TODO: instead of creating user via POST /users, it might be clearer for maintenance to use POST /auth/register
         case 'POST':
             const data = req.body;
 
             const { email, password, firstName, lastName } = data;
 
+            // TODO: we should consider proxying all the environment flags with a configuration class
             if (process.env.SIGNUPS_ENABLED === "false") {
                 res
                     .status(405)

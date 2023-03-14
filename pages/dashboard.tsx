@@ -27,6 +27,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+// TODO: move interfaces into own files, if they are reused in multiple pages
 interface Organisation {
   name: string;
   id: number;
@@ -46,6 +47,7 @@ export default function DashboardPage() {
 
   const { invite, directinvite } = router.query;
 
+  // TODO: These API URLs might be reused, move them to a shared class
   const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
   const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
   const DIRECT_INVITE_API_URL = "/api/frontend/v0.1/tokens/directInvitation/";
@@ -73,6 +75,8 @@ export default function DashboardPage() {
       inviteHandler();
     }
 
+    // TODO: consider moving the API communication into own files, so they are reusable and testable.
+    //       this also separates UI from business logic, which is standard practice.
     function inviteHandler() {
       fetch(tokenUrl + token, {
         method: "GET",
@@ -104,12 +108,17 @@ export default function DashboardPage() {
     router.push(`/orgs/${id}/apps`);
   }
 
+  // TODO: Create a reusable fetcher class, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/useApp.ts
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
   const { data, error, mutate } = useSWR<Organisation[]>(ORGS_API_URL, fetcher);
   if (error) return <div>Failed to load</div>;
+  // TODO: Instead of using checking if data is not available, use the `isLoading` flag returned by useSWR and display both, 
+  //       the data and the loading indicator at the same time
   if (!data) return <div>Loading...</div>;
-  
+
+  // TODO: it might be smart idea to move all the route strings into a shared class in its own file, e.g. AppRoutes, so when moving a page, the paths are updated
+  //       everywhere in the application.
   function navigateToEditOrgPage(id: number) {
     router.push(`/orgs/${id}/edit`);
   }
@@ -128,6 +137,7 @@ export default function DashboardPage() {
   }
 
   function deleteOrg(id: number) {
+    // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
     fetch(ORGS_API_URL + id, {
       method: "DELETE",
     }).then(response => {
@@ -153,6 +163,7 @@ export default function DashboardPage() {
   }
 
   function joinOrg(id: number) {
+    // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
     fetch(tokenUrl + token, {
       method: "POST",
     }).then(response => {

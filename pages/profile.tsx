@@ -17,6 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+// TODO: move interfaces into own files, if they are reused in multiple pages
 interface User {
   email: string;
   firstName: string;
@@ -26,8 +27,10 @@ interface User {
 export default function ProfilePage() {
   const router = useRouter();
   
+  // TODO: status is unused
   const { data: session, status } = useSession();
 
+  // TODO: These API URLs might be reused, move them to a shared class
   const USERS_API_URL = "/api/frontend/v0.1/users/";
   const PASSWORD_API_URL = "/api/frontend/v0.1/users/passwordChange";
   const EMAIL_API_URL = "/api/frontend/v0.1/users/emailChange";
@@ -36,6 +39,7 @@ export default function ProfilePage() {
 
   const [passwordOld, setPasswordOld] = useState("");
   const [password, setPassword] = useState("");
+  // TODO: use a good variable name like `confirmationPassword` or similar
   const [password2, setPassword2] = useState("");
 
   const [emailNew, setEmailNew] = useState("");
@@ -47,6 +51,8 @@ export default function ProfilePage() {
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // TODO: see `dashboard.tsx` for all the comments about API communication
+    
   useEffect(() => {
     if (!router.isReady) return;
 

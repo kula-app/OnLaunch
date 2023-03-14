@@ -1,3 +1,5 @@
+// TODO: remove this page if unused
+
 export default function About() {
   return (
     <>

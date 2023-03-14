@@ -26,6 +26,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseDto[]>
 ) {
+  // TODO: is this the cleanest solution for parameter validation available for Next.JS?
   if (req.query.appId == null) {
     res.status(405).end("parameter AppId needed");
   }

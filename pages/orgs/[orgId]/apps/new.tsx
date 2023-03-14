@@ -9,18 +9,20 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+// TODO: see org/new.tsx for partial interfaces
 
 interface App {
   name: string;
   orgId: number;
 }
 
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+
 export default function NewAppPage() {
   const router = useRouter();
 
   const { data: session, status } = useSession();
+  // TODO: loading is unused
   const loading = status === "loading";
 
   const orgId = router.query.orgId;

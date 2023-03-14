@@ -24,6 +24,8 @@ import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 
+// TODO: see orgs/new.tsx for partial types
+
 type Action = {
   actionType: string;
   buttonDesign: string;
@@ -40,6 +42,8 @@ interface Message {
   appId: number;
   actions: Action[];
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();

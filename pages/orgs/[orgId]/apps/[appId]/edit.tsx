@@ -9,13 +9,14 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+// TODO: see org/new.tsx for partial types
 
 interface App {
   name: string;
   id: number;
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditAppPage() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function EditAppPage() {
         setAlertMessage(`Error while fetching message: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
-    });
+    // TODO: missing some dependencies in here
   }, [router.isReady]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {

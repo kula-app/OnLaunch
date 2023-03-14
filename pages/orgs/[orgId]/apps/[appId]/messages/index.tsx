@@ -28,6 +28,8 @@ import type { AlertColor } from '@mui/material/Alert';
 import { getSession, useSession } from 'next-auth/react';
 import { TextField } from "@mui/material";
 
+// TODO: see org/new.tsx for partial types
+
 interface Action {
   title: string;
 }
@@ -49,6 +51,8 @@ interface App {
   publicKey: string;
   messages: Message[];
 }
+
+// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
