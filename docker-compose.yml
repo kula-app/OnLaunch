@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
@@ -8,4 +8,10 @@ services:
       POSTGRES_USER: onlaunch
       POSTGRES_PASSWORD: password
     ports:
-      - '5432:5432'
+      - 5432:5432
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - 1025:1025
+      - 8025:8025
