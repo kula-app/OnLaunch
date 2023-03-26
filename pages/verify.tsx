@@ -10,29 +10,31 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
+import { useCallback } from 'react';
 
 export default function VerifyPage() {
   const router = useRouter();
 
-  const { signup, token } = router.query;
+  const { signup, token, email } = router.query;
 
   const VERIFICATION_TOKEN_API_URL = "/api/frontend/v0.1/tokens/verification/";
   
   const [verified, setVerified] = useState(false);
   const [expired, setExpired] = useState(false);
   const [obsolete, setObsolete] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
   
+  const navigateToAuthPage = useCallback(() => {
+    router.push(`/auth`);
+  }, [router]);
+
   useEffect(() => {
     if (!router.isReady) return;
-    if (!!token) {
-      tokenHandler();
-    }
-
-    function tokenHandler() {
+    if (!!token && !signup) {
       fetch(VERIFICATION_TOKEN_API_URL, {
         method: "PUT",
         body: JSON.stringify({ token: token }),
@@ -55,6 +57,8 @@ export default function VerifyPage() {
           setExpired(true);
         } else if (error.message.includes('obsolete')) {
           setObsolete(true);
+        } else if (error.message.includes('already verified')) {
+          navigateToAuthPage();
         } else {
           setAlertMessage(`Error while verifying: ${error.message}`);
           setAlertSeverity("error");
@@ -62,19 +66,45 @@ export default function VerifyPage() {
         }
       }); 
     }
-  }, [router.isReady, token]);
+
+  }, [router.isReady, token, signup, email, navigateToAuthPage]);
     
-  function navigateToAuthPage() {
-    router.push(`/auth`);
+  function resendLink() {
+    fetch(VERIFICATION_TOKEN_API_URL, {
+      method: "POST",
+      body: JSON.stringify({ email: email }),
+      headers: {
+          "Content-Type": "application/json",
+      },
+    }).then((response) => {
+        if(!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+
+        setAlertMessage(`Link was successfully resend!`);
+        setAlertSeverity("success");
+        setShowAlert(true);
+  
+        return response.json();
+    })
+    .catch(error => {
+      setAlertMessage(`Error while resending link: ${error.message}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }); 
+
+    setDisabled(true);
   }
 
   return (
     <>
       <Navbar hasSession={false} />
       <main className={styles.main}>
-        {(signup && !expired) && <div>
+        {((signup || email) && !expired) && <div>
           <h1 className="centeredElement">Verify your account</h1>
-          <div>You should receive a mail within the next minutes with the verification link!</div>
+          <div>Please check your mails for the verification link!</div>
         </div>
         }
         {(verified && !expired) && <div className="centeredElement column">
@@ -90,7 +120,7 @@ export default function VerifyPage() {
             </Button>
         </div>
         }
-        {(!signup && !verified && expired) && <div className="centeredElement column">
+        {(!signup && !verified && expired && !obsolete) && <div className="centeredElement column">
           <h1 className="centeredElement">Link is expired!</h1>
           <div>No worries, we already sent you a new one
           </div>
@@ -102,9 +132,30 @@ export default function VerifyPage() {
           </div>
         </div>
         }
-        {(!verified && !signup && !expired && !obsolete) && <div>
+        {(!verified && !signup && !expired && !obsolete && !email) && <div>
           <h1>loading ...</h1>
         </div> 
+        }
+        {(!signup && !verified && !!email && !disabled) && 
+          <Button 
+            variant="contained" 
+            type="button"
+            className="marginTopMedium"
+            onClick={() => resendLink()}
+            >
+              resend link
+          </Button>
+        }
+        {(!signup && !verified && !!email && disabled) && 
+          <Button 
+            variant="contained" 
+            type="button"
+            className="marginTopMedium"
+            disabled
+            onClick={() => resendLink()}
+            >
+              resend link
+          </Button>
         }
       </main>
       <Snackbar 

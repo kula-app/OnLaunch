@@ -58,6 +58,10 @@ export default function AuthForm() {
     function navigateToVerifyPage() {
         router.replace(`/verify?signup=true`);
     } 
+    
+    function navigateToVerifyPageWithEmail(email: string) {
+        router.replace(`/verify?email=${email}`);
+    } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -70,7 +74,7 @@ export default function AuthForm() {
             })
             if (result && result.error) {
                 if (result.error === "Verify account!") {
-                    navigateToVerifyPage();
+                    navigateToVerifyPageWithEmail(email);
                 }
                 setAlertMessage(`Error while logging in: ${result.error}`);
                 setAlertSeverity("error");
@@ -82,7 +86,6 @@ export default function AuthForm() {
             try {
                 const result = await createUser(email, password, firstName, lastName);
                 navigateToVerifyPage();
-                
                 
             } catch (error) {
                 setAlertMessage(`Error while creating user: ${error}`);
