@@ -31,10 +31,6 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
-      tokenHandler();
-    }
-
-    function tokenHandler() {
       fetch(ApiRoutes.getPasswordResetByToken(token as string), {
         method: "GET",
         headers: {
@@ -52,8 +48,7 @@ export default function ResetPasswordPage() {
     
           return response.json();
       })
-      .catch(error => {
-        // TODO: error is not processed or displated
+      .catch(() => {
           setLoading(false);
       }); 
     }

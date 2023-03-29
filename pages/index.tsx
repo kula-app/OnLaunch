@@ -18,7 +18,7 @@ export default function IndexPage() {
 
   return (
     <>
-      {/* TODO: add a short message like 'Redirecting...', so in case something went wrong the page is not blank */}
+      <h1>redirecting ...</h1>
     </>
   );
 }

@@ -9,8 +9,7 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
-// TODO: getSession is unused
-import { useSession, signOut, getSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import Routes from "../routes/routes";
 import ApiRoutes from "../routes/apiRoutes";
 
@@ -23,11 +22,8 @@ export default function ResetPasswordPage() {
   const loading = status === "loading"
 
   const { token } = router.query;
-
-  const EMAIL_API_URL = "/api/frontend/v0.1/users/emailChange";
   
   const [emailChanged, setEmailChanged] = useState(false);
-
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -36,12 +32,6 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token && !loading) {
-      // TODO: why is tokenHandler nested in a function?
-      tokenHandler();
-    }
-
-    function tokenHandler() {
-    
       fetch(ApiRoutes.EMAIL_CHANGE, {
         method: "PUT",
         body: JSON.stringify({ token: token }),
