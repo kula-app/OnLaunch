@@ -9,6 +9,7 @@ import type { AlertColor } from '@mui/material/Alert';
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
+import Routes from '../routes/routes';
 
 const USERS_API_URL = "/api/frontend/v0.1/users/";
 
@@ -48,15 +49,15 @@ export default function AuthForm() {
     }
     
     function navigateToHomePage() {
-        router.replace(`/`);
+        router.replace(Routes.index);
     } 
     
     function navigateToPasswordResetPage() {
-        router.replace(`/reset`);
+        router.replace(Routes.reset);
     } 
     
     function navigateToVerifyPage() {
-        router.replace(`/verify?signup=true`);
+        router.replace(`${Routes.verify}?signup=true`);
     } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {

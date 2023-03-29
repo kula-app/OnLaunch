@@ -12,6 +12,7 @@ import Link from "next/link";
 import Button from "@mui/material/Button";
 import { signOut } from 'next-auth/react';
 import { useRouter } from "next/router";
+import Routes from "../routes/routes";
 
 interface Props {
   /**
@@ -30,7 +31,7 @@ export default function Navbar(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function navigateToAuthPage() {
-    router.push(`/auth`);
+    router.push(Routes.auth);
   }
 
   const handleDrawerToggle = () => {

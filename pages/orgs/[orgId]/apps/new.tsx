@@ -9,6 +9,9 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../../../routes/routes";
 // TODO: see org/new.tsx for partial interfaces
 
 interface App {
@@ -25,7 +28,7 @@ export default function NewAppPage() {
   // TODO: loading is unused
   const loading = status === "loading";
 
-  const orgId = router.query.orgId;
+  const orgId = Number(router.query.orgId);
 
   const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
 
@@ -37,7 +40,7 @@ export default function NewAppPage() {
 
 
   function navigateToAppsPage() {
-    router.push(`/orgs/${orgId}/apps/`);
+    router.push(Routes.getOrgAppsByOrgId(orgId));
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -46,7 +49,7 @@ export default function NewAppPage() {
     // load data from form
     let app: App = {
         name: appName,
-        orgId: Number(orgId),
+        orgId: orgId,
     };
 
     // make POST http request

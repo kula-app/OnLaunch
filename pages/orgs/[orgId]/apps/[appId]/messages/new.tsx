@@ -20,6 +20,9 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
+import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../../../../../routes/routes";
 // TODO: see org/new.tsx for partial types
 
 type Action = {
@@ -50,8 +53,8 @@ export default function NewMessageForAppPage() {
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["TEXT", "FILLED"];
 
-  const orgId = router.query.orgId;
-  const appId = router.query.appId;
+  const orgId = Number(router.query.orgId);
+  const appId = Number(router.query.appId);
   
   const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
@@ -69,7 +72,7 @@ export default function NewMessageForAppPage() {
   const [endDate, setEndDate] = useState("");
 
   function navigateToAppMessagesPage() {
-    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/`);
+    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -82,7 +85,7 @@ export default function NewMessageForAppPage() {
         blocking: switchValue,
         startDate: startDate,
         endDate: endDate,
-        appId: Number(router.query.appId),
+        appId: appId,
         actions: actions,
     };
 

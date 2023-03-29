@@ -9,6 +9,9 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import type { AlertColor } from '@mui/material/Alert';
+import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../../../../routes/routes";
 // TODO: see org/new.tsx for partial types
 
 interface App {
@@ -60,8 +63,8 @@ export default function EditAppPage() {
         setAlertMessage(`Error while fetching message: ${error.message}`);
         setAlertSeverity("error");
         setShowAlert(true);
-    // TODO: missing some dependencies in here
-  }, [router.isReady]);
+    });
+  }, [router.isReady, APPS_API_URL, appId]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,7 +106,7 @@ export default function EditAppPage() {
   }
   
   function navigateToAppsPage() {
-    router.push(`/orgs/${orgId}/apps/`);
+    router.push(Routes.getOrgAppsByOrgId(Number(orgId)));
   } 
 
   function fillForm(app: App) {

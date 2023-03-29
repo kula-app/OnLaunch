@@ -30,6 +30,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 import TextField from "@mui/material/TextField";
 import { SelectChangeEvent } from "@mui/material";
+import Routes from "../../../../routes/routes";
 
 // TODO: see org/new.tsx about partial types
 
@@ -58,7 +59,7 @@ interface Org {
 export default function AppsPage() {
   const router = useRouter();
   
-  const orgId = router.query.orgId;
+  const orgId = Number(router.query.orgId);
 
   
   const roles = ["ADMIN", "USER"];
@@ -79,8 +80,8 @@ export default function AppsPage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  function navigateToMessagesPage(id: number) {
-    router.push(`/orgs/${orgId}/apps/${id}/messages`);
+  function navigateToMessagesPage(appId: number) {
+    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   }
 
   // @ts-ignore
@@ -98,16 +99,16 @@ export default function AppsPage() {
 
   const baseUrl = window.location.origin;
   
-  function navigateToEditAppPage(id: number) {
-    router.push(`/orgs/${orgId}/apps/${id}/edit`);
+  function navigateToEditAppPage(appId: number) {
+    router.push(Routes.editAppForOrgIdAndAppId(orgId, appId));
   }
 
   function navigateToHome() {
-    router.push("/");
+    router.push(Routes.index);
   }
 
   function navigateToNewAppPage() {
-    router.push(`/orgs/${orgId}/apps/new`);
+    router.push(Routes.createNewAppForOrgId(orgId));
   }
 
   function handleDelete(id: number) {

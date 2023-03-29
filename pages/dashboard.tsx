@@ -26,6 +26,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Routes from "../routes/routes";
 
 // TODO: move interfaces into own files, if they are reused in multiple pages
 interface Organisation {
@@ -105,7 +106,7 @@ export default function DashboardPage() {
   }, [router.isReady, invite, directinvite, token, tokenUrl]);
 
   function navigateToAppsPage(id: number) {
-    router.push(`/orgs/${id}/apps`);
+    router.push(Routes.getOrgAppsByOrgId(id));
   }
 
   // TODO: Create a reusable fetcher class, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/useApp.ts
@@ -120,15 +121,15 @@ export default function DashboardPage() {
   // TODO: it might be smart idea to move all the route strings into a shared class in its own file, e.g. AppRoutes, so when moving a page, the paths are updated
   //       everywhere in the application.
   function navigateToEditOrgPage(id: number) {
-    router.push(`/orgs/${id}/edit`);
+    router.push(Routes.editOrgById(id));
   }
 
   function navigateToNewOrgPage() {
-    router.push(`/orgs/new`);
+    router.push(Routes.createNewOrg);
   }
 
   function navigateToOrgPage(id: number) {
-    router.push(`/orgs/${id}/apps`);
+    router.push(Routes.getOrgAppsByOrgId(id));
   }
 
   function handleDelete(id: number) {

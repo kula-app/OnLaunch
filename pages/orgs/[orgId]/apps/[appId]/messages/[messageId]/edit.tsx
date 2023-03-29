@@ -23,6 +23,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../../../../../../routes/routes";
 
 // TODO: see orgs/new.tsx for partial types
 
@@ -54,8 +55,8 @@ export default function EditMessageOfAppPage() {
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["TEXT", "FILLED"];
 
-  const orgId = router.query.orgId;
-  const appId = router.query.appId;
+  const orgId = Number(router.query.orgId);
+  const appId = Number(router.query.appId);
 
   const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
@@ -66,7 +67,7 @@ export default function EditMessageOfAppPage() {
   const [actions, setActions] = useState<Action[]>([]);
 
   const [switchValue, setSwitchValue] = useState(false);
-  const messageId  = router.query.messageId;
+  const messageId  = Number(router.query.messageId);
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -111,13 +112,13 @@ export default function EditMessageOfAppPage() {
 
     // load data from form
     let message: Message = {
-      id: Number(router.query.messageId),
+      id: messageId,
       title: title,
       body: body,
       blocking: switchValue,
       startDate: startDate,
       endDate: endDate,
-      appId: Number(router.query.appId),
+      appId: appId,
       actions: actions,
     };
     
@@ -152,7 +153,7 @@ export default function EditMessageOfAppPage() {
   }
   
   function navigateToAppMessagesPage() {
-    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/`);
+    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   } 
 
   function fillForm(msg: Message) {

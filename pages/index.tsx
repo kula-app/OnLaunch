@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { getSession } from 'next-auth/react';
 import { useEffect } from "react";
+import Routes from "../routes/routes";
 
 export default function IndexPage() {
   const router = useRouter();
@@ -9,7 +10,7 @@ export default function IndexPage() {
     if (!router.isReady) return;
 
     function navigateToDashboardPage() {
-      router.push(`/dashboard`);
+      router.push(Routes.dashboard);
     }
 
     navigateToDashboardPage();

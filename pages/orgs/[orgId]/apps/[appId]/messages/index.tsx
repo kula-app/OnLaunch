@@ -27,6 +27,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession, useSession } from 'next-auth/react';
 import { TextField } from "@mui/material";
+import Routes from "../../../../../../routes/routes";
 
 // TODO: see org/new.tsx for partial types
 
@@ -60,8 +61,8 @@ export default function MessagesOfAppPage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
   
-  const orgId = router.query.orgId;
-  const appId = router.query.appId;
+  const orgId = Number(router.query.orgId);
+  const appId = Number(router.query.appId);
 
   const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
   const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
@@ -80,12 +81,12 @@ export default function MessagesOfAppPage() {
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
 
-  function navigateToEditMessagePage(id: number) {
-    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/${id}/edit`);
+  function navigateToEditMessagePage(messageId: number) {
+    router.push(Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId));
   }
 
   function navigateToNewMessagePage() {
-    router.push(`/orgs/${orgId}/apps/${router.query.appId}/messages/new`);
+    router.push(Routes.createNewMessageForOrgIdAndAppId(orgId, appId));
   }
 
   function handleDelete(id: number) {
