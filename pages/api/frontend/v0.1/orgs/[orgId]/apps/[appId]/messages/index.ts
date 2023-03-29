@@ -1,7 +1,7 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import { getSession } from 'next-auth/react';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -29,7 +29,7 @@ export default async function handler(
     const session = await getSession({ req: req });
 
     if (!session) {
-        res.status(401).json({ message: 'Not authorized!' });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
         return;
     }
 
@@ -51,7 +51,7 @@ export default async function handler(
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
         // if user has no business here, return a 404
-        res.status(404).json({ message: 'organisation not found' });
+        res.status(StatusCodes.NOT_FOUND).json({ message: 'organisation not found' });
         return;
     }
     
@@ -66,12 +66,12 @@ export default async function handler(
                 }
             })
 
-            res.status(200).json(allMessages);
+            res.status(StatusCodes.OK).json(allMessages);
             break;
 
         case 'POST':
             if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
-                res.status(400).json({ message: 'start date has to be before end date' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'start date has to be before end date' });
                 return;
             }
 
@@ -96,11 +96,11 @@ export default async function handler(
                 });
             }
 
-            res.status(201).json(message);
+            res.status(StatusCodes.CREATED).json(message);
             break;
 
         default:
-            res.status(405).json({ message: 'method not allowed' });
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).json({ message: 'method not allowed' });
             return;
     }
 }

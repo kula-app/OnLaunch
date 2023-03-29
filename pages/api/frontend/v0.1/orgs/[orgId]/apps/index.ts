@@ -1,8 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import { getSession } from 'next-auth/react';
 import { generateToken } from '../../../../../../../util/auth';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -19,7 +19,7 @@ export default async function handler(
     const session = await getSession({ req: req });
 
     if (!session) {
-        res.status(401).json({ message: 'Not authorized!' });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
         return;
     }
 
@@ -41,7 +41,7 @@ export default async function handler(
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
         // if user has no business here, return a 404
-        res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
+        res.status(StatusCodes.NOT_FOUND).json({ message: 'no organisation found with id ' + req.query.orgId });
         return;
     }
 
@@ -56,7 +56,7 @@ export default async function handler(
                 }
             })
 
-            res.status(200).json(
+            res.status(StatusCodes.OK).json(
                 allApps.map((app): AppDto => {
                   return {
                     id: app.id,
@@ -77,11 +77,11 @@ export default async function handler(
                     publicKey: generatedToken,
                 }
             })
-            res.status(201).json(app);
+            res.status(StatusCodes.CREATED).json(app);
             break;
 
         default:
-            res.status(405).json({ message: 'method not allowed' });
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).json({ message: 'method not allowed' });
             return;
     }
 }

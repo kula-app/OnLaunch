@@ -1,6 +1,6 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient();
 
@@ -26,9 +26,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseDto[]>
 ) {
-  // TODO: is this the cleanest solution for parameter validation available for Next.JS?
-  if (req.query.appId == null) {
-    res.status(405).end("parameter AppId needed");
+  if (!req.query.appId) {
+    res.status(StatusCodes.METHOD_NOT_ALLOWED).end("parameter AppId needed");
   }
   
   switch (req.method) {
@@ -36,7 +35,7 @@ export default async function handler(
       const publicKey = req.headers.publickey;
       
       if (!publicKey) {
-        res.status(400).end("no publicKey provided");
+        res.status(StatusCodes.BAD_REQUEST).end("no publicKey provided");
         return;
       }
       
@@ -47,7 +46,7 @@ export default async function handler(
       });
 
       if (!app) {
-        res.status(400).end("wrong publicKey provided");
+        res.status(StatusCodes.BAD_REQUEST).end("wrong publicKey provided");
         return;
       }
 
@@ -74,7 +73,7 @@ export default async function handler(
         },  
       });
 
-      res.status(200).json(
+      res.status(StatusCodes.OK).json(
         allMessages.map((message): ResponseDto => {
           return {
             id: message.id,
@@ -93,7 +92,7 @@ export default async function handler(
       break;
 
     default:
-      res.status(405).end("method not allowed");
+      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
       break;
   }
 }

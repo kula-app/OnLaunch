@@ -1,6 +1,6 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -18,20 +18,20 @@ export default async function handler(
             });
 
             if (resetToken == null) {
-                res.status(404).json({ message: 'no token found that looks like this: ' + req.query.token });
+                res.status(StatusCodes.NOT_FOUND).json({ message: 'no token found that looks like this: ' + req.query.token });
                 return;
             }
 
             if (resetToken && (resetToken.isArchived || resetToken.isObsolete || resetToken.expiryDate < new Date())) {
-                res.status(404).json({ message: 'no token found that looks like this: ' + req.query.token });
+                res.status(StatusCodes.NOT_FOUND).json({ message: 'no token found that looks like this: ' + req.query.token });
                 return;
             }
 
-            res.status(200).json(resetToken);
+            res.status(StatusCodes.OK).json(resetToken);
             break;
 
         default:
-            res.status(405).json({ message: 'method not allowed' });
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).json({ message: 'method not allowed' });
             return;
     }
 }

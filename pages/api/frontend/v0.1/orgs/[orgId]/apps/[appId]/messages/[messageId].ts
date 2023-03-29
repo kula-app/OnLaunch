@@ -1,7 +1,7 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, Prisma } from '@prisma/client'
 import { getSession } from 'next-auth/react';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -24,7 +24,7 @@ export default async function handler(
     const session = await getSession({ req: req });
 
     if (!session) {
-        res.status(401).json({ message: 'Not authorized!' });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
         return;
     }
 
@@ -46,7 +46,7 @@ export default async function handler(
 
     if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
         // if user has no business here, return a 404
-        res.status(404).json({ message: 'no organisation found with id ' + req.query.orgId });
+        res.status(StatusCodes.NOT_FOUND).json({ message: 'no organisation found with id ' + req.query.orgId });
         return;
     }
 
@@ -62,11 +62,11 @@ export default async function handler(
             });
 
             if (message == null) {
-                res.status(404).json({ message: 'no message found with id ' + req.query.messageId });
+                res.status(StatusCodes.NOT_FOUND).json({ message: 'no message found with id ' + req.query.messageId });
                 return;
             }
 
-            res.status(200).json(message)
+            res.status(StatusCodes.OK).json(message)
             break
 
         case 'DELETE':
@@ -83,10 +83,10 @@ export default async function handler(
                     }
                 });
 
-                res.status(200).json(deletedMessage)
+                res.status(StatusCodes.OK).json(deletedMessage)
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).json({ message: 'no message found with id ' + req.query.messageId });
+                    res.status(StatusCodes.NOT_FOUND).json({ message: 'no message found with id ' + req.query.messageId });
                     return;
                 }
             }
@@ -95,7 +95,7 @@ export default async function handler(
         case 'PUT':
             try {
                 if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
-                    res.status(400).json({ message: 'start date has to be before end date' });
+                    res.status(StatusCodes.BAD_REQUEST).json({ message: 'start date has to be before end date' });
                     return;
                 }
 
@@ -129,17 +129,17 @@ export default async function handler(
                     });
                 }
 
-                res.status(201).json(updatedMessage);
+                res.status(StatusCodes.CREATED).json(updatedMessage);
             } catch(e) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                    res.status(404).json({ message: 'no message found with id ' + req.query.messageId });
+                    res.status(StatusCodes.NOT_FOUND).json({ message: 'no message found with id ' + req.query.messageId });
                     return;
                 }
             }
             break;
 
         default:
-            res.status(405).json({ message: 'method not allowed' });
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).json({ message: 'method not allowed' });
             return;
     }
 }

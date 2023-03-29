@@ -2,9 +2,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail, hashAndSaltPassword, validatePassword } from '../../../../../util/auth';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
-
 
 export default async function handler(
     req: NextApiRequest,
@@ -18,14 +18,14 @@ export default async function handler(
         case 'PUT':
             if (!token || !password) {
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'No token or token provided!'});
                 return;
             }
 
             if (!(await validatePassword(password))) {
                 res
-                    .status(422)
+                    .status(StatusCodes.UNPROCESSABLE_ENTITY)
                     .json({ message: 'Invalid data - password consists of less than 8 characters'});
                 return;
             }
@@ -38,14 +38,14 @@ export default async function handler(
                     
             if (!lookupToken) {
                 res
-                    .status(404)
+                    .status(StatusCodes.NOT_FOUND)
                     .json({ message: 'PasswordReset token not found!'});
                 return;
             }
         
             if (lookupToken && (lookupToken.isArchived || lookupToken.isObsolete || lookupToken.expiryDate < new Date())) {
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'Please restart the password reset process!'});
                 return;
             }
@@ -71,7 +71,7 @@ export default async function handler(
                 }
             });
 
-            res.status(200).json(updatedUser);
+            res.status(StatusCodes.OK).json(updatedUser);
             break;
 
         case 'POST':
@@ -85,7 +85,7 @@ export default async function handler(
             });
 
             if (!user || ( user && !user.id)) {
-                res.status(400).json({ message: 'User not found!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found!' });
                 return;
             }
 
@@ -115,11 +115,11 @@ export default async function handler(
 
             sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "RESET_PASSWORD", "");
             
-            res.status(200).json(user);
+            res.status(StatusCodes.OK).json(user);
             break;
 
         default:
-            res.status(405).end('method not allowed');
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end('method not allowed');
             break;
     }
         

@@ -1,8 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { hashAndSaltPassword, validatePassword, verifyPassword } from '../../../../../util/auth';
 import { getSession } from 'next-auth/react';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -20,7 +20,7 @@ export default async function handler(
             const session = await getSession({ req: req });
 
             if (!session) {
-                res.status(401).json({ message: 'Not authorized!' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
                 return;
             }
 
@@ -28,7 +28,7 @@ export default async function handler(
 
             if (!(await validatePassword(password))) {
                 res
-                    .status(422)
+                    .status(StatusCodes.UNPROCESSABLE_ENTITY)
                     .json({ message: 'Invalid data - new password consists of less than 8 characters'});
                 return;
             }
@@ -43,13 +43,13 @@ export default async function handler(
             });
                 
             if (!user || ( user && !user.id)) {
-                res.status(400).json({ message: 'User not found!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found!' });
                 return;
             }
 
             // TODO: move the concat to the `verifyPassword` method
             if (!(await verifyPassword(passwordOld.concat(user.salt), user.password as string))) {
-                res.status(400).json({ message: 'Current password is wrong!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'Current password is wrong!' });
                 return;
             }
 
@@ -65,11 +65,11 @@ export default async function handler(
                 }
             });
 
-            res.status(201).json(createdUser.email);
+            res.status(StatusCodes.CREATED).json(createdUser.email);
             break;
 
         default:
-            res.status(405).end('method not allowed');
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end('method not allowed');
             break;
     }
         

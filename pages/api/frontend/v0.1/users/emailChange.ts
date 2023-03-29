@@ -1,8 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { getSession } from 'next-auth/react';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -20,13 +20,13 @@ export default async function handler(
             const session = await getSession({ req: req });
 
             if (!session) {
-                res.status(401).json({ message: 'Not authorized!' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
                 return;
             }
 
             if (!emailNew || !emailNew.includes('@')) {
                 res
-                    .status(422)
+                    .status(StatusCodes.UNPROCESSABLE_ENTITY)
                     .json({ message: 'Invalid data - email not valid'});
                     return;
             }
@@ -43,7 +43,7 @@ export default async function handler(
             });
                 
             if (!user || ( user && !user.id)) {
-                res.status(400).json({ message: 'User not found!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found!' });
                 return;
             }
 
@@ -57,7 +57,7 @@ export default async function handler(
             });
                 
             if (userWithNewEmail) {
-                res.status(400).json({ message: 'Email address not available!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'Email address not available!' });
                 return;
             }
 
@@ -89,7 +89,7 @@ export default async function handler(
 
             sendTokenPerMail(emailToken.newEmail as string, user.firstName as string, generatedToken, "CHANGE_EMAIL", "");
 
-            res.status(201).json(user.email);
+            res.status(StatusCodes.CREATED).json(user.email);
             break;
         
         case 'PUT':
@@ -101,14 +101,14 @@ export default async function handler(
                     
             if (!lookupToken) {
                 res
-                    .status(404)
+                    .status(StatusCodes.NOT_FOUND)
                     .json({ message: 'EmailChange token not found!'});
                 return;
             }
         
             if (lookupToken && (lookupToken.isArchived || lookupToken.isObsolete || lookupToken.expiryDate < new Date())) {
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'Verification token is obsolete!'});
                 return;
             }
@@ -133,11 +133,11 @@ export default async function handler(
                 }
             });
 
-            res.status(200).json(lookupToken.newEmail);
+            res.status(StatusCodes.OK).json(lookupToken.newEmail);
             break;
 
         default:
-            res.status(405).end('method not allowed');
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end('method not allowed');
             break;
     }
         

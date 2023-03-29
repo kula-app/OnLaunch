@@ -1,8 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { hashAndSaltPassword, validatePassword, generateToken, sendTokenPerMail } from '../../../../util/auth';
 import { getSession } from 'next-auth/react';
+import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
@@ -22,21 +22,21 @@ export default async function handler(
             // TODO: we should consider proxying all the environment flags with a configuration class
             if (process.env.SIGNUPS_ENABLED === "false") {
                 res
-                    .status(405)
+                    .status(StatusCodes.METHOD_NOT_ALLOWED)
                     .json({ message: 'Not allowed - signups are currently disabled!'});
                 return;
             }
 
             if (!email || !email.includes('@')) {
                 res
-                    .status(422)
+                    .status(StatusCodes.UNPROCESSABLE_ENTITY)
                     .json({ message: 'Invalid data - email not valid'});
                     return;
             }
 
             if (!(await validatePassword(password))) {
                 res
-                    .status(422)
+                    .status(StatusCodes.UNPROCESSABLE_ENTITY)
                     .json({ message: 'Invalid data - password consists of less than 8 characters'});
                 return;
             }
@@ -52,7 +52,7 @@ export default async function handler(
             
             if (lookupUser) {
                 res
-                    .status(409)
+                    .status(StatusCodes.CONFLICT)
                     .json({ message: 'Conflict - email already in use'});
                 return;
             }
@@ -87,14 +87,14 @@ export default async function handler(
     
             sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY", "");
             
-            res.status(201).json(email);
+            res.status(StatusCodes.CREATED).json(email);
             break;
 
         case 'GET':
             const session = await getSession({ req: req });
 
             if (!session) {
-                res.status(401).json({ message: 'Not authorized!' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
                 return;
             }
 
@@ -108,18 +108,18 @@ export default async function handler(
             });
 
             if (!userFromDb || ( userFromDb && !userFromDb.id)) {
-                res.status(400).json({ message: 'User not found!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found!' });
                 return;
             }
 
-            res.status(201).json({ email: userFromDb.email, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
+            res.status(StatusCodes.CREATED).json({ email: userFromDb.email, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
             break;
         
         case 'DELETE':
             const session2 = await getSession({ req: req });
 
             if (!session2) {
-                res.status(401).json({ message: 'Not authorized!' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
                 return;
             }
 
@@ -135,7 +135,7 @@ export default async function handler(
             });
 
             if (!userFromDb2 || ( userFromDb2 && !userFromDb2.id)) {
-                res.status(400).json({ message: 'User not found!' });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found!' });
                 return;
             }
 
@@ -168,7 +168,7 @@ export default async function handler(
             }));
             
             if (orgsToDeleteFirst.length) {
-                res.status(400).json({ message: 'You have to delete these organisations first: ' + JSON.stringify(orgsToDeleteFirst) });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: 'You have to delete these organisations first: ' + JSON.stringify(orgsToDeleteFirst) });
                 return;
             }
 
@@ -194,11 +194,11 @@ export default async function handler(
                 }
             });
 
-            res.status(201).json({ deletedUser });
+            res.status(StatusCodes.CREATED).json({ deletedUser });
             break;
 
         default:
-            res.status(405).end('method not allowed');
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end('method not allowed');
             break;
     }   
 }

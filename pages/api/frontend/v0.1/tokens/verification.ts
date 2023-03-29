@@ -1,13 +1,11 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
+import { StatusCodes } from 'http-status-codes';
 
-const nodemailer = require("nodemailer");
 require('dotenv').config();
 
 const prisma = new PrismaClient()
-
 
 export default async function handler(
     req: NextApiRequest,
@@ -20,7 +18,7 @@ export default async function handler(
 
     if (!token) {
         res
-            .status(400)
+            .status(StatusCodes.BAD_REQUEST)
             .json({ message: 'No token provided!'});
         return;
     }
@@ -36,21 +34,21 @@ export default async function handler(
                     
             if (!lookupToken) {
                 res
-                    .status(404)
+                    .status(StatusCodes.NOT_FOUND)
                     .json({ message: 'Verification token not found!'});
                 return;
             }
         
             if (lookupToken && lookupToken.isArchived) {
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'User already verified!'});
                 return;
             }
         
             if (lookupToken && lookupToken.isObsolete) {
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'Verification token is obsolete!'});
                 return;
             }
@@ -91,7 +89,7 @@ export default async function handler(
                 sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY", "");
                 
                 res
-                    .status(400)
+                    .status(StatusCodes.BAD_REQUEST)
                     .json({ message: 'Verification token expired!'});
                 return;
             }
@@ -114,11 +112,11 @@ export default async function handler(
                 }
             });
 
-            res.status(200).json(user.email);
+            res.status(StatusCodes.OK).json(user.email);
             break;
 
         default:
-            res.status(405).end('method not allowed');
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end('method not allowed');
             break;
     }
         
