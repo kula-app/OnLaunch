@@ -25,25 +25,8 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../../../../routes/routes";
 import ApiRoutes from "../../../../../../../routes/apiRoutes";
-
-// TODO: see orgs/new.tsx for partial types
-
-type Action = {
-  actionType: string;
-  buttonDesign: string;
-  title: string;
-};
-
-interface Message {
-  endDate: string;
-  startDate: string;
-  blocking: boolean;
-  body: string;
-  title: string;
-  id: number;
-  appId: number;
-  actions: Action[];
-}
+import { Message } from "../../../../../../../types/message";
+import { Action } from "../../../../../../../types/action";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -166,7 +149,9 @@ export default function EditMessageOfAppPage() {
     setEndDate(Moment(msg.endDate).format(
       "YYYY-MM-DDTHH:mm:ss"
     ));
-    setActions(msg.actions);
+    if (msg.actions) {
+      setActions(msg.actions);
+    }
   }
 
   

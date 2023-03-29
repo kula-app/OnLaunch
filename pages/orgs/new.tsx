@@ -14,12 +14,6 @@ import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../routes/routes";
 import ApiRoutes from "../../routes/apiRoutes";
 
-// TODO: move shared interfaces to own files.
-//       As this is a partial interface of the full Org interface (ie. only name without anything else), consider using the type `Partial<Org>` instead of creating a different interface
-interface Org {
-  name: string;
-}
-
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function NewOrgPage() {
@@ -41,15 +35,10 @@ export default function NewOrgPage() {
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // load data from form
-    let org: Org = {
-        name: orgName,
-    };
-
     // make POST http request
     fetch(ApiRoutes.ORGS, {
         method: "POST",
-        body: JSON.stringify(org),
+        body: JSON.stringify({ name: orgName }),
         headers: {
             "Content-Type": "application/json",
         },

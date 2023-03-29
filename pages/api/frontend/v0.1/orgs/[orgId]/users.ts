@@ -3,16 +3,9 @@ import { PrismaClient, Prisma } from '@prisma/client'
 import { getSession } from 'next-auth/react';
 import { generateToken, sendTokenPerMail } from '../../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
+import { UserDto } from '../../../../../../types/userDto';
 
 const prisma = new PrismaClient()
-
-interface UserDto {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  }
 
 export default async function handler(
     req: NextApiRequest,

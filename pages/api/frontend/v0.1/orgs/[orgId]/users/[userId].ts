@@ -5,14 +5,6 @@ import { StatusCodes } from 'http-status-codes';
 
 const prisma = new PrismaClient()
 
-interface UserDto {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  }
-
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse

@@ -32,28 +32,9 @@ import TextField from "@mui/material/TextField";
 import { SelectChangeEvent } from "@mui/material";
 import Routes from "../../../../routes/routes";
 import ApiRoutes from "../../../../routes/apiRoutes";
-
-// TODO: see org/new.tsx about partial types
-
-interface App {
-  name: string;
-  id: number;
-  role: string;
-}
-
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-}
-
-interface Org {
-  invitationToken: string;
-  name: string;
-  role: string;
-}
+import { App } from "../../../../types/app";
+import { User } from "../../../../types/user";
+import { Org } from "../../../../types/org";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -429,17 +410,17 @@ export default function AppsPage() {
                           })}
                         </Select>  
                         <Tooltip title={user.email === session?.user?.email ? "leave organisation" : "remove from organisation"} >
-                          <IconButton onClick={() => removeUser(user.id)}>
+                          <IconButton onClick={() => removeUser(Number(user.id))}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>
                       </div>}
                       {userRole === "USER" && 
                         <div>
-                          {user.role.toLowerCase()}
+                          {(user.role as string).toLowerCase()}
                           
                         {user.email === session?.user?.email && <Tooltip title="leave organisation" >
-                          <IconButton onClick={() => removeUser(user.id)}>
+                          <IconButton onClick={() => removeUser(Number(user.id))}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>}

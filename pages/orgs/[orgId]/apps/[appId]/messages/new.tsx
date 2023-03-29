@@ -24,24 +24,8 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../../../routes/routes";
 import ApiRoutes from "../../../../../../routes/apiRoutes";
-// TODO: see org/new.tsx for partial types
-
-type Action = {
-  actionType: string;
-  buttonDesign: string;
-  title: string;
-};
-
-interface Message {
-  endDate: string;
-  startDate: string;
-  blocking: boolean;
-  body: string;
-  title: string;
-  id?: number;
-  appId: number;
-  actions?: Action[];
-}
+import { Action } from "../../../../../../types/action";
+import { Message } from "../../../../../../types/message";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 

@@ -29,30 +29,8 @@ import { getSession, useSession } from 'next-auth/react';
 import { TextField } from "@mui/material";
 import Routes from "../../../../../../routes/routes";
 import ApiRoutes from "../../../../../../routes/apiRoutes";
-
-// TODO: see org/new.tsx for partial types
-
-interface Action {
-  title: string;
-}
-interface Message {
-  endDate: string;
-  startDate: string;
-  blocking: boolean;
-  body: string;
-  title: string;
-  id: number;
-  appId: number;
-  actions: Action[];
-}
-
-interface App {
-  name: string;
-  id: number;
-  role: string;
-  publicKey: string;
-  messages: Message[];
-}
+import { Message } from "../../../../../../types/message";
+import { App } from "../../../../../../types/app";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -90,11 +68,13 @@ export default function MessagesOfAppPage() {
 
   function handleDelete(messageId: number) {
     setMessageId(messageId);
-    const message = data?.messages.find(x => x.id == messageId);
-    if ( message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
+    if (data && data.messages) {
+      const message = data?.messages.find(x => x.id == messageId);
+      if (message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
         setShowDeleteDialog(true);
-    } else {
-        deleteMessage(messageId);
+      } else {
+          deleteMessage(messageId);
+      }
     }
   }
 
@@ -140,7 +120,7 @@ export default function MessagesOfAppPage() {
               variant="contained"
               sx={{ marginLeft: 2 }}
               onClick={() => {
-                navigator.clipboard.writeText(data.publicKey);
+                navigator.clipboard.writeText(data.publicKey as string);
                 setAlertMessage("Public key copied to clipboard");
                 setAlertSeverity("success");
                 setShowAlert(true);
@@ -193,7 +173,7 @@ export default function MessagesOfAppPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.messages.map((message: Message, index: number) => {
+              {data.messages && data.messages.map((message: Message, index: number) => {
                 return (
                   <TableRow key={index}>
                     <TableCell className="centeredText">
@@ -234,17 +214,17 @@ export default function MessagesOfAppPage() {
                       {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
                     </TableCell>
                     <TableCell className="centeredText">
-                      {message.actions.length}
+                      {!!message.actions ? message.actions.length : 0}
                     </TableCell>
                     <TableCell>
                       <div className="hiddenTableElement">
                         <Tooltip title="edit" >
-                            <IconButton onClick={() => navigateToEditMessagePage(message.id)}>
+                            <IconButton onClick={() => navigateToEditMessagePage(Number(message.id))}>
                                 <EditIcon />
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="delete" >
-                            <IconButton onClick={() => handleDelete(message.id)}>
+                            <IconButton onClick={() => handleDelete(Number(message.id))}>
                                 <DeleteForeverIcon />
                             </IconButton>
                         </Tooltip>
@@ -255,7 +235,7 @@ export default function MessagesOfAppPage() {
               })}
             </TableBody>
           </Table>
-          {data.messages.length == 0 && (
+          {data.messages && data.messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
           <Snackbar 

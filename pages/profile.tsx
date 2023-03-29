@@ -17,25 +17,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ApiRoutes from "../routes/apiRoutes";
-
-// TODO: move interfaces into own files, if they are reused in multiple pages
-interface User {
-  email: string;
-  firstName: string;
-  lastName: string;
-}
+import { User } from "../types/user";
 
 export default function ProfilePage() {
   const router = useRouter();
   
-  // TODO: status is unused
   const { data: session } = useSession();
 
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<Partial<User>>();
 
   const [passwordOld, setPasswordOld] = useState("");
   const [password, setPassword] = useState("");
-  // TODO: use a good variable name like `confirmationPassword` or similar
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const [emailNew, setEmailNew] = useState("");
@@ -62,7 +54,7 @@ export default function ProfilePage() {
         return response.json();
     })
     .then((data) => {
-        let userData: User = {
+        let userData: Partial<User> = {
           email: data.email,
           firstName: data.firstName,
           lastName: data.lastName,

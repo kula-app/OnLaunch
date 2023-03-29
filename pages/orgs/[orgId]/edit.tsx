@@ -13,20 +13,14 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../routes/routes";
 import ApiRoutes from "../../../routes/apiRoutes";
-
-// TODO: See `new.tsx` about partial types
-interface Org {
-  name: string;
-  id: number;
-}
+import { Org } from "../../../types/org";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditOrgPage() {
   const router = useRouter();
   
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");

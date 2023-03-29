@@ -13,12 +13,7 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../../routes/routes";
 import ApiRoutes from "../../../../../routes/apiRoutes";
-// TODO: see org/new.tsx for partial types
-
-interface App {
-  name: string;
-  id: number;
-}
+import { App } from "../../../../../types/app";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -51,8 +46,8 @@ export default function EditAppPage() {
     })
     .then((data) => {
         let app: App = {
-        id: data.id,
-        name: data.name,
+          id: data.id,
+          name: data.name,
         };
 
         fillForm(app);
@@ -67,16 +62,13 @@ export default function EditAppPage() {
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // load data from form
-    let newApp: App = {
-      id: Number(router.query.appId),
-      name: appName,
-    };
-
     // make PUT http request
     fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
     method: "PUT",
-    body: JSON.stringify(newApp),
+    body: JSON.stringify({
+      id: Number(router.query.appId),
+      name: appName,
+    }),
     headers: {
         "Content-Type": "application/json",
     },

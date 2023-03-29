@@ -13,12 +13,6 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../routes/routes";
 import ApiRoutes from "../../../../routes/apiRoutes";
-// TODO: see org/new.tsx for partial interfaces
-
-interface App {
-  name: string;
-  orgId: number;
-}
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -43,16 +37,13 @@ export default function NewAppPage() {
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // load data from form
-    let app: App = {
-        name: appName,
-        orgId: orgId,
-    };
-
     // make POST http request
     fetch(ApiRoutes.getAppsByOrgId(orgId), {
         method: "POST",
-        body: JSON.stringify(app),
+        body: JSON.stringify({
+          name: appName,
+          orgId: orgId,
+        }),
         headers: {
             "Content-Type": "application/json",
         },

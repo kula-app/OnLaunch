@@ -28,19 +28,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Routes from "../routes/routes";
 import ApiRoutes from "../routes/apiRoutes";
-
-// TODO: move interfaces into own files, if they are reused in multiple pages
-interface Organisation {
-  name: string;
-  id: number;
-  role: string;
-}
-
-interface OrgInvite {
-  id: number;
-  name: string;
-  invitationToken: string;
-}
+import { Org } from "../types/org";
+import { OrgInvite } from "../types/orgInvite";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -111,7 +100,7 @@ export default function DashboardPage() {
   // TODO: Create a reusable fetcher class, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/useApp.ts
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<Organisation[]>(ApiRoutes.ORGS, fetcher);
+  const { data, error, mutate } = useSWR<Org[]>(ApiRoutes.ORGS, fetcher);
   if (error) return <div>Failed to load</div>;
   // TODO: Instead of using checking if data is not available, use the `isLoading` flag returned by useSWR and display both, 
   //       the data and the loading indicator at the same time
