@@ -1,35 +1,12 @@
 class Routes {
-  static get index(): string {
-    return "/";
-  }
-
-  static get dashboard(): string {
-    return "/dashboard";
-  }
-
-  static get auth(): string {
-    return "/auth";
-  }
-
-  static get changeEmail(): string {
-    return "/changeEmail";
-  }
-
-  static get profile(): string {
-    return "/profile";
-  }
-
-  static get reset(): string {
-    return "/reset";
-  }
-
-  static get resetPassword(): string {
-    return "/resetPassword";
-  }
-
-  static get verify(): string {
-    return "/verify";
-  }
+  static readonly INDEX = "/";
+  static readonly DASHBOARD = "/dashboard";
+  static readonly AUTH = "/auth";
+  static readonly CHANGE_EMAIL = "/changeEmail";
+  static readonly PROFILE = "/profile";
+  static readonly RESET = "/reset";
+  static readonly RESET_PASSWORD = "/resetPassword";
+  static readonly VERIFY = "/verify";
 
   static get createNewOrg(): string {
     return "/orgs/new";

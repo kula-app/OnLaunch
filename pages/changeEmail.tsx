@@ -11,6 +11,8 @@ import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 // TODO: getSession is unused
 import { useSession, signOut, getSession } from 'next-auth/react';
+import Routes from "../routes/routes";
+import ApiRoutes from "../routes/apiRoutes";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -40,7 +42,7 @@ export default function ResetPasswordPage() {
 
     function tokenHandler() {
     
-      fetch(EMAIL_API_URL, {
+      fetch(ApiRoutes.EMAIL_CHANGE, {
         method: "PUT",
         body: JSON.stringify({ token: token }),
         headers: {
@@ -75,7 +77,7 @@ export default function ResetPasswordPage() {
   }, [router.isReady, token, router, session, loading]);
     
   function navigateToAuthPage() {
-    router.push(`/auth`);
+    router.push(Routes.AUTH);
   }
 
   return (

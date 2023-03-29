@@ -31,6 +31,7 @@ import type { AlertColor } from '@mui/material/Alert';
 import TextField from "@mui/material/TextField";
 import { SelectChangeEvent } from "@mui/material";
 import Routes from "../../../../routes/routes";
+import ApiRoutes from "../../../../routes/apiRoutes";
 
 // TODO: see org/new.tsx about partial types
 
@@ -63,11 +64,6 @@ export default function AppsPage() {
 
   
   const roles = ["ADMIN", "USER"];
-
-  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
-  const ORG_USERS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/users/`;
-  const ORG_API_URL = `/api/frontend/v0.1/orgs/`;
-  const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -77,8 +73,7 @@ export default function AppsPage() {
   const [appId, setAppId] = useState(-1);
   const [userEmail, setUserEmail] = useState("");
 
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
 
   function navigateToMessagesPage(appId: number) {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
@@ -86,9 +81,9 @@ export default function AppsPage() {
 
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<App[]>(router.isReady ? APPS_API_URL : undefined, fetcher);
-  const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ORG_USERS_API_URL : undefined, fetcher);
-  const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ORG_API_URL + orgId : undefined, fetcher);
+  const { data, error, mutate } = useSWR<App[]>(router.isReady ? ApiRoutes.getAppsByOrgId(orgId) : undefined, fetcher);
+  const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ApiRoutes.getOrgUsersByOrgId(orgId) : undefined, fetcher);
+  const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ApiRoutes.getOrgById(orgId) : undefined, fetcher);
   if (error || userError || orgError) return <div>Failed to load</div>;
   if (!data || !userData || !orgData) return <div>Loading...</div>;
 
@@ -104,7 +99,7 @@ export default function AppsPage() {
   }
 
   function navigateToHome() {
-    router.push(Routes.index);
+    router.push(Routes.INDEX);
   }
 
   function navigateToNewAppPage() {
@@ -116,8 +111,8 @@ export default function AppsPage() {
     setShowDeleteDialog(true);
   }
 
-  function deleteApp(id: number) {
-    fetch(APPS_API_URL + id, {
+  function deleteApp(appId: number) {
+    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
       method: "DELETE",
     }).then(response => {
       if (!response.ok) {
@@ -128,21 +123,21 @@ export default function AppsPage() {
       
       mutate();
       
-      setAlertMessage(`App with id '${id}' successfully deleted!`);
+      setAlertMessage(`App with id '${appId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
 
       return response.json();
     })
     .catch(error => {
-      setAlertMessage(`Error while deleting app with id ${id}: ${error.message}`);
+      setAlertMessage(`Error while deleting app with id ${appId}: ${error.message}`);
       setAlertSeverity("error");
       setShowAlert(true);
     });    
   }
 
-  function removeUser(id: number) {
-    fetch(ORG_USERS_API_URL + id, {
+  function removeUser(userId: number) {
+    fetch(ApiRoutes.getOrgUserByOrgIdAndUserId(orgId, userId), {
       method: "DELETE",
     }).then(response => {
       if (!response.ok) {
@@ -151,7 +146,7 @@ export default function AppsPage() {
         });
       }
     
-      if (id === Number(userData?.find(i => i.email === session?.user?.email)?.id)) {
+      if (userId === Number(userData?.find(i => i.email === session?.user?.email)?.id)) {
         navigateToHome();
       } else {
 
@@ -172,7 +167,7 @@ export default function AppsPage() {
   }
 
   function resetInvitation() {
-    fetch(ORG_INVITE_API_URL + orgData?.invitationToken, {
+    fetch(ApiRoutes.getOrgsInvitationByToken(orgData?.invitationToken as string), {
       method: "PUT",
       headers: {
           "Content-Type": "application/json",
@@ -202,7 +197,7 @@ export default function AppsPage() {
     event.preventDefault();
 
     // make POST http request
-    fetch(ORG_USERS_API_URL, {
+    fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
         method: "POST",
         body: JSON.stringify({ email: userEmail }),
         headers: {
@@ -239,7 +234,7 @@ export default function AppsPage() {
     let users = [... userData];
     let user = users[index];
 
-    fetch(ORG_USERS_API_URL, {
+    fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
       method: "PUT",
       body: JSON.stringify({ role: event.target.value, userId: user.id, orgId: orgId }),
       headers: {

@@ -10,11 +10,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from '../routes/routes';
-
-const USERS_API_URL = "/api/frontend/v0.1/users/";
+import ApiRoutes from '../routes/apiRoutes';
 
 async function createUser(email: string, password: string, firstName: string, lastName: string) {
-    const response = await fetch(USERS_API_URL, {
+    const response = await fetch(ApiRoutes.USERS, {
         method: 'POST',
         body: JSON.stringify({ email, password, firstName, lastName }),
         headers: {
@@ -49,15 +48,15 @@ export default function AuthForm() {
     }
     
     function navigateToHomePage() {
-        router.replace(Routes.index);
+        router.replace(Routes.INDEX);
     } 
     
     function navigateToPasswordResetPage() {
-        router.replace(Routes.reset);
+        router.replace(Routes.RESET);
     } 
     
     function navigateToVerifyPage() {
-        router.replace(`${Routes.verify}?signup=true`);
+        router.replace(`${Routes.VERIFY}?signup=true`);
     } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {

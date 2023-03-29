@@ -10,7 +10,7 @@ export default function IndexPage() {
     if (!router.isReady) return;
 
     function navigateToDashboardPage() {
-      router.push(Routes.dashboard);
+      router.push(Routes.DASHBOARD);
     }
 
     navigateToDashboardPage();

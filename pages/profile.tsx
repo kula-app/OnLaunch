@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ApiRoutes from "../routes/apiRoutes";
 
 // TODO: move interfaces into own files, if they are reused in multiple pages
 interface User {
@@ -28,19 +29,14 @@ export default function ProfilePage() {
   const router = useRouter();
   
   // TODO: status is unused
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
-  // TODO: These API URLs might be reused, move them to a shared class
-  const USERS_API_URL = "/api/frontend/v0.1/users/";
-  const PASSWORD_API_URL = "/api/frontend/v0.1/users/passwordChange";
-  const EMAIL_API_URL = "/api/frontend/v0.1/users/emailChange";
-  
   const [user, setUser] = useState<User>();
 
   const [passwordOld, setPasswordOld] = useState("");
   const [password, setPassword] = useState("");
   // TODO: use a good variable name like `confirmationPassword` or similar
-  const [password2, setPassword2] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const [emailNew, setEmailNew] = useState("");
   const [displayEmailMessage, setDisplayEmailMessage] = useState(false);
@@ -56,7 +52,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(USERS_API_URL)
+    fetch(ApiRoutes.USERS)
     .then((response) => {
         if(!response.ok) {
             return response.json().then(error => {
@@ -83,8 +79,8 @@ export default function ProfilePage() {
 
   
   function sendNewPassword() {
-    if (password === password2) {
-      fetch(PASSWORD_API_URL, {
+    if (password === passwordConfirmation) {
+      fetch(ApiRoutes.PASSWORD_CHANGE, {
         method: "PUT",
         body: JSON.stringify({ password: password, passwordOld: passwordOld }),
         headers: {
@@ -99,7 +95,7 @@ export default function ProfilePage() {
         
         setPasswordOld("");
         setPassword("");
-        setPassword2("");
+        setPasswordConfirmation("");
 
         setAlertMessage("Password successfully changed!");
         setAlertSeverity("success");
@@ -125,7 +121,7 @@ export default function ProfilePage() {
       setAlertSeverity("error");
       setShowAlert(true);
     } else {
-      fetch(EMAIL_API_URL, {
+      fetch(ApiRoutes.EMAIL_CHANGE, {
         method: "POST",
         body: JSON.stringify({ emailNew: emailNew }),
         headers: {
@@ -160,7 +156,7 @@ export default function ProfilePage() {
   }
 
   function sendDeleteProfile() {
-    fetch(USERS_API_URL, {
+    fetch(ApiRoutes.USERS, {
       method: "DELETE",
       headers: {
           "Content-Type": "application/json",
@@ -235,11 +231,11 @@ export default function ProfilePage() {
           <TextField 
               required 
               label="New Password (repeat)"
-              id="password2"
+              id="passwordConfirmation"
               type="password" 
-              value={password2}
+              value={passwordConfirmation}
               className="marginTopMedium"
-              onChange={(event) => setPassword2(event.target.value)}
+              onChange={(event) => setPasswordConfirmation(event.target.value)}
           />
           <Button
             variant="contained"

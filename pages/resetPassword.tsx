@@ -11,21 +11,18 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+import Routes from "../routes/routes";
+import ApiRoutes from "../routes/apiRoutes";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
 
   const { token } = router.query;
-
-  const RESET_TOKEN_API_URL = "/api/frontend/v0.1/tokens/resetPassword/";
   
   const [validToken, setValidToken] = useState(false);
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
-  // TODO: use a clean variable name, like `confirmationPassword`
-  const [password2, setPassword2] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -38,7 +35,7 @@ export default function ResetPasswordPage() {
     }
 
     function tokenHandler() {
-      fetch(RESET_TOKEN_API_URL + token, {
+      fetch(ApiRoutes.getPasswordResetByToken(token as string), {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -63,12 +60,12 @@ export default function ResetPasswordPage() {
   }, [router.isReady, token]);
     
   function navigateToAuthPage() {
-    router.push(`/auth`);
+    router.push(Routes.AUTH);
   }
 
   function sendNewPassword() {
-    if (password === password2) {
-      fetch(RESET_TOKEN_API_URL, {
+    if (password === passwordConfirmation) {
+      fetch(ApiRoutes.PASSWORD_RESET, {
         method: "PUT",
         body: JSON.stringify({ token: token, password: password }),
         headers: {
@@ -119,10 +116,10 @@ export default function ResetPasswordPage() {
           <TextField 
               required 
               label="Password (repeat)"
-              id="password2"
+              id="passwordConfirmation"
               type="password" 
               className="marginTopMedium"
-              onChange={(event) => setPassword2(event.target.value)}
+              onChange={(event) => setPasswordConfirmation(event.target.value)}
           />
           <Button
               variant="contained"

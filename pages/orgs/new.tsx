@@ -11,6 +11,8 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../routes/routes";
+import ApiRoutes from "../../routes/apiRoutes";
 
 // TODO: move shared interfaces to own files.
 //       As this is a partial interface of the full Org interface (ie. only name without anything else), consider using the type `Partial<Org>` instead of creating a different interface
@@ -23,10 +25,7 @@ interface Org {
 export default function NewOrgPage() {
   const router = useRouter();
 
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-
-  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
+  const { data: session } = useSession();
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -36,7 +35,7 @@ export default function NewOrgPage() {
 
 
   function navigateToDashboardPage() {
-    router.push(`/dashboard`);
+    router.push(Routes.DASHBOARD);
   } 
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -48,7 +47,7 @@ export default function NewOrgPage() {
     };
 
     // make POST http request
-    fetch(ORGS_API_URL, {
+    fetch(ApiRoutes.ORGS, {
         method: "POST",
         body: JSON.stringify(org),
         headers: {

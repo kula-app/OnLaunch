@@ -27,6 +27,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Routes from "../routes/routes";
+import ApiRoutes from "../routes/apiRoutes";
 
 // TODO: move interfaces into own files, if they are reused in multiple pages
 interface Organisation {
@@ -48,10 +49,8 @@ export default function DashboardPage() {
 
   const { invite, directinvite } = router.query;
 
-  // TODO: These API URLs might be reused, move them to a shared class
-  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
-  const ORG_INVITE_API_URL = "/api/frontend/v0.1/tokens/organisationInvitation/";
-  const DIRECT_INVITE_API_URL = "/api/frontend/v0.1/tokens/directInvitation/";
+  const ORG_INVITE_API_URL = ApiRoutes.ORGS_INVITATION;
+  const DIRECT_INVITE_API_URL = ApiRoutes.DIRECT_INVITATION;
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -79,7 +78,7 @@ export default function DashboardPage() {
     // TODO: consider moving the API communication into own files, so they are reusable and testable.
     //       this also separates UI from business logic, which is standard practice.
     function inviteHandler() {
-      fetch(tokenUrl + token, {
+      fetch(tokenUrl + '/' + token, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -103,7 +102,7 @@ export default function DashboardPage() {
         setShowAlert(true); 
       }); 
     }
-  }, [router.isReady, invite, directinvite, token, tokenUrl]);
+  }, [router.isReady, invite, directinvite, token, tokenUrl, DIRECT_INVITE_API_URL, ORG_INVITE_API_URL]);
 
   function navigateToAppsPage(id: number) {
     router.push(Routes.getOrgAppsByOrgId(id));
@@ -112,7 +111,7 @@ export default function DashboardPage() {
   // TODO: Create a reusable fetcher class, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/useApp.ts
   // @ts-ignore
   const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<Organisation[]>(ORGS_API_URL, fetcher);
+  const { data, error, mutate } = useSWR<Organisation[]>(ApiRoutes.ORGS, fetcher);
   if (error) return <div>Failed to load</div>;
   // TODO: Instead of using checking if data is not available, use the `isLoading` flag returned by useSWR and display both, 
   //       the data and the loading indicator at the same time
@@ -128,18 +127,18 @@ export default function DashboardPage() {
     router.push(Routes.createNewOrg);
   }
 
-  function navigateToOrgPage(id: number) {
-    router.push(Routes.getOrgAppsByOrgId(id));
+  function navigateToOrgPage(orgId: number) {
+    router.push(Routes.getOrgAppsByOrgId(orgId));
   }
 
-  function handleDelete(id: number) {
-    setOrgId(id);
+  function handleDelete(orgId: number) {
+    setOrgId(orgId);
     setShowDeleteDialog(true);
   }
 
-  function deleteOrg(id: number) {
+  function deleteOrg(orgId: number) {
     // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
-    fetch(ORGS_API_URL + id, {
+    fetch(ApiRoutes.getOrgById(orgId), {
       method: "DELETE",
     }).then(response => {
       if (!response.ok) {
@@ -150,14 +149,14 @@ export default function DashboardPage() {
       
       mutate();
       
-      setAlertMessage(`Organisation with id '${id}' successfully deleted!`);
+      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
 
       return response.json();
     })
     .catch(error => {
-      setAlertMessage(`Error while deleting org with id ${id}: ${error.message}`);
+      setAlertMessage(`Error while deleting org with id ${orgId}: ${error.message}`);
       setAlertSeverity("error");
       setShowAlert(true);
     });    
@@ -165,7 +164,7 @@ export default function DashboardPage() {
 
   function joinOrg(id: number) {
     // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
-    fetch(tokenUrl + token, {
+    fetch(tokenUrl + '/' + token, {
       method: "POST",
     }).then(response => {
       if (!response.ok) {

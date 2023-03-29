@@ -31,7 +31,7 @@ export default function Navbar(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function navigateToAuthPage() {
-    router.push(Routes.auth);
+    router.push(Routes.AUTH);
   }
 
   const handleDrawerToggle = () => {

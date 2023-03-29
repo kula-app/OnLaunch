@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../../routes/routes";
+import ApiRoutes from "../../../../../routes/apiRoutes";
 // TODO: see org/new.tsx for partial types
 
 interface App {
@@ -24,12 +25,10 @@ interface App {
 export default function EditAppPage() {
   const router = useRouter();
   
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
   
-  const orgId = router.query.orgId;
-
-  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
+  const orgId = Number(router.query.orgId);
+  const appId = Number(router.query.appId);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -37,12 +36,11 @@ export default function EditAppPage() {
 
   const[appName, setAppName] = useState("");
 
-  const { appId } = router.query;
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(APPS_API_URL + appId)
+    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId))
     .then((response) => {
         if(!response.ok) {
             return response.json().then(error => {
@@ -64,7 +62,7 @@ export default function EditAppPage() {
         setAlertSeverity("error");
         setShowAlert(true);
     });
-  }, [router.isReady, APPS_API_URL, appId]);
+  }, [router.isReady, appId, orgId]);
 
   function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,7 +74,7 @@ export default function EditAppPage() {
     };
 
     // make PUT http request
-    fetch(APPS_API_URL + appId, {
+    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
     method: "PUT",
     body: JSON.stringify(newApp),
     headers: {

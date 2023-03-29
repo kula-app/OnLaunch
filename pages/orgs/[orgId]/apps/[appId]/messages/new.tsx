@@ -23,6 +23,7 @@ import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
 import Routes from "../../../../../../routes/routes";
+import ApiRoutes from "../../../../../../routes/apiRoutes";
 // TODO: see org/new.tsx for partial types
 
 type Action = {
@@ -47,16 +48,13 @@ interface Message {
 export default function NewMessageForAppPage() {
   const router = useRouter();
   
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["TEXT", "FILLED"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
-  
-  const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -90,7 +88,7 @@ export default function NewMessageForAppPage() {
     };
 
     // make POST http request
-    fetch(MESSAGES_API_URL, {
+    fetch(ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId), {
         method: "POST",
         body: JSON.stringify(message),
         headers: {

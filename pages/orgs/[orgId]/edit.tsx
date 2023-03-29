@@ -11,6 +11,8 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import type { AlertColor } from '@mui/material/Alert';
 import { useSession, getSession } from 'next-auth/react';
+import Routes from "../../../routes/routes";
+import ApiRoutes from "../../../routes/apiRoutes";
 
 // TODO: See `new.tsx` about partial types
 interface Org {
@@ -26,20 +28,18 @@ export default function EditOrgPage() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
-
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
   const[orgName, setOrgName] = useState("");
 
-  const { orgId } = router.query;
+  const orgId = Number(router.query.orgId);
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ORGS_API_URL + orgId)
+    fetch(ApiRoutes.getOrgById(orgId))
     .then((response) => {
         // TODO: unify duplicate code `response.json()`
         if(!response.ok) {
@@ -74,7 +74,7 @@ export default function EditOrgPage() {
     };
 
     // make PUT http request
-    fetch(ORGS_API_URL + orgId, {
+    fetch(ApiRoutes.getOrgById(orgId), {
     method: "PUT",
     body: JSON.stringify(newOrg),
     headers: {
@@ -105,7 +105,7 @@ export default function EditOrgPage() {
   }
   
   function navigateToDashboardPage() {
-    router.push(`/dashboard`);
+    router.push(Routes.DASHBOARD);
   } 
 
   function fillForm(org: Org) {

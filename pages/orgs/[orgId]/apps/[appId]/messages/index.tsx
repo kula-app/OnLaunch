@@ -28,6 +28,7 @@ import type { AlertColor } from '@mui/material/Alert';
 import { getSession, useSession } from 'next-auth/react';
 import { TextField } from "@mui/material";
 import Routes from "../../../../../../routes/routes";
+import ApiRoutes from "../../../../../../routes/apiRoutes";
 
 // TODO: see org/new.tsx for partial types
 
@@ -58,14 +59,12 @@ interface App {
 export default function MessagesOfAppPage() {
   const router = useRouter();
   
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
+  const { data: session } = useSession();
   
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
-  const MESSAGES_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/${appId}/messages/`;
+  const APPS_API_URL = ApiRoutes.getAppsByOrgId(orgId);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -77,7 +76,7 @@ export default function MessagesOfAppPage() {
   const now = Moment.now();
 
   const fetcher = (...args: any) => fetch(args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<App>(appId ? APPS_API_URL + appId : null, fetcher);
+  const { data, error, mutate } = useSWR<App>(appId ? ApiRoutes.getAppByOrgIdAndAppId(orgId, appId) : null, fetcher);
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
 
@@ -89,18 +88,18 @@ export default function MessagesOfAppPage() {
     router.push(Routes.createNewMessageForOrgIdAndAppId(orgId, appId));
   }
 
-  function handleDelete(id: number) {
-    setMessageId(id);
-    const message = data?.messages.find(x => x.id == id);
+  function handleDelete(messageId: number) {
+    setMessageId(messageId);
+    const message = data?.messages.find(x => x.id == messageId);
     if ( message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
         setShowDeleteDialog(true);
     } else {
-        deleteMessage(id);
+        deleteMessage(messageId);
     }
   }
 
-  function deleteMessage(id: number) {
-    fetch(MESSAGES_API_URL + id, {
+  function deleteMessage(messageId: number) {
+    fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId), {
       method: "DELETE",
     }).then(response => {
       if (!response.ok) {
@@ -111,14 +110,14 @@ export default function MessagesOfAppPage() {
       
       mutate();
 
-      setAlertMessage(`Message with id '${id}' successfully deleted!`);
+      setAlertMessage(`Message with id '${messageId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
 
       return response.json();
     })
     .catch(error => {
-      setAlertMessage(`Error while deleting message with id ${id}: ${error.message}`);
+      setAlertMessage(`Error while deleting message with id ${messageId}: ${error.message}`);
       setAlertSeverity("error");
       setShowAlert(true);
     });    

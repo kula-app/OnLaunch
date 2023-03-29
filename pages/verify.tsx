@@ -10,6 +10,8 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
+import Routes from "../routes/routes";
+import ApiRoutes from "../routes/apiRoutes";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -17,8 +19,6 @@ export default function VerifyPage() {
   const router = useRouter();
 
   const { signup, token } = router.query;
-
-  const VERIFICATION_TOKEN_API_URL = "/api/frontend/v0.1/tokens/verification/";
   
   const [verified, setVerified] = useState(false);
   const [expired, setExpired] = useState(false);
@@ -31,12 +31,7 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
-      // TODO: why is tokenHandler nested in a function?
-      tokenHandler();
-    }
-
-    function tokenHandler() {
-      fetch(VERIFICATION_TOKEN_API_URL, {
+      fetch(ApiRoutes.VERIFICATION, {
         method: "PUT",
         body: JSON.stringify({ token: token }),
         headers: {
@@ -68,7 +63,7 @@ export default function VerifyPage() {
   }, [router.isReady, token]);
     
   function navigateToAuthPage() {
-    router.push(`/auth`);
+    router.push(Routes.AUTH);
   }
 
   return (
