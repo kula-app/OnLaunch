@@ -43,8 +43,7 @@ export default NextAuth({
                 if (!user) {
                     throw new Error('Wrong credentials!');
                 } else {
-                    // TODO: instead of concating the user and salt here, change the `verifyPassword` to take the salt as a separate parameter and concat there
-                    const isValid = await verifyPassword(credentials.password.concat(user.salt as string), user.password as string);
+                    const isValid = await verifyPassword(credentials.password, user.salt as string, user.password as string);
                     
                     if (!isValid) {
                         throw new Error('Wrong credentials!');

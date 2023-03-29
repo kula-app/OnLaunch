@@ -47,8 +47,7 @@ export default async function handler(
                 return;
             }
 
-            // TODO: move the concat to the `verifyPassword` method
-            if (!(await verifyPassword(passwordOld.concat(user.salt), user.password as string))) {
+            if (!(await verifyPassword(passwordOld, user.salt as string, user.password as string))) {
                 res.status(StatusCodes.BAD_REQUEST).json({ message: 'Current password is wrong!' });
                 return;
             }

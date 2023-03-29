@@ -29,8 +29,8 @@ export async function validatePassword(password: string) {
     return password && password.trim().length >= 8;
 }
 
-export async function verifyPassword(saltedPassword: string, hashedPassword: string) {
-    const isValid = await compare(saltedPassword, hashedPassword);
+export async function verifyPassword(password: string, salt: string, hashedPassword: string) {
+    const isValid = await compare(password.concat(salt), hashedPassword);
     return isValid;
 }
 
