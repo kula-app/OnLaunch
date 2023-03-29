@@ -24,8 +24,7 @@ export default NextAuth({
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                // TODO: 'jsmith' seems to be copy-paste placeholder.
-                email: { label: "Email", type: "text", placeholder: "jsmith" },
+                email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
