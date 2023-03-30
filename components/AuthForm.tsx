@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from '../routes/routes';
-import createUser from '../api/createUser';
+import signupUser from '../api/signupUser';
 
 export default function AuthForm() {
     const router = useRouter();
@@ -62,7 +62,7 @@ export default function AuthForm() {
             }
         } else {
             try {
-                await createUser(email, password, firstName, lastName);
+                await signupUser(email, password, firstName, lastName);
                 navigateToVerifyPage();
             } catch (error) {
                 setAlertMessage(`Error while creating user: ${error}`);

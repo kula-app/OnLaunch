@@ -1,13 +1,13 @@
 import ApiRoutes from "../routes/apiRoutes";
 import { returnDataOrThrowError } from "../util/api";
 
-const createUser = async (
+const signupUser = async (
   email: string, 
   password: string, 
   firstName: string, 
   lastName: string,
 ) => {
-  const response = await fetch(ApiRoutes.USERS, {
+  const response = await fetch(ApiRoutes.SIGNUP, {
     method: 'POST',
     body: JSON.stringify({ 
       email, 
@@ -23,4 +23,4 @@ const createUser = async (
   return await returnDataOrThrowError(response);
 }
 
-export default createUser;
+export default signupUser;
