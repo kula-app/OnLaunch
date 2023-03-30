@@ -1,14 +1,15 @@
 import ApiRoutes from "../routes/apiRoutes";
 import { returnDataOrThrowError } from "../util/api";
 
-const deleteOrg = async (
-  orgId: number, 
+const deleteApp = async (
+  orgId: number,
+  appId: number,
 ) => {
-  const response = await fetch(ApiRoutes.getOrgById(orgId), {
+  const response = await fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
     method: "DELETE",
   });
 
   return await returnDataOrThrowError(response);
 }
 
-export default deleteOrg;
+export default deleteApp;

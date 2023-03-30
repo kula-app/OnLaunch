@@ -1,41 +1,37 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Navbar from "../../../../../../components/Navbar";
 import styles from "../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
+import { TextField } from "@mui/material";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Snackbar from "@mui/material/Snackbar";
 import Chip from '@mui/material/Chip';
-import Tooltip from '@mui/material/Tooltip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import type { AlertColor } from '@mui/material/Alert';
-import { getSession, useSession } from 'next-auth/react';
-import { TextField } from "@mui/material";
-import Routes from "../../../../../../routes/routes";
-import ApiRoutes from "../../../../../../routes/apiRoutes";
-import { Message } from "../../../../../../types/message";
-import { useApp } from "../../../../../../api/useApp";
+import IconButton from "@mui/material/IconButton";
+import Snackbar from "@mui/material/Snackbar";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Tooltip from '@mui/material/Tooltip';
+import { getSession } from 'next-auth/react';
 import deleteMessage from "../../../../../../api/deleteMessage";
+import { useApp } from "../../../../../../api/useApp";
+import Routes from "../../../../../../routes/routes";
+import { Message } from "../../../../../../types/message";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
-  
-  const { data: session } = useSession();
   
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -91,7 +87,6 @@ export default function MessagesOfAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>{data?.name}</h1>
           {data?.role === "ADMIN" && <div className="row">

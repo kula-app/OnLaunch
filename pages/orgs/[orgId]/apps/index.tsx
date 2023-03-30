@@ -1,39 +1,42 @@
-import { useRouter } from "next/router";
+import { getSession, useSession } from 'next-auth/react';
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../../styles/Home.module.css";
-import { useState, FormEvent } from "react";
-import { useSession, getSession } from 'next-auth/react';
-import Navbar from "../../../../components/Navbar";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { SelectChangeEvent } from "@mui/material";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Snackbar from "@mui/material/Snackbar";
-import Tooltip from '@mui/material/Tooltip';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import type { AlertColor } from '@mui/material/Alert';
+import IconButton from "@mui/material/IconButton";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Snackbar from "@mui/material/Snackbar";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
-import { SelectChangeEvent } from "@mui/material";
-import Routes from "../../../../routes/routes";
-import ApiRoutes from "../../../../routes/apiRoutes";
-import { useUsers } from "../../../../api/useUsers";
+import Tooltip from '@mui/material/Tooltip';
+import deleteApp from "../../../../api/deleteApp";
+import deleteUserFromOrg from "../../../../api/deleteUserFromOrg";
+import inviteUser from "../../../../api/inviteUser";
+import resetOrgInvitationToken from "../../../../api/resetOrgInvitationToken";
+import updateUserRoleInOrg from "../../../../api/updateUserRoleInOrg";
 import { useApps } from "../../../../api/useApps";
 import { useOrg } from "../../../../api/useOrg";
+import { useUsers } from "../../../../api/useUsers";
+import Routes from "../../../../routes/routes";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -50,6 +53,7 @@ export default function AppsPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [appId, setAppId] = useState(-1);
   const [userEmail, setUserEmail] = useState("");
+  const [baseUrl, setBaseUrl] = useState("");
 
   const { data: session } = useSession();
 
@@ -57,18 +61,23 @@ export default function AppsPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   }
 
-  const { apps, isError: error, isLoading: isLoadingApps, mutate } = useApps(orgId);
-  const { users, isError: userError, isLoading: isLoadingUser, mutate: userMutate } = useUsers(orgId);
+  const { apps, isError: error, mutate } = useApps(orgId);
+  const { users, isError: userError, mutate: userMutate } = useUsers(orgId);
+  const { org, isError: orgError } = useOrg(orgId);
 
-  const { org, isError: orgError, isLoading: isLoadingOrg, } = useOrg(orgId);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
+  
   if (error || userError || orgError) return <div>Failed to load</div>;
 
   let userRole = "";
   if (!!users) {
     userRole = users.find(i => i.email === session?.user?.email)?.role as string;
   }
-
-  const baseUrl = window.location.origin;
+  
   
   function navigateToEditAppPage(appId: number) {
     router.push(Routes.editAppForOrgIdAndAppId(orgId, appId));
@@ -87,155 +96,94 @@ export default function AppsPage() {
     setShowDeleteDialog(true);
   }
 
-  function deleteApp(appId: number) {
-    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
-      method: "DELETE",
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(error => {
-          throw new Error(error.message);
-        });
-      }
-      
+  async function callDeleteApp(appId: number) {
+    try {
+      await deleteApp(orgId, appId);
+
       mutate();
       
       setAlertMessage(`App with id '${appId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while deleting app with id ${appId}: ${error.message}`);
+    } catch(error) {
+      setAlertMessage(`Error while deleting app with id ${appId}: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    });    
+    }
   }
 
-  function removeUser(userId: number) {
-    fetch(ApiRoutes.getOrgUserByOrgIdAndUserId(orgId, userId), {
-      method: "DELETE",
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(error => {
-          throw new Error(error.message);
-        });
-      }
-    
+  async function removeUser(userId: number) {
+    try {
+      await deleteUserFromOrg(orgId, userId);
+
       if (userId === Number(users?.find(i => i.email === session?.user?.email)?.id)) {
         navigateToHome();
       } else {
-
         userMutate();
         
         setAlertMessage(`User successfully removed from organisation!`);
         setAlertSeverity("success");
         setShowAlert(true);
       }
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while removing user: ${error.message}`);
+    } catch(error) {
+      setAlertMessage(`Error while removing user: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    });    
+    } 
   }
 
-  function resetInvitation() {
-    fetch(ApiRoutes.getOrgsInvitationByToken(org?.invitationToken as string), {
-      method: "PUT",
-      headers: {
-          "Content-Type": "application/json",
-      },
-    })
-    .then(response => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+  async function resetInvitation() {
+    try {
+      await resetOrgInvitationToken(org?.invitationToken as string);
 
-        setAlertMessage("Invitation link changed successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
-
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while changing invitation link: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
+      setAlertMessage("Invitation link changed successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
+    } catch(error) {
+      setAlertMessage(`Error while changing invitation link: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    
+    try {
+      await inviteUser(orgId, userEmail);
 
-    // make POST http request
-    fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
-        method: "POST",
-        body: JSON.stringify({ email: userEmail }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+      setAlertMessage("User invited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
-        setAlertMessage("User invited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
-
-        setUserEmail("");
-
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while adding new user: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
+      setUserEmail("");
+    } catch(error) {
+      setAlertMessage(`Error while adding new user: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
 
-  function handleRoleChange(index: number, event: SelectChangeEvent<unknown>) {
+  async function handleRoleChange(index: number, event: SelectChangeEvent<unknown>) {
     if (!users) {
       return;
     }
 
     let user = [... users][index];
 
-    fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
-      method: "PUT",
-      body: JSON.stringify({ role: event.target.value, userId: user.id, orgId: orgId }),
-      headers: {
-          "Content-Type": "application/json",
-      },
-    })
-    .then(response => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      await updateUserRoleInOrg(orgId, Number(user.id), event.target.value as string);
 
-        userMutate();
+      userMutate();
 
-        setAlertMessage(`User with email ${user.email} is now ${event.target.value}`);
-        setAlertSeverity("success");
-        setShowAlert(true);
-
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while updating user role: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
+      setAlertMessage(`User with email ${user.email} is now ${event.target.value}`);
+      setAlertSeverity("success");
+      setShowAlert(true);
+    } catch(error) {
+      setAlertMessage(`Error while updating user role: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
 
   return (
@@ -248,7 +196,6 @@ export default function AppsPage() {
       </Head>
       <main className={styles.main}>
         <h1>Organisation {org?.name}</h1>
-        {isLoadingOrg && <p className="marginTopMedium">loading...</p>}
         <h1>Apps</h1>
         {userRole === "ADMIN" && <div className="addButton">
             <Button
@@ -310,7 +257,6 @@ export default function AppsPage() {
         {apps?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
-        {isLoadingApps && <p className="marginTopMedium">loading...</p>}
         <div className={styles.main}>
           <h1>Users</h1>
           {userRole === "ADMIN" && <div className="row">
@@ -431,7 +377,6 @@ export default function AppsPage() {
           {users?.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
-          {isLoadingUser && <p className="marginTopMedium">loading...</p>}
         </div>
         <Snackbar 
             open={showAlert} 
@@ -473,7 +418,7 @@ export default function AppsPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowDeleteDialog(false); deleteApp(appId)}} autoFocus>
+              <Button onClick={() => {setShowDeleteDialog(false); callDeleteApp(appId)}} autoFocus>
                 Agree
               </Button>
             </DialogActions>

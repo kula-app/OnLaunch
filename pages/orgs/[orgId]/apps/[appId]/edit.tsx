@@ -1,26 +1,22 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../../../components/Navbar";
 import styles from "../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
+import getApp from "../../../../../api/getApp";
+import updateApp from "../../../../../api/updateApp";
 import Routes from "../../../../../routes/routes";
-import ApiRoutes from "../../../../../routes/apiRoutes";
 import { App } from "../../../../../types/app";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditAppPage() {
   const router = useRouter();
-  
-  const { data: session } = useSession();
   
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -35,64 +31,35 @@ export default function EditAppPage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId))
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let app: App = {
-          id: data.id,
-          name: data.name,
-        };
+    const fetchAppData = async () => {
+      fillForm(await getApp(orgId, appId));
+    } 
 
-        fillForm(app);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
+    try {
+      fetchAppData();
+    } catch(error) {
+      setAlertMessage(`Error while fetching app data: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }, [router.isReady, appId, orgId]);
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // make PUT http request
-    fetch(ApiRoutes.getAppByOrgIdAndAppId(orgId, appId), {
-    method: "PUT",
-    body: JSON.stringify({
-      id: Number(router.query.appId),
-      name: appName,
-    }),
-    headers: {
-        "Content-Type": "application/json",
-    },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      await updateApp(orgId, appId, appName);
 
-        setAlertMessage("App edited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+      setAlertMessage("App edited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
-        navigateToAppsPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while editing app: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
-
+      navigateToAppsPage();
+    } catch(error) {
+      setAlertMessage(`Error while editing app: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
   
   function navigateToAppsPage() {
@@ -108,7 +75,6 @@ export default function EditAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit App</h1>
           <form 

@@ -1,37 +1,37 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
-import styles from "../styles/Home.module.css";
 import Button from "@mui/material/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from '@mui/material/Tooltip';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import deleteOrg from "../api/deleteOrg";
+import getDirectInviteToken from "../api/getDirectInviteToken";
+import getOrgInviteToken from "../api/getOrgInviteToken";
+import joinOrgViaDirectInvite from "../api/joinOrgViaDirectInvite";
+import joinOrgViaOrgInvite from "../api/joinOrgViaOrgInvite";
+import { useOrgs } from "../api/useOrgs";
 import Routes from "../routes/routes";
 import { OrgInvite } from "../types/orgInvite";
-import getDirectInviteToken from "../api/getDirectInviteToken";
-import { useOrgs } from "../api/useOrgs";
-import getOrgInviteToken from "../api/getOrgInviteToken";
-import deleteOrg from "../api/deleteOrg";
-import joinOrgViaOrgInvite from "../api/joinOrgViaOrgInvite";
-import joinOrgViaDirectInvite from "../api/joinOrgViaDirectInvite";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function DashboardPage() {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
 
-  const { orgs: data, isLoading, isError, mutate } = useOrgs();
+  const { orgs, isLoading, isError, mutate } = useOrgs();
   if (isError) return <div>Failed to load</div>;
 
   function navigateToEditOrgPage(id: number) {
@@ -131,15 +131,15 @@ export default function DashboardPage() {
       <main className={styles.main}>
         <h1>Organisations</h1>
         <div className="addButton">
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigateToNewOrgPage();
-              }}
-            >
-              New Organisation
-            </Button>
-          </div>
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigateToNewOrgPage();
+            }}
+          >
+            New Organisation
+          </Button>
+        </div>
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
           <TableHead>
             <TableCell width="5%">
@@ -151,7 +151,7 @@ export default function DashboardPage() {
             <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
-            {data?.map((org, index) => {
+            {orgs?.map((org, index) => {
               return (
                 <TableRow key={index} >
                   <TableCell width="5%">
@@ -161,7 +161,7 @@ export default function DashboardPage() {
                     {org.name}
                   </TableCell>
                   <TableCell width="5%">
-                      <div className="hiddenTableElement">
+                    <div className="hiddenTableElement">
                       <Tooltip title="view messages" >
                           <IconButton onClick={() => navigateToAppsPage(org.id)}>
                             <VisibilityIcon />
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             })}
           </TableBody>
         </Table>
-        {data?.length == 0 && (
+        {orgs?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
         {isLoading && <p className="marginTopMedium">Loading...</p>}

@@ -1,39 +1,36 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../../../../../components/Navbar";
 import styles from "../../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { SelectChangeEvent } from "@mui/material";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Snackbar from "@mui/material/Snackbar";
+import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Switch from "@mui/material/Switch";
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
-import Routes from "../../../../../../../routes/routes";
+import { getSession } from 'next-auth/react';
 import ApiRoutes from "../../../../../../../routes/apiRoutes";
-import { Message } from "../../../../../../../types/message";
+import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../types/action";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+import { Message } from "../../../../../../../types/message";
+import getMessage from "../../../../../../../api/getMessage";
+import updateMessage from "../../../../../../../api/updateMessage";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();
-
-  const { data: session } = useSession();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["TEXT", "FILLED"];
@@ -58,37 +55,20 @@ export default function EditMessageOfAppPage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId))
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let msg: Message = {
-        id: data.id,
-        title: data.title,
-        body: data.body,
-        blocking: data.blocking,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        appId: data.appId,
-        actions: data.actions,
-        };
+    const fetchMessageData = async () => {
+      fillForm(await getMessage(orgId, appId, messageId));
+    } 
 
-        fillForm(msg);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
+    try {
+      fetchMessageData();
+    } catch(error) {
+      setAlertMessage(`Error while fetching message: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }, [router.isReady, orgId, appId, messageId]);
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
@@ -102,35 +82,20 @@ export default function EditMessageOfAppPage() {
       appId: appId,
       actions: actions,
     };
-    
-    // make PUT http request
-    fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId), {
-    method: "PUT",
-    body: JSON.stringify(message),
-    headers: {
-        "Content-Type": "application/json",
-    },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
 
-        setAlertMessage("Message edited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+    try {
+      await updateMessage(orgId, appId, messageId, message);
 
-        navigateToAppMessagesPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while editing message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
+      setAlertMessage("Message edited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
+      navigateToAppMessagesPage();
+    } catch(error) {
+      setAlertMessage(`Error while editing message: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
   
   function navigateToAppMessagesPage() {
@@ -186,7 +151,6 @@ export default function EditMessageOfAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">

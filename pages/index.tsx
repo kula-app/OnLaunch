@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
 import { getSession } from 'next-auth/react';
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Routes from "../routes/routes";
 

@@ -1,18 +1,16 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
-import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
 import Button from "@mui/material/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, signOut } from 'next-auth/react';
-import Routes from "../routes/routes";
-import ApiRoutes from "../routes/apiRoutes";
+import { signOut, useSession } from 'next-auth/react';
 import validateEmailChange from "../api/validateEmailChange";
+import Routes from "../routes/routes";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -60,7 +58,6 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <Navbar hasSession={!!session} />
       <main className={styles.main}>
         {(!loading && !emailChanged) && <div>
           <h1 className="centeredElement">Invalid link</h1>

@@ -1,14 +1,15 @@
-import { Message } from "../types/message";
 import ApiRoutes from "../routes/apiRoutes";
+import { Message } from "../types/message";
 import { returnDataOrThrowError } from "../util/api";
 
-const createMessage = async (
-  orgId: number, 
-  appId: number, 
+const updateMessage = async (
+  orgId: number,
+  appId: number,
+  messageId: number,
   message: Message,
 ) => {
-  const response = await fetch(ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId), {
-    method: "POST",
+  const response = await fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId), {
+    method: "PUT",
     body: JSON.stringify(message),
     headers: {
         "Content-Type": "application/json",
@@ -18,4 +19,4 @@ const createMessage = async (
   return await returnDataOrThrowError(response);
 }
 
-export default createMessage;
+export default updateMessage;

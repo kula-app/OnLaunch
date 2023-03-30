@@ -1,17 +1,9 @@
-import { hash, genSalt, compare } from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
-// TODO: remove unused imports. Visual Studio has a command 'Organize Imports' with a key shortcut for it.
-import { NextApiRequest } from 'next';
-import { getSession } from 'next-auth/react';
-
+import { compare, genSalt, hash } from 'bcrypt';
 var crypto = require('crypto');
 var base64url = require('base64url');
 
 const nodemailer = require("nodemailer");
 require('dotenv').config();
-
-// TODO: unused instance, remove it for cleaner code.
-const prisma = new PrismaClient()
 
 export async function hashAndSaltPassword(password: string) {
     const saltRounds = 10;

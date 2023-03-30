@@ -9,7 +9,7 @@ export function useApps(orgId: number): {
     isLoading: boolean;
     mutate: KeyedMutator<App[]>;
 } {
-  const { data, isLoading, error, mutate } = useSWR<App[]>(ApiRoutes.getOrgUsersByOrgId(orgId), getFetcher);
+  const { data, isLoading, error, mutate } = useSWR<App[]>(ApiRoutes.getAppsByOrgId(orgId), getFetcher);
 
   return {
     apps: data,

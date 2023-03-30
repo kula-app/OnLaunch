@@ -1,23 +1,18 @@
 import ApiRoutes from "../routes/apiRoutes";
+import { returnDataOrThrowError } from "../util/api";
 
-const getOrgInviteToken = async (
+const joinOrgViaOrgInvite = async (
   token: string, 
 ) => {
-    const response = await fetch(
-      ApiRoutes.ORGS_INVITATION + "/" + token, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+  const response = await fetch(
+    ApiRoutes.ORGS_INVITATION + "/" + token, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+  });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-      throw new Error (data.message || 'an error occurred');
-  }
-
-  return data;
+  return await returnDataOrThrowError(response);
 }
 
-export default getOrgInviteToken;
+export default joinOrgViaOrgInvite;

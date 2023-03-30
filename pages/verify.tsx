@@ -1,19 +1,16 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
-import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
 import Button from "@mui/material/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
+import updateVerifiedStatus from "../api/updateVerifiedStatus";
 import Routes from "../routes/routes";
-import ApiRoutes from "../routes/apiRoutes";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -31,34 +28,25 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
-      fetch(ApiRoutes.VERIFICATION, {
-        method: "PUT",
-        body: JSON.stringify({ token: token }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-          if(!response.ok) {
-              return response.json().then(error => {
-                  throw new Error(error.message);
-              });
-          }
+      const verifyUser = async () => {
+        await updateVerifiedStatus(token as string);
+
+        setVerified(true);
+      } 
   
-          setVerified(true);
-    
-          return response.json();
-      })
-      .catch(error => {
-        if (error.message.includes('expired')) {
+      try {
+        verifyUser();
+      } catch(error) {
+        if ((error as string).includes('expired')) {
           setExpired(true);
-        } else if (error.message.includes('obsolete')) {
+        } else if ((error as string).includes('obsolete')) {
           setObsolete(true);
         } else {
-          setAlertMessage(`Error while verifying: ${error.message}`);
+          setAlertMessage(`Error while verifying: ${error}`);
           setAlertSeverity("error");
           setShowAlert(true);
         }
-      }); 
+      }
     }
   }, [router.isReady, token]);
     
@@ -68,7 +56,6 @@ export default function VerifyPage() {
 
   return (
     <>
-      <Navbar hasSession={false} />
       <main className={styles.main}>
         {(signup && !expired) && <div>
           <h1 className="centeredElement">Verify your account</h1>

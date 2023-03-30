@@ -1,26 +1,22 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../components/Navbar";
 import styles from "../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
+import getOrg from "../../../api/getOrg";
+import updateOrg from "../../../api/updateOrg";
 import Routes from "../../../routes/routes";
-import ApiRoutes from "../../../routes/apiRoutes";
 import { Org } from "../../../types/org";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function EditOrgPage() {
   const router = useRouter();
-  
-  const { data: session } = useSession();
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -33,32 +29,21 @@ export default function EditOrgPage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ApiRoutes.getOrgById(orgId))
-    .then((response) => {
-        // TODO: unify duplicate code `response.json()`
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let org: Org = {
-          id: data.id,
-          name: data.name,
-        };
+    const fetchOrgData = async () => {
+      const org = await getOrg(orgId);
+      fillForm(org);
+    } 
 
-        fillForm(org);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
+    try {
+      fetchOrgData();
+    } catch(error) {
+      setAlertMessage(`Error while fetching org: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }, [router.isReady, orgId]);
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
@@ -67,35 +52,19 @@ export default function EditOrgPage() {
       name: orgName,
     };
 
-    // make PUT http request
-    fetch(ApiRoutes.getOrgById(orgId), {
-    method: "PUT",
-    body: JSON.stringify(newOrg),
-    headers: {
-        "Content-Type": "application/json",
-    },
-    }).then((response) => {
-        // TODO: unify duplicate code `response.json()`
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      await updateOrg(newOrg);
 
-        setAlertMessage("Org edited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+      setAlertMessage("Org edited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
-        navigateToDashboardPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while editing org: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
-
+      navigateToDashboardPage();
+    } catch(error) {
+      setAlertMessage(`Error while editing org: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
   
   function navigateToDashboardPage() {
@@ -111,7 +80,6 @@ export default function EditOrgPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit Organisation</h1>
           <form 

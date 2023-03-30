@@ -1,6 +1,7 @@
 import ApiRoutes from "../routes/apiRoutes";
+import { returnDataOrThrowError } from "../util/api";
 
-const deleteUser = async (
+const deleteMessage = async (
   orgId: number,
   appId: number,
   messageId: number,
@@ -9,13 +10,7 @@ const deleteUser = async (
     method: "DELETE",
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-      throw new Error (data.message || 'an error occurred');
-  }
-
-  return data;
+  return await returnDataOrThrowError(response);
 }
 
-export default deleteUser;
+export default deleteMessage;

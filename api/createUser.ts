@@ -1,4 +1,5 @@
 import ApiRoutes from "../routes/apiRoutes";
+import { returnDataOrThrowError } from "../util/api";
 
 const createUser = async (
   email: string, 
@@ -19,13 +20,7 @@ const createUser = async (
     }
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-      throw new Error (data.message || 'an error occurred');
-  }
-
-  return data;
+  return await returnDataOrThrowError(response);
 }
 
 export default createUser;

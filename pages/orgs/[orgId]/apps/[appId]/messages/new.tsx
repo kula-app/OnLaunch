@@ -1,39 +1,33 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import Navbar from "../../../../../../components/Navbar";
 import styles from "../../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { SelectChangeEvent } from "@mui/material";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Snackbar from "@mui/material/Snackbar";
+import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Switch from "@mui/material/Switch";
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
+import createMessage from "../../../../../../api/createMessage";
 import Routes from "../../../../../../routes/routes";
-import ApiRoutes from "../../../../../../routes/apiRoutes";
 import { Action } from "../../../../../../types/action";
 import { Message } from "../../../../../../types/message";
-import createMessage from "../../../../../../api/createMessage";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
-  
-  const { data: session } = useSession();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["TEXT", "FILLED"];
@@ -124,7 +118,6 @@ export default function NewMessageForAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>New Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">

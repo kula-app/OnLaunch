@@ -1,40 +1,19 @@
-import Navbar from "../components/Navbar";
-import { getSession, useSession } from 'next-auth/react';
-import styles from "../styles/Home.module.css";
 import Button from "@mui/material/Button";
+import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from "next/router";
-import { useState, FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import type { AlertColor } from '@mui/material/Alert';
+import TextField from "@mui/material/TextField";
+import createPasswordResetToken from "../api/createPasswordResetToken";
 import Routes from "../routes/routes";
-import ApiRoutes from "../routes/apiRoutes";
-
-async function passwordResetRequest(email: string) {
-  const response = await fetch(ApiRoutes.PASSWORD_RESET, {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-      headers: {
-          'Content-Type':  'application/json'
-      }
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-      throw new Error (data.message || 'an error occurred');
-  }
-
-  return data;
-}
 
 export default function ResetPage() {
-  const { data: session } = useSession();
-
   const router = useRouter();
   
   const[email, setEmail] = useState("");
@@ -52,7 +31,7 @@ export default function ResetPage() {
     event.preventDefault();
 
     try {
-        await passwordResetRequest(email);
+        await createPasswordResetToken(email);
         
         setSentMail(true);
     } catch (error) {
@@ -64,7 +43,6 @@ export default function ResetPage() {
 
   return (
     <>
-      <Navbar hasSession={!!session} />
       <main className={styles.main}>
         {!sentMail && <h1>Enter your mail address for password reset</h1>}
         {!sentMail && 

@@ -1,28 +1,28 @@
+import { getSession, signOut } from 'next-auth/react';
 import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
-import { useSession, getSession, signOut } from 'next-auth/react';
 
 import CloseIcon from "@mui/icons-material/Close";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from '@mui/material/Alert';
-import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import ApiRoutes from "../routes/apiRoutes";
+import IconButton from "@mui/material/IconButton";
+import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import createEmailChangeToken from "../api/createEmailChangeToken";
+import deleteUser from "../api/deleteUser";
+import getUser from "../api/getUser";
+import updatePassword from "../api/updatePassword";
 import { User } from "../types/user";
 
 export default function ProfilePage() {
   const router = useRouter();
-  
-  const { data: session } = useSession();
 
   const [user, setUser] = useState<Partial<User>>();
 
@@ -39,52 +39,28 @@ export default function ProfilePage() {
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // TODO: see `dashboard.tsx` for all the comments about API communication
-    
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ApiRoutes.USERS)
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let userData: Partial<User> = {
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-        };
+    const fetchUserData = async () => {
+      setUser(await getUser());
+    } 
 
-        setUser(userData);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching user data: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
+    try {
+      fetchUserData();
+    } catch(error) {
+      setAlertMessage(`Error while fetching user data: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }, [router.isReady]);
 
   
-  function sendNewPassword() {
+  async function sendNewPassword() {
     if (password === passwordConfirmation) {
-      fetch(ApiRoutes.PASSWORD_CHANGE, {
-        method: "PUT",
-        body: JSON.stringify({ password: password, passwordOld: passwordOld }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        
+      try {
+        await updatePassword(password, passwordOld);
+  
         setPasswordOld("");
         setPassword("");
         setPasswordConfirmation("");
@@ -92,54 +68,34 @@ export default function ProfilePage() {
         setAlertMessage("Password successfully changed!");
         setAlertSeverity("success");
         setShowAlert(true);
-    
-          return response.json();
-      })
-      .catch(error => {
-        setAlertMessage(`Error while sending request: ${error.message}`);
+      } catch(error) {
+        setAlertMessage('The passwords do not match!');
         setAlertSeverity("error");
         setShowAlert(true);
-      }); 
-    } else {
-      setAlertMessage('The passwords do not match!');
-      setAlertSeverity("error");
-      setShowAlert(true);
+      }
     }
   }
   
-  function sendNewEmail() {
+  async function sendNewEmail() {
     if (user?.email === emailNew) {
       setAlertMessage('This is the same as your current email address!');
       setAlertSeverity("error");
       setShowAlert(true);
     } else {
-      fetch(ApiRoutes.EMAIL_CHANGE, {
-        method: "POST",
-        body: JSON.stringify({ emailNew: emailNew }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        
+      try {
+        await createEmailChangeToken(emailNew);
+  
         setEmailNew("");
         setDisplayEmailMessage(true);
 
         setAlertMessage("You have got mail!");
         setAlertSeverity("success");
         setShowAlert(true);
-    
-        return response.json();
-      })
-      .catch(error => {
-        setAlertMessage(`Error while sending request: ${error.message}`);
+      } catch(error) {
+        setAlertMessage(`Error while sending request: ${error}`);
         setAlertSeverity("error");
         setShowAlert(true);
-      }); 
+      }
     }
   } 
 
@@ -147,33 +103,20 @@ export default function ProfilePage() {
     setShowDeleteDialog(true);
   }
 
-  function sendDeleteProfile() {
-    fetch(ApiRoutes.USERS, {
-      method: "DELETE",
-      headers: {
-          "Content-Type": "application/json",
-      },
-    }).then(async (response) => {
-      if(!response.ok) {
-          return response.json().then(error => {
-              throw new Error(error.message);
-          });
-      }
+  async function sendDeleteProfile() {
+    try {
+      await deleteUser();
 
       signOut();
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while sending request: ${error.message}`);
+    } catch(error) {
+      setAlertMessage(`Error while sending request: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    }); 
+    }
   }
     
   return (
     <>
-      <Navbar hasSession={!!session} />
       <main className={styles.main}>
         <h1>Hello, {user?.firstName}!</h1>
         <div className="marginTopMedium column">

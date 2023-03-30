@@ -1,18 +1,18 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
-import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
 import Button from "@mui/material/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from '@mui/material/Alert';
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
 import { getSession } from 'next-auth/react';
+import getPasswordResetToken from "../api/getPasswordResetToken";
+import resetPassword from "../api/resetPassword";
 import Routes from "../routes/routes";
-import ApiRoutes from "../routes/apiRoutes";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -31,26 +31,22 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token) {
-      fetch(ApiRoutes.getPasswordResetByToken(token as string), {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-          if(!response.ok) {
-              return response.json().then(error => {
-                  throw new Error(error.message);
-              });
-          }
+      const fetchEmailChangeToken = async () => {
+        await getPasswordResetToken(token as string);
+        
+        setLoading(false);
+        setValidToken(true);
+      } 
   
-          setLoading(false);
-          setValidToken(true);
-    
-          return response.json();
-      })
-      .catch(() => {
-          setLoading(false);
-      }); 
+      try {
+        fetchEmailChangeToken();
+      } catch(error) {
+        setLoading(false);
+
+        setAlertMessage(`Error while fetching token: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
     }
   }, [router.isReady, token]);
     
@@ -58,30 +54,17 @@ export default function ResetPasswordPage() {
     router.push(Routes.AUTH);
   }
 
-  function sendNewPassword() {
+  async function sendNewPassword() {
     if (password === passwordConfirmation) {
-      fetch(ApiRoutes.PASSWORD_RESET, {
-        method: "PUT",
-        body: JSON.stringify({ token: token, password: password }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-          if(!response.ok) {
-              return response.json().then(error => {
-                  throw new Error(error.message);
-              });
-          }
-
-          navigateToAuthPage();
-    
-          return response.json();
-      })
-      .catch(error => {
-        setAlertMessage(`Error while sending request: ${error.message}`);
+      try {
+        await resetPassword(token as string, password);
+  
+        navigateToAuthPage();
+      } catch(error) {
+        setAlertMessage(`Error while sending request: ${error}`);
         setAlertSeverity("error");
         setShowAlert(true);
-      }); 
+      }
     } else {
       setAlertMessage('The passwords do not match!');
       setAlertSeverity("error");
@@ -91,7 +74,6 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <Navbar hasSession={false} />
       <main className={styles.main}>
         {(!loading && !validToken) && <div>
           <h1 className="centeredElement">Invalid link</h1>
