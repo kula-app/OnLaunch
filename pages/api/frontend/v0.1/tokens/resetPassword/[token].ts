@@ -9,8 +9,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     switch (req.method) {
-        case 'GET':
-            // TODO: how is this validating the token? 
+        case 'GET': 
             const resetToken = await prisma.passwordResetToken.findFirst({
                 where: {
                     token: req.query.token as string
