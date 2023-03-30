@@ -1,9 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from 'react';
 import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
 import Button from "@mui/material/Button";
-import useSWR from "swr";
 
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
@@ -27,87 +25,54 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Routes from "../routes/routes";
-import ApiRoutes from "../routes/apiRoutes";
-import { Org } from "../types/org";
 import { OrgInvite } from "../types/orgInvite";
+import getDirectInviteToken from "../api/getDirectInviteToken";
+import { useOrgs } from "../api/useOrgs";
+import getOrgInviteToken from "../api/getOrgInviteToken";
+import deleteOrg from "../api/deleteOrg";
+import joinOrgViaOrgInvite from "../api/joinOrgViaOrgInvite";
+import joinOrgViaDirectInvite from "../api/joinOrgViaDirectInvite";
 
 export default function DashboardPage() {
   const router = useRouter();
 
-  const { data: session } = useSession();
-
   const { invite, directinvite } = router.query;
 
-  const ORG_INVITE_API_URL = ApiRoutes.ORGS_INVITATION;
-  const DIRECT_INVITE_API_URL = ApiRoutes.DIRECT_INVITATION;
-  
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const [token, setToken] = useState("");
   const [orgInvite, setOrgInvite] = useState<OrgInvite>();
-  const [tokenUrl, setTokenUrl] = useState(ORG_INVITE_API_URL);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [orgId, setOrgId] = useState(-1);
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (!!invite) {
-      setToken(invite as string);
-      setTokenUrl(ORG_INVITE_API_URL);
-      inviteHandler();
-    } else if (!!directinvite) {
-      setToken(directinvite as string);
-      setTokenUrl(DIRECT_INVITE_API_URL);
-      inviteHandler();
-    }
-
-    // TODO: consider moving the API communication into own files, so they are reusable and testable.
-    //       this also separates UI from business logic, which is standard practice.
-    function inviteHandler() {
-      fetch(tokenUrl + '/' + token, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
+    try {
+      async () => {
+        if (!!invite) {
+          setOrgInvite(await getOrgInviteToken(invite as string));
+          setShowInviteDialog(true);
+        } else if (!!directinvite) {
+          setOrgInvite(await getDirectInviteToken(directinvite as string));
+          setShowInviteDialog(true);
         }
-        
-        return response.json();
-      })
-      .then((data) => {
-        setOrgInvite(data);
-        setShowInviteDialog(true);
-      })
-      .catch(error => {
-        setAlertMessage(`Error while joining organisation: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true); 
-      }); 
+      }
+    } catch(error) {
+      setAlertMessage(`Error while joining organisation: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
     }
-  }, [router.isReady, invite, directinvite, token, tokenUrl, DIRECT_INVITE_API_URL, ORG_INVITE_API_URL]);
+  }, [router.isReady, invite, directinvite]);
 
   function navigateToAppsPage(id: number) {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
 
-  // TODO: Create a reusable fetcher class, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/useApp.ts
-  // @ts-ignore
-  const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<Org[]>(ApiRoutes.ORGS, fetcher);
-  if (error) return <div>Failed to load</div>;
-  // TODO: Instead of using checking if data is not available, use the `isLoading` flag returned by useSWR and display both, 
-  //       the data and the loading indicator at the same time
-  if (!data) return <div>Loading...</div>;
+  const { orgs: data, isLoading, isError, mutate } = useOrgs();
+  if (isError) return <div>Failed to load</div>;
 
-  // TODO: it might be smart idea to move all the route strings into a shared class in its own file, e.g. AppRoutes, so when moving a page, the paths are updated
-  //       everywhere in the application.
   function navigateToEditOrgPage(id: number) {
     router.push(Routes.editOrgById(id));
   }
@@ -125,61 +90,44 @@ export default function DashboardPage() {
     setShowDeleteDialog(true);
   }
 
-  function deleteOrg(orgId: number) {
-    // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
-    fetch(ApiRoutes.getOrgById(orgId), {
-      method: "DELETE",
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(error => {
-          throw new Error(error.message);
-        });
-      }
-      
-      mutate();
-      
-      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while deleting org with id ${orgId}: ${error.message}`);
+  async function delOrg(orgId: number) {
+    try {
+        await deleteOrg(orgId);
+        mutate();
+        
+        setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
+        setAlertSeverity("success");
+        setShowAlert(true);
+    } catch (error) {
+      setAlertMessage(`Error while deleting org with id ${orgId}: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    });    
+    } 
   }
 
-  function joinOrg(id: number) {
-    // TODO: move the API call into own file, ref: https://github.com/kula-app/Hermes/blob/main/frontend/src/api/removeJob.ts
-    fetch(tokenUrl + '/' + token, {
-      method: "POST",
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(error => {
-          throw new Error(error.message);
-        });
+  async function joinOrg(id: number) {
+    try {
+      if (!!invite) {
+        await joinOrgViaOrgInvite(invite as string);
+      } else if (!!directinvite) {
+        await joinOrgViaDirectInvite(directinvite as string);
       }
+      if (!! invite || !!directinvite) {
+        setAlertMessage(`Successfully joined organisation with id ${id}!`);
+        setAlertSeverity("success");
+        setShowAlert(true);
 
-      setAlertMessage(`Successfully joined organisation with id ${id}!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
-
-      navigateToOrgPage(id);
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while joining: ${error.message}`);
+        navigateToOrgPage(id);
+      }
+    } catch(error) {
+      setAlertMessage(`Error while joining: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    });    
+    }
   }
 
   return (
     <>
-      <Navbar hasSession={!!session} />
       <main className={styles.main}>
         <h1>Organisations</h1>
         <div className="addButton">
@@ -203,7 +151,7 @@ export default function DashboardPage() {
             <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
-            {data.map((org, index) => {
+            {data?.map((org, index) => {
               return (
                 <TableRow key={index} >
                   <TableCell width="5%">
@@ -238,9 +186,10 @@ export default function DashboardPage() {
             })}
           </TableBody>
         </Table>
-        {data.length == 0 && (
+        {data?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
+        {isLoading && <p className="marginTopMedium">Loading...</p>}
         <Snackbar 
             open={showAlert} 
             autoHideDuration={6000} 
@@ -281,7 +230,7 @@ export default function DashboardPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowDeleteDialog(false); deleteOrg(orgId)}} autoFocus>
+              <Button onClick={() => {setShowDeleteDialog(false); delOrg(orgId)}} autoFocus>
                 Agree
               </Button>
             </DialogActions>

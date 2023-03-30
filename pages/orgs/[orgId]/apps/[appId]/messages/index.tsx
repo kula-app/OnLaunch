@@ -1,7 +1,6 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useSWR from "swr";
 import Navbar from "../../../../../../components/Navbar";
 import styles from "../../../../../../styles/Home.module.css";
 
@@ -30,9 +29,8 @@ import { TextField } from "@mui/material";
 import Routes from "../../../../../../routes/routes";
 import ApiRoutes from "../../../../../../routes/apiRoutes";
 import { Message } from "../../../../../../types/message";
-import { App } from "../../../../../../types/app";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+import { useApp } from "../../../../../../api/useApp";
+import deleteMessage from "../../../../../../api/deleteMessage";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
@@ -41,8 +39,6 @@ export default function MessagesOfAppPage() {
   
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
-
-  const APPS_API_URL = ApiRoutes.getAppsByOrgId(orgId);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
@@ -53,10 +49,8 @@ export default function MessagesOfAppPage() {
 
   const now = Moment.now();
 
-  const fetcher = (...args: any) => fetch(args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<App>(appId ? ApiRoutes.getAppByOrgIdAndAppId(orgId, appId) : null, fetcher);
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  const { app: data, isLoading, isError, mutate } = useApp(orgId, appId);
+  if (isError) return <div>Failed to load</div>;
 
   function navigateToEditMessagePage(messageId: number) {
     router.push(Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId));
@@ -73,34 +67,25 @@ export default function MessagesOfAppPage() {
       if (message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
         setShowDeleteDialog(true);
       } else {
-          deleteMessage(messageId);
+          callDeleteMessage(messageId);
       }
     }
   }
 
-  function deleteMessage(messageId: number) {
-    fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId), {
-      method: "DELETE",
-    }).then(response => {
-      if (!response.ok) {
-        return response.json().then(error => {
-          throw new Error(error.message);
-        });
-      }
+  async function callDeleteMessage(messageId: number) {
+    try {
+      await deleteMessage(orgId, appId, messageId);
       
       mutate();
 
       setAlertMessage(`Message with id '${messageId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
-
-      return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while deleting message with id ${messageId}: ${error.message}`);
+    } catch (error) {
+      setAlertMessage(`Error while deleting message with id ${messageId}: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    });    
+    };    
   }
 
   return (
@@ -108,8 +93,8 @@ export default function MessagesOfAppPage() {
       <div>
         <Navbar hasSession={!!session} />
         <main className={styles.main}>
-          <h1>{data.name}</h1>
-          {data.role === "ADMIN" && <div className="row">
+          <h1>{data?.name}</h1>
+          {data?.role === "ADMIN" && <div className="row">
             <TextField 
               disabled 
               label="Public Key for Clients"
@@ -173,7 +158,7 @@ export default function MessagesOfAppPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.messages && data.messages.map((message: Message, index: number) => {
+              {data?.messages && data.messages.map((message: Message, index: number) => {
                 return (
                   <TableRow key={index}>
                     <TableCell className="centeredText">
@@ -235,9 +220,10 @@ export default function MessagesOfAppPage() {
               })}
             </TableBody>
           </Table>
-          {data.messages && data.messages.length == 0 && (
+          {data?.messages && data.messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
+          {isLoading && <div className="marginTopMedium">Loading...</div>}
           <Snackbar 
             open={showAlert} 
             autoHideDuration={6000} 
@@ -278,7 +264,7 @@ export default function MessagesOfAppPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowDeleteDialog(false); deleteMessage(messageId)}} autoFocus>
+              <Button onClick={() => {setShowDeleteDialog(false); callDeleteMessage(messageId)}} autoFocus>
                 Agree
               </Button>
             </DialogActions>

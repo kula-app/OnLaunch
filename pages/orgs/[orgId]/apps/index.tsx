@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
 import styles from "../../../../styles/Home.module.css";
-import useSWR from "swr";
 import { useState, FormEvent } from "react";
 import { useSession, getSession } from 'next-auth/react';
 import Navbar from "../../../../components/Navbar";
@@ -32,11 +31,9 @@ import TextField from "@mui/material/TextField";
 import { SelectChangeEvent } from "@mui/material";
 import Routes from "../../../../routes/routes";
 import ApiRoutes from "../../../../routes/apiRoutes";
-import { App } from "../../../../types/app";
-import { User } from "../../../../types/user";
-import { Org } from "../../../../types/org";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+import { useUsers } from "../../../../api/useUsers";
+import { useApps } from "../../../../api/useApps";
+import { useOrg } from "../../../../api/useOrg";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -60,17 +57,15 @@ export default function AppsPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   }
 
-  // @ts-ignore
-  const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-  const { data, error, mutate } = useSWR<App[]>(router.isReady ? ApiRoutes.getAppsByOrgId(orgId) : undefined, fetcher);
-  const { data: userData, error: userError, mutate: userMutate } = useSWR<User[]>(router.isReady ? ApiRoutes.getOrgUsersByOrgId(orgId) : undefined, fetcher);
-  const { data: orgData, error: orgError, mutate: orgMutate } = useSWR<Org>(router.isReady ? ApiRoutes.getOrgById(orgId) : undefined, fetcher);
+  const { apps, isError: error, isLoading: isLoadingApps, mutate } = useApps(orgId);
+  const { users, isError: userError, isLoading: isLoadingUser, mutate: userMutate } = useUsers(orgId);
+
+  const { org, isError: orgError, isLoading: isLoadingOrg, } = useOrg(orgId);
   if (error || userError || orgError) return <div>Failed to load</div>;
-  if (!data || !userData || !orgData) return <div>Loading...</div>;
 
   let userRole = "";
-  if (!!userData) {
-    userRole = userData.find(i => i.email === session?.user?.email)?.role as string;
+  if (!!users) {
+    userRole = users.find(i => i.email === session?.user?.email)?.role as string;
   }
 
   const baseUrl = window.location.origin;
@@ -127,7 +122,7 @@ export default function AppsPage() {
         });
       }
     
-      if (userId === Number(userData?.find(i => i.email === session?.user?.email)?.id)) {
+      if (userId === Number(users?.find(i => i.email === session?.user?.email)?.id)) {
         navigateToHome();
       } else {
 
@@ -148,7 +143,7 @@ export default function AppsPage() {
   }
 
   function resetInvitation() {
-    fetch(ApiRoutes.getOrgsInvitationByToken(orgData?.invitationToken as string), {
+    fetch(ApiRoutes.getOrgsInvitationByToken(org?.invitationToken as string), {
       method: "PUT",
       headers: {
           "Content-Type": "application/json",
@@ -208,12 +203,11 @@ export default function AppsPage() {
   }
 
   function handleRoleChange(index: number, event: SelectChangeEvent<unknown>) {
-    if (!userData) {
+    if (!users) {
       return;
     }
 
-    let users = [... userData];
-    let user = users[index];
+    let user = [... users][index];
 
     fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
       method: "PUT",
@@ -252,9 +246,9 @@ export default function AppsPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Navbar hasSession={!!session} />
       <main className={styles.main}>
-        <h1>Organisation {orgData?.name}</h1>
+        <h1>Organisation {org?.name}</h1>
+        {isLoadingOrg && <p className="marginTopMedium">loading...</p>}
         <h1>Apps</h1>
         {userRole === "ADMIN" && <div className="addButton">
             <Button
@@ -278,7 +272,7 @@ export default function AppsPage() {
             <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
-            {data.map((app, index) => {
+            {apps?.map((app, index) => {
               return (
                 <TableRow key={index} >
                   <TableCell width="5%">
@@ -313,9 +307,10 @@ export default function AppsPage() {
             })}
           </TableBody>
         </Table>
-        {data.length == 0 && (
+        {apps?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
+        {isLoadingApps && <p className="marginTopMedium">loading...</p>}
         <div className={styles.main}>
           <h1>Users</h1>
           {userRole === "ADMIN" && <div className="row">
@@ -323,14 +318,14 @@ export default function AppsPage() {
               disabled 
               label="Invitation link"
               id="invite" 
-              value={baseUrl + "/dashboard?invite=" + orgData?.invitationToken}
+              value={baseUrl + "/dashboard?invite=" + org?.invitationToken}
             />
             <div className="column">
               <Button
                 variant="contained"
                 sx={{ marginLeft: 5 }}
                 onClick={() => {
-                  navigator.clipboard.writeText(baseUrl + "/dashboard?invite="+(orgData?.invitationToken as string));
+                  navigator.clipboard.writeText(baseUrl + "/dashboard?invite="+(org?.invitationToken as string));
                   setAlertMessage("Invitation link copied to clipboard");
                   setAlertSeverity("success");
                   setShowAlert(true);
@@ -386,7 +381,7 @@ export default function AppsPage() {
               <TableCell></TableCell>
             </TableHead>
             <TableBody>
-              {userData.map((user, index) => {
+              {users?.map((user, index) => {
                 return (
                   <TableRow key={index} >
                     <TableCell >
@@ -433,9 +428,10 @@ export default function AppsPage() {
               })}
             </TableBody>
           </Table>
-          {userData.length == 0 && (
+          {users?.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
+          {isLoadingUser && <p className="marginTopMedium">loading...</p>}
         </div>
         <Snackbar 
             open={showAlert} 

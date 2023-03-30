@@ -26,6 +26,7 @@ import Routes from "../../../../../../routes/routes";
 import ApiRoutes from "../../../../../../routes/apiRoutes";
 import { Action } from "../../../../../../types/action";
 import { Message } from "../../../../../../types/message";
+import createMessage from "../../../../../../api/createMessage";
 
 // TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
 
@@ -57,7 +58,7 @@ export default function NewMessageForAppPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   } 
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
@@ -71,36 +72,20 @@ export default function NewMessageForAppPage() {
         actions: actions,
     };
 
-    // make POST http request
-    fetch(ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId), {
-        method: "POST",
-        body: JSON.stringify(message),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      await createMessage(orgId, appId, message);
 
-        setAlertMessage("Message created successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+      setAlertMessage("Message created successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
-        resetForm(); 
-        navigateToAppMessagesPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while creating new message: ${error.message}`);
+      resetForm(); 
+      navigateToAppMessagesPage();
+    } catch (error) {
+        setAlertMessage(`Error while creating new message: ${error}`);
         setAlertSeverity("error");
         setShowAlert(true);
-    });  
-       
+    }    
   }
 
   function resetForm() {

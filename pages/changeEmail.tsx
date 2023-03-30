@@ -12,8 +12,7 @@ import type { AlertColor } from '@mui/material/Alert';
 import { useSession, signOut } from 'next-auth/react';
 import Routes from "../routes/routes";
 import ApiRoutes from "../routes/apiRoutes";
-
-// TODO: see `dashboard.tsx` for all the comments about API communication & shared classes
+import validateEmailChange from "../api/validateEmailChange";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -32,36 +31,25 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token && !loading) {
-      fetch(ApiRoutes.EMAIL_CHANGE, {
-        method: "PUT",
-        body: JSON.stringify({ token: token }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-          if(!response.ok) {
-              return response.json().then(error => {
-                  throw new Error(error.message);
-              });
-          }
+      try {
+        async () => {
+          await validateEmailChange(token as string);
+        }
 
-          if (!!session) {
-            signOut({
-              redirect: false
-            });
-          }
+        if (!!session) {
+          signOut({
+            redirect: false
+          });
+        }
   
-          setEmailChanged(true);
-    
-          return response.json();
-      })
-      .catch(error => {
-        if (!error.message.includes("obsolete")) {
-          setAlertMessage(`Error while request: ${error.message}`);
+        setEmailChanged(true);
+      } catch(error) {
+        if (!(error as string).includes("obsolete")) {
+          setAlertMessage(`Error while request: ${error}`);
           setAlertSeverity("error");
           setShowAlert(true);
         }
-      }); 
+      }; 
     }
     
   }, [router.isReady, token, router, session, loading]);

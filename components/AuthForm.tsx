@@ -10,25 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from '../routes/routes';
-import ApiRoutes from '../routes/apiRoutes';
-
-async function createUser(email: string, password: string, firstName: string, lastName: string) {
-    const response = await fetch(ApiRoutes.USERS, {
-        method: 'POST',
-        body: JSON.stringify({ email, password, firstName, lastName }),
-        headers: {
-            'Content-Type':  'application/json'
-        }
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error (data.message || 'an error occurred');
-    }
-
-    return data;
-}
+import createUser from '../api/createUser';
 
 export default function AuthForm() {
     const router = useRouter();
@@ -80,10 +62,8 @@ export default function AuthForm() {
             }
         } else {
             try {
-                const result = await createUser(email, password, firstName, lastName);
+                await createUser(email, password, firstName, lastName);
                 navigateToVerifyPage();
-                
-                
             } catch (error) {
                 setAlertMessage(`Error while creating user: ${error}`);
                 setAlertSeverity("error");
