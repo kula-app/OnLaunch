@@ -9,6 +9,7 @@ class Routes {
   static readonly RESET = "/reset";
   static readonly RESET_PASSWORD = "/resetPassword";
   static readonly VERIFY = "/verify";
+  static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
 
   static get createNewOrg(): string {
     return "/orgs/new";

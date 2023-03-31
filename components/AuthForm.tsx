@@ -38,7 +38,7 @@ export default function AuthForm() {
     } 
     
     function navigateToVerifyPage() {
-        router.replace(`${Routes.VERIFY}?signup=true`);
+        router.replace(Routes.VERIFY_AFTER_SIGNUP);
     } 
 
     async function submitHandler(event: FormEvent<HTMLFormElement>) {
