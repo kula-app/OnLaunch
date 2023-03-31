@@ -3,13 +3,13 @@ import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import getOrg from "../../../api/getOrg";
 import updateOrg from "../../../api/updateOrg";
 import Routes from "../../../routes/routes";
@@ -22,7 +22,7 @@ export default function EditOrgPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[orgName, setOrgName] = useState("");
+  const [orgName, setOrgName] = useState("");
 
   const orgId = Number(router.query.orgId);
 
@@ -32,11 +32,11 @@ export default function EditOrgPage() {
     const fetchOrgData = async () => {
       const org = await getOrg(orgId);
       fillForm(org);
-    } 
+    };
 
     try {
       fetchOrgData();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while fetching org: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -60,19 +60,18 @@ export default function EditOrgPage() {
       setShowAlert(true);
 
       navigateToDashboardPage();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while editing org: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
     }
   }
-  
+
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);
-  } 
+  }
 
   function fillForm(org: Org) {
-
     // fill the form
     setOrgName(org.name);
   }
@@ -82,32 +81,28 @@ export default function EditOrgPage() {
       <div>
         <main className={styles.main}>
           <h1>Edit Organisation</h1>
-          <form 
-            id="orgForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="orgForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               value={orgName}
               onChange={(event) => setOrgName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               update
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -138,10 +133,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { StatusCodes } from 'http-status-codes';
+import { StatusCodes } from "http-status-codes";
 
 const prisma = new PrismaClient();
 
@@ -29,20 +29,20 @@ export default async function handler(
   if (!req.query.appId) {
     res.status(StatusCodes.METHOD_NOT_ALLOWED).end("parameter AppId needed");
   }
-  
+
   switch (req.method) {
     case "GET":
       const publicKey = req.headers.publickey;
-      
+
       if (!publicKey) {
         res.status(StatusCodes.BAD_REQUEST).end("no publicKey provided");
         return;
       }
-      
+
       const app = await prisma.app.findFirst({
         where: {
-          publicKey: publicKey as string
-        }
+          publicKey: publicKey as string,
+        },
       });
 
       if (!app) {
@@ -57,7 +57,7 @@ export default async function handler(
         where: {
           AND: [
             {
-              appId: Number(req.query.appId)
+              appId: Number(req.query.appId),
             },
             {
               startDate: {
@@ -70,7 +70,7 @@ export default async function handler(
               },
             },
           ],
-        },  
+        },
       });
 
       res.status(StatusCodes.OK).json(

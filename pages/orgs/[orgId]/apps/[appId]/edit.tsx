@@ -3,13 +3,13 @@ import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import getApp from "../../../../../api/getApp";
 import updateApp from "../../../../../api/updateApp";
 import Routes from "../../../../../routes/routes";
@@ -17,7 +17,7 @@ import { App } from "../../../../../models/app";
 
 export default function EditAppPage() {
   const router = useRouter();
-  
+
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
@@ -25,19 +25,18 @@ export default function EditAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
-
+  const [appName, setAppName] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
 
     const fetchAppData = async () => {
       fillForm(await getApp(orgId, appId));
-    } 
+    };
 
     try {
       fetchAppData();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while fetching app data: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -55,19 +54,18 @@ export default function EditAppPage() {
       setShowAlert(true);
 
       navigateToAppsPage();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while editing app: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
     }
   }
-  
+
   function navigateToAppsPage() {
     router.push(Routes.getOrgAppsByOrgId(Number(orgId)));
-  } 
+  }
 
   function fillForm(app: App) {
-
     // fill the form
     setAppName(app.name);
   }
@@ -77,32 +75,28 @@ export default function EditAppPage() {
       <div>
         <main className={styles.main}>
           <h1>Edit App</h1>
-          <form 
-            id="appForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="appForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               value={appName}
               onChange={(event) => setAppName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               update
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -133,10 +127,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

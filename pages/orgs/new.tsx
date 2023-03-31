@@ -3,13 +3,13 @@ import { FormEvent, useState } from "react";
 import styles from "../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import createOrg from "../../api/createOrg";
 import Routes from "../../routes/routes";
 
@@ -20,12 +20,11 @@ export default function NewOrgPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[orgName, setOrgName] = useState("");
-
+  const [orgName, setOrgName] = useState("");
 
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);
-  } 
+  }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,9 +36,9 @@ export default function NewOrgPage() {
       setAlertSeverity("success");
       setShowAlert(true);
 
-      resetForm(); 
+      resetForm();
       navigateToDashboardPage();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while creating new org: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -55,30 +54,27 @@ export default function NewOrgPage() {
       <div>
         <main className={styles.main}>
           <h1>New Organisation</h1>
-          <form id="orgForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="orgForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               onChange={(event) => setOrgName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               save
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -109,10 +105,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

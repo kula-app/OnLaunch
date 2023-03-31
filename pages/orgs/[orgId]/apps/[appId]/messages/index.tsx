@@ -7,15 +7,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import { TextField } from "@mui/material";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import Chip from '@mui/material/Chip';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import Table from "@mui/material/Table";
@@ -23,8 +23,8 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from '@mui/material/Tooltip';
-import { getSession } from 'next-auth/react';
+import Tooltip from "@mui/material/Tooltip";
+import { getSession } from "next-auth/react";
 import deleteMessage from "../../../../../../api/deleteMessage";
 import { useApp } from "../../../../../../api/useApp";
 import Routes from "../../../../../../routes/routes";
@@ -32,7 +32,7 @@ import { Message } from "../../../../../../models/message";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
-  
+
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
@@ -49,7 +49,9 @@ export default function MessagesOfAppPage() {
   if (isError) return <div>Failed to load</div>;
 
   function navigateToEditMessagePage(messageId: number) {
-    router.push(Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId));
+    router.push(
+      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId)
+    );
   }
 
   function navigateToNewMessagePage() {
@@ -59,11 +61,15 @@ export default function MessagesOfAppPage() {
   function handleDelete(messageId: number) {
     setMessageId(messageId);
     if (data && data.messages) {
-      const message = data?.messages.find(x => x.id == messageId);
-      if (message && Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now)) {
+      const message = data?.messages.find((x) => x.id == messageId);
+      if (
+        message &&
+        Moment(message.startDate).isBefore(now) &&
+        Moment(message.endDate).isAfter(now)
+      ) {
         setShowDeleteDialog(true);
       } else {
-          callDeleteMessage(messageId);
+        callDeleteMessage(messageId);
       }
     }
   }
@@ -71,17 +77,19 @@ export default function MessagesOfAppPage() {
   async function callDeleteMessage(messageId: number) {
     try {
       await deleteMessage(orgId, appId, messageId);
-      
+
       mutate();
 
       setAlertMessage(`Message with id '${messageId}' successfully deleted!`);
       setAlertSeverity("success");
       setShowAlert(true);
     } catch (error) {
-      setAlertMessage(`Error while deleting message with id ${messageId}: ${error}`);
+      setAlertMessage(
+        `Error while deleting message with id ${messageId}: ${error}`
+      );
       setAlertSeverity("error");
       setShowAlert(true);
-    };    
+    }
   }
 
   return (
@@ -89,27 +97,28 @@ export default function MessagesOfAppPage() {
       <div>
         <main className={styles.main}>
           <h1>{data?.name}</h1>
-          {data?.role === "ADMIN" && <div className="row">
-            <TextField 
-              disabled 
-              label="Public Key for Clients"
-              id="publicKey" 
-              value={data.publicKey}
-            />
-            <Button
-              variant="contained"
-              sx={{ marginLeft: 2 }}
-              onClick={() => {
-                navigator.clipboard.writeText(data.publicKey as string);
-                setAlertMessage("Public key copied to clipboard");
-                setAlertSeverity("success");
-                setShowAlert(true);
-              }}
-            >
-              copy
-            </Button>
-          </div>
-          }
+          {data?.role === "ADMIN" && (
+            <div className="row">
+              <TextField
+                disabled
+                label="Public Key for Clients"
+                id="publicKey"
+                value={data.publicKey}
+              />
+              <Button
+                variant="contained"
+                sx={{ marginLeft: 2 }}
+                onClick={() => {
+                  navigator.clipboard.writeText(data.publicKey as string);
+                  setAlertMessage("Public key copied to clipboard");
+                  setAlertSeverity("success");
+                  setShowAlert(true);
+                }}
+              >
+                copy
+              </Button>
+            </div>
+          )}
           <div className="addButton marginTopLarge">
             <Button
               variant="contained"
@@ -153,78 +162,97 @@ export default function MessagesOfAppPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.messages && data.messages.map((message: Message, index: number) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="centeredText">
-                      {message.id}
-                    </TableCell>
-                    <TableCell>
-                      <div className="centeredElement">
-                        { Moment(message.startDate).isBefore(now) && Moment(message.endDate).isAfter(now) && (
-                            <Tooltip title="this message is currently displayed in apps" >
-                                <Chip label="active" color="success" size="small" />
+              {data?.messages &&
+                data.messages.map((message: Message, index: number) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="centeredText">
+                        {message.id}
+                      </TableCell>
+                      <TableCell>
+                        <div className="centeredElement">
+                          {Moment(message.startDate).isBefore(now) &&
+                            Moment(message.endDate).isAfter(now) && (
+                              <Tooltip title="this message is currently displayed in apps">
+                                <Chip
+                                  label="active"
+                                  color="success"
+                                  size="small"
+                                />
+                              </Tooltip>
+                            )}
+                          {Moment(message.endDate).isBefore(now) && (
+                            <Tooltip title="this message will not be displayed again in apps">
+                              <Chip
+                                label="past"
+                                size="small"
+                                variant="outlined"
+                              />
                             </Tooltip>
-                        )}
-                        { Moment(message.endDate).isBefore(now) && (
-                            <Tooltip title="this message will not be displayed again in apps" >
-                                <Chip label="past" size="small" variant="outlined" />
+                          )}
+                          {Moment(message.startDate).isAfter(now) && (
+                            <Tooltip title="this message will be displayed in apps in the future">
+                              <Chip
+                                label="upcoming"
+                                color="secondary"
+                                size="small"
+                                variant="outlined"
+                              />
                             </Tooltip>
-                        )}
-                        { Moment(message.startDate).isAfter(now) && (
-                            <Tooltip title="this message will be displayed in apps in the future" >
-                                <Chip label="upcoming" color="secondary" size="small" variant="outlined" />
-                            </Tooltip>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {message.title}
-                    </TableCell>
-                    <TableCell>
-                      {message.body}
-                    </TableCell>
-                    <TableCell className="centeredText">
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{message.title}</TableCell>
+                      <TableCell>{message.body}</TableCell>
+                      <TableCell className="centeredText">
                         {String(message.blocking)}
-                    </TableCell>
-                    <TableCell>
-                      {Moment(message.startDate).format("DD.MM.YYYY HH:mm:ss")}
-                    </TableCell>
-                    <TableCell>
-                      {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
-                    </TableCell>
-                    <TableCell className="centeredText">
-                      {!!message.actions ? message.actions.length : 0}
-                    </TableCell>
-                    <TableCell>
-                      <div className="hiddenTableElement">
-                        <Tooltip title="edit" >
-                            <IconButton onClick={() => navigateToEditMessagePage(Number(message.id))}>
-                                <EditIcon />
+                      </TableCell>
+                      <TableCell>
+                        {Moment(message.startDate).format(
+                          "DD.MM.YYYY HH:mm:ss"
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
+                      </TableCell>
+                      <TableCell className="centeredText">
+                        {!!message.actions ? message.actions.length : 0}
+                      </TableCell>
+                      <TableCell>
+                        <div className="hiddenTableElement">
+                          <Tooltip title="edit">
+                            <IconButton
+                              onClick={() =>
+                                navigateToEditMessagePage(Number(message.id))
+                              }
+                            >
+                              <EditIcon />
                             </IconButton>
-                        </Tooltip>
-                        <Tooltip title="delete" >
-                            <IconButton onClick={() => handleDelete(Number(message.id))}>
-                                <DeleteForeverIcon />
+                          </Tooltip>
+                          <Tooltip title="delete">
+                            <IconButton
+                              onClick={() => handleDelete(Number(message.id))}
+                            >
+                              <DeleteForeverIcon />
                             </IconButton>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                          </Tooltip>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
           {data?.messages && data.messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
           {isLoading && <div className="marginTopMedium">Loading...</div>}
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               className="marginTopMedium"
               severity={alertSeverity}
@@ -248,18 +276,25 @@ export default function MessagesOfAppPage() {
             open={showDeleteDialog}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            >
+          >
             <DialogTitle id="alert-dialog-title">
               {`Delete currently active Message with id '${messageId}?`}
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                This message is currently displayed in apps. Deletion cannot be undone.
+                This message is currently displayed in apps. Deletion cannot be
+                undone.
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowDeleteDialog(false); callDeleteMessage(messageId)}} autoFocus>
+              <Button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  callDeleteMessage(messageId);
+                }}
+                autoFocus
+              >
                 Agree
               </Button>
             </DialogActions>
@@ -276,10 +311,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

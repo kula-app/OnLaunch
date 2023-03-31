@@ -5,11 +5,11 @@ const deleteUser = async () => {
   const response = await fetch(ApiRoutes.USERS, {
     method: "DELETE",
     headers: {
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   });
 
   return await returnDataOrThrowError(response);
-}
+};
 
 export default deleteUser;

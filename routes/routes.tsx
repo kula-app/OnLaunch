@@ -27,23 +27,17 @@ class Routes {
     return `/orgs/${orgId}/apps/new`;
   }
 
-  static editAppForOrgIdAndAppId(
-    orgId: number, 
-    appId: number
-  ): string {
+  static editAppForOrgIdAndAppId(orgId: number, appId: number): string {
     return `/orgs/${orgId}/apps/${appId}/edit`;
   }
 
-  static getMessagesByOrgIdAndAppId(
-    orgId: number, 
-    appId: number,
-  ): string {
+  static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {
     return `/orgs/${orgId}/apps/${appId}/messages`;
   }
 
   static createNewMessageForOrgIdAndAppId(
     orgId: number,
-    appId: number,
+    appId: number
   ): string {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
@@ -51,13 +45,13 @@ class Routes {
   static editMessageByOrgIdAndAppIdAndMessageId(
     orgId: number,
     appId: number,
-    messageId: number,
+    messageId: number
   ): string {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }
 
   // the bellow functions use the full path of website for external usage
-  
+
   static changeEmailWithToken(token: string): string {
     return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
   }

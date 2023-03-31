@@ -1,4 +1,4 @@
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Routes from "../routes/routes";
@@ -29,10 +29,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

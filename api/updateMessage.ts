@@ -6,17 +6,20 @@ const updateMessage = async (
   orgId: number,
   appId: number,
   messageId: number,
-  message: Message,
+  message: Message
 ) => {
-  const response = await fetch(ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId), {
-    method: "PUT",
-    body: JSON.stringify(message),
-    headers: {
+  const response = await fetch(
+    ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId),
+    {
+      method: "PUT",
+      body: JSON.stringify(message),
+      headers: {
         "Content-Type": "application/json",
-    },
-  });
+      },
+    }
+  );
 
   return await returnDataOrThrowError(response);
-}
+};
 
 export default updateMessage;

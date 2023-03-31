@@ -1,29 +1,29 @@
 import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
 import deleteOrg from "../api/deleteOrg";
 import getDirectInviteToken from "../api/getDirectInviteToken";
 import getOrgInviteToken from "../api/getOrgInviteToken";
@@ -58,8 +58,8 @@ export default function DashboardPage() {
           setOrgInvite(await getDirectInviteToken(directinvite as string));
           setShowInviteDialog(true);
         }
-      }
-    } catch(error) {
+      };
+    } catch (error) {
       setAlertMessage(`Error while joining organisation: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -92,17 +92,17 @@ export default function DashboardPage() {
 
   async function delOrg(orgId: number) {
     try {
-        await deleteOrg(orgId);
-        mutate();
-        
-        setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
-        setAlertSeverity("success");
-        setShowAlert(true);
+      await deleteOrg(orgId);
+      mutate();
+
+      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
+      setAlertSeverity("success");
+      setShowAlert(true);
     } catch (error) {
       setAlertMessage(`Error while deleting org with id ${orgId}: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
-    } 
+    }
   }
 
   async function joinOrg(id: number) {
@@ -112,14 +112,14 @@ export default function DashboardPage() {
       } else if (!!directinvite) {
         await joinOrgViaDirectInvite(directinvite as string);
       }
-      if (!! invite || !!directinvite) {
+      if (!!invite || !!directinvite) {
         setAlertMessage(`Successfully joined organisation with id ${id}!`);
         setAlertSeverity("success");
         setShowAlert(true);
 
         navigateToOrgPage(id);
       }
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while joining: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -153,34 +153,34 @@ export default function DashboardPage() {
           <TableBody>
             {orgs?.map((org, index) => {
               return (
-                <TableRow key={index} >
-                  <TableCell width="5%">
-                    {org.id}
-                  </TableCell>
-                  <TableCell>
-                    {org.name}
-                  </TableCell>
+                <TableRow key={index}>
+                  <TableCell width="5%">{org.id}</TableCell>
+                  <TableCell>{org.name}</TableCell>
                   <TableCell width="5%">
                     <div className="hiddenTableElement">
-                      <Tooltip title="view messages" >
-                          <IconButton onClick={() => navigateToAppsPage(org.id)}>
-                            <VisibilityIcon />
-                          </IconButton>
-                        </Tooltip>
-                        {org.role === "ADMIN" && <Tooltip title="edit" >
-                          <IconButton onClick={() => navigateToEditOrgPage(org.id)}>
+                      <Tooltip title="view messages">
+                        <IconButton onClick={() => navigateToAppsPage(org.id)}>
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
+                      {org.role === "ADMIN" && (
+                        <Tooltip title="edit">
+                          <IconButton
+                            onClick={() => navigateToEditOrgPage(org.id)}
+                          >
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        }
-                        {org.role === "ADMIN" && <Tooltip title="delete" >
+                      )}
+                      {org.role === "ADMIN" && (
+                        <Tooltip title="delete">
                           <IconButton onClick={() => handleDelete(org.id)}>
                             <DeleteForeverIcon />
                           </IconButton>
                         </Tooltip>
-                        } 
-                      </div>
-                    </TableCell>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -190,71 +190,83 @@ export default function DashboardPage() {
           <p className="marginTopMedium">no data to show</p>
         )}
         {isLoading && <p className="marginTopMedium">Loading...</p>}
-        <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
-            onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
-            <Alert
-              className="marginTopMedium"
-              severity={alertSeverity}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setShowAlert(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {alertMessage}
-            </Alert>
-          </Snackbar> 
-          <Dialog
-            open={showDeleteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={6000}
+          onClose={() => setShowAlert(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            className="marginTopMedium"
+            severity={alertSeverity}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setShowAlert(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
           >
-            <DialogTitle id="alert-dialog-title">
-              {`Delete Organisation with id '${orgId}?`}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                This cannot be undone.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowDeleteDialog(false); delOrg(orgId)}} autoFocus>
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Dialog
-            open={showInviteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">
-              {`Join Organisation '${orgInvite?.name}?'`}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                You can leave any time.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowInviteDialog(false)}>Cancel</Button>
-              <Button onClick={() => {setShowInviteDialog(false); joinOrg(Number(orgInvite?.id))}} autoFocus>
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
+        <Dialog
+          open={showDeleteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Delete Organisation with id '${orgId}?`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              This cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                setShowDeleteDialog(false);
+                delOrg(orgId);
+              }}
+              autoFocus
+            >
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={showInviteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Join Organisation '${orgInvite?.name}?'`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              You can leave any time.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowInviteDialog(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                setShowInviteDialog(false);
+                joinOrg(Number(orgInvite?.id));
+              }}
+              autoFocus
+            >
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
       </main>
     </>
   );
@@ -266,10 +278,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

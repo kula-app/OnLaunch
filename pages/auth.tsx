@@ -1,8 +1,7 @@
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import AuthForm from "../components/AuthForm";
 
 export default function Auth() {
-
   return (
     <>
       <AuthForm />
@@ -16,10 +15,10 @@ export async function getServerSideProps(context: any) {
   if (session) {
     return {
       redirect: {
-        destination: '/',
+        destination: "/",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

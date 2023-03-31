@@ -5,13 +5,13 @@ import styles from "../../../../../../styles/Home.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import Snackbar from "@mui/material/Snackbar";
 import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
@@ -20,7 +20,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import createMessage from "../../../../../../api/createMessage";
 import Routes from "../../../../../../routes/routes";
 import { Action } from "../../../../../../models/action";
@@ -50,20 +50,20 @@ export default function NewMessageForAppPage() {
 
   function navigateToAppMessagesPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
-  } 
+  }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
     let message: Message = {
-        title: title,
-        body: body,
-        blocking: switchValue,
-        startDate: startDate,
-        endDate: endDate,
-        appId: appId,
-        actions: actions,
+      title: title,
+      body: body,
+      blocking: switchValue,
+      startDate: startDate,
+      endDate: endDate,
+      appId: appId,
+      actions: actions,
     };
 
     try {
@@ -73,13 +73,13 @@ export default function NewMessageForAppPage() {
       setAlertSeverity("success");
       setShowAlert(true);
 
-      resetForm(); 
+      resetForm();
       navigateToAppMessagesPage();
     } catch (error) {
-        setAlertMessage(`Error while creating new message: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }    
+      setAlertMessage(`Error while creating new message: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
 
   function resetForm() {
@@ -88,7 +88,10 @@ export default function NewMessageForAppPage() {
   }
 
   function addAction() {
-    setActions(oldActions => [...oldActions, { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" }]);
+    setActions((oldActions) => [
+      ...oldActions,
+      { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" },
+    ]);
   }
 
   function deleteAction(index: number) {
@@ -96,20 +99,29 @@ export default function NewMessageForAppPage() {
     newActions.splice(index, 1);
     setActions(newActions);
   }
-  
-  function handleActionTitleChange(index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+
+  function handleActionTitleChange(
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     let data = [...actions];
     data[index]["title"] = event.target.value;
     setActions(data);
   }
 
-  function handleActionTypeChange(index: number, event: SelectChangeEvent<unknown>) {
+  function handleActionTypeChange(
+    index: number,
+    event: SelectChangeEvent<unknown>
+  ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
     setActions(data);
   }
 
-  function handleButtonDesignChange(index: number, event: SelectChangeEvent<unknown>) {
+  function handleButtonDesignChange(
+    index: number,
+    event: SelectChangeEvent<unknown>
+  ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
     setActions(data);
@@ -121,34 +133,33 @@ export default function NewMessageForAppPage() {
         <main className={styles.main}>
           <h1>New Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
-            <TextField 
-              required 
-              label="Title" 
-              id="title" 
-              variant="outlined" 
+            <TextField
+              required
+              label="Title"
+              id="title"
+              variant="outlined"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
             />
-            <TextField 
+            <TextField
               required
-              multiline 
-              label="Body" 
-              minRows={10} 
-              maxRows={10} 
-              id="body" 
+              multiline
+              label="Body"
+              minRows={10}
+              maxRows={10}
+              id="body"
               className="marginTopMedium"
               value={body}
               onChange={(event) => setBody(event.target.value)}
             />
             <div>
-              <FormControlLabel 
-                control=
-                  {
-                    <Switch
-                      checked={switchValue}
-                      onChange={() => setSwitchValue(!switchValue)}
-                    ></Switch>
-                  }
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={switchValue}
+                    onChange={() => setSwitchValue(!switchValue)}
+                  ></Switch>
+                }
                 label="Blocking"
                 labelPlacement="start"
                 sx={{ marginLeft: 0 }}
@@ -176,9 +187,9 @@ export default function NewMessageForAppPage() {
             />
             <h3 className="marginTopMedium centeredElement">Actions</h3>
             <Table
-            sx={{ minWidth: 650, maxWidth: 1300 }}
-            aria-label="simple table"
-            className="messageTable"
+              sx={{ minWidth: 650, maxWidth: 1300 }}
+              aria-label="simple table"
+              className="messageTable"
             >
               <TableHead>
                 <TableRow>
@@ -195,50 +206,62 @@ export default function NewMessageForAppPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {actions && actions.map((action: Action, index: number) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Select 
-                          label="ButtonDesign"
-                          value={action.buttonDesign}
-                          onChange={event => handleButtonDesignChange(index, event)}
-                        >
-                          {buttonDesigns.map((value, index) => {
-                            return (
-                              <MenuItem key={index} value={value}>{value}</MenuItem>
-                            )
-                          })}
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <Select 
-                          label="ActionType"
-                          value={action.actionType}
-                          onChange={event => handleActionTypeChange(index, event)}
-                        >
-                          {actionTypes.map((value, index) => {
-                            return (
-                              <MenuItem key={index} value={value}>{value}</MenuItem>
-                            )
-                          })}
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                      <TextField type="text" 
-                          name="actionTitle" 
-                          value={action.title} 
-                          onChange={event => handleActionTitleChange(index, event)}
+                {actions &&
+                  actions.map((action: Action, index: number) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Select
+                            label="ButtonDesign"
+                            value={action.buttonDesign}
+                            onChange={(event) =>
+                              handleButtonDesignChange(index, event)
+                            }
+                          >
+                            {buttonDesigns.map((value, index) => {
+                              return (
+                                <MenuItem key={index} value={value}>
+                                  {value}
+                                </MenuItem>
+                              );
+                            })}
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            label="ActionType"
+                            value={action.actionType}
+                            onChange={(event) =>
+                              handleActionTypeChange(index, event)
+                            }
+                          >
+                            {actionTypes.map((value, index) => {
+                              return (
+                                <MenuItem key={index} value={value}>
+                                  {value}
+                                </MenuItem>
+                              );
+                            })}
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            type="text"
+                            name="actionTitle"
+                            value={action.title}
+                            onChange={(event) =>
+                              handleActionTitleChange(index, event)
+                            }
                           />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => deleteAction(index)}>
-                          <DeleteForeverIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton onClick={() => deleteAction(index)}>
+                            <DeleteForeverIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
             {actions.length == 0 && (
@@ -252,18 +275,18 @@ export default function NewMessageForAppPage() {
                 }}
               >
                 New Action
-                </Button>
+              </Button>
             </div>
             <Button variant="contained" type="submit">
               save
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -294,10 +317,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

@@ -3,13 +3,13 @@ import { FormEvent, useState } from "react";
 import styles from "../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
-import type { AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import createApp from "../../../../api/createApp";
 import Routes from "../../../../routes/routes";
 
@@ -22,12 +22,11 @@ export default function NewAppPage() {
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
-
+  const [appName, setAppName] = useState("");
 
   function navigateToAppsPage() {
     router.push(Routes.getOrgAppsByOrgId(orgId));
-  } 
+  }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,9 +38,9 @@ export default function NewAppPage() {
       setAlertSeverity("success");
       setShowAlert(true);
 
-      resetForm(); 
+      resetForm();
       navigateToAppsPage();
-    } catch(error) {
+    } catch (error) {
       setAlertMessage(`Error while creating new app: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
@@ -57,30 +56,27 @@ export default function NewAppPage() {
       <div>
         <main className={styles.main}>
           <h1>New App</h1>
-          <form id="appForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="appForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               onChange={(event) => setAppName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               save
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -111,10 +107,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {
