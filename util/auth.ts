@@ -1,4 +1,9 @@
 import { compare, genSalt, hash } from 'bcrypt';
+import { createChangeEmailTemplate } from '../mailTemplate/changeEmail';
+import { createDirectInviteTemplate } from '../mailTemplate/directInvite';
+import { createEmailChangedTemplate } from '../mailTemplate/emailChanged';
+import { createResetPasswordTemplate } from '../mailTemplate/resetPassword';
+import { createVerificationTemplate } from '../mailTemplate/verification';
 import { MailType } from '../types/mailType';
 var crypto = require('crypto');
 var base64url = require('base64url');
@@ -42,56 +47,67 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
     });
 
     let baseUrl = process.env.NEXTAUTH_URL as string;
+    const senderName = process.env.SENDING_NAME as string;
 
     // TODO: Move these templates to separate constants/files, e.g. multiple JSON documents.
     switch (mailType) {
         case MailType.Verification:
+            const verificationTemplate = createVerificationTemplate(firstName, baseUrl, token, senderName);
+
             transporter.sendMail({
                 from: getSenderData(),
                 to: email,
-                subject: 'Verify your OnLaunch account',
-                text: `Dear ${firstName}, please verify your OnLaunch account: <a href='${baseUrl}/verify?token=${token}'>verify now</a>`,
-                html: `Dear <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='${baseUrl}/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
+                subject: verificationTemplate.subject,
+                text: verificationTemplate.text,
+                html: verificationTemplate.html,
             });
             break;
 
         case MailType.ResetPassword:
+            const resetPasswordTemplate = createResetPasswordTemplate(firstName, baseUrl, token, senderName);
+
             transporter.sendMail({
                 from: getSenderData(),
                 to: email,
-                subject: 'Reset your OnLaunch password',
-                text: `Dear ${firstName}, use this link to change your password within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a>`,
-                html: `Dear <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
+                subject: resetPasswordTemplate.subject,
+                text: resetPasswordTemplate.text,
+                html: resetPasswordTemplate.html,
             });
             break;
 
         case MailType.ChangeEmail:
+            const changeEmailTemplate = createChangeEmailTemplate(firstName, baseUrl, token, senderName);
+
             transporter.sendMail({
                 from: getSenderData(),
                 to: email,
-                subject: 'Verify your new OnLaunch email address',
-                text: `Dear ${firstName}, use this link to verify your new email address within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>verify now</a>`,
-                html: `Dear <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='${baseUrl}/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+                subject: changeEmailTemplate.subject,
+                text: changeEmailTemplate.text,
+                html: changeEmailTemplate.html,
             });
             break;
 
         case MailType.EmailChanged:
+            const emailChangedTemplate = createEmailChangedTemplate(firstName, senderName);
+
             transporter.sendMail({
                 from: getSenderData(),
                 to: email,
-                subject: 'Your email address has been changed',
-                text: `Dear ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
-                html: `Dear <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+                subject: emailChangedTemplate.subject,
+                text: emailChangedTemplate.text,
+                html: emailChangedTemplate.html,
             });
             break;
 
         case MailType.DirectInvite:
+            const directInviteTemplate = createDirectInviteTemplate(firstName, baseUrl, token, senderName);
+
             transporter.sendMail({
                 from: getSenderData(),
                 to: email,
-                subject: 'You have a new invitation',
-                text: `Dear ${firstName}, you are now invited to an organisation`,
-                html: `Dear <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='${baseUrl}/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
+                subject: directInviteTemplate.subject,
+                text: directInviteTemplate.text,
+                html: directInviteTemplate.html,
             });
             break;
     }

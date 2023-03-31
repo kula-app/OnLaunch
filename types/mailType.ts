@@ -1,7 +1,7 @@
 export enum MailType {
-    Verification = 'verification',
-    ResetPassword = "reset_password",
     ChangeEmail = "change_email",
+    DirectInvite = "direct_invite",
     EmailChanged = "email_changed",
-    DirectInvite = "direct_invite"
+    ResetPassword = "reset_password",
+    Verification = 'verification',
 }
