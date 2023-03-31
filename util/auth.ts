@@ -40,8 +40,9 @@ export function generateToken() {
 export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: MailType) {
     let transporter = nodemailer.createTransport({
         host: `${config.smtp.host}`,
-        port: Number(config.smtp.port),
+        port: config.smtp.port,
         auth: {
+            // must be wrapped in a string, so it is never undefined
             user: `${config.smtp.user}`,
             pass: `${config.smtp.pass}`,
         }
