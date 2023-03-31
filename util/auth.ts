@@ -6,6 +6,7 @@ import { createEmailChangedTemplate } from '../mailTemplate/emailChanged';
 import { createResetPasswordTemplate } from '../mailTemplate/resetPassword';
 import { createVerificationTemplate } from '../mailTemplate/verification';
 import { MailType } from '../models/mailType';
+import Routes from '../routes/routes';
 var crypto = require('crypto');
 var base64url = require('base64url');
 
@@ -48,12 +49,11 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
         }
     });
 
-    let baseUrl = config.nextAuth.url as string;
     const senderName = config.emailContent.senderName as string;
 
     switch (mailType) {
         case MailType.Verification:
-            const verificationTemplate = createVerificationTemplate(firstName, baseUrl, token, senderName);
+            const verificationTemplate = createVerificationTemplate(firstName, Routes.verifyWithToken(token), senderName);
 
             transporter.sendMail({
                 from: getSenderData(senderName),
@@ -65,7 +65,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             break;
 
         case MailType.ResetPassword:
-            const resetPasswordTemplate = createResetPasswordTemplate(firstName, baseUrl, token, senderName);
+            const resetPasswordTemplate = createResetPasswordTemplate(firstName, Routes.resetPasswordWithToken(token), senderName);
 
             transporter.sendMail({
                 from: getSenderData(senderName),
@@ -77,7 +77,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             break;
 
         case MailType.ChangeEmail:
-            const changeEmailTemplate = createChangeEmailTemplate(firstName, baseUrl, token, senderName);
+            const changeEmailTemplate = createChangeEmailTemplate(firstName, Routes.changeEmailWithToken(token), senderName);
 
             transporter.sendMail({
                 from: getSenderData(senderName),
@@ -101,7 +101,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             break;
 
         case MailType.DirectInvite:
-            const directInviteTemplate = createDirectInviteTemplate(firstName, baseUrl, token, senderName);
+            const directInviteTemplate = createDirectInviteTemplate(firstName, Routes.directInviteWithToken(token), senderName);
 
             transporter.sendMail({
                 from: getSenderData(senderName),

@@ -1,3 +1,5 @@
+import config from "../config/config";
+
 class Routes {
   static readonly INDEX = "/";
   static readonly DASHBOARD = "/dashboard";
@@ -51,6 +53,24 @@ class Routes {
     messageId: number,
   ): string {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
+  }
+
+  // the bellow functions use the full path of website for external usage
+  
+  static changeEmailWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
+  }
+
+  static directInviteWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
+  }
+
+  static resetPasswordWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.RESET_PASSWORD}?token=${token}`;
+  }
+
+  static verifyWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
   }
 }
 
