@@ -29,25 +29,23 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token && !loading) {
-      try {
-        async () => {
+      async () => {
+        try {
           await validateEmailChange(token as string);
-        };
-
-        if (!!session) {
-          signOut({
-            redirect: false,
-          });
+          if (!!session) {
+            signOut({
+              redirect: false,
+            });
+          }
+          setEmailChanged(true);
+        } catch (error) {
+          if (!(error as string).includes("obsolete")) {
+            setAlertMessage(`Error while request: ${error}`);
+            setAlertSeverity("error");
+            setShowAlert(true);
+          }
         }
-
-        setEmailChanged(true);
-      } catch (error) {
-        if (!(error as string).includes("obsolete")) {
-          setAlertMessage(`Error while request: ${error}`);
-          setAlertSeverity("error");
-          setShowAlert(true);
-        }
-      }
+      };
     }
   }, [router.isReady, token, router, session, loading]);
 

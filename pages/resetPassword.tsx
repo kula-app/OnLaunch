@@ -32,21 +32,21 @@ export default function ResetPasswordPage() {
     if (!router.isReady) return;
     if (!!token) {
       const fetchEmailChangeToken = async () => {
-        await getPasswordResetToken(token as string);
+        try {
+          await getPasswordResetToken(token as string);
 
-        setLoading(false);
-        setValidToken(true);
+          setLoading(false);
+          setValidToken(true);
+        } catch (error) {
+          setLoading(false);
+
+          setAlertMessage(`Error while fetching token: ${error}`);
+          setAlertSeverity("error");
+          setShowAlert(true);
+        }
       };
 
-      try {
-        fetchEmailChangeToken();
-      } catch (error) {
-        setLoading(false);
-
-        setAlertMessage(`Error while fetching token: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-      }
+      fetchEmailChangeToken();
     }
   }, [router.isReady, token]);
 

@@ -30,17 +30,17 @@ export default function EditOrgPage() {
     if (!router.isReady) return;
 
     const fetchOrgData = async () => {
-      const org = await getOrg(orgId);
-      fillForm(org);
+      try {
+        const org = await getOrg(orgId);
+        fillForm(org);
+      } catch (error) {
+        setAlertMessage(`Error while fetching org: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
     };
 
-    try {
-      fetchOrgData();
-    } catch (error) {
-      setAlertMessage(`Error while fetching org: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
+    fetchOrgData();
   }, [router.isReady, orgId]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {

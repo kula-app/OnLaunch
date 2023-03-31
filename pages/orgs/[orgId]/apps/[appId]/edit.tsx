@@ -31,16 +31,16 @@ export default function EditAppPage() {
     if (!router.isReady) return;
 
     const fetchAppData = async () => {
-      fillForm(await getApp(orgId, appId));
+      try {
+        fillForm(await getApp(orgId, appId));
+      } catch (error) {
+        setAlertMessage(`Error while fetching app data: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
     };
 
-    try {
-      fetchAppData();
-    } catch (error) {
-      setAlertMessage(`Error while fetching app data: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
+    fetchAppData();
   }, [router.isReady, appId, orgId]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {

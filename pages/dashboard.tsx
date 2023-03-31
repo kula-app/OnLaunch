@@ -49,8 +49,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!router.isReady) return;
-    try {
-      async () => {
+
+    async () => {
+      try {
         if (!!invite) {
           setOrgInvite(await getOrgInviteToken(invite as string));
           setShowInviteDialog(true);
@@ -58,12 +59,12 @@ export default function DashboardPage() {
           setOrgInvite(await getDirectInviteToken(directinvite as string));
           setShowInviteDialog(true);
         }
-      };
-    } catch (error) {
-      setAlertMessage(`Error while joining organisation: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
+      } catch (error) {
+        setAlertMessage(`Error while joining organisation: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
+    };
   }, [router.isReady, invite, directinvite]);
 
   function navigateToAppsPage(id: number) {

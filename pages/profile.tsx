@@ -43,16 +43,16 @@ export default function ProfilePage() {
     if (!router.isReady) return;
 
     const fetchUserData = async () => {
-      setUser(await getUser());
+      try {
+        setUser(await getUser());
+      } catch (error) {
+        setAlertMessage(`Error while fetching user data: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
     };
 
-    try {
-      fetchUserData();
-    } catch (error) {
-      setAlertMessage(`Error while fetching user data: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
+    fetchUserData();
   }, [router.isReady]);
 
   async function sendNewPassword() {

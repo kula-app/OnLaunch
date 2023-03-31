@@ -56,16 +56,16 @@ export default function EditMessageOfAppPage() {
     if (!router.isReady) return;
 
     const fetchMessageData = async () => {
-      fillForm(await getMessage(orgId, appId, messageId));
+      try {
+        fillForm(await getMessage(orgId, appId, messageId));
+      } catch (error) {
+        setAlertMessage(`Error while fetching message: ${error}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      }
     };
 
-    try {
-      fetchMessageData();
-    } catch (error) {
-      setAlertMessage(`Error while fetching message: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
+    fetchMessageData();
   }, [router.isReady, orgId, appId, messageId]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
