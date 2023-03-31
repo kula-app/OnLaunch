@@ -70,7 +70,6 @@ model User {
 
   firstName String?
   lastName  String?
-  birthday  DateTime?
 
   email    String?
   password String?

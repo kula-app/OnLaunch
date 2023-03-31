@@ -54,7 +54,6 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "firstName" TEXT,
     "lastName" TEXT,
-    "birthday" TIMESTAMP(3),
     "email" TEXT,
     "password" TEXT,
     "salt" TEXT,
