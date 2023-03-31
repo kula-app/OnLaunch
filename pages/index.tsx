@@ -1,6 +1,7 @@
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { getSession } from 'next-auth/react';
 import { useEffect } from "react";
+import Routes from "../routes/routes";
 
 export default function IndexPage() {
   const router = useRouter();
@@ -9,7 +10,7 @@ export default function IndexPage() {
     if (!router.isReady) return;
 
     function navigateToDashboardPage() {
-      router.push(`/dashboard`);
+      router.push(Routes.DASHBOARD);
     }
 
     navigateToDashboardPage();
@@ -17,6 +18,7 @@ export default function IndexPage() {
 
   return (
     <>
+      <h1>redirecting ...</h1>
     </>
   );
 }
@@ -27,10 +29,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

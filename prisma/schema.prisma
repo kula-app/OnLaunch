@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,12 +8,12 @@ datasource db {
 }
 
 enum ActionType {
-  DISMISS  @map("dismiss")
+  DISMISS @map("dismiss")
 }
 
 enum ButtonDesign {
-  TEXT        @map("text")
-  FILLED      @map("filled")
+  TEXT   @map("text")
+  FILLED @map("filled")
 }
 
 enum Role {
@@ -25,129 +22,161 @@ enum Role {
 }
 
 model Action {
-  id          Int          @id @default(autoincrement())
-  actionType  ActionType
-  buttonDesign    ButtonDesign
-  title       String
-  Message     Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  messageId   Int?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title        String
+  actionType   ActionType
+  buttonDesign ButtonDesign
+
+  message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId Int?
 }
 
 model Message {
-  id          Int         @id @default(autoincrement())
-  blocking    Boolean
-  title       String
-  body        String
-  actions     Action[]
-  startDate   DateTime
-  endDate     DateTime
-  App         App?        @relation(fields: [appId], references: [id], onDelete: Cascade)
-  appId       Int?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title     String
+  body      String
+  blocking  Boolean
+  startDate DateTime
+  endDate   DateTime
+  actions   Action[]
+
+  app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId Int?
 }
 
 model App {
-  id          Int         @id @default(autoincrement())
-  name        String
-  messages    Message[]
-  Organisation  Organisation?        @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  orgId       Int?
-  publicKey   String      @unique
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String
+  publicKey String    @unique
+  messages  Message[]
+
+  organisation Organisation? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId        Int?
 }
 
 model User {
-  id          Int         @id @default(autoincrement())
-  firstName   String?
-  lastName    String?
-  email       String?
-  password    String?
-  salt        String?
-  isVerified  Boolean
-  isDeleted   Boolean     @default(false)
-  token       VerificationToken[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String?
+  lastName  String?
+
+  email    String?
+  password String?
+  salt     String?
+
+  // only a verified user can use the functionality of OnLaunch
+  isVerified Boolean
+  isDeleted  Boolean @default(false)
+
+  token               VerificationToken[]
   passwordToken       PasswordResetToken[]
   emailChangeToken    EmailChangeToken[]
-  userInvitationToken     UserInvitationToken[]
-  orgs        UsersInOrganisations[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  userInvitationToken UserInvitationToken[]
+  orgs                UsersInOrganisations[]
 }
 
 model Organisation {
-  id          Int         @id @default(autoincrement())
-  name        String
-  invitationToken   String?    @unique
-  apps        App[]
-  users       UsersInOrganisations[]
-  userInvitationToken     UserInvitationToken[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name            String
+  invitationToken String @unique
+
+  apps                App[]
+  users               UsersInOrganisations[]
+  userInvitationToken UserInvitationToken[]
 }
 
+// this model indicates which users are in which organisation (with which role) and vice versa
 model UsersInOrganisations {
-  org         Organisation    @relation(fields: [orgId], references: [id])
-  orgId       Int
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  role        Role
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org    Organisation @relation(fields: [orgId], references: [id])
+  orgId  Int
+  user   User         @relation(fields: [userId], references: [id])
+  userId Int
+  role   Role
+
   @@id([orgId, userId])
 }
 
 model VerificationToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token      String   @unique
+  expiryDate DateTime
+  // true indicates that this token has served it purpose successfully (user got verified)
+  isArchived Boolean  @default(false)
+  // indicates that this token has been replaced with a newer one and therefore is invalid
+  isObsolete Boolean  @default(false)
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model PasswordResetToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token      String   @unique
+  expiryDate DateTime
+  // true indicates that this token has served it purpose successfully (password has been reset)
+  isArchived Boolean  @default(false)
+  // indicates that this token has been replaced with a newer one and therefore is invalid
+  isObsolete Boolean  @default(false)
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model EmailChangeToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  newEmail    String
-  currentEmail    String
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token        String   @unique
+  expiryDate   DateTime
+  newEmail     String
+  currentEmail String
+  // true indicates that this token has served it purpose successfully (email has been changed)
+  isArchived   Boolean  @default(false)
+  // indicates that this token has been replaced with a newer one and therefore is invalid
+  isObsolete   Boolean  @default(false)
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model UserInvitationToken {
-  id          Int         @id @default(autoincrement())
-  token       String      @unique
-  expiryDate  DateTime  
-  isArchived  Boolean     @default(false)
-  isObsolete  Boolean     @default(false)
-  Organisation    Organisation    @relation(fields: [orgId], references: [id])
-  orgId       Int
-  User        User        @relation(fields: [userId], references: [id])
-  userId      Int         
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token      String   @unique
+  expiryDate DateTime
+  // true indicates that this token has served it purpose successfully (user has accepted the invitation)
+  isArchived Boolean  @default(false)
+  // indicates that this token has been replaced with a newer one and therefore is invalid
+  isObsolete Boolean  @default(false)
+
+  organisation Organisation @relation(fields: [orgId], references: [id])
+  orgId        Int
+  user         User         @relation(fields: [userId], references: [id])
+  userId       Int
 }

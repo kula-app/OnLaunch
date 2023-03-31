@@ -1,24 +1,24 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from 'react';
-import styles from "../styles/Home.module.css";
-import Navbar from "../components/Navbar";
 import Button from "@mui/material/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import styles from "../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import type { AlertColor } from '@mui/material/Alert';
-import { getSession } from 'next-auth/react';
-import { useCallback } from 'react';
+import { getSession } from "next-auth/react";
+import updateVerifiedStatus from "../api/updateVerifiedStatus";
+import Routes from "../routes/routes";
+import { useCallback } from "react";
+import ApiRoutes from "../routes/apiRoutes";
 
 export default function VerifyPage() {
   const router = useRouter();
 
   const { signup, token, email } = router.query;
 
-  const VERIFICATION_TOKEN_API_URL = "/api/frontend/v0.1/tokens/verification/";
-  
   const [verified, setVerified] = useState(false);
   const [expired, setExpired] = useState(false);
   const [obsolete, setObsolete] = useState(false);
@@ -27,80 +27,68 @@ export default function VerifyPage() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
-  
+
   const navigateToAuthPage = useCallback(() => {
-    router.push(`/auth`);
+    router.push(Routes.AUTH);
   }, [router]);
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (!!token && !signup) {
-      fetch(VERIFICATION_TOKEN_API_URL, {
-        method: "PUT",
-        body: JSON.stringify({ token: token }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-      }).then((response) => {
-          if(!response.ok) {
-              return response.json().then(error => {
-                  throw new Error(error.message);
-              });
-          }
-  
-          setVerified(true);
-    
-          return response.json();
-      })
-      .catch(error => {
-        if (error.message.includes('expired')) {
+    if (!!token) {
+      const verifyUser = async () => {
+        await updateVerifiedStatus(token as string);
+
+        setVerified(true);
+      };
+
+      try {
+        verifyUser();
+      } catch (error) {
+        if ((error as string).includes("expired")) {
           setExpired(true);
-        } else if (error.message.includes('obsolete')) {
+        } else if ((error as string).includes("obsolete")) {
           setObsolete(true);
-        } else if (error.message.includes('already verified')) {
-          navigateToAuthPage();
         } else {
-          setAlertMessage(`Error while verifying: ${error.message}`);
+          setAlertMessage(`Error while verifying: ${error}`);
           setAlertSeverity("error");
           setShowAlert(true);
         }
-      }); 
+      }
     }
+  }, [router.isReady, token, signup, navigateToAuthPage]);
 
-  }, [router.isReady, token, signup, email, navigateToAuthPage]);
-    
   function resendLink() {
-    fetch(VERIFICATION_TOKEN_API_URL, {
+    fetch(ApiRoutes.VERIFICATION, {
       method: "POST",
       body: JSON.stringify({ email: email }),
       headers: {
-          "Content-Type": "application/json",
+        "Content-Type": "application/json",
       },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((error) => {
+            throw new Error(error.message);
+          });
         }
 
         setAlertMessage(`Link was successfully resend!`);
         setAlertSeverity("success");
         setShowAlert(true);
-  
+
         return response.json();
-    })
-    .catch(error => {
-      setAlertMessage(`Error while resending link: ${error.message}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }); 
+      })
+      .catch((error) => {
+        setAlertMessage(`Error while resending link: ${error.message}`);
+        setAlertSeverity("error");
+        setShowAlert(true);
+      });
 
     setDisabled(true);
   }
 
   return (
     <>
-      <Navbar hasSession={false} />
       <main className={styles.main}>
         {((signup || email) && !expired) && <div>
           <h1 className="centeredElement">Verify your account</h1>
@@ -118,21 +106,13 @@ export default function VerifyPage() {
             >
               login
             </Button>
-        </div>
-        }
+          </div>
+          }
         {(!signup && !verified && expired && !obsolete) && <div className="centeredElement column">
-          <h1 className="centeredElement">Link is expired!</h1>
-          <div>No worries, we already sent you a new one
+            <h1 className="centeredElement">Link is expired!</h1>
+            <div>No worries, we already sent you a new one </div>
           </div>
-        </div>
-        }
-        {(!signup && !verified && !expired && obsolete) && <div className="centeredElement column">
-          <h1 className="centeredElement">Link is obsolete!</h1>
-          <div>You already received a more recent link from us per mail
-          </div>
-        </div>
-        }
-        {(!verified && !signup && !expired && !obsolete && !email) && <div>
+        }{(!verified && !signup && !expired && !obsolete && !email) && <div>
           <h1>loading ...</h1>
         </div> 
         }
@@ -158,12 +138,12 @@ export default function VerifyPage() {
           </Button>
         }
       </main>
-      <Snackbar 
-        open={showAlert} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={showAlert}
+        autoHideDuration={6000}
         onClose={() => setShowAlert(false)}
-        anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-        >
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
         <Alert
           severity={alertSeverity}
           action={
@@ -192,10 +172,10 @@ export async function getServerSideProps(context: any) {
   if (session) {
     return {
       redirect: {
-        destination: '/',
+        destination: "/",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

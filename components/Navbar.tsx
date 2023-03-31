@@ -10,8 +10,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import Button from "@mui/material/Button";
-import { signOut } from 'next-auth/react';
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
+import Routes from "../routes/routes";
 
 interface Props {
   /**
@@ -22,15 +23,17 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = [{ id: "home", link: "/", label: "Home" },
-                  { id: "profile", link: "/profile", label: "Profile"}];
+const navItems = [
+  { id: "home", link: "/", label: "Home" },
+  { id: "profile", link: "/profile", label: "Profile" },
+];
 
 export default function Navbar(props: Props) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function navigateToAuthPage() {
-    router.push(`/auth`);
+    router.push(Routes.AUTH);
   }
 
   const handleDrawerToggle = () => {
@@ -43,18 +46,20 @@ export default function Navbar(props: Props) {
         OnLaunch
       </Typography>
       <Divider />
-      {props.hasSession && navItems.map((item) => (
-        <Link key={item.id} href={item.link}>
-          {item.label}
-        </Link>
-      ))}
-      {props.hasSession && 
+      {props.hasSession &&
+        navItems.map((item) => (
+          <Link key={item.id} href={item.link}>
+            {item.label}
+          </Link>
+        ))}
+      {props.hasSession && (
         <Link key={navItems.length} href="/auth">
           Login
-        </Link>}
+        </Link>
+      )}
     </Box>
   );
-  
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -76,41 +81,44 @@ export default function Navbar(props: Props) {
           >
             OnLaunch
           </Typography>
-          {props.hasSession && <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item) => (
-              <Link 
-                key={item.id} 
-                href={item.link} 
-                style={{ color: "#fff", marginRight: 20 }}>
-                {item.label}
-              </Link>
-            ))}
-          </Box>}
-          {props.hasSession && 
-              <Button
-                variant="outlined"
-                color="info"
-                sx={{ backgroundColor: "white" }}
-                onClick={() => {
-                  signOut({
-                    redirect: false
-                  });
-                  navigateToAuthPage();
-                }}
-              >
-                logout
-              </Button>
-            }
-            {(!props.hasSession) && 
-              <Button
-                variant="outlined"
-                color="info"
-                sx={{ backgroundColor: "white" }}
-                onClick={() => navigateToAuthPage()}
-              >
-                login
-              </Button>
-            }
+          {props.hasSession && (
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              {navItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.link}
+                  style={{ color: "#fff", marginRight: 20 }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </Box>
+          )}
+          {props.hasSession && (
+            <Button
+              variant="outlined"
+              color="info"
+              sx={{ backgroundColor: "white" }}
+              onClick={() => {
+                signOut({
+                  redirect: false,
+                });
+                navigateToAuthPage();
+              }}
+            >
+              logout
+            </Button>
+          )}
+          {!props.hasSession && (
+            <Button
+              variant="outlined"
+              color="info"
+              sx={{ backgroundColor: "white" }}
+              onClick={() => navigateToAuthPage()}
+            >
+              login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <Box component="nav">

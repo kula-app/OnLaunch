@@ -1,66 +1,49 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../components/Navbar";
 import styles from "../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
-
-interface Org {
-  name: string;
-  id: number;
-}
+import { getSession } from "next-auth/react";
+import getOrg from "../../../api/getOrg";
+import updateOrg from "../../../api/updateOrg";
+import Routes from "../../../routes/routes";
+import { Org } from "../../../models/org";
 
 export default function EditOrgPage() {
   const router = useRouter();
-  
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-
-  const ORGS_API_URL = "/api/frontend/v0.1/orgs/";
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[orgName, setOrgName] = useState("");
+  const [orgName, setOrgName] = useState("");
 
-  const { orgId } = router.query;
+  const orgId = Number(router.query.orgId);
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(ORGS_API_URL + orgId)
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let org: Org = {
-          id: data.id,
-          name: data.name,
-        };
+    const fetchOrgData = async () => {
+      const org = await getOrg(orgId);
+      fillForm(org);
+    };
 
-        fillForm(org);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
+    try {
+      fetchOrgData();
+    } catch (error) {
+      setAlertMessage(`Error while fetching org: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }, [router.isReady, orgId]);
 
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // load data from form
@@ -69,42 +52,26 @@ export default function EditOrgPage() {
       name: orgName,
     };
 
-    // make PUT http request
-    fetch(ORGS_API_URL + orgId, {
-    method: "PUT",
-    body: JSON.stringify(newOrg),
-    headers: {
-        "Content-Type": "application/json",
-    },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      await updateOrg(newOrg);
 
-        setAlertMessage("Org edited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+      setAlertMessage("Org edited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
 
-        navigateToDashboardPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while editing org: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
-
+      navigateToDashboardPage();
+    } catch (error) {
+      setAlertMessage(`Error while editing org: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
-  
+
   function navigateToDashboardPage() {
-    router.push(`/dashboard`);
-  } 
+    router.push(Routes.DASHBOARD);
+  }
 
   function fillForm(org: Org) {
-
     // fill the form
     setOrgName(org.name);
   }
@@ -112,35 +79,30 @@ export default function EditOrgPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit Organisation</h1>
-          <form 
-            id="orgForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="orgForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               value={orgName}
               onChange={(event) => setOrgName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               update
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -171,10 +133,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

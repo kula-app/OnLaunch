@@ -41,13 +41,18 @@ RUN yarn install \
 # ---- Build Setup ----
 FROM project_setup AS build_setup
 # copy app sources
+COPY api ./api
+COPY components ./components
+COPY config ./config
+COPY mailTemplate ./mailTemplate
+COPY models ./models
+COPY pages ./pages
 COPY prisma ./prisma
-COPY components  ./components
-COPY pages  ./pages
 COPY public ./public
+COPY routes ./routes
 COPY styles ./styles
-COPY util ./util
 COPY types ./types
+COPY util ./util
 
 # ---- Development ----
 # build development server

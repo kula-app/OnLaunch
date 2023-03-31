@@ -1,15 +1,17 @@
-import { hash, genSalt, compare } from "bcrypt";
-import { PrismaClient } from "@prisma/client";
-import { NextApiRequest } from "next";
-import { getSession } from "next-auth/react";
-
+import { compare, genSalt, hash } from "bcrypt";
+import config from "../config/config";
+import { createChangeEmailTemplate } from "../mailTemplate/changeEmail";
+import { createDirectInviteTemplate } from "../mailTemplate/directInvite";
+import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
+import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
+import { createVerificationTemplate } from "../mailTemplate/verification";
+import { MailType } from "../models/mailType";
+import Routes from "../routes/routes";
 var crypto = require("crypto");
 var base64url = require("base64url");
 
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-
-const prisma = new PrismaClient();
 
 export async function hashAndSaltPassword(password: string) {
   const saltRounds = 10;
@@ -28,10 +30,11 @@ export async function validatePassword(password: string) {
 }
 
 export async function verifyPassword(
-  saltedPassword: string,
+  password: string,
+  salt: string,
   hashedPassword: string
 ) {
-  const isValid = await compare(saltedPassword, hashedPassword);
+  const isValid = await compare(password.concat(salt), hashedPassword);
   return isValid;
 }
 
@@ -43,73 +46,105 @@ export function sendTokenPerMail(
   email: string,
   firstName: string,
   token: string,
-  mailType: string,
-  misc: string
+  mailType: MailType
 ) {
   function ifEmptyThenUndefined(value?: string) {
     value?.length === 0 ? undefined : value;
   }
 
   let transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    auth: ifEmptyThenUndefined(process.env.SMTP_USER) !== undefined && {
-      user: ifEmptyThenUndefined(process.env.SMTP_USER),
-      pass: ifEmptyThenUndefined(process.env.SMTP_PASS),
+    host: config.smtp.host,
+    port: config.smtp.port,
+    auth: ifEmptyThenUndefined(config.smtp.user) !== undefined && {
+      user: ifEmptyThenUndefined(config.smtp.user),
+      pass: ifEmptyThenUndefined(config.smtp.pass),
     },
   });
 
-  let baseUrl = process.env.NEXTAUTH_URL as string;
+  const senderName = config.emailContent.senderName as string;
 
   switch (mailType) {
-    case "VERIFY":
+    case MailType.Verification:
+      const verificationTemplate = createVerificationTemplate(
+        firstName,
+        Routes.verifyWithToken(token),
+        senderName
+      );
+
       transporter.sendMail({
-        from: '"Flo Ho" <flo@onlaunch.com>',
+        from: getSenderData(senderName),
         to: email,
-        subject: "Verify your OnLaunch account",
-        text: `Servas ${firstName}, please verify your OnLaunch account: <a href='${baseUrl}/verify?token=${token}'>verify now</a>`,
-        html: `Servas <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='${baseUrl}/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
+        subject: verificationTemplate.subject,
+        text: verificationTemplate.text,
+        html: verificationTemplate.html,
       });
       break;
 
-    case "RESET_PASSWORD":
+    case MailType.ResetPassword:
+      const resetPasswordTemplate = createResetPasswordTemplate(
+        firstName,
+        Routes.resetPasswordWithToken(token),
+        senderName
+      );
+
       transporter.sendMail({
-        from: '"Flo Ho" <flo@onlaunch.com>',
+        from: getSenderData(senderName),
         to: email,
-        subject: "Reset your OnLaunch password",
-        text: `Servas ${firstName}, use this link to change your password within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a>`,
-        html: `Servas <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
+        subject: resetPasswordTemplate.subject,
+        text: resetPasswordTemplate.text,
+        html: resetPasswordTemplate.html,
       });
       break;
 
-    case "CHANGE_EMAIL":
+    case MailType.ChangeEmail:
+      const changeEmailTemplate = createChangeEmailTemplate(
+        firstName,
+        Routes.changeEmailWithToken(token),
+        senderName
+      );
+
       transporter.sendMail({
-        from: '"Flo Ho" <flo@onlaunch.com>',
+        from: getSenderData(senderName),
         to: email,
-        subject: "Verify your new OnLaunch email address",
-        text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>verify now</a>`,
-        html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='${baseUrl}/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+        subject: changeEmailTemplate.subject,
+        text: changeEmailTemplate.text,
+        html: changeEmailTemplate.html,
       });
       break;
 
-    case "MAIL_CHANGED":
+    case MailType.EmailChanged:
+      const emailChangedTemplate = createEmailChangedTemplate(
+        firstName,
+        senderName
+      );
+
       transporter.sendMail({
-        from: '"Flo Ho" <flo@onlaunch.com>',
+        from: getSenderData(senderName),
         to: email,
-        subject: "Your email address has been changed",
-        text: `Servas ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
-        html: `Servas <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+        subject: emailChangedTemplate.subject,
+        text: emailChangedTemplate.text,
+        html: emailChangedTemplate.html,
       });
       break;
 
-    case "DIRECT_INVITE":
+    case MailType.DirectInvite:
+      const directInviteTemplate = createDirectInviteTemplate(
+        firstName,
+        Routes.directInviteWithToken(token),
+        senderName
+      );
+
       transporter.sendMail({
-        from: '"Flo Ho" <flo@onlaunch.com>',
+        from: getSenderData(senderName),
         to: email,
-        subject: "You have a new invitation",
-        text: `Servas ${firstName}, you are now invited to an organisation`,
-        html: `Servas <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='${baseUrl}/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
+        subject: directInviteTemplate.subject,
+        text: directInviteTemplate.text,
+        html: directInviteTemplate.html,
       });
       break;
+  }
+
+  function getSenderData(senderName: string) {
+    return `"${senderName}" <${config.emailContent.senderAddress}>`;
   }
 }

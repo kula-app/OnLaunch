@@ -1,200 +1,146 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import { hashAndSaltPassword, validatePassword, generateToken, sendTokenPerMail } from '../../../../util/auth';
-import { getSession } from 'next-auth/react';
+import { PrismaClient } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    switch(req.method) {
-        case 'POST':
-            const data = req.body;
+  switch (req.method) {
+    case "GET":
+      const session = await getSession({ req: req });
 
-            const { email, password, firstName, lastName } = data;
+      if (!session) {
+        res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: "Not authorized!" });
+        return;
+      }
 
-            if (process.env.SIGNUPS_ENABLED === "false") {
-                res
-                    .status(405)
-                    .json({ message: 'Not allowed - signups are currently disabled!'});
-                return;
-            }
+      const userFromDb = await prisma.user.findFirst({
+        where: {
+          id: Number(session.user.id),
+          NOT: {
+            isDeleted: true,
+          },
+        },
+      });
 
-            if (!email || !email.includes('@')) {
-                res
-                    .status(422)
-                    .json({ message: 'Invalid data - email not valid'});
-                    return;
-            }
+      if (!userFromDb || (userFromDb && !userFromDb.id)) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User not found!" });
+        return;
+      }
 
-            if (!(await validatePassword(password))) {
-                res
-                    .status(422)
-                    .json({ message: 'Invalid data - password consists of less than 8 characters'});
-                return;
-            }
+      res
+        .status(StatusCodes.CREATED)
+        .json({
+          email: userFromDb.email,
+          firstName: userFromDb.firstName,
+          lastName: userFromDb.lastName,
+        });
+      break;
 
-            const lookupUser = await prisma.user.findFirst({
-                where: {
-                    email: email,
-                    NOT: {
-                        isDeleted: true,
-                    }
-                }
-            });
-            
-            if (lookupUser) {
-                res
-                    .status(409)
-                    .json({ message: 'Conflict - email already in use'});
-                return;
-            }
+    case "DELETE":
+      const session2 = await getSession({ req: req });
 
-            const { hashedSaltedPassword, salt } = await hashAndSaltPassword(password);
+      if (!session2) {
+        res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: "Not authorized!" });
+        return;
+      }
 
-            const createdUser = await prisma.user.create({
-                data: {
-                    email: email,
-                    password: hashedSaltedPassword,
-                    salt: salt,
-                    firstName: firstName,
-                    lastName: lastName,
-                    isVerified: false,
-                }
-            });
+      const userEmail2 = session2.user?.email as string;
 
-            const generatedToken = generateToken();
-        
-            var expiryDate = new Date();
-            // set expiryDate one week from now
-            expiryDate.setDate(expiryDate.getDate() + 7);
-    
-            const verificationToken = await prisma.verificationToken.create({
-                data: {
-                    userId: createdUser.id,
-                    token: generatedToken,
-                    expiryDate: expiryDate,
-                    isArchived: false,
-                }
-            });
-    
-            sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY", "");
-            
-            res.status(201).json(email);
-            break;
+      const userFromDb2 = await prisma.user.findFirst({
+        where: {
+          email: userEmail2,
+          NOT: {
+            isDeleted: true,
+          },
+        },
+      });
 
-        case 'GET':
-            const session = await getSession({ req: req });
+      if (!userFromDb2 || (userFromDb2 && !userFromDb2.id)) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User not found!" });
+        return;
+      }
 
-            if (!session) {
-                res.status(401).json({ message: 'Not authorized!' });
-                return;
-            }
+      // check if user is qualified to be deleted
+      const userInOrgs = await prisma.usersInOrganisations.findMany({
+        where: {
+          user: {
+            id: userFromDb2.id,
+          },
+          role: "ADMIN",
+        },
+      });
 
-            const userFromDb = await prisma.user.findFirst({
-                where: {
-                    id: Number(session.user.id),
-                    NOT: {
-                        isDeleted: true,
-                    }
-                }
-            });
+      let orgsToDeleteFirst: Array<number> = [];
 
-            if (!userFromDb || ( userFromDb && !userFromDb.id)) {
-                res.status(400).json({ message: 'User not found!' });
-                return;
-            }
+      await Promise.all(
+        userInOrgs.map(async (userInOrg) => {
+          const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
+            where: {
+              orgId: userInOrg.orgId,
+              role: "ADMIN",
+              NOT: {
+                userId: userInOrg.userId,
+              },
+            },
+          });
 
-            res.status(201).json({ email: userFromDb.email, firstName: userFromDb.firstName, lastName: userFromDb.lastName });
-            break;
-        
-        case 'DELETE':
-            const session2 = await getSession({ req: req });
+          if (Array.isArray(otherAdminsInOrg) && !otherAdminsInOrg.length) {
+            orgsToDeleteFirst.push(userInOrg.orgId);
+          }
+        })
+      );
 
-            if (!session2) {
-                res.status(401).json({ message: 'Not authorized!' });
-                return;
-            }
+      if (orgsToDeleteFirst.length) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({
+            message:
+              "You have to delete these organisations first: " +
+              JSON.stringify(orgsToDeleteFirst),
+          });
+        return;
+      }
 
-            const userEmail2 = session2.user?.email as string;
+      // if user qualifies to be deleted:
+      const deletedUser = await prisma.user.update({
+        where: {
+          id: userFromDb2.id,
+        },
+        data: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          password: null,
+          salt: null,
+          isDeleted: true,
+        },
+      });
 
-            const userFromDb2 = await prisma.user.findFirst({
-                where: {
-                    email: userEmail2,
-                    NOT: {
-                        isDeleted: true,
-                    }
-                }
-            });
+      // delete user from organisations
+      await prisma.usersInOrganisations.deleteMany({
+        where: {
+          userId: deletedUser.id,
+        },
+      });
 
-            if (!userFromDb2 || ( userFromDb2 && !userFromDb2.id)) {
-                res.status(400).json({ message: 'User not found!' });
-                return;
-            }
+      res.status(StatusCodes.CREATED).json({ deletedUser });
+      break;
 
-            // check if user is qualified to be deleted
-            const userInOrgs = await prisma.usersInOrganisations.findMany({
-                where: {
-                    user: {
-                        id: userFromDb2.id
-                    },
-                    role: "ADMIN"
-                }
-            });
-
-            let orgsToDeleteFirst: Array<number> = [];
-            
-            await Promise.all(userInOrgs.map(async (userInOrg) => {
-                const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
-                    where: {
-                        orgId: userInOrg.orgId,
-                        role: "ADMIN",
-                        NOT: {
-                            userId: userInOrg.userId
-                        }
-                    }
-                });
-                
-                if (Array.isArray(otherAdminsInOrg) && !otherAdminsInOrg.length) {
-                    orgsToDeleteFirst.push(userInOrg.orgId);
-                } 
-            }));
-            
-            if (orgsToDeleteFirst.length) {
-                res.status(400).json({ message: 'You have to delete these organisations first: ' + JSON.stringify(orgsToDeleteFirst) });
-                return;
-            }
-
-            // if user qualifies to be deleted:
-            const deletedUser = await prisma.user.update({
-                where: {
-                    id: userFromDb2.id
-                },
-                data: {
-                    email: null,
-                    firstName: null,
-                    lastName: null,
-                    password: null,
-                    salt: null,
-                    isDeleted: true,
-                }
-            });
-
-            // delete user from organisations 
-            await prisma.usersInOrganisations.deleteMany({
-                where: {
-                    userId: deletedUser.id
-                }
-            });
-
-            res.status(201).json({ deletedUser });
-            break;
-
-        default:
-            res.status(405).end('method not allowed');
-            break;
-    }   
+    default:
+      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
+      break;
+  }
 }

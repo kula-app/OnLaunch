@@ -1,126 +1,147 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
-import { generateToken, sendTokenPerMail, hashAndSaltPassword, validatePassword } from '../../../../../util/auth';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { PrismaClient } from "@prisma/client";
+import {
+  generateToken,
+  sendTokenPerMail,
+  hashAndSaltPassword,
+  validatePassword,
+} from "../../../../../util/auth";
+import { StatusCodes } from "http-status-codes";
+import { MailType } from "../../../../../models/mailType";
 
-const prisma = new PrismaClient()
-
+const prisma = new PrismaClient();
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    const data = req.body;
+  const data = req.body;
 
-    const { token, email, password } = data;
+  const { token, email, password } = data;
 
-    switch(req.method) {
-        case 'PUT':
-            if (!token || !password) {
-                res
-                    .status(400)
-                    .json({ message: 'No token or token provided!'});
-                return;
-            }
+  switch (req.method) {
+    case "PUT":
+      if (!token || !password) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "No token or token provided!" });
+        return;
+      }
 
-            if (!(await validatePassword(password))) {
-                res
-                    .status(422)
-                    .json({ message: 'Invalid data - password consists of less than 8 characters'});
-                return;
-            }
+      if (!(await validatePassword(password))) {
+        res
+          .status(StatusCodes.UNPROCESSABLE_ENTITY)
+          .json({
+            message:
+              "Invalid data - password consists of less than 8 characters",
+          });
+        return;
+      }
 
-            const lookupToken = await prisma.passwordResetToken.findFirst({
-                where: {
-                    token: token
-                }
-            });
-                    
-            if (!lookupToken) {
-                res
-                    .status(404)
-                    .json({ message: 'PasswordReset token not found!'});
-                return;
-            }
-        
-            if (lookupToken && (lookupToken.isArchived || lookupToken.isObsolete || lookupToken.expiryDate < new Date())) {
-                res
-                    .status(400)
-                    .json({ message: 'Please restart the password reset process!'});
-                return;
-            }
+      const lookupToken = await prisma.passwordResetToken.findFirst({
+        where: {
+          token: token,
+        },
+      });
 
-            const { hashedSaltedPassword, salt } = await hashAndSaltPassword(password);
+      if (!lookupToken) {
+        res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "PasswordReset token not found!" });
+        return;
+      }
 
-            const updatedUser = await prisma.user.update({
-                where: {
-                    id: lookupToken.userId,
-                },
-                data: {
-                    password: hashedSaltedPassword,
-                    salt: salt,
-                }
-            });
+      if (
+        lookupToken &&
+        (lookupToken.isArchived ||
+          lookupToken.isObsolete ||
+          lookupToken.expiryDate < new Date())
+      ) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Please restart the password reset process!" });
+        return;
+      }
 
-            await prisma.passwordResetToken.update({
-                where: {
-                    id: lookupToken.id,
-                },
-                data: {
-                    isArchived: true,
-                }
-            });
+      const { hashedSaltedPassword, salt } = await hashAndSaltPassword(
+        password
+      );
 
-            res.status(200).json(updatedUser);
-            break;
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: lookupToken.userId,
+        },
+        data: {
+          password: hashedSaltedPassword,
+          salt: salt,
+        },
+      });
 
-        case 'POST':
-            const user = await prisma.user.findFirst({
-                where: {
-                    email: email,
-                    NOT: {
-                        isDeleted: true,
-                    }
-                }
-            });
+      await prisma.passwordResetToken.update({
+        where: {
+          id: lookupToken.id,
+        },
+        data: {
+          isArchived: true,
+        },
+      });
 
-            if (!user || ( user && !user.id)) {
-                res.status(400).json({ message: 'User not found!' });
-                return;
-            }
+      res.status(StatusCodes.OK).json(updatedUser);
+      break;
 
-            const generatedToken = generateToken();
+    case "POST":
+      const user = await prisma.user.findFirst({
+        where: {
+          email: email,
+          NOT: {
+            isDeleted: true,
+          },
+        },
+      });
 
-            var expiryDate = new Date();
-            // set expiryDate one hour from now
-            expiryDate.setTime(expiryDate.getTime() + (60*60*1000));
+      if (!user || (user && !user.id)) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User not found!" });
+        return;
+      }
 
-            await prisma.passwordResetToken.updateMany({
-                where: {
-                    userId: user.id,
-                    isObsolete: false,
-                },
-                data: {
-                    isObsolete: true,
-                }
-            });
-            
-            await prisma.passwordResetToken.create({
-                data: {
-                    userId: user.id,
-                    token: generatedToken,
-                    expiryDate: expiryDate,
-                }
-            });
+      const generatedToken = generateToken();
 
-            sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "RESET_PASSWORD", "");
-            
-            res.status(200).json(user);
-            break;
+      var expiryDate = new Date();
+      // set expiryDate one hour from now
+      expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
 
-        default:
-            res.status(405).end('method not allowed');
-            break;
-    }
-        
+      await prisma.passwordResetToken.updateMany({
+        where: {
+          userId: user.id,
+          isObsolete: false,
+        },
+        data: {
+          isObsolete: true,
+        },
+      });
+
+      await prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          token: generatedToken,
+          expiryDate: expiryDate,
+        },
+      });
+
+      sendTokenPerMail(
+        user.email as string,
+        user.firstName as string,
+        generatedToken,
+        MailType.ResetPassword
+      );
+
+      res.status(StatusCodes.OK).json(user);
+      break;
+
+    default:
+      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
+      break;
+  }
 }

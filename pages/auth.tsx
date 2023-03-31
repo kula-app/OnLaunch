@@ -1,14 +1,9 @@
-import Navbar from "../components/Navbar";
+import { getSession } from "next-auth/react";
 import AuthForm from "../components/AuthForm";
-import { getSession, useSession } from 'next-auth/react';
 
 export default function Auth() {
-    const { data: session, status } = useSession();
-    const loading = status === "loading";
-
   return (
     <>
-      <Navbar hasSession={!!session} />
       <AuthForm />
     </>
   );
@@ -20,10 +15,10 @@ export async function getServerSideProps(context: any) {
   if (session) {
     return {
       redirect: {
-        destination: '/',
+        destination: "/",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {

@@ -1,112 +1,71 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "../../../../../components/Navbar";
 import styles from "../../../../../styles/Home.module.css";
 
 import CloseIcon from "@mui/icons-material/Close";
+import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import type { AlertColor } from '@mui/material/Alert';
-import { useSession, getSession } from 'next-auth/react';
-
-interface App {
-  name: string;
-  id: number;
-}
+import { getSession } from "next-auth/react";
+import getApp from "../../../../../api/getApp";
+import updateApp from "../../../../../api/updateApp";
+import Routes from "../../../../../routes/routes";
+import { App } from "../../../../../models/app";
 
 export default function EditAppPage() {
   const router = useRouter();
-  
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-  
-  const orgId = router.query.orgId;
 
-  const APPS_API_URL = `/api/frontend/v0.1/orgs/${orgId}/apps/`;
+  const orgId = Number(router.query.orgId);
+  const appId = Number(router.query.appId);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const[appName, setAppName] = useState("");
-
-  const { appId } = router.query;
+  const [appName, setAppName] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    fetch(APPS_API_URL + appId)
-    .then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-    .then((data) => {
-        let app: App = {
-        id: data.id,
-        name: data.name,
-        };
-
-        fillForm(app);
-    })
-    .catch(error => {
-        setAlertMessage(`Error while fetching message: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    });
-  }, [router.isReady]);
-
-  function submitHandler(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    // load data from form
-    let newApp: App = {
-      id: Number(router.query.appId),
-      name: appName,
+    const fetchAppData = async () => {
+      fillForm(await getApp(orgId, appId));
     };
 
-    // make PUT http request
-    fetch(APPS_API_URL + appId, {
-    method: "PUT",
-    body: JSON.stringify(newApp),
-    headers: {
-        "Content-Type": "application/json",
-    },
-    }).then((response) => {
-        if(!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
+    try {
+      fetchAppData();
+    } catch (error) {
+      setAlertMessage(`Error while fetching app data: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
+  }, [router.isReady, appId, orgId]);
 
-        setAlertMessage("App edited successfully!");
-        setAlertSeverity("success");
-        setShowAlert(true);
+  async function submitHandler(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-        navigateToAppsPage();
-  
-        return response.json();
-    })
-    .catch(error => {
-        setAlertMessage(`Error while editing app: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-    }); 
+    try {
+      await updateApp(orgId, appId, appName);
 
+      setAlertMessage("App edited successfully!");
+      setAlertSeverity("success");
+      setShowAlert(true);
+
+      navigateToAppsPage();
+    } catch (error) {
+      setAlertMessage(`Error while editing app: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
   }
-  
+
   function navigateToAppsPage() {
-    router.push(`/orgs/${orgId}/apps/`);
-  } 
+    router.push(Routes.getOrgAppsByOrgId(Number(orgId)));
+  }
 
   function fillForm(app: App) {
-
     // fill the form
     setAppName(app.name);
   }
@@ -114,35 +73,30 @@ export default function EditAppPage() {
   return (
     <>
       <div>
-        <Navbar hasSession={!!session} />
         <main className={styles.main}>
           <h1>Edit App</h1>
-          <form 
-            id="appForm" 
-            onSubmit={submitHandler} 
-            className="column"
-          >
-            <TextField 
-              required 
+          <form id="appForm" onSubmit={submitHandler} className="column">
+            <TextField
+              required
               label="Name"
-              id="name" 
+              id="name"
               value={appName}
               onChange={(event) => setAppName(event.target.value)}
             />
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               update
             </Button>
           </form>
-          <Snackbar 
-            open={showAlert} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={6000}
             onClose={() => setShowAlert(false)}
-            anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-            >
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
             <Alert
               severity={alertSeverity}
               action={
@@ -173,10 +127,10 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth',
+        destination: "/auth",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   return {
