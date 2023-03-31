@@ -13,7 +13,7 @@ import { getSession } from 'next-auth/react';
 import getOrg from "../../../api/getOrg";
 import updateOrg from "../../../api/updateOrg";
 import Routes from "../../../routes/routes";
-import { Org } from "../../../types/org";
+import { Org } from "../../../models/org";
 
 export default function EditOrgPage() {
   const router = useRouter();

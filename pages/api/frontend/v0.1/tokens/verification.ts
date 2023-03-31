@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
-import { MailType } from '../../../../../types/mailType';
+import { MailType } from '../../../../../models/mailType';
 
 require('dotenv').config();
 

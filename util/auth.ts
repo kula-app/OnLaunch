@@ -5,7 +5,7 @@ import { createDirectInviteTemplate } from '../mailTemplate/directInvite';
 import { createEmailChangedTemplate } from '../mailTemplate/emailChanged';
 import { createResetPasswordTemplate } from '../mailTemplate/resetPassword';
 import { createVerificationTemplate } from '../mailTemplate/verification';
-import { MailType } from '../types/mailType';
+import { MailType } from '../models/mailType';
 var crypto = require('crypto');
 var base64url = require('base64url');
 

@@ -1,5 +1,5 @@
 import ApiRoutes from "../routes/apiRoutes";
-import { Org } from "../types/org";
+import { Org } from "../models/org";
 import { returnDataOrThrowError } from "../util/api";
 
 const updateOrg = async (

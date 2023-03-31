@@ -19,7 +19,7 @@ import createEmailChangeToken from "../api/createEmailChangeToken";
 import deleteUser from "../api/deleteUser";
 import getUser from "../api/getUser";
 import updatePassword from "../api/updatePassword";
-import { User } from "../types/user";
+import { User } from "../models/user";
 
 export default function ProfilePage() {
   const router = useRouter();

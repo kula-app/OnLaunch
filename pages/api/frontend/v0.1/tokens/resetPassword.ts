@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail, hashAndSaltPassword, validatePassword } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
-import { MailType } from '../../../../../types/mailType';
+import { MailType } from '../../../../../models/mailType';
 
 const prisma = new PrismaClient()
 

@@ -28,7 +28,7 @@ import { getSession } from 'next-auth/react';
 import deleteMessage from "../../../../../../api/deleteMessage";
 import { useApp } from "../../../../../../api/useApp";
 import Routes from "../../../../../../routes/routes";
-import { Message } from "../../../../../../types/message";
+import { Message } from "../../../../../../models/message";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import useSWR, { KeyedMutator } from 'swr';
 import ApiRoutes from '../routes/apiRoutes';
-import { Org } from '../types/org';
+import { Org } from '../models/org';
 import getFetcher from '../util/fetcher';
 
 export function useOrgs(): {

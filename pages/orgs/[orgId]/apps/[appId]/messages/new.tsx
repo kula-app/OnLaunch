@@ -23,8 +23,8 @@ import TextField from "@mui/material/TextField";
 import { getSession } from 'next-auth/react';
 import createMessage from "../../../../../../api/createMessage";
 import Routes from "../../../../../../routes/routes";
-import { Action } from "../../../../../../types/action";
-import { Message } from "../../../../../../types/message";
+import { Action } from "../../../../../../models/action";
+import { Message } from "../../../../../../models/message";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();

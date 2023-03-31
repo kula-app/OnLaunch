@@ -24,8 +24,8 @@ import TextField from "@mui/material/TextField";
 import { getSession } from 'next-auth/react';
 import ApiRoutes from "../../../../../../../routes/apiRoutes";
 import Routes from "../../../../../../../routes/routes";
-import { Action } from "../../../../../../../types/action";
-import { Message } from "../../../../../../../types/message";
+import { Action } from "../../../../../../../models/action";
+import { Message } from "../../../../../../../models/message";
 import getMessage from "../../../../../../../api/getMessage";
 import updateMessage from "../../../../../../../api/updateMessage";
 

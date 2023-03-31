@@ -1,4 +1,4 @@
-import { Template } from "../types/template";
+import { Template } from "../models/template";
 
 export function createEmailChangedTemplate(firstName: string, senderName: string): Template {
     return {

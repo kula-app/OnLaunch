@@ -13,7 +13,7 @@ import { getSession } from 'next-auth/react';
 import getApp from "../../../../../api/getApp";
 import updateApp from "../../../../../api/updateApp";
 import Routes from "../../../../../routes/routes";
-import { App } from "../../../../../types/app";
+import { App } from "../../../../../models/app";
 
 export default function EditAppPage() {
   const router = useRouter();

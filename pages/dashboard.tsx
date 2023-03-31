@@ -31,7 +31,7 @@ import joinOrgViaDirectInvite from "../api/joinOrgViaDirectInvite";
 import joinOrgViaOrgInvite from "../api/joinOrgViaOrgInvite";
 import { useOrgs } from "../api/useOrgs";
 import Routes from "../routes/routes";
-import { OrgInvite } from "../types/orgInvite";
+import { OrgInvite } from "../models/orgInvite";
 
 export default function DashboardPage() {
   const router = useRouter();

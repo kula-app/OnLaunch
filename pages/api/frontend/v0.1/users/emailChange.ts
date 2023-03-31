@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { getSession } from 'next-auth/react';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
-import { MailType } from '../../../../../types/mailType';
+import { MailType } from '../../../../../models/mailType';
 
 const prisma = new PrismaClient()
 

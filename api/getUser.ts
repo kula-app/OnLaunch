@@ -1,5 +1,5 @@
 import ApiRoutes from "../routes/apiRoutes";
-import { User } from "../types/user";
+import { User } from "../models/user";
 import { returnDataOrThrowError } from "../util/api";
 
 const getUser = async (

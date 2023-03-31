@@ -1,6 +1,6 @@
 import useSWR, { KeyedMutator } from 'swr';
 import ApiRoutes from '../routes/apiRoutes';
-import { App } from '../types/app';
+import { App } from '../models/app';
 import getFetcher from '../util/fetcher';
 
 export function useApps(orgId: number): {

@@ -1,4 +1,4 @@
-import { Template } from "../types/template";
+import { Template } from "../models/template";
 
 export function createResetPasswordTemplate(firstName: string, baseUrl: string, token: string, senderName: string): Template {
     return {

@@ -1,5 +1,5 @@
 import ApiRoutes from "../routes/apiRoutes";
-import { Message } from "../types/message";
+import { Message } from "../models/message";
 import { returnDataOrThrowError } from "../util/api";
 
 const updateMessage = async (

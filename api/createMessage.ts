@@ -1,4 +1,4 @@
-import { Message } from "../types/message";
+import { Message } from "../models/message";
 import ApiRoutes from "../routes/apiRoutes";
 import { returnDataOrThrowError } from "../util/api";
 
