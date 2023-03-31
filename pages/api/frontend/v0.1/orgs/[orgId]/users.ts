@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react';
 import { generateToken, sendTokenPerMail } from '../../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
 import { UserDto } from '../../../../../../types/userDto';
+import { MailType } from '../../../../../../types/mailType';
 
 const prisma = new PrismaClient()
 
@@ -156,7 +157,7 @@ export default async function handler(
                             }
                         });
 
-                        sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "DIRECT_INVITE", "");
+                        sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, MailType.DirectInvite);
 
                         res.status(StatusCodes.CREATED).json(uit);
                         return;

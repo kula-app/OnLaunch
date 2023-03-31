@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { getSession } from 'next-auth/react';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
+import { MailType } from '../../../../../types/mailType';
 
 const prisma = new PrismaClient()
 
@@ -87,7 +88,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(emailToken.newEmail as string, user.firstName as string, generatedToken, "CHANGE_EMAIL", "");
+            sendTokenPerMail(emailToken.newEmail as string, user.firstName as string, generatedToken, MailType.ChangeEmail);
 
             res.status(StatusCodes.CREATED).json(user.email);
             break;
@@ -122,7 +123,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(lookupToken.currentEmail as string, "OnLaunch user", "", "MAIL_CHANGED", "");
+            sendTokenPerMail(lookupToken.currentEmail as string, "OnLaunch user", "", MailType.EmailChanged);
 
             await prisma.emailChangeToken.update({
                 where: {

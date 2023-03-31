@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
+import { MailType } from '../../../../../types/mailType';
 
 require('dotenv').config();
 
@@ -86,7 +87,7 @@ export default async function handler(
                     }
                 });
                 
-                sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, "VERIFY", "");
+                sendTokenPerMail(user?.email as string, user?.firstName as string, verificationToken.token, MailType.Verification);
                 
                 res
                     .status(StatusCodes.BAD_REQUEST)

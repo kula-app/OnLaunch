@@ -1,8 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import { generateToken, sendTokenPerMail, hashAndSaltPassword, validatePassword } from '../../../../../util/auth';
 import { StatusCodes } from 'http-status-codes';
+import { MailType } from '../../../../../types/mailType';
 
 const prisma = new PrismaClient()
 
@@ -113,7 +113,7 @@ export default async function handler(
                 }
             });
 
-            sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, "RESET_PASSWORD", "");
+            sendTokenPerMail(user.email as string, user.firstName as string, generatedToken, MailType.ResetPassword);
             
             res.status(StatusCodes.OK).json(user);
             break;

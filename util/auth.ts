@@ -1,4 +1,5 @@
 import { compare, genSalt, hash } from 'bcrypt';
+import { MailType } from '../types/mailType';
 var crypto = require('crypto');
 var base64url = require('base64url');
 
@@ -30,16 +31,13 @@ export function generateToken() {
     return base64url(crypto.randomBytes(32));
 }
 
-// TODO: create an enum for the `mailType`
-export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: string, misc: string) {
+export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: MailType) {
     let transporter = nodemailer.createTransport({
-        // TODO: This value must be configurable via the environment
-        host: "sandbox.smtp.mailtrap.io",
-        // TODO: This value must be configurable via the environment
-        port: 2525,
+        host: `${process.env.SMTP_HOST}`,
+        port: Number(process.env.SMTP_PORT),
         auth: {
-            user: `${process.env.MAILTRAP_USER}`,
-            pass: `${process.env.MAILTRAP_PASS}`,
+            user: `${process.env.SMTP_USER}`,
+            pass: `${process.env.SMTP_PASS}`,
         }
     });
 
@@ -47,65 +45,58 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
 
     // TODO: Move these templates to separate constants/files, e.g. multiple JSON documents.
     switch (mailType) {
-        case 'VERIFY':
+        case MailType.Verification:
             transporter.sendMail({
-                // TODO: This value must be configurable via the environment
-                from: '"Flo Ho" <flo@onlaunch.com>',
+                from: getSenderData(),
                 to: email,
                 subject: 'Verify your OnLaunch account',
-                // TODO: Make sure that these texts are suitable for public usage
-                text: `Servas ${firstName}, please verify your OnLaunch account: <a href='${baseUrl}/verify?token=${token}'>verify now</a>`,
-                html: `Servas <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='${baseUrl}/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
+                text: `Dear ${firstName}, please verify your OnLaunch account: <a href='${baseUrl}/verify?token=${token}'>verify now</a>`,
+                html: `Dear <b>${firstName}</b>,<br/><br/>please verify your OnLaunch account:<br/><br/>link: <a href='${baseUrl}/verify?token=${token}'>verify now</a><br/>Your link expires in 7 days<br/><br/>Flo von OnLaunch`,
             });
             break;
 
-            case 'RESET_PASSWORD':
-                transporter.sendMail({
-                    // TODO: This value must be configurable via the environment
-                    from: '"Flo Ho" <flo@onlaunch.com>',
-                    to: email,
-                    subject: 'Reset your OnLaunch password',
-                    // TODO: Make sure that these texts are suitable for public usage
-                    text: `Servas ${firstName}, use this link to change your password within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a>`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
-                });
-                break;
+        case MailType.ResetPassword:
+            transporter.sendMail({
+                from: getSenderData(),
+                to: email,
+                subject: 'Reset your OnLaunch password',
+                text: `Dear ${firstName}, use this link to change your password within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a>`,
+                html: `Dear <b>${firstName}</b>,<br/><br/>use this link to change your password within the next hour:<br/><br/>link: <a href='${baseUrl}/resetPassword?token=${token}'>reset now</a><br/>If you haven't requested a password reset, please contact our support service<br/><br/>Flo von OnLaunch`,
+            });
+            break;
 
-            case 'CHANGE_EMAIL':
-                transporter.sendMail({
-                    // TODO: This value must be configurable via the environment
-                    from: '"Flo Ho" <flo@onlaunch.com>',
-                    to: email,
-                    subject: 'Verify your new OnLaunch email address',
-                    // TODO: Make sure that these texts are suitable for public usage
-                    text: `Servas ${firstName}, use this link to verify your new email address within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>verify now</a>`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='${baseUrl}/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
-                });
-                break;
+        case MailType.ChangeEmail:
+            transporter.sendMail({
+                from: getSenderData(),
+                to: email,
+                subject: 'Verify your new OnLaunch email address',
+                text: `Dear ${firstName}, use this link to verify your new email address within the next hour: <a href='${baseUrl}/resetPassword?token=${token}'>verify now</a>`,
+                html: `Dear <b>${firstName}</b>,<br/><br/>use this link to verify your new email address within the next hour:<br/><br/>link: <a href='${baseUrl}/changeEmail?token=${token}'>verify now</a><br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+            });
+            break;
 
-            case 'MAIL_CHANGED':
-                transporter.sendMail({
-                    // TODO: This value must be configurable via the environment
-                    from: '"Flo Ho" <flo@onlaunch.com>',
-                    to: email,
-                    subject: 'Your email address has been changed',
-                    // TODO: Make sure that these texts are suitable for public usage
-                    text: `Servas ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
-                });
-                break;
+        case MailType.EmailChanged:
+            transporter.sendMail({
+                from: getSenderData(),
+                to: email,
+                subject: 'Your email address has been changed',
+                text: `Dear ${firstName}, we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed`,
+                html: `Dear <b>${firstName}</b>,<br/><br/>we just wanted to inform you that this is no longer your current email address for OnLaunch, because it was changed<br/>If you haven't requested this email change, please contact our support service<br/><br/>Flo von OnLaunch`,
+            });
+            break;
 
-            case 'DIRECT_INVITE':
-                transporter.sendMail({
-                    // TODO: This value must be configurable via the environment
-                    from: '"Flo Ho" <flo@onlaunch.com>',
-                    to: email,
-                    subject: 'You have a new invitation',
-                    // TODO: Make sure that these texts are suitable for public usage
-                    text: `Servas ${firstName}, you are now invited to an organisation`,
-                    html: `Servas <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='${baseUrl}/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
-                });
-                break;
+        case MailType.DirectInvite:
+            transporter.sendMail({
+                from: getSenderData(),
+                to: email,
+                subject: 'You have a new invitation',
+                text: `Dear ${firstName}, you are now invited to an organisation`,
+                html: `Dear <b>${firstName}</b>,<br/><br/>you are invited to join an organisation<br/><br/>use this link to show and join within the next hour:<br/><br/>link: <a href='${baseUrl}/dashboard?directinvite=${token}'>join now</a><br/><br/>Flo von OnLaunch`,
+            });
+            break;
     }
-    
+
+    function getSenderData() {
+        return `"${process.env.SENDING_NAME}" <${process.env.SENDING_EMAIL_ADDRESS}>`;
+    }
 }

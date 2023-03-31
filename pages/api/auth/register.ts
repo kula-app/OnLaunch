@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { MailType } from '../../../types/mailType';
 import { generateToken, hashAndSaltPassword, sendTokenPerMail, validatePassword } from '../../../util/auth';
 
 const prisma = new PrismaClient()
@@ -81,7 +82,7 @@ export default async function handler(
                 }
             });
     
-            sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, "VERIFY", "");
+            sendTokenPerMail(createdUser.email as string, createdUser.firstName as string, verificationToken.token, MailType.Verification);
             
             res.status(StatusCodes.CREATED).json(email);
             break;
