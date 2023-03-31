@@ -5,7 +5,7 @@ const joinOrgViaOrgInvite = async (
   token: string, 
 ) => {
   const response = await fetch(
-    ApiRoutes.ORGS_INVITATION + "/" + token, {
+    ApiRoutes.getOrgsInvitationByToken(token), {
       method: "POST",
       headers: {
           "Content-Type": "application/json",

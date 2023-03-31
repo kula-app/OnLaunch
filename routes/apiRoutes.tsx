@@ -46,6 +46,10 @@ class ApiRoutes {
       return `${ApiRoutes.ORGS_INVITATION}/${token}`;
     }
 
+    static getDirectInvitationByToken(token: string): string {
+      return `${ApiRoutes.DIRECT_INVITATION}/${token}`;
+    }
+
     static getPasswordResetByToken(token: string): string {
       return `${ApiRoutes.API_BASE_URL}/users/resetPassword/${token}`;
     }

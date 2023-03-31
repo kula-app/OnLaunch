@@ -5,7 +5,7 @@ const joinOrgViaDirectInvite = async (
   token: string, 
 ) => {
   const response = await fetch(
-    ApiRoutes.DIRECT_INVITATION + "/" + token, {
+    ApiRoutes.getDirectInvitationByToken(token), {
       method: "POST",
       headers: {
           "Content-Type": "application/json",

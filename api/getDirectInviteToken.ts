@@ -5,7 +5,7 @@ const getDirectInviteToken = async (
   token: string, 
 ) => {
   const response = await fetch(
-    ApiRoutes.DIRECT_INVITATION + "/" + token, {
+    ApiRoutes.getDirectInvitationByToken(token), {
       method: "GET",
       headers: {
           "Content-Type": "application/json",
