@@ -3,7 +3,7 @@ class ApiRoutes {
     static API_BASE_URL = `/api/frontend/v${ApiRoutes.VERSION}`;
 
     static readonly USERS = `${ApiRoutes.API_BASE_URL}/users`;
-    static readonly SIGNUP = `${ApiRoutes.API_BASE_URL}/auth/register`;
+    static readonly SIGNUP = `${ApiRoutes.API_BASE_URL}/users/register`;
     static readonly ORGS = `${ApiRoutes.API_BASE_URL}/orgs`;
 
     static readonly ORGS_INVITATION = `${ApiRoutes.API_BASE_URL}/tokens/organisationInvitation`;

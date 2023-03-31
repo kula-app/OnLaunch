@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MailType } from '../../../types/mailType';
-import { generateToken, hashAndSaltPassword, sendTokenPerMail, validatePassword } from '../../../util/auth';
+import config from '../../../../../config/config';
+import { MailType } from '../../../../../types/mailType';
+import { generateToken, hashAndSaltPassword, sendTokenPerMail, validatePassword } from '../../../../../util/auth';
 
 const prisma = new PrismaClient()
 
@@ -16,8 +17,7 @@ export default async function handler(
 
             const { email, password, firstName, lastName } = data;
 
-            // TODO: we should consider proxying all the environment flags with a configuration class
-            if (process.env.SIGNUPS_ENABLED === "false") {
+            if (!config.signup.isEnabled) {
                 res
                     .status(StatusCodes.METHOD_NOT_ALLOWED)
                     .json({ message: 'Not allowed - signups are currently disabled!'});

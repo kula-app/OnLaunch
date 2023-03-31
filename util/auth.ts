@@ -1,4 +1,5 @@
 import { compare, genSalt, hash } from 'bcrypt';
+import config from '../config/config';
 import { createChangeEmailTemplate } from '../mailTemplate/changeEmail';
 import { createDirectInviteTemplate } from '../mailTemplate/directInvite';
 import { createEmailChangedTemplate } from '../mailTemplate/emailChanged';
@@ -38,24 +39,23 @@ export function generateToken() {
 
 export function sendTokenPerMail(email: string, firstName: string, token: string, mailType: MailType) {
     let transporter = nodemailer.createTransport({
-        host: `${process.env.SMTP_HOST}`,
-        port: Number(process.env.SMTP_PORT),
+        host: `${config.smtp.host}`,
+        port: Number(config.smtp.port),
         auth: {
-            user: `${process.env.SMTP_USER}`,
-            pass: `${process.env.SMTP_PASS}`,
+            user: `${config.smtp.user}`,
+            pass: `${config.smtp.pass}`,
         }
     });
 
-    let baseUrl = process.env.NEXTAUTH_URL as string;
-    const senderName = process.env.SENDING_NAME as string;
+    let baseUrl = config.nextAuth.url as string;
+    const senderName = config.emailContent.senderName as string;
 
-    // TODO: Move these templates to separate constants/files, e.g. multiple JSON documents.
     switch (mailType) {
         case MailType.Verification:
             const verificationTemplate = createVerificationTemplate(firstName, baseUrl, token, senderName);
 
             transporter.sendMail({
-                from: getSenderData(),
+                from: getSenderData(senderName),
                 to: email,
                 subject: verificationTemplate.subject,
                 text: verificationTemplate.text,
@@ -67,7 +67,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             const resetPasswordTemplate = createResetPasswordTemplate(firstName, baseUrl, token, senderName);
 
             transporter.sendMail({
-                from: getSenderData(),
+                from: getSenderData(senderName),
                 to: email,
                 subject: resetPasswordTemplate.subject,
                 text: resetPasswordTemplate.text,
@@ -79,7 +79,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             const changeEmailTemplate = createChangeEmailTemplate(firstName, baseUrl, token, senderName);
 
             transporter.sendMail({
-                from: getSenderData(),
+                from: getSenderData(senderName),
                 to: email,
                 subject: changeEmailTemplate.subject,
                 text: changeEmailTemplate.text,
@@ -91,7 +91,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             const emailChangedTemplate = createEmailChangedTemplate(firstName, senderName);
 
             transporter.sendMail({
-                from: getSenderData(),
+                from: getSenderData(senderName),
                 to: email,
                 subject: emailChangedTemplate.subject,
                 text: emailChangedTemplate.text,
@@ -103,7 +103,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             const directInviteTemplate = createDirectInviteTemplate(firstName, baseUrl, token, senderName);
 
             transporter.sendMail({
-                from: getSenderData(),
+                from: getSenderData(senderName),
                 to: email,
                 subject: directInviteTemplate.subject,
                 text: directInviteTemplate.text,
@@ -112,7 +112,7 @@ export function sendTokenPerMail(email: string, firstName: string, token: string
             break;
     }
 
-    function getSenderData() {
-        return `"${process.env.SENDING_NAME}" <${process.env.SENDING_EMAIL_ADDRESS}>`;
+    function getSenderData(senderName: string) {
+        return `"${senderName}" <${config.emailContent.senderAddress}>`;
     }
 }
