@@ -48,13 +48,16 @@ export function sendTokenPerMail(
   token: string,
   mailType: MailType
 ) {
+  function ifEmptyThenUndefined(value?: string) {
+    value?.length === 0 ? undefined : value;
+  }
+
   let transporter = nodemailer.createTransport({
-    host: `${config.smtp.host}`,
+    host: config.smtp.host,
     port: config.smtp.port,
-    auth: {
-      // must be wrapped in a string, so it is never undefined
-      user: `${config.smtp.user}`,
-      pass: `${config.smtp.pass}`,
+    auth: ifEmptyThenUndefined(config.smtp.user) !== undefined && {
+      user: ifEmptyThenUndefined(config.smtp.user),
+      pass: ifEmptyThenUndefined(config.smtp.pass),
     },
   });
 
