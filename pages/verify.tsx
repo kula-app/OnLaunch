@@ -12,7 +12,7 @@ import { getSession } from "next-auth/react";
 import updateVerifiedStatus from "../api/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
-import ApiRoutes from "../routes/apiRoutes";
+import createVerifyToken from "../api/createVerifyToken";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -34,19 +34,19 @@ export default function VerifyPage() {
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (!!token) {
-      const verifyUser = async () => {
+
+    async function verifyUser() {
+      try {
         await updateVerifiedStatus(token as string);
 
         setVerified(true);
-      };
-
-      try {
-        verifyUser();
       } catch (error) {
-        if ((error as string).includes("expired")) {
+        if (String(error).includes("already verified")) {
+          // if user already verified, go to auth page
+          navigateToAuthPage();
+        } else if (String(error).includes("expired")) {
           setExpired(true);
-        } else if ((error as string).includes("obsolete")) {
+        } else if (String(error).includes("obsolete")) {
           setObsolete(true);
         } else {
           setAlertMessage(`Error while verifying: ${error}`);
@@ -55,34 +55,24 @@ export default function VerifyPage() {
         }
       }
     }
+
+    if (!!token) {
+      verifyUser();
+    }
   }, [router.isReady, token, signup, navigateToAuthPage]);
 
-  function resendLink() {
-    fetch(ApiRoutes.VERIFICATION, {
-      method: "POST",
-      body: JSON.stringify({ email: email }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
-        }
+  async function resendLink() {
+    try {
+      await createVerifyToken(email as string);
 
-        setAlertMessage(`Link was successfully resend!`);
-        setAlertSeverity("success");
-        setShowAlert(true);
-
-        return response.json();
-      })
-      .catch((error) => {
-        setAlertMessage(`Error while resending link: ${error.message}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
-      });
+      setAlertMessage(`Link was successfully resend!`);
+      setAlertSeverity("success");
+      setShowAlert(true);
+    } catch (error) {
+      setAlertMessage(`Error while resending link: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
 
     setDisabled(true);
   }
@@ -90,15 +80,20 @@ export default function VerifyPage() {
   return (
     <>
       <main className={styles.main}>
-        {((signup || email) && !expired) && <div>
-          <h1 className="centeredElement">Verify your account</h1>
-          <div>Please check your mails for the verification link!</div>
-        </div>
-        }
-        {(verified && !expired) && <div className="centeredElement column">
-          <h1 className="centeredElement">Thank you for verifying!</h1>
-          <div>If you want to use the full functionality of OnLaunch please log in</div>
-          <Button
+        {(signup || email) && !expired && (
+          <div>
+            <h1 className="centeredElement">Verify your account</h1>
+            <div>Please check your mails for the verification link!</div>
+          </div>
+        )}
+        {verified && !expired && (
+          <div className="centeredElement column">
+            <h1 className="centeredElement">Thank you for verifying!</h1>
+            <div>
+              If you want to use the full functionality of OnLaunch please log
+              in
+            </div>
+            <Button
               variant="contained"
               color="info"
               sx={{ marginTop: 5 }}
@@ -107,36 +102,39 @@ export default function VerifyPage() {
               login
             </Button>
           </div>
-          }
-        {(!signup && !verified && expired && !obsolete) && <div className="centeredElement column">
+        )}
+        {!signup && !verified && expired && !obsolete && (
+          <div className="centeredElement column">
             <h1 className="centeredElement">Link is expired!</h1>
             <div>No worries, we already sent you a new one </div>
           </div>
-        }{(!verified && !signup && !expired && !obsolete && !email) && <div>
-          <h1>loading ...</h1>
-        </div> 
-        }
-        {(!signup && !verified && !!email && !disabled) && 
-          <Button 
-            variant="contained" 
+        )}
+        {!verified && !signup && !expired && !obsolete && !email && (
+          <div>
+            <h1>loading ...</h1>
+          </div>
+        )}
+        {!signup && !verified && !!email && !disabled && (
+          <Button
+            variant="contained"
             type="button"
             className="marginTopMedium"
             onClick={() => resendLink()}
-            >
-              resend link
+          >
+            resend link
           </Button>
-        }
-        {(!signup && !verified && !!email && disabled) && 
-          <Button 
-            variant="contained" 
+        )}
+        {!signup && !verified && !!email && disabled && (
+          <Button
+            variant="contained"
             type="button"
             className="marginTopMedium"
             disabled
             onClick={() => resendLink()}
-            >
-              resend link
+          >
+            resend link
           </Button>
-        }
+        )}
       </main>
       <Snackbar
         open={showAlert}

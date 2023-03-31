@@ -42,7 +42,7 @@ export default function AuthForm() {
   }
 
   function navigateToVerifyPageWithEmail(email: string) {
-    router.replace(`/verify?email=${email}`);
+    router.replace(Routes.getVerifyWithEmail(email));
   } 
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {

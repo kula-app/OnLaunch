@@ -11,6 +11,10 @@ class Routes {
   static readonly VERIFY = "/verify";
   static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
 
+  static getVerifyWithEmail(email: string): string {
+    return `/verify?email=${email}`;
+  }
+
   static get createNewOrg(): string {
     return "/orgs/new";
   }

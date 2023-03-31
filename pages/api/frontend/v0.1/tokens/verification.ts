@@ -33,13 +33,13 @@ export default async function handler(
             email: email,
           },
         });
-        console.log("email: " + email);
+        
         id = Number(userByEmail?.id);
       } else {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "No token or email provided!" });
         return;
       }
-      console.log("id= " + id);
+      
       const unverifiedUser = await prisma.user.findUnique({
         where: {
           id: id,
