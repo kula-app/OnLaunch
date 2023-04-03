@@ -7,4 +7,5 @@ export interface App {
     role?: string;
     orgId?: number;
     messages?: Message[];
+    activeMessages?: number;
 }

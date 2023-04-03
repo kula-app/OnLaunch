@@ -10,6 +10,7 @@ type AppDto = {
   id: number;
   name: string;
   role: string;
+  activeMessages: number;
 };
 
 export default async function handler(
@@ -56,6 +57,24 @@ export default async function handler(
         orderBy: {
           id: "asc",
         },
+        include: {
+          messages: {
+            where: {
+              AND: [
+                {
+                  startDate: {
+                    lte: new Date(),
+                  },
+                },
+                {
+                  endDate: {
+                    gte: new Date(),
+                  },
+                },
+              ],
+            }
+          }
+        }
       });
 
       res.status(StatusCodes.OK).json(
@@ -64,6 +83,7 @@ export default async function handler(
             id: app.id,
             name: app.name,
             role: userInOrg?.role,
+            activeMessages: app.messages.length,
           };
         })
       );

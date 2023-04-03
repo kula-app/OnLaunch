@@ -228,6 +228,9 @@ export default function AppsPage() {
             <TableCell>
               <strong>App Name</strong>
             </TableCell>
+            <TableCell width="5%" className="centeredText">
+              <strong># Active Messages</strong>
+            </TableCell>
             <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
@@ -236,6 +239,11 @@ export default function AppsPage() {
                 <TableRow key={index}>
                   <TableCell width="5%">{app.id}</TableCell>
                   <TableCell>{app.name}</TableCell>
+                  <TableCell width="5%" className="centeredText">
+                    <Tooltip title="this many messages are currently shown in mobile apps">
+                      <div>{app.activeMessages}</div>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell width="5%">
                     <div className="hiddenTableElement">
                       <Tooltip title="view messages">
