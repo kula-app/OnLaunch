@@ -44,7 +44,7 @@ const config: Config = {
   },
   smtp: {
     host: process.env.SMTP_HOST || "localhost",
-    port: Number(process.env.SMTP_Port) || 1025,
+    port: Number(process.env.SMTP_PORT) || 1025,
     user: process.env.SMTP_USER || "",
     pass: process.env.SMTP_PASS || "",
   },
