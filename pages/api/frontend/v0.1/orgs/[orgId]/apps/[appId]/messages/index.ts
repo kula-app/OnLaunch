@@ -95,7 +95,7 @@ export default async function handler(
         actions.forEach((action) => {
           action.messageId = message.id;
         });
-        const savedActions = await prisma.action.createMany({
+        await prisma.action.createMany({
           data: req.body.actions,
         });
       }

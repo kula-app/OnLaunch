@@ -43,10 +43,21 @@ export default function MessagesOfAppPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [messageId, setMessageId] = useState(-1);
 
+  const [showHistory, setShowHistory] = useState(false);
+
   const now = Moment.now();
 
   const { app: data, isLoading, isError, mutate } = useApp(orgId, appId);
   if (isError) return <div>Failed to load</div>;
+
+  const messages = data?.messages?.filter((message) => {
+    if (showHistory) {
+      return new Date(message.endDate).getTime() < now;
+    } else {
+      return new Date(message.endDate).getTime() >= now;
+    }
+  });
+
 
   function navigateToEditMessagePage(messageId: number) {
     router.push(
@@ -129,6 +140,24 @@ export default function MessagesOfAppPage() {
               New Message
             </Button>
           </div>
+          <div className="addButton marginTopLarge">
+            <Button
+              variant="text"
+              onClick={() => {
+                setShowHistory(!showHistory);
+              }}
+            >
+              {showHistory
+                ? `show current messages (${
+                    Number(data?.messages?.length) -
+                    (messages ? messages.length : 0)
+                  })`
+                : `show history (${
+                    Number(data?.messages?.length) -
+                    (messages ? messages.length : 0)
+                  })`}
+            </Button>
+          </div>
           <Table
             sx={{ minWidth: 650, maxWidth: 1300 }}
             aria-label="simple table"
@@ -163,7 +192,8 @@ export default function MessagesOfAppPage() {
             </TableHead>
             <TableBody>
               {data?.messages &&
-                data.messages.map((message: Message, index: number) => {
+                messages &&
+                messages.map((message: Message, index: number) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="centeredText">
@@ -243,7 +273,7 @@ export default function MessagesOfAppPage() {
                 })}
             </TableBody>
           </Table>
-          {data?.messages && data.messages.length == 0 && (
+          {data?.messages && messages && messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
           {isLoading && <div className="marginTopMedium">Loading...</div>}

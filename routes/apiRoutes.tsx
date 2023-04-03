@@ -35,7 +35,7 @@ class ApiRoutes {
   }
 
   static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {
-    return `${ApiRoutes.getAppsByOrgId(orgId)}/${appId}/messages`;
+    return `${ApiRoutes.getAppByOrgIdAndAppId(orgId, appId)}/messages`;
   }
 
   static getMessageByOrgIdAndAppIdAndMessageId(
