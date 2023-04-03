@@ -49,8 +49,8 @@ const config: Config = {
     pass: process.env.SMTP_PASS || "",
   },
   emailContent: {
-    senderName: process.env.SENDING_NAME || "Flo",
-    senderAddress: process.env.SENDING_EMAIL_ADDRESS || "flo@kula.app",
+    senderName: process.env.SMTP_FROM_NAME || "OnLaunch",
+    senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
   },
 };
 
