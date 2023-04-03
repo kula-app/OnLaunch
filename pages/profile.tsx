@@ -15,10 +15,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import createEmailChangeToken from "../api/createEmailChangeToken";
-import deleteUser from "../api/deleteUser";
-import getUser from "../api/getUser";
-import updatePassword from "../api/updatePassword";
+import createEmailChangeToken from "../api/tokens/createEmailChangeToken";
+import deleteUser from "../api/users/deleteUser";
+import getUser from "../api/users/getUser";
+import updatePassword from "../api/tokens/updatePassword";
 import { User } from "../models/user";
 
 export default function ProfilePage() {

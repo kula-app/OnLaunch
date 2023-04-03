@@ -10,8 +10,8 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import getApp from "../../../../../api/getApp";
-import updateApp from "../../../../../api/updateApp";
+import getApp from "../../../../../api/apps/getApp";
+import updateApp from "../../../../../api/apps/updateApp";
 import Routes from "../../../../../routes/routes";
 import { App } from "../../../../../models/app";
 

@@ -10,8 +10,8 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import getOrg from "../../../api/getOrg";
-import updateOrg from "../../../api/updateOrg";
+import getOrg from "../../../api/orgs/getOrg";
+import updateOrg from "../../../api/orgs/updateOrg";
 import Routes from "../../../routes/routes";
 import { Org } from "../../../models/org";
 

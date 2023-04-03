@@ -9,7 +9,7 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import { signOut, useSession } from "next-auth/react";
-import validateEmailChange from "../api/validateEmailChange";
+import validateEmailChange from "../api/tokens/validateEmailChange";
 import Routes from "../routes/routes";
 
 export default function ResetPasswordPage() {

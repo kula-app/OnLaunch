@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
-import signupUser from "../api/signupUser";
+import signupUser from "../api/users/signupUser";
 
 export default function AuthForm() {
   const router = useRouter();

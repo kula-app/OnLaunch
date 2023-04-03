@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import createOrg from "../../api/createOrg";
+import createOrg from "../../api/orgs/createOrg";
 import Routes from "../../routes/routes";
 
 export default function NewOrgPage() {

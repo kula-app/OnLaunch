@@ -28,14 +28,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
-import deleteApp from "../../../../api/deleteApp";
-import deleteUserFromOrg from "../../../../api/deleteUserFromOrg";
-import inviteUser from "../../../../api/inviteUser";
-import resetOrgInvitationToken from "../../../../api/resetOrgInvitationToken";
-import updateUserRoleInOrg from "../../../../api/updateUserRoleInOrg";
-import { useApps } from "../../../../api/useApps";
-import { useOrg } from "../../../../api/useOrg";
-import { useUsers } from "../../../../api/useUsers";
+import deleteApp from "../../../../api/apps/deleteApp";
+import deleteUserFromOrg from "../../../../api/orgs/deleteUserFromOrg";
+import inviteUser from "../../../../api/orgs/inviteUser";
+import resetOrgInvitationToken from "../../../../api/tokens/resetOrgInvitationToken";
+import updateUserRoleInOrg from "../../../../api/orgs/updateUserRoleInOrg";
+import { useApps } from "../../../../api/apps/useApps";
+import { useOrg } from "../../../../api/orgs/useOrg";
+import { useUsers } from "../../../../api/orgs/useUsers";
 import Routes from "../../../../routes/routes";
 
 export default function AppsPage() {

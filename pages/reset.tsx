@@ -10,7 +10,7 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import createPasswordResetToken from "../api/createPasswordResetToken";
+import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
 
 export default function ResetPage() {

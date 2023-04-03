@@ -26,8 +26,8 @@ import ApiRoutes from "../../../../../../../routes/apiRoutes";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
-import getMessage from "../../../../../../../api/getMessage";
-import updateMessage from "../../../../../../../api/updateMessage";
+import getMessage from "../../../../../../../api/messages/getMessage";
+import updateMessage from "../../../../../../../api/messages/updateMessage";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();

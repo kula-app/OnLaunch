@@ -9,10 +9,10 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import { getSession } from "next-auth/react";
-import updateVerifiedStatus from "../api/updateVerifiedStatus";
+import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
-import createVerifyToken from "../api/createVerifyToken";
+import createVerifyToken from "../api/tokens/createVerifyToken";
 
 export default function VerifyPage() {
   const router = useRouter();

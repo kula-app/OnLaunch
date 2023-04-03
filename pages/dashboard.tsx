@@ -24,12 +24,12 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
-import deleteOrg from "../api/deleteOrg";
-import getDirectInviteToken from "../api/getDirectInviteToken";
-import getOrgInviteToken from "../api/getOrgInviteToken";
-import joinOrgViaDirectInvite from "../api/joinOrgViaDirectInvite";
-import joinOrgViaOrgInvite from "../api/joinOrgViaOrgInvite";
-import { useOrgs } from "../api/useOrgs";
+import deleteOrg from "../api/orgs/deleteOrg";
+import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
+import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
+import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
+import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
+import { useOrgs } from "../api/orgs/useOrgs";
 import Routes from "../routes/routes";
 import { OrgInvite } from "../models/orgInvite";
 

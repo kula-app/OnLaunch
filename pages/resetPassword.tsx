@@ -10,8 +10,8 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import getPasswordResetToken from "../api/getPasswordResetToken";
-import resetPassword from "../api/resetPassword";
+import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
+import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
 
 export default function ResetPasswordPage() {

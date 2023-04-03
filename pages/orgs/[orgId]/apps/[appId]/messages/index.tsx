@@ -25,8 +25,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import { getSession } from "next-auth/react";
-import deleteMessage from "../../../../../../api/deleteMessage";
-import { useApp } from "../../../../../../api/useApp";
+import deleteMessage from "../../../../../../api/messages/deleteMessage";
+import { useApp } from "../../../../../../api/apps/useApp";
 import Routes from "../../../../../../routes/routes";
 import { Message } from "../../../../../../models/message";
 

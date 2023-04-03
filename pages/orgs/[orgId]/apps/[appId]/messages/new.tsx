@@ -21,7 +21,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import createMessage from "../../../../../../api/createMessage";
+import createMessage from "../../../../../../api/messages/createMessage";
 import Routes from "../../../../../../routes/routes";
 import { Action } from "../../../../../../models/action";
 import { Message } from "../../../../../../models/message";
