@@ -10,3 +10,63 @@
   margin-bottom: 64px;
   margin-top: 64px;
 }
+
+/* mobile phone container */
+.phoneContainer {
+  position: relative;
+  width: 375px;
+  height: 812px;
+  border: 2px solid #333;
+  border-radius: 50px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+/* mobile phone screen */
+.phoneScreen {
+  position: absolute;
+  top: 60px;
+  left: 30px;
+  width: 315px;
+  height: 692px;
+  background-color: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* text (message title) on the screen */
+.phoneScreen h1 {
+  font-size: 36px;
+  text-align: center;
+  overflow-wrap: break-word; 
+  margin: 5%;
+  margin-top: 10%;
+}
+
+/* text (message body) on the screen */
+.phoneScreen p {
+  font-size: 24px;
+  text-align: center;
+  overflow-wrap: break-word; 
+  margin: 5%;
+}
+
+.phoneScreen button {
+  width: 90%;
+  margin-left: 5%;
+  margin-bottom: 5%;
+  font-size: 18px;
+}
+
+.phoneScreen div {
+  width: 90%;
+  margin-left: 5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
