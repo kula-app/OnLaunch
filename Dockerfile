@@ -45,15 +45,11 @@ COPY styles ./styles
 COPY types ./types
 COPY util ./util
 
-# ---- Development ----
+# ---- Production ----
 # build development server
-FROM build_setup AS build_development
+FROM build_setup AS build_production
 # copy node_modules with all build tools included
 COPY --from=dependencies /home/node/app/node_modules ./node_modules
-
-# ---- Production ----
-# build production server
-FROM build_development AS build_production
 # build the server
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn prisma generate
