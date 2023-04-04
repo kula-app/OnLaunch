@@ -20,17 +20,8 @@ COPY next.config.js .
 COPY tsconfig.json .
 
 # ---- Dependencies ----
-# Node --     Install Production & Development Node Dependencies
+# Node -- Install Production & Development Node Dependencies
 FROM project_setup AS dependencies
-# install project node libs in production mode
-RUN yarn install \
-  --frozen-lockfile \
-  --no-progress \
-  --ignore-scripts \
-  --production \
-  --network-timeout 1000000
-# copy production node_modules aside to cache them for the final build
-RUN cp -R node_modules          prod_node_modules
 # install ALL node_modules, including 'devDependencies'
 RUN yarn install \
   --frozen-lockfile \
@@ -70,7 +61,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:18 AS release
+FROM node:18-slim AS release
 # install additional dependencies
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
@@ -82,13 +73,24 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Change runtime working directory
 WORKDIR /home/node/app/
-# copy production dependencies
-COPY --from=dependencies      /home/node/app/prod_node_modules  ./node_modules
-# # copy build output
-COPY --from=build_production  /home/node/app/public             ./public
-COPY --from=build_production  /home/node/app/.next              ./.next
+
+# copy build output required for yarn install for better build efficiency
+COPY --from=build_production /home/node/app/package.json    ./
+COPY --from=build_production /home/node/app/prisma          ./prisma
+
+# install production dependencies
+RUN yarn install \
+  --frozen-lockfile \
+  --no-progress \
+  --production \
+  --network-timeout 1000000
+
+# copy remaining build output
+COPY --from=build_production /home/node/app/public          ./public
+COPY --from=build_production /home/node/app/.next           ./.next
 
 # select user
+RUN chown -R node:node /home/node/app
 USER node
 
 ENV NODE_ENV production
@@ -102,4 +104,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Run application
-CMD [ "node", "node_modules/.bin/next", "start" ]
+CMD ["/bin/bash", "-c", "./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]
