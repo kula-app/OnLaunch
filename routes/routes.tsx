@@ -1,4 +1,6 @@
-import config from "../config/config";
+import { loadConfig } from "../config/loadConfig";
+
+const config = loadConfig();
 
 class Routes {
   static readonly INDEX = "/";

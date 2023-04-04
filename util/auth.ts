@@ -1,5 +1,5 @@
 import { compare, genSalt, hash } from "bcrypt";
-import config from "../config/config";
+import { loadConfig } from "../config/loadConfig";
 import { createChangeEmailTemplate } from "../mailTemplate/changeEmail";
 import { createDirectInviteTemplate } from "../mailTemplate/directInvite";
 import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
@@ -7,11 +7,11 @@ import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
 import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
 import Routes from "../routes/routes";
+import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 var crypto = require("crypto");
 var base64url = require("base64url");
 
 const nodemailer = require("nodemailer");
-require("dotenv").config();
 
 export async function hashAndSaltPassword(password: string) {
   const saltRounds = 10;
@@ -48,10 +48,7 @@ export function sendTokenPerMail(
   token: string,
   mailType: MailType
 ) {
-  function ifEmptyThenUndefined(value?: string) {
-    value?.length === 0 ? undefined : value;
-  }
-
+  const config = loadConfig();
   let transporter = nodemailer.createTransport({
     host: config.smtp.host,
     port: config.smtp.port,

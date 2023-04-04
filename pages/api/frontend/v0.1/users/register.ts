@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import config from "../../../../../config/config";
+import { loadConfig } from "../../../../../config/loadConfig";
 import { MailType } from "../../../../../models/mailType";
 import {
   generateToken,
@@ -16,6 +16,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const config = loadConfig();
   switch (req.method) {
     case "POST":
       const data = req.body;

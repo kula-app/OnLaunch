@@ -1,7 +1,7 @@
+import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as os from "os";
-import { StatusCodes } from "http-status-codes";
-import config from "../../config/config";
+import { loadConfig } from "../../config/loadConfig";
 
 type Data = {
   status: string;
@@ -13,6 +13,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data | {}>
 ) {
+  const config = loadConfig();
   if (req.headers.authorization !== `token ${config.health.apiKey}`) {
     return res.status(StatusCodes.FORBIDDEN).json({
       error: {
