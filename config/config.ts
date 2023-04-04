@@ -1,3 +1,5 @@
+import * as crypto from "crypto";
+
 interface NextAuthConfig {
   url: string;
 }
@@ -22,10 +24,15 @@ interface EmailContentConfig {
   senderAddress: string;
 }
 
+interface HealthConfig {
+  apiKey: string;
+}
+
 interface Config {
   nextAuth: NextAuthConfig;
   signup: SignupConfig;
   database: DatabaseConfig;
+  health: HealthConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
 }
@@ -41,6 +48,10 @@ const config: Config = {
     url:
       process.env.DATABASE_URL ||
       "postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public",
+  },
+  health: {
+    apiKey:
+      process.env.HEALTH_API_KEY || crypto.randomBytes(32).toString("hex"),
   },
   smtp: {
     host: process.env.SMTP_HOST || "localhost",
