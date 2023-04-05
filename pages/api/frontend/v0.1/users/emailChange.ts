@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getSession } from "next-auth/react";
 import { generateToken, sendTokenPerMail } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { MailType } from "../../../../../models/mailType";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const session = await getSession({ req: req });
+      const session = await getServerSession(req, res, authOptions);
 
       if (!session) {
         res
