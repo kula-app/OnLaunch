@@ -42,7 +42,6 @@ COPY prisma ./prisma
 COPY public ./public
 COPY routes ./routes
 COPY styles ./styles
-COPY types ./types
 COPY util ./util
 
 # ---- Production ----
