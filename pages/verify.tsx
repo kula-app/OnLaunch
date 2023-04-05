@@ -90,8 +90,7 @@ export default function VerifyPage() {
           <div className="centeredElement column">
             <h1 className="centeredElement">Thank you for verifying!</h1>
             <div>
-              If you want to use the full functionality of OnLaunch please log
-              in
+              If you want to use the full functionality of OnLaunch please log in
             </div>
             <Button
               variant="contained"
@@ -103,10 +102,12 @@ export default function VerifyPage() {
             </Button>
           </div>
         )}
-        {!signup && !verified && expired && !obsolete && (
+        {!signup && !verified && (expired || obsolete) && (
           <div className="centeredElement column">
-            <h1 className="centeredElement">Link is expired!</h1>
-            <div>No worries, we already sent you a new one </div>
+            <h1 className="centeredElement">
+              Link is {expired ? "expired" : "obsolete"}!
+            </h1>
+            <div>No worries, we can send you a new one </div>
           </div>
         )}
         {!verified && !signup && !expired && !obsolete && !email && (
@@ -114,7 +115,7 @@ export default function VerifyPage() {
             <h1>loading ...</h1>
           </div>
         )}
-        {!signup && !verified && !!email && !disabled && (
+        {!signup && !verified && (!!email || !!expired || !!obsolete) && !disabled && (
           <Button
             variant="contained"
             type="button"

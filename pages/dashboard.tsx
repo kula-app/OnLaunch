@@ -49,8 +49,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!router.isReady) return;
-
-    async () => {
+    async function showInvitation() {
       try {
         if (!!invite) {
           setOrgInvite(await getOrgInviteToken(invite as string));
@@ -65,6 +64,9 @@ export default function DashboardPage() {
         setShowAlert(true);
       }
     };
+    if (!!invite || !!directinvite) {
+      showInvitation();
+    }
   }, [router.isReady, invite, directinvite]);
 
   function navigateToAppsPage(id: number) {

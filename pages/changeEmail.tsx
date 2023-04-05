@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!router.isReady) return;
     if (!!token && !loading) {
-      async () => {
+      const changeEmail = async () => {
         try {
           await validateEmailChange(token as string);
           if (!!session) {
@@ -39,13 +39,14 @@ export default function ResetPasswordPage() {
           }
           setEmailChanged(true);
         } catch (error) {
-          if (!(error as string).includes("obsolete")) {
+          if (!String(error).includes("obsolete")) {
             setAlertMessage(`Error while request: ${error}`);
             setAlertSeverity("error");
             setShowAlert(true);
           }
         }
       };
+      changeEmail();
     }
   }, [router.isReady, token, router, session, loading]);
 
