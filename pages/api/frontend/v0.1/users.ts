@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -9,17 +10,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+    return;
+  }
+
   switch (req.method) {
     case "GET":
-      const session = await getSession({ req: req });
-
-      if (!session) {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: "Not authorized!" });
-        return;
-      }
-
       const userFromDb = await prisma.user.findFirst({
         where: {
           id: Number(session.user.id),
@@ -36,26 +35,15 @@ export default async function handler(
         return;
       }
 
-      res
-        .status(StatusCodes.CREATED)
-        .json({
-          email: userFromDb.email,
-          firstName: userFromDb.firstName,
-          lastName: userFromDb.lastName,
-        });
+      res.status(StatusCodes.CREATED).json({
+        email: userFromDb.email,
+        firstName: userFromDb.firstName,
+        lastName: userFromDb.lastName,
+      });
       break;
 
     case "DELETE":
-      const session2 = await getSession({ req: req });
-
-      if (!session2) {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: "Not authorized!" });
-        return;
-      }
-
-      const userEmail2 = session2.user?.email as string;
+      const userEmail2 = session.user?.email as string;
 
       const userFromDb2 = await prisma.user.findFirst({
         where: {
@@ -104,13 +92,11 @@ export default async function handler(
       );
 
       if (orgsToDeleteFirst.length) {
-        res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({
-            message:
-              "You have to delete these organisations first: " +
-              JSON.stringify(orgsToDeleteFirst),
-          });
+        res.status(StatusCodes.BAD_REQUEST).json({
+          message:
+            "You have to delete these organisations first: " +
+            JSON.stringify(orgsToDeleteFirst),
+        });
         return;
       }
 

@@ -5,8 +5,9 @@ import {
   validatePassword,
   verifyPassword,
 } from "../../../../../util/auth";
-import { getSession } from "next-auth/react";
 import { StatusCodes } from "http-status-codes";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +21,7 @@ export default async function handler(
 
   switch (req.method) {
     case "PUT":
-      const session = await getSession({ req: req });
+      const session = await getServerSession(req, res, authOptions);
 
       if (!session) {
         res
@@ -32,12 +33,10 @@ export default async function handler(
       const id = session.user?.id;
 
       if (!(await validatePassword(password))) {
-        res
-          .status(StatusCodes.UNPROCESSABLE_ENTITY)
-          .json({
-            message:
-              "Invalid data - new password consists of less than 8 characters",
-          });
+        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+          message:
+            "Invalid data - new password consists of less than 8 characters",
+        });
         return;
       }
 

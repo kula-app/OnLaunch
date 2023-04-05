@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getSession } from "next-auth/react";
 import { generateToken } from "../../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req: req });
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
@@ -72,9 +73,9 @@ export default async function handler(
                   },
                 },
               ],
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       res.status(StatusCodes.OK).json(

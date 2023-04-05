@@ -1,11 +1,22 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { verifyPassword } from "../../../util/auth";
 
 const prisma = new PrismaClient();
 
-export default NextAuth({
+// augment next-auth session that's used throughout
+// the application to include an 'id' field
+declare module 'next-auth' {
+  interface Session {
+      user: {
+          id: number
+          email: string
+      }
+  }
+}
+
+export const authOptions: NextAuthOptions ={
   session: {
     strategy: "jwt",
   },
@@ -15,7 +26,7 @@ export default NextAuth({
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub;
+        session.user.id = Number(token.sub);
       }
       return session;
     },
@@ -61,4 +72,6 @@ export default NextAuth({
       },
     }),
   ],
-});
+};
+
+export default NextAuth(authOptions)
