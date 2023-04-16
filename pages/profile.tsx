@@ -3,23 +3,20 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import { MdClose } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import createEmailChangeToken from "../api/tokens/createEmailChangeToken";
 import deleteUser from "../api/users/deleteUser";
 import getUser from "../api/users/getUser";
 import updatePassword from "../api/tokens/updatePassword";
 import { User } from "../models/user";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -199,30 +196,11 @@ export default function ProfilePage() {
           </Button>
         </div>
       </main>
-      <Snackbar
-        open={showAlert}
-        autoHideDuration={6000}
-        onClose={() => setShowAlert(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={alertSeverity}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setShowAlert(false);
-              }}
-            >
-              <MdClose fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {alertMessage}
-        </Alert>
-      </Snackbar>
+      <CustomSnackbar
+        message={alertMessage}
+        severity={alertSeverity}
+        isOpenState={[showAlert, setShowAlert]}
+      />
       <Dialog
         open={showDeleteDialog}
         aria-labelledby="alert-dialog-title"

@@ -3,14 +3,11 @@ import styles from "../styles/Home.module.css";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { signIn } from "next-auth/react";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from "@mui/material/Alert";
-import { MdClose } from "react-icons/md";
-import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
 import signupUser from "../api/users/signupUser";
+import CustomSnackbar from "./CustomSnackbar";
 
 export default function AuthForm() {
   const router = useRouter();
@@ -43,7 +40,7 @@ export default function AuthForm() {
 
   function navigateToVerifyPageWithEmail(email: string) {
     router.replace(Routes.getVerifyWithEmail(email));
-  } 
+  }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -136,30 +133,11 @@ export default function AuthForm() {
             </Button>
           )}
         </form>
-        <Snackbar
-          open={showAlert}
-          autoHideDuration={6000}
-          onClose={() => setShowAlert(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            severity={alertSeverity}
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setShowAlert(false);
-                }}
-              >
-                <MdClose fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {alertMessage}
-          </Alert>
-        </Snackbar>
+        <CustomSnackbar
+          message={alertMessage}
+          severity={alertSeverity}
+          isOpenState={[showAlert, setShowAlert]}
+        />
       </main>
     </>
   );

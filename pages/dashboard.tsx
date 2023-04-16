@@ -5,9 +5,7 @@ import styles from "../styles/Home.module.css";
 
 import { MdDeleteForever, MdClose, MdEdit, MdVisibility } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import { getSession } from "next-auth/react";
 
 import Dialog from "@mui/material/Dialog";
@@ -29,6 +27,7 @@ import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
 import { useOrgs } from "../api/orgs/useOrgs";
 import Routes from "../routes/routes";
 import { OrgInvite } from "../models/orgInvite";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -190,31 +189,11 @@ export default function DashboardPage() {
           <p className="marginTopMedium">no data to show</p>
         )}
         {isLoading && <p className="marginTopMedium">Loading...</p>}
-        <Snackbar
-          open={showAlert}
-          autoHideDuration={6000}
-          onClose={() => setShowAlert(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            className="marginTopMedium"
-            severity={alertSeverity}
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setShowAlert(false);
-                }}
-              >
-                <MdClose fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {alertMessage}
-          </Alert>
-        </Snackbar>
+        <CustomSnackbar
+          message={alertMessage}
+          severity={alertSeverity}
+          isOpenState={[showAlert, setShowAlert]}
+        />
         <Dialog
           open={showDeleteDialog}
           aria-labelledby="alert-dialog-title"

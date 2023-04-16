@@ -3,10 +3,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
 
-import { MdDeleteForever, MdClose, MdEdit } from "react-icons/md";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { TextField } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Dialog from "@mui/material/Dialog";
@@ -15,7 +14,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -27,6 +25,7 @@ import deleteMessage from "../../../../../../api/messages/deleteMessage";
 import { useApp } from "../../../../../../api/apps/useApp";
 import Routes from "../../../../../../routes/routes";
 import { Message } from "../../../../../../models/message";
+import CustomSnackbar from "../../../../../../components/CustomSnackbar";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
@@ -55,7 +54,6 @@ export default function MessagesOfAppPage() {
       return new Date(message.endDate).getTime() >= now;
     }
   });
-
 
   function navigateToEditMessagePage(messageId: number) {
     router.push(
@@ -275,31 +273,11 @@ export default function MessagesOfAppPage() {
             <p className="marginTopMedium">no data to show</p>
           )}
           {isLoading && <div className="marginTopMedium">Loading...</div>}
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={6000}
-            onClose={() => setShowAlert(false)}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          >
-            <Alert
-              className="marginTopMedium"
-              severity={alertSeverity}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setShowAlert(false);
-                  }}
-                >
-                  <MdClose fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {alertMessage}
-            </Alert>
-          </Snackbar>
+          <CustomSnackbar
+            message={alertMessage}
+            severity={alertSeverity}
+            isOpenState={[showAlert, setShowAlert]}
+          />
           <Dialog
             open={showDeleteDialog}
             aria-labelledby="alert-dialog-title"

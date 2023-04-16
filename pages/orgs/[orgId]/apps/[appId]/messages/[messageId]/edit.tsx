@@ -6,13 +6,11 @@ import styles from "../../../../../../../styles/Home.module.css";
 import { MdDeleteForever, MdClose } from "react-icons/md";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import Snackbar from "@mui/material/Snackbar";
 import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -26,6 +24,7 @@ import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
 import getMessage from "../../../../../../../api/messages/getMessage";
 import updateMessage from "../../../../../../../api/messages/updateMessage";
+import CustomSnackbar from "../../../../../../../components/CustomSnackbar";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();
@@ -306,30 +305,11 @@ export default function EditMessageOfAppPage() {
               update
             </Button>
           </form>
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={6000}
-            onClose={() => setShowAlert(false)}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          >
-            <Alert
-              severity={alertSeverity}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setShowAlert(false);
-                  }}
-                >
-                  <MdClose fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {alertMessage}
-            </Alert>
-          </Snackbar>
+          <CustomSnackbar
+            message={alertMessage}
+            severity={alertSeverity}
+            isOpenState={[showAlert, setShowAlert]}
+          />
         </main>
       </div>
     </>

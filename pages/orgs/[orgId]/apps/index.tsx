@@ -7,7 +7,6 @@ import styles from "../../../../styles/Home.module.css";
 import { MdDeleteForever, MdClose, MdEdit, MdVisibility } from "react-icons/md";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,7 +16,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import Snackbar from "@mui/material/Snackbar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -34,6 +32,7 @@ import { useApps } from "../../../../api/apps/useApps";
 import { useOrg } from "../../../../api/orgs/useOrg";
 import { useUsers } from "../../../../api/orgs/useUsers";
 import Routes from "../../../../routes/routes";
+import CustomSnackbar from "../../../../components/CustomSnackbar";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -421,31 +420,11 @@ export default function AppsPage() {
             <p className="marginTopMedium">no data to show</p>
           )}
         </div>
-        <Snackbar
-          open={showAlert}
-          autoHideDuration={6000}
-          onClose={() => setShowAlert(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            className="marginTopMedium"
-            severity={alertSeverity}
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setShowAlert(false);
-                }}
-              >
-                <MdClose fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {alertMessage}
-          </Alert>
-        </Snackbar>
+        <CustomSnackbar
+          message={alertMessage}
+          severity={alertSeverity}
+          isOpenState={[showAlert, setShowAlert]}
+        />
         <Dialog
           open={showDeleteDialog}
           aria-labelledby="alert-dialog-title"

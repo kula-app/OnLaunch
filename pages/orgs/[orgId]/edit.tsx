@@ -2,18 +2,15 @@ import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../styles/Home.module.css";
 
-import { MdClose } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import getOrg from "../../../api/orgs/getOrg";
 import updateOrg from "../../../api/orgs/updateOrg";
 import Routes from "../../../routes/routes";
 import { Org } from "../../../models/org";
+import CustomSnackbar from "../../../components/CustomSnackbar";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -97,30 +94,11 @@ export default function EditOrgPage() {
               update
             </Button>
           </form>
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={6000}
-            onClose={() => setShowAlert(false)}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          >
-            <Alert
-              severity={alertSeverity}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setShowAlert(false);
-                  }}
-                >
-                  <MdClose fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {alertMessage}
-            </Alert>
-          </Snackbar>
+          <CustomSnackbar
+            message={alertMessage}
+            severity={alertSeverity}
+            isOpenState={[showAlert, setShowAlert]}
+          />
         </main>
       </div>
     </>

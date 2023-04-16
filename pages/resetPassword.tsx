@@ -3,16 +3,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import { MdClose } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
 import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -118,30 +115,11 @@ export default function ResetPasswordPage() {
           </div>
         )}
       </main>
-      <Snackbar
-        open={showAlert}
-        autoHideDuration={6000}
-        onClose={() => setShowAlert(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={alertSeverity}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setShowAlert(false);
-              }}
-            >
-              <MdClose fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {alertMessage}
-        </Alert>
-      </Snackbar>
+      <CustomSnackbar
+        message={alertMessage}
+        severity={alertSeverity}
+        isOpenState={[showAlert, setShowAlert]}
+      />
     </>
   );
 }

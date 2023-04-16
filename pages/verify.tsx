@@ -3,16 +3,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import { MdClose } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
 import { getSession } from "next-auth/react";
 import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
 import createVerifyToken from "../api/tokens/createVerifyToken";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -90,7 +87,8 @@ export default function VerifyPage() {
           <div className="centeredElement column">
             <h1 className="centeredElement">Thank you for verifying!</h1>
             <div>
-              If you want to use the full functionality of OnLaunch please log in
+              If you want to use the full functionality of OnLaunch please log
+              in
             </div>
             <Button
               variant="contained"
@@ -115,16 +113,19 @@ export default function VerifyPage() {
             <h1>loading ...</h1>
           </div>
         )}
-        {!signup && !verified && (!!email || !!expired || !!obsolete) && !disabled && (
-          <Button
-            variant="contained"
-            type="button"
-            className="marginTopMedium"
-            onClick={() => resendLink()}
-          >
-            resend link
-          </Button>
-        )}
+        {!signup &&
+          !verified &&
+          (!!email || !!expired || !!obsolete) &&
+          !disabled && (
+            <Button
+              variant="contained"
+              type="button"
+              className="marginTopMedium"
+              onClick={() => resendLink()}
+            >
+              resend link
+            </Button>
+          )}
         {!signup && !verified && !!email && disabled && (
           <Button
             variant="contained"
@@ -137,30 +138,11 @@ export default function VerifyPage() {
           </Button>
         )}
       </main>
-      <Snackbar
-        open={showAlert}
-        autoHideDuration={6000}
-        onClose={() => setShowAlert(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={alertSeverity}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setShowAlert(false);
-              }}
-            >
-              <MdClose fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {alertMessage}
-        </Alert>
-      </Snackbar>
+      <CustomSnackbar
+        message={alertMessage}
+        severity={alertSeverity}
+        isOpenState={[showAlert, setShowAlert]}
+      />
     </>
   );
 }
