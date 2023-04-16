@@ -25,13 +25,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseDto[]>
 ) {
-  if (!req.query.appId) {
-    res.status(StatusCodes.METHOD_NOT_ALLOWED).end("parameter AppId needed");
-  }
-
   switch (req.method) {
     case "GET":
-      const publicKey = req.headers["X-API-Key"];
+      const publicKey = req.headers["x-api-key"];
 
       if (!publicKey) {
         res.status(StatusCodes.BAD_REQUEST).end("no public key provided");
@@ -45,7 +41,7 @@ export default async function handler(
       });
 
       if (!app) {
-        res.status(StatusCodes.BAD_REQUEST).end("wrong publicKey provided");
+        res.status(StatusCodes.NOT_FOUND).end("no app found for public key");
         return;
       }
 
@@ -56,7 +52,7 @@ export default async function handler(
         where: {
           AND: [
             {
-              appId: Number(req.query.appId),
+              appId: app.id,
             },
             {
               startDate: {
