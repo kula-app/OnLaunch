@@ -30,7 +30,7 @@ export default function NewMessageForAppPage() {
   const router = useRouter();
 
   const actionTypes = ["DISMISS"];
-  const buttonDesigns = ["TEXT", "FILLED"];
+  const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -41,7 +41,7 @@ export default function NewMessageForAppPage() {
 
   const [actions, setActions] = useState<Action[]>([]);
 
-  const [switchValue, setSwitchValue] = useState(false);
+  const [blocking, setBlocking] = useState(false);
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -59,7 +59,7 @@ export default function NewMessageForAppPage() {
     let message: Message = {
       title: title,
       body: body,
-      blocking: switchValue,
+      blocking: blocking,
       startDate: startDate,
       endDate: endDate,
       appId: appId,
@@ -84,7 +84,7 @@ export default function NewMessageForAppPage() {
 
   function resetForm() {
     (document.getElementById("messageForm") as HTMLFormElement)?.reset();
-    setSwitchValue(false);
+    setBlocking(false);
   }
 
   function addAction() {
@@ -157,8 +157,8 @@ export default function NewMessageForAppPage() {
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={switchValue}
-                      onChange={() => setSwitchValue(!switchValue)}
+                      checked={blocking}
+                      onChange={() => setBlocking(!blocking)}
                     ></Switch>
                   }
                   label="Blocking"
@@ -313,9 +313,12 @@ export default function NewMessageForAppPage() {
           <div className={styles.phoneContainer}>
             <div className={styles.phoneScreen}>
               <div>
-                <h1>
-                  {title}
-                </h1>
+                <div className={styles.closeIconContainer}>
+                  {!blocking && (
+                    <CloseIcon className={styles.closeIcon} style={{ color: 'grey' }}></CloseIcon>
+                  )}
+                </div>
+                <h1 style={{ marginTop: (blocking ? '72px' : '16px') }}>{title}</h1>
               </div>
               <div>
                 <p>{body}</p>
