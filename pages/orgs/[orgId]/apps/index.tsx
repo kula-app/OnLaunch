@@ -4,10 +4,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { MdDeleteForever, MdClose, MdEdit, MdVisibility } from "react-icons/md";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
@@ -250,7 +247,7 @@ export default function AppsPage() {
                         <IconButton
                           onClick={() => navigateToMessagesPage(app.id)}
                         >
-                          <VisibilityIcon />
+                          <MdVisibility />
                         </IconButton>
                       </Tooltip>
                       {app.role === "ADMIN" && (
@@ -258,14 +255,14 @@ export default function AppsPage() {
                           <IconButton
                             onClick={() => navigateToEditAppPage(app.id)}
                           >
-                            <EditIcon />
+                            <MdEdit />
                           </IconButton>
                         </Tooltip>
                       )}
                       {app.role === "ADMIN" && (
                         <Tooltip title="delete">
                           <IconButton onClick={() => handleDelete(app.id)}>
-                            <DeleteForeverIcon />
+                            <MdDeleteForever />
                           </IconButton>
                         </Tooltip>
                       )}
@@ -393,7 +390,7 @@ export default function AppsPage() {
                             <IconButton
                               onClick={() => removeUser(Number(user.id))}
                             >
-                              <DeleteForeverIcon />
+                              <MdDeleteForever />
                             </IconButton>
                           </Tooltip>
                         </div>
@@ -407,7 +404,7 @@ export default function AppsPage() {
                               <IconButton
                                 onClick={() => removeUser(Number(user.id))}
                               >
-                                <DeleteForeverIcon />
+                                <MdDeleteForever />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -442,7 +439,7 @@ export default function AppsPage() {
                   setShowAlert(false);
                 }}
               >
-                <CloseIcon fontSize="inherit" />
+                <MdClose fontSize="inherit" />
               </IconButton>
             }
           >

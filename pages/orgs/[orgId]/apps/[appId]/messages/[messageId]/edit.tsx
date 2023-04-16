@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../../../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { MdDeleteForever, MdClose } from "react-icons/md";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
@@ -22,7 +21,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
-import ApiRoutes from "../../../../../../../routes/apiRoutes";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
@@ -33,7 +31,7 @@ export default function EditMessageOfAppPage() {
   const router = useRouter();
 
   const actionTypes = ["DISMISS"];
-  const buttonDesigns = ["TEXT", "FILLED"];
+  const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -283,7 +281,7 @@ export default function EditMessageOfAppPage() {
                         </TableCell>
                         <TableCell width="5%">
                           <IconButton onClick={() => deleteAction(index)}>
-                            <DeleteForeverIcon />
+                            <MdDeleteForever />
                           </IconButton>
                         </TableCell>
                       </TableRow>
@@ -325,7 +323,7 @@ export default function EditMessageOfAppPage() {
                     setShowAlert(false);
                   }}
                 >
-                  <CloseIcon fontSize="inherit" />
+                  <MdClose fontSize="inherit" />
                 </IconButton>
               }
             >

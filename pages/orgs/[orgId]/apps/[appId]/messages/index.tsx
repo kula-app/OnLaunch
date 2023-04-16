@@ -3,9 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import EditIcon from "@mui/icons-material/Edit";
+import { MdDeleteForever, MdClose, MdEdit } from "react-icons/md";
 import { TextField } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
@@ -256,14 +254,14 @@ export default function MessagesOfAppPage() {
                                 navigateToEditMessagePage(Number(message.id))
                               }
                             >
-                              <EditIcon />
+                              <MdEdit />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="delete">
                             <IconButton
                               onClick={() => handleDelete(Number(message.id))}
                             >
-                              <DeleteForeverIcon />
+                              <MdDeleteForever />
                             </IconButton>
                           </Tooltip>
                         </div>
@@ -295,7 +293,7 @@ export default function MessagesOfAppPage() {
                     setShowAlert(false);
                   }}
                 >
-                  <CloseIcon fontSize="inherit" />
+                  <MdClose fontSize="inherit" />
                 </IconButton>
               }
             >

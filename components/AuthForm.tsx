@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import type { AlertColor } from "@mui/material/Alert";
-import CloseIcon from "@mui/icons-material/Close";
+import { MdClose } from "react-icons/md";
 import IconButton from "@mui/material/IconButton";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
@@ -153,7 +153,7 @@ export default function AuthForm() {
                   setShowAlert(false);
                 }}
               >
-                <CloseIcon fontSize="inherit" />
+                <MdClose fontSize="inherit" />
               </IconButton>
             }
           >

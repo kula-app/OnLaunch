@@ -3,16 +3,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
+import { MdDeleteForever, MdClose, MdEdit, MdVisibility } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import { getSession } from "next-auth/react";
 
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -63,7 +60,7 @@ export default function DashboardPage() {
         setAlertSeverity("error");
         setShowAlert(true);
       }
-    };
+    }
     if (!!invite || !!directinvite) {
       showInvitation();
     }
@@ -163,7 +160,7 @@ export default function DashboardPage() {
                     <div className="hiddenTableElement">
                       <Tooltip title="view messages">
                         <IconButton onClick={() => navigateToAppsPage(org.id)}>
-                          <VisibilityIcon />
+                          <MdVisibility />
                         </IconButton>
                       </Tooltip>
                       {org.role === "ADMIN" && (
@@ -171,14 +168,14 @@ export default function DashboardPage() {
                           <IconButton
                             onClick={() => navigateToEditOrgPage(org.id)}
                           >
-                            <EditIcon />
+                            <MdEdit />
                           </IconButton>
                         </Tooltip>
                       )}
                       {org.role === "ADMIN" && (
                         <Tooltip title="delete">
                           <IconButton onClick={() => handleDelete(org.id)}>
-                            <DeleteForeverIcon />
+                            <MdDeleteForever />
                           </IconButton>
                         </Tooltip>
                       )}
@@ -211,7 +208,7 @@ export default function DashboardPage() {
                   setShowAlert(false);
                 }}
               >
-                <CloseIcon fontSize="inherit" />
+                <MdClose fontSize="inherit" />
               </IconButton>
             }
           >

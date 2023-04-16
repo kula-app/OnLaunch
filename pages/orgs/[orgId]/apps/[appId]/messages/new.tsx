@@ -2,8 +2,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { MdDeleteForever, MdClose } from "react-icons/md";
 import { SelectChangeEvent } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
@@ -257,7 +256,7 @@ export default function NewMessageForAppPage() {
                           </TableCell>
                           <TableCell>
                             <IconButton onClick={() => deleteAction(index)}>
-                              <DeleteForeverIcon />
+                              <MdDeleteForever />
                             </IconButton>
                           </TableCell>
                         </TableRow>
@@ -302,7 +301,7 @@ export default function NewMessageForAppPage() {
                       setShowAlert(false);
                     }}
                   >
-                    <CloseIcon fontSize="inherit" />
+                    <MdClose fontSize="inherit" />
                   </IconButton>
                 }
               >
@@ -315,7 +314,7 @@ export default function NewMessageForAppPage() {
               <div>
                 <div className={styles.closeIconContainer}>
                   {!blocking && (
-                    <CloseIcon className={styles.closeIcon} style={{ color: 'grey' }}></CloseIcon>
+                    <MdClose className={styles.closeIcon} style={{ color: 'grey' }}></MdClose>
                   )}
                 </div>
                 <h1 style={{ marginTop: (blocking ? '72px' : '16px') }}>{title}</h1>

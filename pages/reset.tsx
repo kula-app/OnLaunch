@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import CloseIcon from "@mui/icons-material/Close";
+import { MdClose } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
@@ -96,7 +96,7 @@ export default function ResetPage() {
                   setShowAlert(false);
                 }}
               >
-                <CloseIcon fontSize="inherit" />
+                <MdClose fontSize="inherit" />
               </IconButton>
             }
           >
