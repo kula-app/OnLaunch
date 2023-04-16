@@ -35,6 +35,7 @@ FROM project_setup AS build_setup
 COPY api ./api
 COPY components ./components
 COPY config ./config
+COPY fonts ./fonts
 COPY mailTemplate ./mailTemplate
 COPY models ./models
 COPY pages ./pages
