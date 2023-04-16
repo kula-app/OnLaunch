@@ -5,8 +5,7 @@ import { StatusCodes } from "http-status-codes";
 const prisma = new PrismaClient();
 
 enum ActionType {
-  Button = "BUTTON",
-  DismissButton = "DISMISS_BUTTON",
+  Dismiss = "DISMISS",
 }
 
 type ActionDto = {

@@ -7,8 +7,7 @@ import { authOptions } from "../../../../../../../auth/[...nextauth]";
 const prisma = new PrismaClient();
 
 enum ActionType {
-  Button = "BUTTON",
-  DismissButton = "DISMISS_BUTTON",
+  Dismiss = "DISMISS",
 }
 
 type Action = {
