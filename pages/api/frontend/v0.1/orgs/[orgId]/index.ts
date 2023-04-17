@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -10,34 +9,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return;
-  }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-    select: {
-      role: true,
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business here, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
+  if (!user) {
     return;
   }
 
@@ -62,13 +36,13 @@ export default async function handler(
       res.status(StatusCodes.OK).json({
         name: org.name,
         apps: org.apps,
-        invitationToken: userInOrg?.role === "ADMIN" ? org.invitationToken : "",
+        invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
       });
       break;
 
     case "DELETE":
       try {
-        if (userInOrg?.role === "USER") {
+        if (user.role === "USER") {
           res.status(StatusCodes.FORBIDDEN).json({
             message:
               "you are not allowed to delete organisation with id " +
@@ -108,7 +82,7 @@ export default async function handler(
 
     case "PUT":
       try {
-        if (userInOrg?.role === "USER") {
+        if (user.role === "USER") {
           res.status(StatusCodes.FORBIDDEN).json({
             message:
               "you are not allowed to update organisation with id " +

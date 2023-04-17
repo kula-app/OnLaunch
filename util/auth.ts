@@ -8,6 +8,11 @@ import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
 import Routes from "../routes/routes";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../pages/api/auth/[...nextauth]";
+import { StatusCodes } from "http-status-codes";
+import { PrismaClient } from "@prisma/client";
 var crypto = require("crypto");
 var base64url = require("base64url");
 
@@ -144,4 +149,56 @@ export function sendTokenPerMail(
   function getSenderData(senderName: string) {
     return `"${senderName}" <${config.emailContent.senderAddress}>`;
   }
+}
+
+export async function authenticateRequest(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+    return false;
+  }
+
+  return true;
+}
+export async function getUserFromRequest(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  prisma: PrismaClient
+) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+    return;
+  }
+
+  const id = session.user?.id;
+
+  const userInOrg = await prisma.usersInOrganisations.findFirst({
+    where: {
+      user: {
+        id: Number(id),
+      },
+      org: {
+        id: Number(req.query.orgId),
+      },
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
+    // if user has no business here, return a 404
+    res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "no organisation found with id " + req.query.orgId });
+    return;
+  }
+
+  return { role: userInOrg?.role, id: Number(id) };
 }

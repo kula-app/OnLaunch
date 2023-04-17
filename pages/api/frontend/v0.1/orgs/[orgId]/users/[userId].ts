@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -10,31 +9,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return;
-  }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business with this organisation, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
+  if (!user) {
     return;
   }
 
@@ -42,8 +19,8 @@ export default async function handler(
     case "DELETE":
       try {
         if (
-          userInOrg?.role === "USER" &&
-          userInOrg?.userId !== Number(req.query.userId)
+          user.role === "USER" &&
+          user.id !== Number(req.query.userId)
         ) {
           res
             .status(StatusCodes.FORBIDDEN)
@@ -58,8 +35,8 @@ export default async function handler(
         }
 
         if (
-          userInOrg?.role === "ADMIN" &&
-          userInOrg?.userId === Number(req.query.userId)
+          user.role === "ADMIN" &&
+          user.id === Number(req.query.userId)
         ) {
           const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
             where: {

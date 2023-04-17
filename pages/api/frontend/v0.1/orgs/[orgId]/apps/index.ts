@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { generateToken } from "../../../../../../../util/auth";
+import { generateToken, getUserFromRequest } from "../../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -18,37 +16,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+  if (!user) {
     return;
   }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-    select: {
-      role: true,
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business here, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
-    return;
-  }
-
+  
   switch (req.method) {
     case "GET":
       const allApps = await prisma.app.findMany({
@@ -83,7 +56,7 @@ export default async function handler(
           return {
             id: app.id,
             name: app.name,
-            role: userInOrg?.role,
+            role: user.role,
             activeMessages: app.messages.length,
           };
         })

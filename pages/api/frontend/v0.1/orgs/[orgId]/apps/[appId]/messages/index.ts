@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../../../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -27,34 +26,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return;
-  }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-    select: {
-      role: true,
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business here, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "organisation not found" });
+  if (!user) {
     return;
   }
 

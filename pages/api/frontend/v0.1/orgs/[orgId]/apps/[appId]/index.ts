@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -10,34 +9,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return;
-  }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-    select: {
-      role: true,
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business here, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
+  if (!user) {
     return;
   }
 
@@ -73,8 +47,8 @@ export default async function handler(
       }
 
       res.status(StatusCodes.OK).json({
-        role: userInOrg?.role,
-        publicKey: userInOrg?.role === "ADMIN" ? app.publicKey : "",
+        role: user.role,
+        publicKey: user.role === "ADMIN" ? app.publicKey : "",
         name: app.name,
         messages: app.messages,
       });
@@ -82,13 +56,11 @@ export default async function handler(
 
     case "DELETE":
       try {
-        if (userInOrg?.role === "USER") {
-          res
-            .status(StatusCodes.FORBIDDEN)
-            .json({
-              message:
-                "you are not allowed to delete app with id " + req.query.orgId,
-            });
+        if (user.role === "USER") {
+          res.status(StatusCodes.FORBIDDEN).json({
+            message:
+              "you are not allowed to delete app with id " + req.query.orgId,
+          });
           return;
         }
         const deletedApp = await prisma.app.delete({
@@ -109,13 +81,11 @@ export default async function handler(
 
     case "PUT":
       try {
-        if (userInOrg?.role === "USER") {
-          res
-            .status(StatusCodes.FORBIDDEN)
-            .json({
-              message:
-                "you are not allowed to update app with id " + req.query.orgId,
-            });
+        if (user.role === "USER") {
+          res.status(StatusCodes.FORBIDDEN).json({
+            message:
+              "you are not allowed to update app with id " + req.query.orgId,
+          });
           return;
         }
         const updatedApp = await prisma.app.update({
