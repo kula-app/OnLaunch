@@ -32,10 +32,10 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
-      const publicKey = req.headers.publickey;
+      const publicKey = req.headers["X-API-Key"];
 
       if (!publicKey) {
-        res.status(StatusCodes.BAD_REQUEST).end("no publicKey provided");
+        res.status(StatusCodes.BAD_REQUEST).end("no public key provided");
         return;
       }
 
