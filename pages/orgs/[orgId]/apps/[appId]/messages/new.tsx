@@ -58,8 +58,8 @@ export default function NewMessageForAppPage() {
       title: title,
       body: body,
       blocking: blocking,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: String(new Date(startDate)),
+      endDate: String(new Date(endDate)),
       appId: appId,
       actions: actions,
     };

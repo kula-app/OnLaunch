@@ -74,8 +74,8 @@ export default function EditMessageOfAppPage() {
       title: title,
       body: body,
       blocking: switchValue,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: String(new Date(startDate)),
+      endDate: String(new Date(endDate)),
       appId: appId,
       actions: actions,
     };
