@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import {
+  getUserFromRequest,
   hashAndSaltPassword,
   validatePassword,
   verifyPassword,
@@ -21,16 +22,13 @@ export default async function handler(
 
   switch (req.method) {
     case "PUT":
-      const session = await getServerSession(req, res, authOptions);
-
-      if (!session) {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: "Not authorized!" });
+      const user = await getUserFromRequest(req, res)
+    
+      if (!user) {
         return;
       }
 
-      const id = session.user?.id;
+      const id = user.id;
 
       if (!(await validatePassword(password))) {
         res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
@@ -40,7 +38,7 @@ export default async function handler(
         return;
       }
 
-      const user = await prisma.user.findFirst({
+      const userById = await prisma.user.findFirst({
         where: {
           id: Number(id),
           NOT: {
@@ -49,7 +47,7 @@ export default async function handler(
         },
       });
 
-      if (!user || (user && !user.id)) {
+      if (!userById || (userById && !userById.id)) {
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
@@ -59,8 +57,8 @@ export default async function handler(
       if (
         !(await verifyPassword(
           passwordOld,
-          user.salt as string,
-          user.password as string
+          userById.salt as string,
+          userById.password as string
         ))
       ) {
         res
@@ -72,9 +70,9 @@ export default async function handler(
       const { hashedSaltedPassword: newHashedSaltedPassword, salt: newSalt } =
         await hashAndSaltPassword(password);
 
-      const createdUser = await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: {
-          id: user.id,
+          id: userById.id,
         },
         data: {
           password: newHashedSaltedPassword,
@@ -82,7 +80,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.CREATED).json(createdUser.email);
+      res.status(StatusCodes.CREATED).json(updatedUser.email);
       break;
 
     default:

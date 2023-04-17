@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
-import { generateToken, sendTokenPerMail } from "../../../../../../util/auth";
+import { generateToken, getUserWithRoleFromRequest, sendTokenPerMail } from "../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { UserDto } from "../../../../../../models/userDto";
 import { MailType } from "../../../../../../models/mailType";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -13,31 +11,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserWithRoleFromRequest(req, res, prisma);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return;
-  }
-
-  const id = session.user?.id;
-
-  const userInOrg = await prisma.usersInOrganisations.findFirst({
-    where: {
-      user: {
-        id: Number(id),
-      },
-      org: {
-        id: Number(req.query.orgId),
-      },
-    },
-  });
-
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    // if user has no business with this organisation, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
+  if (!user) {
     return;
   }
 
@@ -80,7 +56,7 @@ export default async function handler(
 
     case "PUT":
       try {
-        if (userInOrg?.role === "USER") {
+        if (user.role === "USER") {
           res
             .status(StatusCodes.FORBIDDEN)
             .json({
@@ -93,7 +69,7 @@ export default async function handler(
           return;
         }
 
-        if (userInOrg.userId === req.body.userId) {
+        if (user.id === req.body.userId) {
           res
             .status(StatusCodes.BAD_REQUEST)
             .json({ message: "you cannot change your own role!" });
@@ -131,7 +107,7 @@ export default async function handler(
 
     case "POST":
       try {
-        if (userInOrg?.role === "USER") {
+        if (user.role === "USER") {
           res
             .status(StatusCodes.FORBIDDEN)
             .json({
@@ -144,7 +120,7 @@ export default async function handler(
           return;
         }
 
-        const user = await prisma.user.findFirst({
+        const userByEmail = await prisma.user.findFirst({
           where: {
             email: req.body.email,
             NOT: {
@@ -153,12 +129,12 @@ export default async function handler(
           },
         });
 
-        if (user && user.id) {
+        if (userByEmail && userByEmail.id) {
           const searchUserAlreadyInOrganisation =
             await prisma.usersInOrganisations.findFirst({
               where: {
-                userId: user.id,
-                orgId: userInOrg?.orgId,
+                userId: userByEmail.id,
+                orgId: Number(req.body.orgId),
               },
             });
 
@@ -171,7 +147,7 @@ export default async function handler(
 
           await prisma.userInvitationToken.updateMany({
             where: {
-              userId: userInOrg?.userId,
+              userId: user.id,
               isObsolete: false,
             },
             data: {
@@ -188,15 +164,15 @@ export default async function handler(
           const uit = await prisma.userInvitationToken.create({
             data: {
               token: generatedToken,
-              orgId: userInOrg?.orgId,
-              userId: userInOrg?.userId,
+              orgId: Number(req.body.orgId),
+              userId: user.id,
               expiryDate: expiryDate,
             },
           });
 
           sendTokenPerMail(
-            user.email as string,
-            user.firstName as string,
+            userByEmail.email as string,
+            userByEmail.firstName as string,
             generatedToken,
             MailType.DirectInvite
           );

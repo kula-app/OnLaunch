@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -10,10 +11,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res)
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+  if (!user) {
     return;
   }
 
@@ -21,7 +21,7 @@ export default async function handler(
     case "GET":
       const userFromDb = await prisma.user.findFirst({
         where: {
-          id: Number(session.user.id),
+          id: Number(user.id),
           NOT: {
             isDeleted: true,
           },
@@ -43,7 +43,7 @@ export default async function handler(
       break;
 
     case "DELETE":
-      const userEmail2 = session.user?.email as string;
+      const userEmail2 = user.email as string;
 
       const userFromDb2 = await prisma.user.findFirst({
         where: {

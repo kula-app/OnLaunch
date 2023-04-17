@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth/next";
-import { generateToken } from "../../../../../util/auth";
+import { getUserFromRequest, generateToken } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
-import { authOptions } from "../../../auth/[...nextauth]";
 
 
 const prisma = new PrismaClient();
@@ -18,21 +16,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+  if (!user) {
     return;
   }
-
-  const id = session.user?.id;
 
   switch (req.method) {
     case "GET":
       const orgsForUser = await prisma.usersInOrganisations.findMany({
         where: {
           user: {
-            id: Number(id),
+            id: user.id,
           },
         },
         include: {
@@ -58,7 +53,7 @@ export default async function handler(
         data: {
           user: {
             connect: {
-              id: Number(id),
+              id: user.id,
             },
           },
           role: "ADMIN",

@@ -151,23 +151,9 @@ export function sendTokenPerMail(
   }
 }
 
-export async function authenticateRequest(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
-    return false;
-  }
-
-  return true;
-}
 export async function getUserFromRequest(
   req: NextApiRequest,
-  res: NextApiResponse,
-  prisma: PrismaClient
+  res: NextApiResponse
 ) {
   const session = await getServerSession(req, res, authOptions);
 
@@ -176,12 +162,23 @@ export async function getUserFromRequest(
     return;
   }
 
-  const id = session.user?.id;
+  return session.user;
+}
+export async function getUserWithRoleFromRequest(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  prisma: PrismaClient
+) {
+  const user = await getUserFromRequest(req, res);
+
+  if (!user) {
+    return;
+  }
 
   const userInOrg = await prisma.usersInOrganisations.findFirst({
     where: {
       user: {
-        id: Number(id),
+        id: Number(user.id),
       },
       org: {
         id: Number(req.query.orgId),
@@ -200,5 +197,5 @@ export async function getUserFromRequest(
     return;
   }
 
-  return { role: userInOrg?.role, id: Number(id) };
+  return { role: userInOrg?.role, id: user.id, email: user.email };
 }

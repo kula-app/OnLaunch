@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../auth/[...nextauth]";
+import { getUserFromRequest } from "../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -14,14 +13,11 @@ export default async function handler(
 
   const { token } = data;
 
-  const session = await getServerSession(req, res, authOptions);
+  const user = await getUserFromRequest(req, res);
 
-  if (!session) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+  if (!user) {
     return;
   }
-
-  const id = session.user?.id;
 
   const userInvitationToken = await prisma.userInvitationToken.findFirst({
     where: {
@@ -54,11 +50,9 @@ export default async function handler(
   });
 
   if (!organisation) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({
-        message: `No organisation found with id ${userInvitationToken.orgId}!`,
-      });
+    res.status(StatusCodes.BAD_REQUEST).json({
+      message: `No organisation found with id ${userInvitationToken.orgId}!`,
+    });
     return;
   }
 
@@ -76,7 +70,7 @@ export default async function handler(
       try {
         await prisma.usersInOrganisations.create({
           data: {
-            userId: id,
+            userId: user.id,
             orgId: organisation.id,
             role: "USER",
           },

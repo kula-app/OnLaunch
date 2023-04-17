@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { getUserFromRequest } from "../../../../../../../../../util/auth";
+import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
 
 const prisma = new PrismaClient();
 
@@ -26,7 +26,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const user = await getUserFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
     return;

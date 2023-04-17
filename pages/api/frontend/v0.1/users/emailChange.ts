@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { generateToken, sendTokenPerMail } from "../../../../../util/auth";
+import { getUserFromRequest, generateToken, sendTokenPerMail } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { MailType } from "../../../../../models/mailType";
 import { getServerSession } from "next-auth/next";
@@ -18,12 +18,9 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const session = await getServerSession(req, res, authOptions);
-
-      if (!session) {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: "Not authorized!" });
+      const user = await getUserFromRequest(req, res)
+    
+      if (!user) {
         return;
       }
 
@@ -34,18 +31,16 @@ export default async function handler(
         return;
       }
 
-      const userEmail = session.user?.email as string;
-
-      const user = await prisma.user.findFirst({
+      const userByEmail = await prisma.user.findFirst({
         where: {
-          email: userEmail,
+          email: user.email,
           NOT: {
             isDeleted: true,
           },
         },
       });
 
-      if (!user || (user && !user.id)) {
+      if (!userByEmail || (userByEmail && !userByEmail.id)) {
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
@@ -90,13 +85,13 @@ export default async function handler(
           token: generatedToken,
           expiryDate: expiryDate,
           newEmail: emailNew,
-          currentEmail: userEmail,
+          currentEmail: user.email,
         },
       });
 
       sendTokenPerMail(
         emailToken.newEmail as string,
-        user.firstName as string,
+        userByEmail.firstName as string,
         generatedToken,
         MailType.ChangeEmail
       );
