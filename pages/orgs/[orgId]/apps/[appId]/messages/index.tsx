@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
 
 import { MdDeleteForever, MdEdit } from "react-icons/md";
-import { TextField } from "@mui/material";
+import { CircularProgress, TextField } from "@mui/material";
 import type { AlertColor } from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
@@ -272,7 +272,12 @@ export default function MessagesOfAppPage() {
           {data?.messages && messages && messages.length == 0 && (
             <p className="marginTopMedium">no data to show</p>
           )}
-          {isLoading && <div className="marginTopMedium">Loading...</div>}
+          {isLoading && (
+            <div>
+              <div className="marginTopMedium">Loading...</div>
+              <CircularProgress />
+            </div>
+          )}
           <CustomSnackbar
             message={alertMessage}
             severity={alertSeverity}

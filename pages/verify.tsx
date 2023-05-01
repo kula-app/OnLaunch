@@ -10,6 +10,7 @@ import Routes from "../routes/routes";
 import { useCallback } from "react";
 import createVerifyToken from "../api/tokens/createVerifyToken";
 import CustomSnackbar from "../components/CustomSnackbar";
+import { CircularProgress } from "@mui/material";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -111,6 +112,7 @@ export default function VerifyPage() {
         {!verified && !signup && !expired && !obsolete && !email && (
           <div>
             <h1>loading ...</h1>
+            <CircularProgress />
           </div>
         )}
         {!signup &&

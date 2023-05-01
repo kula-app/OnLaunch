@@ -27,6 +27,7 @@ import { useOrgs } from "../api/orgs/useOrgs";
 import Routes from "../routes/routes";
 import { OrgInvite } from "../models/orgInvite";
 import CustomSnackbar from "../components/CustomSnackbar";
+import { CircularProgress } from "@mui/material";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -162,7 +163,12 @@ export default function DashboardPage() {
         {orgs?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
-        {isLoading && <p className="marginTopMedium">Loading...</p>}
+        {isLoading && (
+          <div>
+            <p className="marginTopMedium">Loading...</p>
+            <CircularProgress />
+          </div>
+        )}
         <CustomSnackbar
           message={alertMessage}
           severity={alertSeverity}

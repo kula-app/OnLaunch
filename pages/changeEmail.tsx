@@ -8,6 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 import validateEmailChange from "../api/tokens/validateEmailChange";
 import Routes from "../routes/routes";
 import CustomSnackbar from "../components/CustomSnackbar";
+import { CircularProgress } from "@mui/material";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -82,6 +83,7 @@ export default function ResetPasswordPage() {
         {loading && (
           <div>
             <h1>loading ...</h1>
+            <CircularProgress />
           </div>
         )}
       </main>
