@@ -44,9 +44,9 @@ COPY public ./public
 COPY routes ./routes
 COPY styles ./styles
 COPY util ./util
-COPY sentry.client.config .
-COPY sentry.edge.config .
-COPY sentry.server.config .
+COPY sentry.client.config.ts .
+COPY sentry.edge.config.ts .
+COPY sentry.server.config.ts .
 
 # ---- Production ----
 # build development server
