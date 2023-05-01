@@ -7,10 +7,8 @@ import {
   verifyPassword,
 } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../auth/[...nextauth]";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,

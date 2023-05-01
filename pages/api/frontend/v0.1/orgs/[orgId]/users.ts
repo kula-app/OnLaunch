@@ -9,7 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import { UserDto } from "../../../../../../models/userDto";
 import { MailType } from "../../../../../../models/mailType";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,

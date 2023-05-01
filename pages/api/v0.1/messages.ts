@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 enum ActionType {
   Dismiss = "DISMISS",

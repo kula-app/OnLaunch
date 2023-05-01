@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 enum ActionType {
   Dismiss = "DISMISS",

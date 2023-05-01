@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { getUserFromRequest, generateToken } from "../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,

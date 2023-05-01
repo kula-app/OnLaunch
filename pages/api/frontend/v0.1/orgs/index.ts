@@ -4,7 +4,7 @@ import { getUserFromRequest, generateToken } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 type OrganisationDto = {
   id: number;

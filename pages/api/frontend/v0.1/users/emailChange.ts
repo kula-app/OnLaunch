@@ -3,10 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import { getUserFromRequest, generateToken, sendTokenPerMail } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { MailType } from "../../../../../models/mailType";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../auth/[...nextauth]";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,

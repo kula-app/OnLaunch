@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { generateToken, getUserWithRoleFromRequest } from "../../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 type AppDto = {
   id: number;
