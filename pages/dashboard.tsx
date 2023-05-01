@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
-import { MdDeleteForever, MdClose, MdEdit, MdVisibility } from "react-icons/md";
+import { MdEdit, MdVisibility } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import { getSession } from "next-auth/react";
@@ -19,7 +19,6 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
-import deleteOrg from "../api/orgs/deleteOrg";
 import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
@@ -40,8 +39,6 @@ export default function DashboardPage() {
 
   const [orgInvite, setOrgInvite] = useState<OrgInvite>();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [orgId, setOrgId] = useState(-1);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -82,26 +79,6 @@ export default function DashboardPage() {
 
   function navigateToOrgPage(orgId: number) {
     router.push(Routes.getOrgAppsByOrgId(orgId));
-  }
-
-  function handleDelete(orgId: number) {
-    setOrgId(orgId);
-    setShowDeleteDialog(true);
-  }
-
-  async function delOrg(orgId: number) {
-    try {
-      await deleteOrg(orgId);
-      mutate();
-
-      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
-    } catch (error) {
-      setAlertMessage(`Error while deleting org with id ${orgId}: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
   }
 
   async function joinOrg(id: number) {
@@ -171,13 +148,6 @@ export default function DashboardPage() {
                           </IconButton>
                         </Tooltip>
                       )}
-                      {org.role === "ADMIN" && (
-                        <Tooltip title="delete">
-                          <IconButton onClick={() => handleDelete(org.id)}>
-                            <MdDeleteForever />
-                          </IconButton>
-                        </Tooltip>
-                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -194,32 +164,6 @@ export default function DashboardPage() {
           severity={alertSeverity}
           isOpenState={[showAlert, setShowAlert]}
         />
-        <Dialog
-          open={showDeleteDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {`Delete Organisation with id '${orgId}?`}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              This cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setShowDeleteDialog(false);
-                delOrg(orgId);
-              }}
-              autoFocus
-            >
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
         <Dialog
           open={showInviteDialog}
           aria-labelledby="alert-dialog-title"

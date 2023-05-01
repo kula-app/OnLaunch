@@ -22,15 +22,20 @@ import {
   MenuItem,
   Tooltip,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { MdDeleteForever } from "react-icons/md";
 import updateUserRoleInOrg from "../../../api/orgs/updateUserRoleInOrg";
-import users from "../../api/frontend/v0.1/users";
 import { useUsers } from "../../../api/orgs/useUsers";
 import deleteUserFromOrg from "../../../api/orgs/deleteUserFromOrg";
 import inviteUser from "../../../api/orgs/inviteUser";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
 import { useOrg } from "../../../api/orgs/useOrg";
+import deleteOrg from "../../../api/orgs/deleteOrg";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -40,6 +45,8 @@ export default function EditOrgPage() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [orgName, setOrgName] = useState("");
 
@@ -69,22 +76,18 @@ export default function EditOrgPage() {
 
     fetchOrgData();
   }, [router.isReady, orgId]);
-  
+
   const { data: session } = useSession();
 
   const { org, isError: orgError } = useOrg(orgId);
   const { users, isError: userError, mutate: userMutate } = useUsers(orgId);
-  
+
   if (userError || orgError) return <div>Failed to load</div>;
 
   let userRole = "";
   if (!!users) {
     userRole = users.find((i) => i.email === session?.user?.email)
       ?.role as string;
-  }
-
-  function navigateToHome() {
-    router.push(Routes.INDEX);
   }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -128,7 +131,7 @@ export default function EditOrgPage() {
         userId ===
         Number(users?.find((i) => i.email === session?.user?.email)?.id)
       ) {
-        navigateToHome();
+        navigateToDashboardPage();
       } else {
         userMutate();
 
@@ -201,6 +204,26 @@ export default function EditOrgPage() {
       setShowAlert(true);
     } catch (error) {
       setAlertMessage(`Error while updating user role: ${error}`);
+      setAlertSeverity("error");
+      setShowAlert(true);
+    }
+  }
+
+  function handleDelete() {
+    setShowDeleteDialog(true);
+  }
+
+  async function delOrg() {
+    try {
+      await deleteOrg(orgId);
+
+      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
+      setAlertSeverity("success");
+      setShowAlert(true);
+
+      navigateToDashboardPage();
+    } catch (error) {
+      setAlertMessage(`Error while deleting org with id ${orgId}: ${error}`);
       setAlertSeverity("error");
       setShowAlert(true);
     }
@@ -374,12 +397,47 @@ export default function EditOrgPage() {
             {users?.length == 0 && (
               <p className="marginTopMedium">no data to show</p>
             )}
+            <h1 className="marginTopLarge">Delete Organisation</h1>
+            <Button
+              variant="contained"
+              endIcon={<MdDeleteForever />}
+              color="error"
+              onClick={() => handleDelete()}
+            >
+              delete
+            </Button>
           </div>
           <CustomSnackbar
             message={alertMessage}
             severity={alertSeverity}
             isOpenState={[showAlert, setShowAlert]}
           />
+          <Dialog
+            open={showDeleteDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {`Delete Organisation '${org?.name}?`}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                This cannot be undone.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+              <Button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  delOrg();
+                }}
+                autoFocus
+              >
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
         </main>
       </div>
     </>
