@@ -129,7 +129,11 @@ export default function DashboardPage() {
           <TableBody>
             {orgs?.map((org, index) => {
               return (
-                <TableRow key={index}>
+                <TableRow
+                  className="clickable-row"
+                  key={index}
+                  onClick={() => navigateToAppsPage(org.id)}
+                >
                   <TableCell width="5%">{org.id}</TableCell>
                   <TableCell>{org.name}</TableCell>
                   <TableCell width="5%">

@@ -114,7 +114,11 @@ export default function AppsPage() {
           <TableBody>
             {apps?.map((app, index) => {
               return (
-                <TableRow key={index}>
+                <TableRow
+                  key={index}
+                  className="clickable-row"
+                  onClick={() => navigateToMessagesPage(app.id)}
+                >
                   <TableCell width="5%">{app.id}</TableCell>
                   <TableCell>{app.name}</TableCell>
                   <TableCell width="5%" className="centeredText">

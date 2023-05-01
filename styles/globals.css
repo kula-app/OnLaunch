@@ -148,3 +148,11 @@ td.centeredText,
 th.centeredText {
   text-align: center;
 }
+
+tbody tr:hover {
+  background-color: rgba(130, 130, 130, 0.1);
+}
+
+tbody tr.clickable-row:hover {
+  cursor: pointer;
+}
