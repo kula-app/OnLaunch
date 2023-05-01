@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { verifyPassword } from "../../../util/auth";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 // augment next-auth session that's used throughout
 // the application to include an 'id' field
