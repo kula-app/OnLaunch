@@ -36,6 +36,7 @@ export default async function handler(
       res.status(StatusCodes.OK).json({
         name: org.name,
         apps: org.apps,
+        role: user.role,
         invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
       });
       break;
