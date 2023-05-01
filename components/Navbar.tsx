@@ -45,12 +45,15 @@ export default function Navbar(props: Props) {
       <Typography variant="h6" sx={{ my: 2 }}>
         OnLaunch
       </Typography>
-      <Divider />
+      <Divider sx={{ marginBottom: 2 }}/>
       {props.hasSession &&
         navItems.map((item) => (
+          <div key={item.id}>
           <Link key={item.id} href={item.link}>
             {item.label}
           </Link>
+          <Divider sx={{ marginBottom: 2, marginTop: 2 }}/>
+          </div>
         ))}
       {props.hasSession && (
         <Link key={navItems.length} href="/auth">
