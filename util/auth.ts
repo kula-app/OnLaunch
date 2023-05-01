@@ -13,6 +13,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient } from "@prisma/client";
+import { createDirectInviteNewUserTemplate } from "../mailTemplate/directInviteNewUser";
 var crypto = require("crypto");
 var base64url = require("base64url");
 
@@ -142,6 +143,21 @@ export function sendTokenPerMail(
         subject: directInviteTemplate.subject,
         text: directInviteTemplate.text,
         html: directInviteTemplate.html,
+      });
+      break;
+
+    case MailType.DirectInviteNewUser:
+      const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
+        Routes.directInviteWithToken(token),
+        senderName
+      );
+
+      transporter.sendMail({
+        from: getSenderData(senderName),
+        to: email,
+        subject: directInviteNewUserTemplate.subject,
+        text: directInviteNewUserTemplate.text,
+        html: directInviteNewUserTemplate.html,
       });
       break;
   }

@@ -168,15 +168,17 @@ model UserInvitationToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  token      String   @unique
-  expiryDate DateTime
+  invitedEmail String
+  token        String   @unique
+  expiryDate   DateTime
   // true indicates that this token has served it purpose successfully (user has accepted the invitation)
-  isArchived Boolean  @default(false)
+  isArchived   Boolean  @default(false)
   // indicates that this token has been replaced with a newer one and therefore is invalid
-  isObsolete Boolean  @default(false)
+  isObsolete   Boolean  @default(false)
 
   organisation Organisation @relation(fields: [orgId], references: [id])
   orgId        Int
+  // the user who invited the email above to the organisation
   user         User         @relation(fields: [userId], references: [id])
   userId       Int
 }

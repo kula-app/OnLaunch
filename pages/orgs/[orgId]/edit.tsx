@@ -319,16 +319,18 @@ export default function EditOrgPage() {
               aria-label="simple table"
             >
               <TableHead>
-                <TableCell>
-                  <strong>Name</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Email</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Role</strong>
-                </TableCell>
-                <TableCell></TableCell>
+                <TableRow>
+                  <TableCell>
+                    <strong>Name</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Email</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Role</strong>
+                  </TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
               </TableHead>
               <TableBody>
                 {users?.map((user, index) => {
