@@ -1,5 +1,4 @@
 import * as crypto from "crypto";
-import * as dotenv from "dotenv";
 
 interface NextAuthConfig {
   url: string;
@@ -29,6 +28,11 @@ interface HealthConfig {
   apiKey: string;
 }
 
+interface SentryConfig {
+  dsn: string;
+  replaysSessionSampleRate: number;
+}
+
 interface Config {
   nextAuth: NextAuthConfig;
   signup: SignupConfig;
@@ -36,6 +40,7 @@ interface Config {
   health: HealthConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
+  sentryConfig: SentryConfig;
 }
 
 export function loadConfig(): Config {
@@ -64,6 +69,10 @@ export function loadConfig(): Config {
     emailContent: {
       senderName: process.env.SMTP_FROM_NAME || "OnLaunch",
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
+    },
+    sentryConfig: {
+      dsn: process.env.SENTRY_DSN || "",
+      replaysSessionSampleRate: Number(process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE) || 0.1,
     },
   };
 }
