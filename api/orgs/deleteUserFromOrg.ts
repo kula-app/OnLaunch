@@ -1,9 +1,9 @@
 import ApiRoutes from "../../routes/apiRoutes";
 import { returnDataOrThrowError } from "../../util/api";
 
-const deleteUserFromOrg = async (orgId: number, userId: number) => {
+const deleteUserFromOrg = async (orgId: number, userEmail: string) => {
   const response = await fetch(
-    ApiRoutes.getOrgUserByOrgIdAndUserId(orgId, userId),
+    ApiRoutes.getOrgUserByOrgIdAndUserId(orgId, userEmail),
     {
       method: "DELETE",
     }

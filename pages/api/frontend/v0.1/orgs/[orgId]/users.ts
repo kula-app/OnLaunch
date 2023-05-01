@@ -41,17 +41,40 @@ export default async function handler(
         });
         return;
       }
+      
+      const userInvitationsInOrg = await prisma.userInvitationToken.findMany({
+        where: {
+          orgId: Number(req.query.orgId),
+          isObsolete: false,
+          isArchived: false,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+
+      const users = usersInOrg.map((userInOrg): UserDto => {
+        return {
+          id: userInOrg.userId,
+          firstName: userInOrg.user.firstName as string,
+          lastName: userInOrg.user.lastName as string,
+          email: userInOrg.user.email as string,
+          role: userInOrg.role,
+        };
+      });
+
+      const usersInvited = userInvitationsInOrg.map((invite): UserDto => {
+        return {
+          id: -1,
+          firstName: "(pending)",
+          lastName: "",
+          email: invite.invitedEmail,
+          role: "USER"
+        }
+      });
 
       res.status(StatusCodes.OK).json(
-        usersInOrg.map((userInOrg): UserDto => {
-          return {
-            id: userInOrg.userId,
-            firstName: userInOrg.user.firstName as string,
-            lastName: userInOrg.user.lastName as string,
-            email: userInOrg.user.email as string,
-            role: userInOrg.role,
-          };
-        })
+        [...users, ...usersInvited]
       );
       break;
 
@@ -103,7 +126,6 @@ export default async function handler(
       break;
 
     case "POST":
-      console.log("req.query.orgId: " + req.query.orgId)
       if (user.role === "USER") {
         res.status(StatusCodes.FORBIDDEN).json({
           message:
@@ -126,8 +148,6 @@ export default async function handler(
         },
       });
 
-      console.log("test");
-      console.log("userByEmail: " + JSON.stringify(userByEmail));
       if (userByEmail && userByEmail.id) {
         const searchUserAlreadyInOrganisation =
           await prisma.usersInOrganisations.findFirst({
@@ -145,7 +165,6 @@ export default async function handler(
         }
       }
 
-      console.log("test2");
       await prisma.userInvitationToken.updateMany({
         where: {
           invitedEmail: req.body.email,

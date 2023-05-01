@@ -123,13 +123,15 @@ export default function EditOrgPage() {
     setOrgName(org.name);
   }
 
-  async function removeUser(userId: number) {
+  async function removeUser(userEmail: string) {
     try {
-      await deleteUserFromOrg(orgId, userId);
+      await deleteUserFromOrg(orgId, userEmail);
 
+      console.log("aaa: " + userEmail ===
+      String(users?.find((i) => i.email === session?.user?.email)));
       if (
-        userId ===
-        Number(users?.find((i) => i.email === session?.user?.email)?.id)
+        userEmail ===
+        String(users?.find((i) => i.email === session?.user?.email))
       ) {
         navigateToDashboardPage();
       } else {
@@ -171,6 +173,7 @@ export default function EditOrgPage() {
       setShowAlert(true);
 
       setUserEmail("");
+      userMutate();
     } catch (error) {
       setAlertMessage(`Error while adding new user: ${error}`);
       setAlertSeverity("error");
@@ -367,7 +370,7 @@ export default function EditOrgPage() {
                               }
                             >
                               <IconButton
-                                onClick={() => removeUser(Number(user.id))}
+                                onClick={() => removeUser(user.email)}
                               >
                                 <MdDeleteForever />
                               </IconButton>
@@ -381,7 +384,7 @@ export default function EditOrgPage() {
                             {user.email === session?.user?.email && (
                               <Tooltip title="leave organisation">
                                 <IconButton
-                                  onClick={() => removeUser(Number(user.id))}
+                                  onClick={() => removeUser(user.email)}
                                 >
                                   <MdDeleteForever />
                                 </IconButton>

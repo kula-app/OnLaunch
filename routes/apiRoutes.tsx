@@ -22,8 +22,8 @@ class ApiRoutes {
     return `${ApiRoutes.getOrgById(orgId)}/users`;
   }
 
-  static getOrgUserByOrgIdAndUserId(orgId: number, userId: number): string {
-    return `${ApiRoutes.getOrgUsersByOrgId(orgId)}/${userId}`;
+  static getOrgUserByOrgIdAndUserId(orgId: number, userEmail: string): string {
+    return `${ApiRoutes.getOrgUsersByOrgId(orgId)}/${userEmail}`;
   }
 
   static getAppsByOrgId(orgId: number): string {
