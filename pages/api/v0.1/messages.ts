@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
+import { Logger } from "../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -25,15 +26,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseDto[]>
 ) {
+  const logger = new Logger(__filename);
+  
   switch (req.method) {
     case "GET":
       const publicKey = req.headers["x-api-key"];
 
       if (!publicKey) {
-        res.status(StatusCodes.BAD_REQUEST).end("no public key provided");
+        logger.error("No api key provided");
+        res.status(StatusCodes.BAD_REQUEST).end("no api key provided");
         return;
       }
 
+      logger.log(`Looking up api key '${publicKey as string}'`);
       const app = await prisma.app.findFirst({
         where: {
           publicKey: publicKey as string,
@@ -41,10 +46,12 @@ export default async function handler(
       });
 
       if (!app) {
-        res.status(StatusCodes.NOT_FOUND).end("no app found for public key");
+        logger.log(`No app found for api key '${publicKey as string}'`);
+        res.status(StatusCodes.NOT_FOUND).end("no app found for api key");
         return;
       }
 
+      logger.log(`Looking up all messages for app with id '${app.id}'`);
       const allMessages = await prisma.message.findMany({
         include: {
           actions: true,

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getUserFromRequest } from "../../../../util/auth";
+import { Logger } from "../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -9,7 +10,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const user = await getUserFromRequest(req, res)
+  const logger = new Logger(__filename);
+
+  const user = await getUserFromRequest(req, res);
 
   if (!user) {
     return;
@@ -17,6 +20,7 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      logger.log(`Looking up user with id '${user.id}'`);
       const userFromDb = await prisma.user.findFirst({
         where: {
           id: Number(user.id),
@@ -27,6 +31,7 @@ export default async function handler(
       });
 
       if (!userFromDb || (userFromDb && !userFromDb.id)) {
+        logger.error(`No user found with id '${user.id}'`);
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
@@ -41,29 +46,34 @@ export default async function handler(
       break;
 
     case "DELETE":
-      const userEmail2 = user.email as string;
+      const userEmail = user.email as string;
 
-      const userFromDb2 = await prisma.user.findFirst({
+      logger.log(`Looking up user with email '${userEmail}'`);
+      const userByEmail = await prisma.user.findFirst({
         where: {
-          email: userEmail2,
+          email: userEmail,
           NOT: {
             isDeleted: true,
           },
         },
       });
 
-      if (!userFromDb2 || (userFromDb2 && !userFromDb2.id)) {
+      if (!userByEmail || (userByEmail && !userByEmail.id)) {
+        logger.error(`No user found with email '${userEmail}'`);
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
         return;
       }
 
+      logger.log(
+        `Looking up organisations that user with id '${userByEmail.id}' is part of`
+      );
       // check if user is qualified to be deleted
       const userInOrgs = await prisma.usersInOrganisations.findMany({
         where: {
           user: {
-            id: userFromDb2.id,
+            id: userByEmail.id,
           },
           role: "ADMIN",
         },
@@ -71,6 +81,9 @@ export default async function handler(
 
       let orgsToDeleteFirst: Array<number> = [];
 
+      logger.log(
+        `Looking up other admins in organisations that user with id '${userByEmail.id}' is part of`
+      );
       await Promise.all(
         userInOrgs.map(async (userInOrg) => {
           const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
@@ -90,6 +103,9 @@ export default async function handler(
       );
 
       if (orgsToDeleteFirst.length) {
+        logger.error(
+          `Before deleting user profile of user with id '${userByEmail.id}', these organisations have to be deleted first: ${JSON.stringify(orgsToDeleteFirst)}`
+        );
         res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "You have to delete these organisations first: " +
@@ -98,10 +114,11 @@ export default async function handler(
         return;
       }
 
+      logger.log(`Updating user with id '${userByEmail.id}' as deleted`);
       // if user qualifies to be deleted:
       const deletedUser = await prisma.user.update({
         where: {
-          id: userFromDb2.id,
+          id: userByEmail.id,
         },
         data: {
           email: null,
@@ -113,6 +130,7 @@ export default async function handler(
         },
       });
 
+      logger.log(`Deleting relations for all organisations that user with id '${deletedUser.id}' is in`);
       // delete user from organisations
       await prisma.usersInOrganisations.deleteMany({
         where: {

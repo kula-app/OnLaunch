@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { getUserWithRoleFromRequest } from "../../../../../../../util/auth";
+import { Logger } from "../../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -9,6 +10,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
@@ -18,9 +21,12 @@ export default async function handler(
   switch (req.method) {
     case "DELETE":
       if (user.role === "USER" && user.email !== req.query.userEmail) {
+        logger.error(
+          `You are not allowed to delete user with email '${req.query.userEmail}' from organisation with id '${req.query.orgId}'`
+        );
         res.status(StatusCodes.FORBIDDEN).json({
           message:
-            "you are not allowed to delete user with email " +
+            "You are not allowed to delete user with email " +
             req.query.userEmail +
             " from organisation with id " +
             req.query.orgId,
@@ -29,6 +35,7 @@ export default async function handler(
       }
 
       if (user.role === "ADMIN" && user.email === req.query.userEmail) {
+        logger.log(`Looking up all admins in org with id '${req.query.orgId}'`);
         const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
           where: {
             orgId: Number(req.query.orgId),
@@ -37,14 +44,16 @@ export default async function handler(
         });
 
         if (otherAdminsInOrg.length === 1) {
+          logger.error("Organisation cannot be left by the only admin");
           res.status(StatusCodes.BAD_REQUEST).json({
             message:
-              "you cannot leave organisation when you are the only admin!",
+              "You cannot leave organisation when you are the only admin",
           });
           return;
         }
       }
 
+      logger.log(`Looking up user with email '${req.query.userEmail}'`);
       const userByEmail = await prisma.user.findFirst({
         where: {
           email: req.query.userEmail as string,
@@ -55,6 +64,7 @@ export default async function handler(
       });
 
       if (userByEmail && userByEmail.id) {
+        logger.log(`Looking up user in org with id '${req.query.orgId}'`);
         const userInOrg = await prisma.usersInOrganisations.findUnique({
           where: {
             orgId_userId: {
@@ -65,6 +75,9 @@ export default async function handler(
         });
 
         if (userInOrg && userInOrg.userId) {
+          logger.log(
+            `Deleting user with id '${userInOrg.userId}' from org with id '${req.query.orgId}'`
+          );
           const deletedUserInOrg = await prisma.usersInOrganisations.delete({
             where: {
               orgId_userId: {
@@ -78,20 +91,28 @@ export default async function handler(
         }
       }
 
+      // if deletion is for a pending invitation
       try {
+        logger.log(
+          `Deleting user direct invite for email '${req.query.userEmail}' for org with id '${req.query.orgId}'`
+        );
         const deletedUserInvite = await prisma.userInvitationToken.deleteMany({
           where: {
             invitedEmail: req.query.userEmail as string,
             isObsolete: false,
+            orgId: Number(req.query.orgId),
           },
         });
 
         res.status(StatusCodes.OK).json(deletedUserInvite);
       } catch (e) {
+        logger.log(
+          `No user invite for email '${req.query.userEmail}' found in organisation with id '${req.query.orgId}'`
+        );
         res.status(StatusCodes.NOT_FOUND).json({
           message:
-            "no user with id " +
-            req.query.userId +
+            "No user invite for email " +
+            req.query.userEmail +
             " found in organisation with id " +
             req.query.orgId,
         });

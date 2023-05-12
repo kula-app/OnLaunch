@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { getUserFromRequest, generateToken } from "../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
+import { Logger } from "../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -9,16 +10,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const data = req.query;
 
   const { token } = data;
 
-  const user = await getUserFromRequest(req, res)
+  const user = await getUserFromRequest(req, res);
 
   if (!user) {
     return;
   }
 
+  logger.log("Looking up organisation invitation token");
   const organisation = await prisma.organisation.findFirst({
     where: {
       invitationToken: token as string,
@@ -26,6 +30,7 @@ export default async function handler(
   });
 
   if (!organisation) {
+    logger.error(`Provided organisation invite token not found`);
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `No organisation found with invite ${token}!` });
@@ -44,6 +49,9 @@ export default async function handler(
 
     case "POST":
       try {
+        logger.log(
+          `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}' (via org token)`
+        );
         await prisma.usersInOrganisations.create({
           data: {
             userId: user.id,
@@ -52,18 +60,22 @@ export default async function handler(
           },
         });
       } catch (error) {
+        logger.error("User already in organisation");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: `User already in organisation!` });
+          .json({ message: `User already in organisation` });
         return;
       }
 
-      res.status(StatusCodes.OK).json({ message: `User joined organisation!` });
+      res.status(StatusCodes.OK).json({ message: `User joined organisation` });
       break;
 
     case "PUT":
       const generatedToken = generateToken();
 
+      logger.log(
+        `Updating new generated invite token for organisation with id '${organisation.id}'`
+      );
       await prisma.organisation.update({
         where: {
           id: organisation.id,
@@ -73,7 +85,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json({ message: `Updated organisation!` });
+      res.status(StatusCodes.OK).json({ message: `Updated organisation` });
       break;
 
     default:

@@ -1,7 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { generateToken, getUserWithRoleFromRequest } from "../../../../../../../util/auth";
+import {
+  generateToken,
+  getUserWithRoleFromRequest,
+} from "../../../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
+import { Logger } from "../../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -16,14 +20,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
     return;
   }
-  
+
   switch (req.method) {
     case "GET":
+      logger.log(`Looking up apps with org id '${req.query.orgId}'`);
       const allApps = await prisma.app.findMany({
         where: {
           orgId: Number(req.query.orgId),
@@ -66,6 +73,9 @@ export default async function handler(
     case "POST":
       const generatedToken = generateToken();
 
+      logger.log(
+        `Creating app '${req.body.name}' for org id '${req.query.orgId}'`
+      );
       const app = await prisma.app.create({
         data: {
           name: req.body.name,

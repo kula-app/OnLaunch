@@ -8,6 +8,7 @@ import {
 import { StatusCodes } from "http-status-codes";
 import { UserDto } from "../../../../../../models/userDto";
 import { MailType } from "../../../../../../models/mailType";
+import { Logger } from "../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -15,6 +16,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
@@ -23,6 +26,9 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      logger.log(
+        `Looking up users in organisation with id '${req.query.orgId}'`
+      );
       const usersInOrg = await prisma.usersInOrganisations.findMany({
         include: {
           user: true,
@@ -36,12 +42,18 @@ export default async function handler(
       });
 
       if (usersInOrg == null) {
+        logger.error(
+          `No users found in organisation with id '${req.query.orgId}'`
+        );
         res.status(StatusCodes.NOT_FOUND).json({
-          message: "no users found in organisation with id " + req.query.orgId,
+          message: "No users found in organisation with id " + req.query.orgId,
         });
         return;
       }
-      
+
+      logger.log(
+        `Looking up user direct invites for organisation with id '${req.query.orgId}'`
+      );
       const userInvitationsInOrg = await prisma.userInvitationToken.findMany({
         where: {
           orgId: Number(req.query.orgId),
@@ -69,40 +81,46 @@ export default async function handler(
           firstName: "(pending)",
           lastName: "",
           email: invite.invitedEmail,
-          role: "USER"
-        }
+          role: "USER",
+        };
       });
 
-      res.status(StatusCodes.OK).json(
-        [...users, ...usersInvited]
-      );
+      // combine user list with pending invites list
+      res.status(StatusCodes.OK).json([...users, ...usersInvited]);
       break;
 
     case "PUT":
+      if (user.role === "USER") {
+        logger.error(
+          `You are not allowed to update user with id '${req.query.userId}' in organisation with id '${req.query.orgId}'`
+        );
+        res.status(StatusCodes.FORBIDDEN).json({
+          message:
+            "You are not allowed to update user with id " +
+            req.body.userId +
+            " in organisation with id " +
+            req.query.orgId,
+        });
+        return;
+      }
+
+      if (user.id === req.body.userId) {
+        logger.error("You cannot change your own role");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "You cannot change your own role" });
+        return;
+      }
+
       try {
-        if (user.role === "USER") {
-          res.status(StatusCodes.FORBIDDEN).json({
-            message:
-              "you are not allowed to update user with id " +
-              req.query.userId +
-              " from organisation with id " +
-              req.query.orgId,
-          });
-          return;
-        }
-
-        if (user.id === req.body.userId) {
-          res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ message: "you cannot change your own role!" });
-          return;
-        }
-
+        logger.log(
+          `Updating role of user with id '${req.body.userId}' in organisation with id '${req.query.orgId}'`
+        );
         const updatedApp = await prisma.usersInOrganisations.update({
           where: {
             orgId_userId: {
               userId: Number(req.body.userId),
-              orgId: Number(req.body.orgId),
+              orgId: Number(req.query.orgId),
             },
           },
           data: {
@@ -114,12 +132,15 @@ export default async function handler(
         return;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          logger.error(
+            `No user with id '${req.body.userId}' found in organisation with id '${req.query.orgId}'`
+          );
           res.status(StatusCodes.NOT_FOUND).json({
             message:
-              "no user with id " +
-              req.query.userId +
+              "No user with id " +
+              req.body.userId +
               " found in organisation with id " +
-              req.query.appId,
+              req.query.orgId,
           });
         }
       }
@@ -127,9 +148,12 @@ export default async function handler(
 
     case "POST":
       if (user.role === "USER") {
+        logger.error(
+          `You are not allowed to add user with email '${req.body.email}' to organisation with id '${req.query.orgId}'`
+        );
         res.status(StatusCodes.FORBIDDEN).json({
           message:
-            "you are not allowed to add user with email " +
+            "You are not allowed to add user with email " +
             req.body.email +
             " to organisation with id " +
             req.query.orgId,
@@ -139,6 +163,7 @@ export default async function handler(
 
       const generatedToken = generateToken();
 
+      logger.log(`Looking up user with email '${req.body.email}'`);
       const userByEmail = await prisma.user.findFirst({
         where: {
           email: req.body.email,
@@ -149,6 +174,9 @@ export default async function handler(
       });
 
       if (userByEmail && userByEmail.id) {
+        logger.log(
+          `Looking up user with id '${userByEmail.id}' in organisation with id '${req.query.orgId}'`
+        );
         const searchUserAlreadyInOrganisation =
           await prisma.usersInOrganisations.findFirst({
             where: {
@@ -158,13 +186,15 @@ export default async function handler(
           });
 
         if (searchUserAlreadyInOrganisation) {
+          logger.error("User already in organisation");
           res
             .status(StatusCodes.BAD_REQUEST)
-            .json({ message: "user already in organisation!" });
+            .json({ message: "User already in organisation!" });
           return;
         }
       }
 
+      logger.log("Updating previous user invitation tokens as obsolete");
       await prisma.userInvitationToken.updateMany({
         where: {
           invitedEmail: req.body.email,
@@ -179,6 +209,9 @@ export default async function handler(
       // set expiryDate one hour from now
       expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
 
+      logger.log(
+        `Creating user invitation token for email '${req.body.email}' for organisation with id '${req.query.orgId}'`
+      );
       const uit = await prisma.userInvitationToken.create({
         data: {
           invitedEmail: req.body.email,

@@ -8,6 +8,7 @@ import {
 } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { MailType } from "../../../../../models/mailType";
+import { Logger } from "../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -15,6 +16,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const data = req.body;
 
   const { token, email, password } = data;
@@ -22,22 +25,22 @@ export default async function handler(
   switch (req.method) {
     case "PUT":
       if (!token || !password) {
+        logger.error("No token or password provided");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "No token or token provided!" });
+          .json({ message: "No token or password provided" });
         return;
       }
 
       if (!(await validatePassword(password))) {
-        res
-          .status(StatusCodes.UNPROCESSABLE_ENTITY)
-          .json({
-            message:
-              "Invalid data - password consists of less than 8 characters",
-          });
+        logger.error("Password consists of less than 8 characters");
+        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+          message: "Invalid data - password consists of less than 8 characters",
+        });
         return;
       }
 
+      logger.log("Looking up password reset token");
       const lookupToken = await prisma.passwordResetToken.findFirst({
         where: {
           token: token,
@@ -45,9 +48,10 @@ export default async function handler(
       });
 
       if (!lookupToken) {
+        logger.error("Password reset token not found");
         res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: "PasswordReset token not found!" });
+          .json({ message: "Password reset token not found" });
         return;
       }
 
@@ -57,6 +61,7 @@ export default async function handler(
           lookupToken.isObsolete ||
           lookupToken.expiryDate < new Date())
       ) {
+        logger.log("Provided password reset token is obsolete");
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Please restart the password reset process!" });
@@ -67,6 +72,7 @@ export default async function handler(
         password
       );
 
+      logger.log(`Updating password of user with id '${lookupToken.userId}'`);
       const updatedUser = await prisma.user.update({
         where: {
           id: lookupToken.userId,
@@ -77,6 +83,7 @@ export default async function handler(
         },
       });
 
+      logger.log("Updating password reset token as archived");
       await prisma.passwordResetToken.update({
         where: {
           id: lookupToken.id,
@@ -90,6 +97,7 @@ export default async function handler(
       break;
 
     case "POST":
+      logger.log(`Looking up user with email '${email}'`);
       const user = await prisma.user.findFirst({
         where: {
           email: email,
@@ -100,9 +108,8 @@ export default async function handler(
       });
 
       if (!user || (user && !user.id)) {
-        res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "User not found!" });
+        logger.error(`No user found with email '${email}'`);
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found" });
         return;
       }
 
@@ -112,6 +119,9 @@ export default async function handler(
       // set expiryDate one hour from now
       expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
 
+      logger.log(
+        `Updating previous password reset tokens for user with id '${user.id}' as obsolete`
+      );
       await prisma.passwordResetToken.updateMany({
         where: {
           userId: user.id,
@@ -122,6 +132,9 @@ export default async function handler(
         },
       });
 
+      logger.log(
+        `Create new password reset token for user with id '${user.id}'`
+      );
       await prisma.passwordResetToken.create({
         data: {
           userId: user.id,

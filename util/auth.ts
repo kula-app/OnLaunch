@@ -14,12 +14,16 @@ import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient } from "@prisma/client";
 import { createDirectInviteNewUserTemplate } from "../mailTemplate/directInviteNewUser";
+import { Logger } from "./logger";
 var crypto = require("crypto");
 var base64url = require("base64url");
 
 const nodemailer = require("nodemailer");
 
+const logger = new Logger(__filename);
+
 export async function hashAndSaltPassword(password: string) {
+  logger.log("Salting and hashing password");
   const saltRounds = 10;
 
   const salt = await genSalt(saltRounds);
@@ -32,6 +36,8 @@ export async function hashAndSaltPassword(password: string) {
 }
 
 export async function validatePassword(password: string) {
+  logger.log("Validating password");
+
   return password && password.trim().length >= 8;
 }
 
@@ -40,11 +46,13 @@ export async function verifyPassword(
   salt: string,
   hashedPassword: string
 ) {
+  logger.log("Verifying password")
   const isValid = await compare(password.concat(salt), hashedPassword);
   return isValid;
 }
 
 export function generateToken() {
+  logger.log("Generating token")
   return base64url(crypto.randomBytes(32));
 }
 
@@ -54,7 +62,10 @@ export function sendTokenPerMail(
   token: string,
   mailType: MailType
 ) {
+  logger.log(`Sending mail of type '${mailType}'`)
+
   const config = loadConfig();
+  
   let transporter = nodemailer.createTransport({
     host: config.smtp.host,
     port: config.smtp.port,
@@ -174,10 +185,12 @@ export async function getUserFromRequest(
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
+    logger.error("User not authorized");
     res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
     return;
   }
 
+  logger.log("Returning user after checking authorization");
   return session.user;
 }
 export async function getUserWithRoleFromRequest(
@@ -188,9 +201,11 @@ export async function getUserWithRoleFromRequest(
   const user = await getUserFromRequest(req, res);
 
   if (!user) {
+    logger.error("No user provided from session");
     return;
   }
 
+  logger.log(`Looking up user with id '${user.id}' in organisation '${req.query.orgId}'`);
   const userInOrg = await prisma.usersInOrganisations.findFirst({
     where: {
       user: {
@@ -206,10 +221,11 @@ export async function getUserWithRoleFromRequest(
   });
 
   if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
+    logger.error(`User n`)
     // if user has no business here, return a 404
     res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: "no organisation found with id " + req.query.orgId });
+      .json({ message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'` });
     return;
   }
 

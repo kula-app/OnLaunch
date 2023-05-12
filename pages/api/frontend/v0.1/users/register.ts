@@ -9,6 +9,7 @@ import {
   sendTokenPerMail,
   validatePassword,
 } from "../../../../../util/auth";
+import { Logger } from "../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -16,7 +17,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const config = loadConfig();
+
   switch (req.method) {
     case "POST":
       const data = req.body;
@@ -24,6 +28,7 @@ export default async function handler(
       const { email, password, firstName, lastName } = data;
 
       if (!config.signup.isEnabled) {
+        logger.error("Signups are currently disabled");
         res
           .status(StatusCodes.METHOD_NOT_ALLOWED)
           .json({ message: "Not allowed - signups are currently disabled!" });
@@ -31,19 +36,22 @@ export default async function handler(
       }
 
       if (!email || !email.includes("@")) {
+        logger.error("Provided email is not valid");
         res
           .status(StatusCodes.UNPROCESSABLE_ENTITY)
-          .json({ message: "Invalid data - email not valid" });
+          .json({ message: "Invalid data - email is not valid" });
         return;
       }
 
       if (!(await validatePassword(password))) {
+        logger.error("Provided password is too short");
         res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
           message: "Invalid data - password consists of less than 8 characters",
         });
         return;
       }
 
+      logger.log(`Looking up user with email '${email}'`);
       const lookupUser = await prisma.user.findFirst({
         where: {
           email: email,
@@ -54,6 +62,7 @@ export default async function handler(
       });
 
       if (lookupUser) {
+        logger.error(`Email '${email}' is already in use`);
         res
           .status(StatusCodes.CONFLICT)
           .json({ message: "Conflict - email already in use" });
@@ -64,6 +73,7 @@ export default async function handler(
         password
       );
 
+      logger.log(`Creating new user with email '${email}'`);
       const createdUser = await prisma.user.create({
         data: {
           email: email,
@@ -81,6 +91,9 @@ export default async function handler(
       // set expiryDate one week from now
       expiryDate.setDate(expiryDate.getDate() + 7);
 
+      logger.log(
+        `Creating verification token for user with id '${createdUser.id}'`
+      );
       const verificationToken = await prisma.verificationToken.create({
         data: {
           userId: createdUser.id,

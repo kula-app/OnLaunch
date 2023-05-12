@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { getUserFromRequest, generateToken } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
-
+import { Logger } from "../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -16,6 +16,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserFromRequest(req, res);
 
   if (!user) {
@@ -24,6 +26,9 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      logger.log(
+        `Looking up organisations that user with id '${user.id}' is part of`
+      );
       const orgsForUser = await prisma.usersInOrganisations.findMany({
         where: {
           user: {
@@ -49,6 +54,7 @@ export default async function handler(
     case "POST":
       const generatedToken = generateToken();
 
+      logger.log(`Creating new organisation for user with id '${user.id}'`);
       const org = await prisma.usersInOrganisations.create({
         data: {
           user: {

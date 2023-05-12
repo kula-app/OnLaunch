@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { generateToken, sendTokenPerMail } from "../../../../../util/auth";
 import { StatusCodes } from "http-status-codes";
 import { MailType } from "../../../../../models/mailType";
+import { Logger } from "../../../../../util/logger";
 
 require("dotenv").config();
 
@@ -12,6 +13,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const data = req.body;
 
   const { token, email } = data;
@@ -20,6 +23,7 @@ export default async function handler(
     case "POST":
       var id = -1;
       if (token) {
+        logger.log(`Looking up verification token`);
         const verificationToken = await prisma.verificationToken.findFirst({
           where: {
             token: token,
@@ -28,18 +32,23 @@ export default async function handler(
 
         id = Number(verificationToken?.userId);
       } else if (email) {
+        logger.log(`Looking up user with email '${email}'`);
         var userByEmail = await prisma.user.findFirst({
           where: {
             email: email,
           },
         });
-        
+
         id = Number(userByEmail?.id);
       } else {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "No token or email provided!" });
+        logger.error("No token or email provided");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "No token or email provided" });
         return;
       }
-      
+
+      logger.log(`Looking up user with id '${id}'`);
       const unverifiedUser = await prisma.user.findUnique({
         where: {
           id: id,
@@ -47,7 +56,10 @@ export default async function handler(
       });
 
       if (unverifiedUser?.isVerified) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "User already verified!" });
+        logger.error("User already verified");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User already verified!" });
         return;
       }
 
@@ -57,6 +69,9 @@ export default async function handler(
       // set expiryDate one week from now
       expiryDate.setDate(expiryDate.getDate() + 7);
 
+      logger.log(
+        `Updating previos verification tokens for user with id '${id}' as obsolete`
+      );
       await prisma.verificationToken.updateMany({
         where: {
           userId: id,
@@ -67,6 +82,7 @@ export default async function handler(
         },
       });
 
+      logger.log(`Create new verification token for user with id '${id}'`);
       const verificationToken = await prisma.verificationToken.create({
         data: {
           userId: id,
@@ -83,17 +99,21 @@ export default async function handler(
         MailType.Verification
       );
 
-      res.status(StatusCodes.OK).json({ message: "Link was successfully resend!" });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Link was successfully resend!" });
       break;
 
     case "PUT":
       if (!token) {
+        logger.error("No token provided");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "No token provided!" });
+          .json({ message: "No token provided" });
         return;
       }
 
+      logger.log(`Looking up verification token`);
       const lookupToken = await prisma.verificationToken.findFirst({
         where: {
           token: token,
@@ -101,26 +121,30 @@ export default async function handler(
       });
 
       if (!lookupToken) {
+        logger.error("Provided verification token not found");
         res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: "Verification token not found!" });
+          .json({ message: "Verification token not found" });
         return;
       }
 
       if (lookupToken && lookupToken.isArchived) {
+        logger.error("User already verified");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "User already verified!" });
+          .json({ message: "User already verified" });
         return;
       }
 
       if (lookupToken && lookupToken.isObsolete) {
+        logger.error("Verification token is obsolete");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Verification token is obsolete!" });
+          .json({ message: "Verification token is obsolete" });
         return;
       }
 
+      logger.log(`Looking up user with id '${lookupToken.userId}'`);
       const user = await prisma.user.findUnique({
         where: {
           id: lookupToken.userId,
@@ -128,16 +152,23 @@ export default async function handler(
       });
 
       if (user?.isVerified) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "User already verified!" });
+        logger.error("User already verified");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User already verified" });
         return;
       }
 
       // if token expired and user not verified, throw error
       if (lookupToken && lookupToken.expiryDate < new Date()) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "Verification token expired!" });
+        logger.error("Provided verification token has expired");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Verification token has expired" });
         return;
       }
 
+      logger.log(`Updating user with id '${lookupToken.userId}' as verified`);
       await prisma.user.update({
         where: {
           id: lookupToken.userId,
@@ -147,6 +178,7 @@ export default async function handler(
         },
       });
 
+      logger.log(`Updating verification token as archived`);
       await prisma.verificationToken.update({
         where: {
           id: lookupToken.id,

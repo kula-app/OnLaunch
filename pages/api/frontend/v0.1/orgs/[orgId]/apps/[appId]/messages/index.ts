@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
+import { Logger } from "../../../../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -26,6 +27,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
@@ -34,6 +37,7 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      logger.log(`Looking up message with app id '${req.query.appId}'`);
       const allMessages = await prisma.message.findMany({
         include: {
           actions: true,
@@ -48,12 +52,14 @@ export default async function handler(
 
     case "POST":
       if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
+        logger.log("Start date has to be before end date");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "start date has to be before end date" });
+          .json({ message: "Start date has to be before end date" });
         return;
       }
 
+      logger.log(`Creating message for app id '${req.query.appId}'`);
       const message = await prisma.message.create({
         data: {
           blocking: req.body.blocking,
@@ -66,6 +72,7 @@ export default async function handler(
       });
 
       if (req.body.actions.length > 0) {
+        logger.log(`Creating actions for message with id '${message.id}'`);
         const actions: Action[] = req.body.actions;
         actions.forEach((action) => {
           action.messageId = message.id;

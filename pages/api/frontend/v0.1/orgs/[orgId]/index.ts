@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
+import { Logger } from "../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -9,6 +10,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const logger = new Logger(__filename);
+
   const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
@@ -17,6 +20,7 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      logger.log(`Looking up organisation with id '${req.query.orgId}'`);
       const org = await prisma.organisation.findUnique({
         where: {
           id: Number(req.query.orgId),
@@ -27,6 +31,7 @@ export default async function handler(
       });
 
       if (org == null) {
+        logger.error(`No organisation found with id '${req.query.orgId}'`);
         res.status(StatusCodes.NOT_FOUND).json({
           message: "no organisation found with id " + req.query.orgId,
         });
@@ -44,19 +49,20 @@ export default async function handler(
     case "DELETE":
       try {
         if (user.role === "USER") {
+          logger.error(
+            `You are not allowed to delete organisation with id '${req.query.orgId}'`
+          );
           res.status(StatusCodes.FORBIDDEN).json({
             message:
-              "you are not allowed to delete organisation with id " +
+              "You are not allowed to delete organisation with id " +
               req.query.orgId,
           });
           return;
         }
-        await prisma.usersInOrganisations.deleteMany({
-          where: {
-            orgId: Number(req.query.orgId),
-          },
-        });
 
+        logger.log(
+          `Deleting user relations from organisation with id '${req.query.orgId}'`
+        );
         // remove relationships between the to-be-deleted organisation and its users
         await prisma.usersInOrganisations.deleteMany({
           where: {
@@ -64,6 +70,7 @@ export default async function handler(
           },
         });
 
+        logger.log(`Deleting organisation with id '${req.query.orgId}'`);
         const deletedOrg = await prisma.organisation.delete({
           where: {
             id: Number(req.query.orgId),
@@ -73,9 +80,10 @@ export default async function handler(
         res.status(StatusCodes.OK).json(deletedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ message: "no org found with id " + req.query.orgId });
+          logger.error(`No organisation found with id '${req.query.orgId}'`);
+          res.status(StatusCodes.NOT_FOUND).json({
+            message: "No organisation found with id " + req.query.orgId,
+          });
           return;
         }
       }
@@ -84,12 +92,17 @@ export default async function handler(
     case "PUT":
       try {
         if (user.role === "USER") {
+          logger.error(
+            `You are not allowed to update organisation with id '${req.query.orgId}'`
+          );
           res.status(StatusCodes.FORBIDDEN).json({
             message:
-              "you are not allowed to update organisation with id " +
+              "You are not allowed to update organisation with id " +
               req.query.orgId,
           });
         }
+
+        logger.log(`Updating org with id '${req.query.orgId}'`);
         const updatedOrg = await prisma.organisation.update({
           where: {
             id: Number(req.query.orgId),
@@ -102,9 +115,10 @@ export default async function handler(
         res.status(StatusCodes.CREATED).json(updatedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          logger.error(`No organisation found with id '${req.query.orgId}'`);
           res
             .status(StatusCodes.NOT_FOUND)
-            .json({ message: "no org found with id " + req.query.orgId });
+            .json({ message: "No organisation found with id " + req.query.orgId });
         }
       }
       break;
