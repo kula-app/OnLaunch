@@ -127,12 +127,7 @@ export default function EditOrgPage() {
     try {
       await deleteUserFromOrg(orgId, userEmail);
 
-      console.log("aaa: " + userEmail ===
-      String(users?.find((i) => i.email === session?.user?.email)));
-      if (
-        userEmail ===
-        String(users?.find((i) => i.email === session?.user?.email))
-      ) {
+      if (userEmail === session?.user?.email) {
         navigateToDashboardPage();
       } else {
         userMutate();
@@ -236,23 +231,27 @@ export default function EditOrgPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>Edit Organisation</h1>
-          <form id="orgForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Name"
-              id="name"
-              value={orgName}
-              onChange={(event) => setOrgName(event.target.value)}
-            />
-            <Button
-              variant="contained"
-              type="submit"
-              className="marginTopMedium"
-            >
-              update
-            </Button>
-          </form>
+          {userRole === "ADMIN" && (
+            <div>
+              <h1>Edit Organisation</h1>
+              <form id="orgForm" onSubmit={submitHandler} className="column">
+                <TextField
+                  required
+                  label="Name"
+                  id="name"
+                  value={orgName}
+                  onChange={(event) => setOrgName(event.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  type="submit"
+                  className="marginTopMedium"
+                >
+                  update
+                </Button>
+              </form>
+            </div>
+          )}
 
           <div className={styles.main}>
             <h1>Users</h1>
@@ -402,15 +401,20 @@ export default function EditOrgPage() {
             {users?.length == 0 && (
               <p className="marginTopMedium">no data to show</p>
             )}
-            <h1 className="marginTopLarge">Delete Organisation</h1>
-            <Button
-              variant="contained"
-              endIcon={<MdDeleteForever />}
-              color="error"
-              onClick={() => handleDelete()}
-            >
-              delete
-            </Button>
+
+            {userRole === "ADMIN" && (
+              <div className="column">
+                <h1 className="marginTopLarge">Delete Organisation</h1>
+                <Button
+                  variant="contained"
+                  endIcon={<MdDeleteForever />}
+                  color="error"
+                  onClick={() => handleDelete()}
+                >
+                  delete
+                </Button>
+              </div>
+            )}
           </div>
           <CustomSnackbar
             message={alertMessage}

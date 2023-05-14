@@ -21,8 +21,8 @@ class Routes {
     return "/orgs/new";
   }
 
-  static editOrgById(orgId: number): string {
-    return `/orgs/${orgId}/edit`;
+  static orgSettingsById(orgId: number): string {
+    return `/orgs/${orgId}/settings`;
   }
 
   static getOrgAppsByOrgId(orgId: number): string {

@@ -46,6 +46,10 @@ export default function AppsPage() {
 
   if (error || orgError) return <div>Failed to load</div>;
 
+  function navigateToOrgSettingsPage(id: number) {
+    router.push(Routes.orgSettingsById(id));
+  }
+
   function navigateToEditAppPage(appId: number) {
     router.push(Routes.editAppForOrgIdAndAppId(orgId, appId));
   }
@@ -85,6 +89,14 @@ export default function AppsPage() {
       </Head>
       <main className={styles.main}>
         <h1>Organisation {org?.name}</h1>
+        <Button
+          variant="contained"
+          onClick={() => {
+            navigateToOrgSettingsPage(orgId);
+          }}
+        >
+          Organisation Settings
+        </Button>
         <h1>Apps</h1>
         {org?.role === "ADMIN" && (
           <div className="addButton">

@@ -2,10 +2,7 @@ import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import { MdEdit, MdVisibility } from "react-icons/md";
 import type { AlertColor } from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
 import { getSession } from "next-auth/react";
 
 import Dialog from "@mui/material/Dialog";
@@ -18,7 +15,6 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
@@ -69,10 +65,6 @@ export default function DashboardPage() {
 
   const { orgs, isLoading, isError, mutate } = useOrgs();
   if (isError) return <div>Failed to load</div>;
-
-  function navigateToEditOrgPage(id: number) {
-    router.push(Routes.editOrgById(id));
-  }
 
   function navigateToNewOrgPage() {
     router.push(Routes.createNewOrg);
@@ -125,7 +117,6 @@ export default function DashboardPage() {
             <TableCell>
               <strong>Org Name</strong>
             </TableCell>
-            <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
             {orgs?.map((org, index) => {
@@ -137,24 +128,6 @@ export default function DashboardPage() {
                 >
                   <TableCell width="5%">{org.id}</TableCell>
                   <TableCell>{org.name}</TableCell>
-                  <TableCell width="5%">
-                    <div className="hiddenTableElement">
-                      <Tooltip title="view messages">
-                        <IconButton onClick={() => navigateToAppsPage(org.id)}>
-                          <MdVisibility />
-                        </IconButton>
-                      </Tooltip>
-                      {org.role === "ADMIN" && (
-                        <Tooltip title="edit">
-                          <IconButton
-                            onClick={() => navigateToEditOrgPage(org.id)}
-                          >
-                            <MdEdit />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </TableCell>
                 </TableRow>
               );
             })}
