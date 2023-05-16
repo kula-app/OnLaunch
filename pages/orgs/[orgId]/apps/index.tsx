@@ -1,41 +1,23 @@
 import { getSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import styles from "../../../../styles/Home.module.css";
 
-import { MdDeleteForever, MdEdit, MdVisibility } from "react-icons/md";
-import type { AlertColor } from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
-import deleteApp from "../../../../api/apps/deleteApp";
 import { useApps } from "../../../../api/apps/useApps";
 import { useOrg } from "../../../../api/orgs/useOrg";
 import Routes from "../../../../routes/routes";
-import CustomSnackbar from "../../../../components/CustomSnackbar";
 
 export default function AppsPage() {
   const router = useRouter();
 
   const orgId = Number(router.query.orgId);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [appId, setAppId] = useState(-1);
 
   function navigateToMessagesPage(appId: number) {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
@@ -50,33 +32,8 @@ export default function AppsPage() {
     router.push(Routes.orgSettingsById(id));
   }
 
-  function navigateToEditAppPage(appId: number) {
-    router.push(Routes.editAppForOrgIdAndAppId(orgId, appId));
-  }
-
   function navigateToNewAppPage() {
     router.push(Routes.createNewAppForOrgId(orgId));
-  }
-
-  function handleDelete(id: number) {
-    setAppId(id);
-    setShowDeleteDialog(true);
-  }
-
-  async function callDeleteApp(appId: number) {
-    try {
-      await deleteApp(orgId, appId);
-
-      mutate();
-
-      setAlertMessage(`App with id '${appId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
-    } catch (error) {
-      setAlertMessage(`Error while deleting app with id ${appId}: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
-    }
   }
 
   return (
@@ -121,7 +78,6 @@ export default function AppsPage() {
             <TableCell width="5%" className="centeredText">
               <strong># Active Messages</strong>
             </TableCell>
-            <TableCell width="5%"></TableCell>
           </TableHead>
           <TableBody>
             {apps?.map((app, index) => {
@@ -138,33 +94,6 @@ export default function AppsPage() {
                       <div>{app.activeMessages}</div>
                     </Tooltip>
                   </TableCell>
-                  <TableCell width="5%">
-                    <div className="hiddenTableElement">
-                      <Tooltip title="view messages">
-                        <IconButton
-                          onClick={() => navigateToMessagesPage(app.id)}
-                        >
-                          <MdVisibility />
-                        </IconButton>
-                      </Tooltip>
-                      {app.role === "ADMIN" && (
-                        <Tooltip title="edit">
-                          <IconButton
-                            onClick={() => navigateToEditAppPage(app.id)}
-                          >
-                            <MdEdit />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      {app.role === "ADMIN" && (
-                        <Tooltip title="delete">
-                          <IconButton onClick={() => handleDelete(app.id)}>
-                            <MdDeleteForever />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </TableCell>
                 </TableRow>
               );
             })}
@@ -173,37 +102,6 @@ export default function AppsPage() {
         {apps?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>
         )}
-        <CustomSnackbar
-          message={alertMessage}
-          severity={alertSeverity}
-          isOpenState={[showAlert, setShowAlert]}
-        />
-        <Dialog
-          open={showDeleteDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {`Delete App with id '${appId}?`}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              This cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setShowDeleteDialog(false);
-                callDeleteApp(appId);
-              }}
-              autoFocus
-            >
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
       </main>
     </>
   );

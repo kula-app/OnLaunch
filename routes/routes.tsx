@@ -25,16 +25,16 @@ class Routes {
     return `/orgs/${orgId}/settings`;
   }
 
+  static appSettingsByOrgIdAndAppId(orgId: number, appId: number): string {
+    return `${Routes.getOrgAppsByOrgId(orgId)}/${appId}/settings`;
+  }
+
   static getOrgAppsByOrgId(orgId: number): string {
     return `/orgs/${orgId}/apps`;
   }
 
   static createNewAppForOrgId(orgId: number): string {
     return `/orgs/${orgId}/apps/new`;
-  }
-
-  static editAppForOrgIdAndAppId(orgId: number, appId: number): string {
-    return `/orgs/${orgId}/apps/${appId}/edit`;
   }
 
   static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {

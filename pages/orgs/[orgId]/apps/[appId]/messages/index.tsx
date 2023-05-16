@@ -99,32 +99,24 @@ export default function MessagesOfAppPage() {
     }
   }
 
+  function navigateToAppSettingsPage() {
+    router.push(Routes.appSettingsByOrgIdAndAppId(orgId, appId));
+  }
+
   return (
     <>
       <div>
         <main className={styles.main}>
           <h1>{data?.name}</h1>
           {data?.role === "ADMIN" && (
-            <div className="row">
-              <TextField
-                disabled
-                label="Public Key for Clients"
-                id="publicKey"
-                value={data.publicKey}
-              />
-              <Button
-                variant="contained"
-                sx={{ marginLeft: 2 }}
-                onClick={() => {
-                  navigator.clipboard.writeText(data.publicKey as string);
-                  setAlertMessage("Public key copied to clipboard");
-                  setAlertSeverity("success");
-                  setShowAlert(true);
-                }}
-              >
-                copy
-              </Button>
-            </div>
+            <Button
+              variant="contained"
+              onClick={() => {
+                navigateToAppSettingsPage();
+              }}
+            >
+              App Settings
+            </Button>
           )}
           <div className="addButton marginTopLarge">
             <Button
