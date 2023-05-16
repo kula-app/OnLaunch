@@ -3,7 +3,7 @@ import { returnDataOrThrowError } from "../../util/api";
 
 const deleteUserFromOrg = async (orgId: number, userEmail: string) => {
   const response = await fetch(
-    ApiRoutes.getOrgUserByOrgIdAndUserId(orgId, userEmail),
+    ApiRoutes.getOrgUserByOrgIdAndUserEmail(orgId, userEmail),
     {
       method: "DELETE",
     }

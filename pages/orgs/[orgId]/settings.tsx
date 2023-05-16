@@ -36,6 +36,7 @@ import inviteUser from "../../../api/orgs/inviteUser";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
 import { useOrg } from "../../../api/orgs/useOrg";
 import deleteOrg from "../../../api/orgs/deleteOrg";
+import updateUserInviteRoleInOrg from "../../../api/orgs/updateUserInviteRoleInOrg";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -187,16 +188,24 @@ export default function EditOrgPage() {
     let user = [...users][index];
 
     try {
-      await updateUserRoleInOrg(
-        orgId,
-        Number(user.id),
-        event.target.value as string
-      );
+      if (user.id === -1) {
+        await updateUserInviteRoleInOrg(
+          orgId,
+          user.email,
+          event.target.value as string
+        );
+      } else {
+        await updateUserRoleInOrg(
+          orgId,
+          Number(user.id),
+          event.target.value as string
+        );
+      }
 
       userMutate();
 
       setAlertMessage(
-        `User with email ${user.email} is now ${event.target.value}`
+        `User ${user.id === -1 ? "invite for" : "with"} email ${user.email} is now ${event.target.value}`
       );
       setAlertSeverity("success");
       setShowAlert(true);

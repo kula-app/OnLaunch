@@ -170,6 +170,7 @@ model UserInvitationToken {
 
   invitedEmail String
   token        String   @unique
+  role         Role     @default(USER)
   expiryDate   DateTime
   // true indicates that this token has served it purpose successfully (user has accepted the invitation)
   isArchived   Boolean  @default(false)

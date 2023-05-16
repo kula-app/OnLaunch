@@ -117,7 +117,63 @@ export default async function handler(
             req.query.orgId,
         });
       }
+      break;
 
+    case "PUT":
+      if (user.role === "USER") {
+        logger.error(
+          `You are not allowed to update user invite with email '${req.query.userEmail}' in organisation with id '${req.query.orgId}'`
+        );
+        res.status(StatusCodes.FORBIDDEN).json({
+          message:
+            "You are not allowed to update user invite with email " +
+            req.body.userEmail +
+            " in organisation with id " +
+            req.query.orgId,
+        });
+        return;
+      }
+
+      if (user.email === req.body.userEmail) {
+        logger.error("You cannot change your own role");
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "You cannot change your own role" });
+        return;
+      }
+
+      try {
+        logger.log(
+          `Updating role of user invite with email '${req.body.userEmail}' in organisation with id '${req.query.orgId}'`
+        );
+        const updatedInvite = await prisma.userInvitationToken.updateMany({
+          where: {
+            invitedEmail: req.body.userEmail as string,
+            orgId: Number(req.query.orgId),
+            isObsolete: false,
+            isArchived: false,
+          },
+          data: {
+            role: req.body.role,
+          },
+        });
+
+        res.status(StatusCodes.CREATED).json(updatedInvite);
+        return;
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          logger.error(
+            `No user invite with email '${req.body.userEmail}' found in organisation with id '${req.query.orgId}'`
+          );
+          res.status(StatusCodes.NOT_FOUND).json({
+            message:
+              "No user with email " +
+              req.body.userEmail +
+              " found in organisation with id " +
+              req.query.orgId,
+          });
+        }
+      }
       break;
 
     default:

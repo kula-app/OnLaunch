@@ -81,7 +81,7 @@ export default async function handler(
           firstName: "(pending)",
           lastName: "",
           email: invite.invitedEmail,
-          role: "USER",
+          role: invite.role,
         };
       });
 
@@ -92,7 +92,7 @@ export default async function handler(
     case "PUT":
       if (user.role === "USER") {
         logger.error(
-          `You are not allowed to update user with id '${req.query.userId}' in organisation with id '${req.query.orgId}'`
+          `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${req.query.orgId}'`
         );
         res.status(StatusCodes.FORBIDDEN).json({
           message:
@@ -231,8 +231,6 @@ export default async function handler(
 
       res.status(StatusCodes.CREATED).json(uit);
       return;
-
-      break;
 
     default:
       res

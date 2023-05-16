@@ -22,7 +22,7 @@ class ApiRoutes {
     return `${ApiRoutes.getOrgById(orgId)}/users`;
   }
 
-  static getOrgUserByOrgIdAndUserId(orgId: number, userEmail: string): string {
+  static getOrgUserByOrgIdAndUserEmail(orgId: number, userEmail: string): string {
     return `${ApiRoutes.getOrgUsersByOrgId(orgId)}/${userEmail}`;
   }
 
