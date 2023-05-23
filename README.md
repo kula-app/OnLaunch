@@ -13,43 +13,56 @@ First, you have to meet these requirements.
 ### Prerequisites
 
 - Node.js
-- PostgreSQL
-- Yarn (_recommended_)
-
-or
-
 - Docker
+- Yarn (_recommended_)
 
 ## Setup
 
 1. Clone the repo
+
 ```bash
 git clone https://github.com/kula-app/OnLaunch.git
 ```
+
 2. Go to the project folder
+
 3. Install packages
+
 ```bash
 yarn install
 ```
+
 4. Set up your `.env` file
+
 Create a copy of the `.env.example` file and name the new one `.env`
 
 ## Local Deployment
 
 1. Start the next.js server
+
 ```bash
 yarn dev
 ```
+
 2. Start docker resources
+
 ```bash
 docker-compose up
 ```
+
 This will start a Postgres and a Mailhog instance.
+
 3. Run Prisma Studio
+
 ```bash
 yarn prisma studio
 ```
+
 With Prisma Studio you can easily inspect the data within your database.
+
+## Contributing Guide
+
+Pleae see our [Contributing Guide](https://github.com/kula-app/OnLaunch/blob/main/CONTRIBUTING.md).
 
 ## License
 
