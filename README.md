@@ -36,6 +36,13 @@ yarn install
 
 Create a copy of the `.env.example` file and name the new one `.env`
 
+5. Integrate OnLaunch into your mobile apps
+
+To see how, check out our client repos:
+
+- [Android Client](https://github.com/kula-app/OnLaunch-Android-Client)
+- [iOS Client](https://github.com/kula-app/OnLaunch-iOS-Client)
+
 ## Local Deployment
 
 1. Start the next.js server
