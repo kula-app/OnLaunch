@@ -85,7 +85,7 @@ export default async function handler(
           data: {
             userId: user.id,
             orgId: organisation.id,
-            role: "USER",
+            role: userInvitationToken.role,
           },
         });
 
