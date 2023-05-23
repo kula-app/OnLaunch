@@ -69,7 +69,7 @@ With Prisma Studio you can easily inspect the data within your database.
 
 ## Contributing Guide
 
-Pleae see our [Contributing Guide](https://github.com/kula-app/OnLaunch/blob/main/CONTRIBUTING.md).
+Please see our [Contributing Guide](https://github.com/kula-app/OnLaunch/blob/main/CONTRIBUTING.md).
 
 ## License
 
