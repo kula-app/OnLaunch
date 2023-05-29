@@ -2,17 +2,18 @@ import { getSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../../../../styles/Home.module.css";
-
-import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import { useApps } from "../../../../api/apps/useApps";
 import { useOrg } from "../../../../api/orgs/useOrg";
 import Routes from "../../../../routes/routes";
+import {
+  Button,
+  Table,
+  Tooltip,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+} from "@chakra-ui/react";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -47,7 +48,6 @@ export default function AppsPage() {
       <main className={styles.main}>
         <h1>Organisation {org?.name}</h1>
         <Button
-          variant="contained"
           onClick={() => {
             navigateToOrgSettingsPage(orgId);
           }}
@@ -58,7 +58,6 @@ export default function AppsPage() {
         {org?.role === "ADMIN" && (
           <div className="addButton">
             <Button
-              variant="contained"
               onClick={() => {
                 navigateToNewAppPage();
               }}
@@ -68,36 +67,36 @@ export default function AppsPage() {
           </div>
         )}
         <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
-          <TableHead>
-            <TableCell width="5%">
+          <Thead>
+            <Th width="5%">
               <strong>ID</strong>
-            </TableCell>
-            <TableCell>
+            </Th>
+            <Th>
               <strong>App Name</strong>
-            </TableCell>
-            <TableCell width="5%" className="centeredText">
+            </Th>
+            <Th width="5%" className="centeredText">
               <strong># Active Messages</strong>
-            </TableCell>
-          </TableHead>
-          <TableBody>
+            </Th>
+          </Thead>
+          <Tbody>
             {apps?.map((app, index) => {
               return (
-                <TableRow
+                <Tr
                   key={index}
                   className="clickable-row"
                   onClick={() => navigateToMessagesPage(app.id)}
                 >
-                  <TableCell width="5%">{app.id}</TableCell>
-                  <TableCell>{app.name}</TableCell>
-                  <TableCell width="5%" className="centeredText">
-                    <Tooltip title="this many messages are currently shown in mobile apps">
+                  <Th width="5%">{app.id}</Th>
+                  <Th>{app.name}</Th>
+                  <Th width="5%" className="centeredText">
+                    <Tooltip label="this many messages are currently shown in mobile apps">
                       <div>{app.activeMessages}</div>
                     </Tooltip>
-                  </TableCell>
-                </TableRow>
+                  </Th>
+                </Tr>
               );
             })}
-          </TableBody>
+          </Tbody>
         </Table>
         {apps?.length == 0 && (
           <p className="marginTopMedium">no data to show</p>

@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from 'next-auth'
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { verifyPassword } from "../../../util/auth";
@@ -7,16 +7,17 @@ const prisma: PrismaClient = new PrismaClient();
 
 // augment next-auth session that's used throughout
 // the application to include an 'id' field
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
-      user: {
-          id: number
-          email: string
-      }
+    user: {
+      id: number;
+      email: string;
+      name: string;
+    };
   }
 }
 
-export const authOptions: NextAuthOptions ={
+export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
@@ -27,6 +28,7 @@ export const authOptions: NextAuthOptions ={
     async session({ session, token }) {
       if (session.user) {
         session.user.id = Number(token.sub);
+        session.user.name = token.name as string;
       }
       return session;
     },
@@ -67,11 +69,15 @@ export const authOptions: NextAuthOptions ={
             throw new Error("Verify account!");
           }
 
-          return { id: user.id, email: user.email } as any;
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.firstName?.concat(" ").concat(user.lastName as string),
+          } as any;
         }
       },
     }),
   ],
 };
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);

@@ -1,26 +1,24 @@
 import { useState, FormEvent } from "react";
 import styles from "../styles/Home.module.css";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import { signIn } from "next-auth/react";
-import type { AlertColor } from "@mui/material/Alert";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
 import signupUser from "../api/users/signupUser";
-import CustomSnackbar from "./CustomSnackbar";
+import {
+  Button,
+  Input,
+  useToast,
+} from "@chakra-ui/react";
 
 export default function AuthForm() {
   const router = useRouter();
+  const toast = useToast();
 
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   function switchLoginMode() {
     setIsLoginMode((prevState) => !prevState);
@@ -78,39 +76,47 @@ export default function AuthForm() {
       <main className={styles.main}>
         <h1>{isLoginMode ? "Login" : "Sign up"}</h1>
         <form className="column" onSubmit={submitHandler}>
-          <TextField
-            required
-            label="Email"
-            id="email"
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          <TextField
-            required
-            label="Password"
-            id="password"
-            type="password"
-            className="marginTopMedium"
-            onChange={(event) => setPassword(event.target.value)}
-          />
-          {!isLoginMode && (
-            <TextField
+          <label>
+            Email
+            <Input
               required
-              label="First name"
-              id="firstName"
-              className="marginTopMedium"
-              onChange={(event) => setFirstName(event.target.value)}
+              id="email"
+              onChange={(event) => setEmail(event.target.value)}
             />
+          </label>
+          <label>
+            Password
+            <Input
+              required
+              id="password"
+              type="password"
+              className="marginTopMedium"
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
+          {!isLoginMode && (
+            <label>
+              First name
+              <Input
+                required
+                id="firstName"
+                className="marginTopMedium"
+                onChange={(event) => setFirstName(event.target.value)}
+              />
+            </label>
           )}
           {!isLoginMode && (
-            <TextField
-              required
-              label="Last name"
-              id="lastName"
-              className="marginTopMedium"
-              onChange={(event) => setLastName(event.target.value)}
-            />
+            <label>
+              Last name
+              <Input
+                required
+                id="lastName"
+                className="marginTopMedium"
+                onChange={(event) => setLastName(event.target.value)}
+              />
+            </label>
           )}
-          <Button variant="contained" type="submit" className="marginTopMedium">
+          <Button colorScheme="blue" type="submit" className="marginTopMedium">
             {isLoginMode ? "login" : "create account"}
           </Button>
           <Button
@@ -129,15 +135,10 @@ export default function AuthForm() {
               type="button"
               onClick={() => navigateToPasswordResetPage()}
             >
-              Forgot Password
+              forgot password
             </Button>
           )}
         </form>
-        <CustomSnackbar
-          message={alertMessage}
-          severity={alertSeverity}
-          isOpenState={[showAlert, setShowAlert]}
-        />
       </main>
     </>
   );

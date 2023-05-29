@@ -6,11 +6,6 @@
   min-height: 100vh;
 }
 
-.main h1 {
-  margin-bottom: 64px;
-  margin-top: 64px;
-}
-
 @font-face {
   font-family: 'Roboto-Regular';
   src: local('Roboto-Regular'), url(../fonts/Roboto-Regular.ttf) format('truetype');

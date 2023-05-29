@@ -1,19 +1,16 @@
-import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
 import { getSession } from "next-auth/react";
 import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
 import createVerifyToken from "../api/tokens/createVerifyToken";
-import CustomSnackbar from "../components/CustomSnackbar";
-import { CircularProgress } from "@mui/material";
+import { Button, useToast, Spinner } from "@chakra-ui/react";
 
 export default function VerifyPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const { signup, token, email } = router.query;
 
@@ -21,10 +18,6 @@ export default function VerifyPage() {
   const [expired, setExpired] = useState(false);
   const [obsolete, setObsolete] = useState(false);
   const [disabled, setDisabled] = useState(false);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   const navigateToAuthPage = useCallback(() => {
     router.push(Routes.AUTH);
@@ -47,9 +40,13 @@ export default function VerifyPage() {
         } else if (String(error).includes("obsolete")) {
           setObsolete(true);
         } else {
-          setAlertMessage(`Error while verifying: ${error}`);
-          setAlertSeverity("error");
-          setShowAlert(true);
+          toast({
+            title: "Error while verifying!",
+            description: `${error}`,
+            status: "error",
+            isClosable: true,
+            duration: 6000,
+          });
         }
       }
     }
@@ -57,19 +54,27 @@ export default function VerifyPage() {
     if (!!token) {
       verifyUser();
     }
-  }, [router.isReady, token, signup, navigateToAuthPage]);
+  }, [router.isReady, token, signup, navigateToAuthPage, toast]);
 
   async function resendLink() {
     try {
       await createVerifyToken(email as string);
 
-      setAlertMessage(`Link was successfully resend!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "Link was resend.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
-      setAlertMessage(`Error while resending link: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while resending link!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
 
     setDisabled(true);
@@ -92,7 +97,6 @@ export default function VerifyPage() {
               in
             </div>
             <Button
-              variant="contained"
               color="info"
               sx={{ marginTop: 5 }}
               onClick={() => navigateToAuthPage()}
@@ -112,7 +116,7 @@ export default function VerifyPage() {
         {!verified && !signup && !expired && !obsolete && !email && (
           <div>
             <h1>loading ...</h1>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
         {!signup &&
@@ -120,7 +124,6 @@ export default function VerifyPage() {
           (!!email || !!expired || !!obsolete) &&
           !disabled && (
             <Button
-              variant="contained"
               type="button"
               className="marginTopMedium"
               onClick={() => resendLink()}
@@ -130,7 +133,6 @@ export default function VerifyPage() {
           )}
         {!signup && !verified && !!email && disabled && (
           <Button
-            variant="contained"
             type="button"
             className="marginTopMedium"
             disabled
@@ -140,11 +142,6 @@ export default function VerifyPage() {
           </Button>
         )}
       </main>
-      <CustomSnackbar
-        message={alertMessage}
-        severity={alertSeverity}
-        isOpenState={[showAlert, setShowAlert]}
-      />
     </>
   );
 }

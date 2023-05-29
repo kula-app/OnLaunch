@@ -1,41 +1,40 @@
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import getApp from "../../../../../api/apps/getApp";
 import updateApp from "../../../../../api/apps/updateApp";
 import Routes from "../../../../../routes/routes";
 import { App } from "../../../../../models/app";
-import CustomSnackbar from "../../../../../components/CustomSnackbar";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
 import deleteApp from "../../../../../api/apps/deleteApp";
-import { MdDeleteForever } from "react-icons/md";
+import {
+  Input,
+  Button,
+  useToast,
+  useDisclosure,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+} from "@chakra-ui/react";
+import React from "react";
 
 export default function EditAppPage() {
   const router = useRouter();
+  const toast = useToast();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef(null);
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
   const [appName, setAppName] = useState("");
 
   const [appKey, setAppKey] = useState("");
-
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -51,14 +50,18 @@ export default function EditAppPage() {
           fillForm(app);
         }
       } catch (error) {
-        setAlertMessage(`Error while fetching app data: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while fetching app data!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     };
 
     fetchAppData();
-  }, [router.isReady, router, appId, orgId]);
+  }, [router.isReady, router, appId, orgId, toast]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,22 +69,30 @@ export default function EditAppPage() {
     try {
       await updateApp(orgId, appId, appName);
 
-      setAlertMessage("App edited successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "App has been edited.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToAppDetailPage();
     } catch (error) {
-      setAlertMessage(`Error while editing app: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while editing app!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
   function navigateToAppDetailPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   }
-  
+
   function navigateToAppsPage() {
     router.push(Routes.getOrgAppsByOrgId(Number(orgId)));
   }
@@ -92,22 +103,30 @@ export default function EditAppPage() {
   }
 
   function handleDelete() {
-    setShowDeleteDialog(true);
+    onOpen();
   }
 
   async function callDeleteApp() {
     try {
       await deleteApp(orgId, appId);
 
-      setAlertMessage(`App with id '${appId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: `App with id '${appId}'has been deleted.`,
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToAppsPage();
     } catch (error) {
-      setAlertMessage(`Error while deleting app with id ${appId}: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: `Error while deleting app with id ${appId}!`,
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -117,37 +136,36 @@ export default function EditAppPage() {
         <main className={styles.main}>
           <h1>Edit App</h1>
           <form id="appForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Name"
-              id="name"
-              value={appName}
-              onChange={(event) => setAppName(event.target.value)}
-            />
-            <Button
-              variant="contained"
-              type="submit"
-              className="marginTopMedium"
-            >
+            <label>
+              Name
+              <Input
+                required
+                id="name"
+                value={appName}
+                onChange={(event) => setAppName(event.target.value)}
+              />
+            </label>
+            <Button type="submit" className="marginTopMedium">
               update
             </Button>
           </form>
           <h1>Client API Key</h1>
           <div className="row">
-            <TextField
-              disabled
-              label="Public Key for Clients"
-              id="publicKey"
-              value={appKey}
-            />
+            <label>
+              Public Key for Clients
+              <Input disabled id="publicKey" value={appKey} />
+            </label>
             <Button
-              variant="contained"
               sx={{ marginLeft: 2 }}
               onClick={() => {
                 navigator.clipboard.writeText(appKey as string);
-                setAlertMessage("Public key copied to clipboard");
-                setAlertSeverity("success");
-                setShowAlert(true);
+                toast({
+                  title: "Success!",
+                  description: "Public key copied to clipboard.",
+                  status: "success",
+                  isClosable: true,
+                  duration: 6000,
+                });
               }}
             >
               copy
@@ -155,46 +173,44 @@ export default function EditAppPage() {
           </div>
           <div className="column">
             <h1 className="marginTopLarge">Delete App</h1>
-            <Button
-              variant="contained"
-              endIcon={<MdDeleteForever />}
-              color="error"
-              onClick={() => handleDelete()}
-            >
+            <Button colorScheme="red" onClick={() => handleDelete()}>
               delete
             </Button>
           </div>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
-          <Dialog
-            open={showDeleteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+          <AlertDialog
+            isOpen={isOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelRef}
+            onClose={onClose}
+            isCentered
           >
-            <DialogTitle id="alert-dialog-title">
-              {`Delete App with id '${appId}?`}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                {`Delete App with id '${appId}?`}
+              </AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>
                 This cannot be undone and restoring the api key is not possible.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button
-                onClick={() => {
-                  setShowDeleteDialog(false);
-                  callDeleteApp();
-                }}
-                autoFocus
-              >
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    callDeleteApp();
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </main>
       </div>
     </>

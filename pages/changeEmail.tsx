@@ -1,17 +1,14 @@
-import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
 import { signOut, useSession } from "next-auth/react";
 import validateEmailChange from "../api/tokens/validateEmailChange";
 import Routes from "../routes/routes";
-import CustomSnackbar from "../components/CustomSnackbar";
-import { CircularProgress } from "@mui/material";
+import { Button, Spinner, useToast } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const { data: session, status } = useSession();
   const loading = status === "loading";
@@ -19,10 +16,6 @@ export default function ResetPasswordPage() {
   const { token } = router.query;
 
   const [emailChanged, setEmailChanged] = useState(false);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -37,16 +30,18 @@ export default function ResetPasswordPage() {
           }
           setEmailChanged(true);
         } catch (error) {
-          if (!String(error).includes("obsolete")) {
-            setAlertMessage(`Error while request: ${error}`);
-            setAlertSeverity("error");
-            setShowAlert(true);
-          }
+          toast({
+            title: "Error while request!",
+            description: `${error}`,
+            status: "error",
+            isClosable: true,
+            duration: 6000,
+          });
         }
       };
       changeEmail();
     }
-  }, [router.isReady, token, router, session, loading]);
+  }, [router.isReady, token, router, session, loading, toast]);
 
   function navigateToAuthPage() {
     router.push(Routes.AUTH);
@@ -71,7 +66,6 @@ export default function ResetPasswordPage() {
             </h1>
             <div>please log in with your new email address</div>
             <Button
-              variant="contained"
               color="info"
               sx={{ marginTop: 5 }}
               onClick={() => navigateToAuthPage()}
@@ -83,15 +77,10 @@ export default function ResetPasswordPage() {
         {loading && (
           <div>
             <h1>loading ...</h1>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
       </main>
-      <CustomSnackbar
-        message={alertMessage}
-        severity={alertSeverity}
-        isOpenState={[showAlert, setShowAlert]}
-      />
     </>
   );
 }

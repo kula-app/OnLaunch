@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -94,59 +98,6 @@ body {
   html {
     color-scheme: dark;
   }
-}
-
-.hiddenTableElement {
-  visibility: visible;
-  display: flex;
-  flex-direction: row;
-}
-
-.messageTable:hover .hiddenTableElement {
-  visibility: visible;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.addButton {
-  margin-bottom: 32px;
-  margin-top: 32px;
-}
-
-.centeredElement {
-  display: flex;
-  justify-content: center;
-}
-
-input,
-textarea {
-  margin-bottom: 16px;
-}
-
-.marginTopLarge {
-  margin-top: 64px;
-}
-
-.marginTopMedium {
-  margin-top: 32px;
-}
-
-.marginTopSmall {
-  margin-top: 16px;
-}
-
-td.centeredText,
-th.centeredText {
-  text-align: center;
 }
 
 tbody tr:hover {

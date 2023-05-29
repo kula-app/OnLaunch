@@ -1,21 +1,14 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import styles from "../../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import createOrg from "../../api/orgs/createOrg";
 import Routes from "../../routes/routes";
-import CustomSnackbar from "../../components/CustomSnackbar";
+import { Input, Button, useToast } from "@chakra-ui/react";
 
 export default function NewOrgPage() {
   const router = useRouter();
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
+  const toast = useToast();
 
   const [orgName, setOrgName] = useState("");
 
@@ -29,16 +22,24 @@ export default function NewOrgPage() {
     try {
       await createOrg(orgName);
 
-      setAlertMessage("Org created successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "New organisation created.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       resetForm();
       navigateToDashboardPage();
     } catch (error) {
-      setAlertMessage(`Error while creating new org: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while creating new organisation!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -52,25 +53,21 @@ export default function NewOrgPage() {
         <main className={styles.main}>
           <h1>New Organisation</h1>
           <form id="orgForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Name"
-              id="name"
-              onChange={(event) => setOrgName(event.target.value)}
-            />
+            <label>
+              Name
+              <Input
+                required
+                id="name"
+                onChange={(event) => setOrgName(event.target.value)}
+              />
+            </label>
             <Button
-              variant="contained"
               type="submit"
               className="marginTopMedium"
             >
               save
             </Button>
           </form>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
         </main>
       </div>
     </>
