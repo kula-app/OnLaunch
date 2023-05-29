@@ -1,33 +1,11 @@
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "../../../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { getSession, useSession } from "next-auth/react";
 import getOrg from "../../../api/orgs/getOrg";
 import updateOrg from "../../../api/orgs/updateOrg";
 import Routes from "../../../routes/routes";
 import { Org } from "../../../models/org";
-import CustomSnackbar from "../../../components/CustomSnackbar";
-import {
-  SelectChangeEvent,
-  Table,
-  TableHead,
-  TableCell,
-  TableBody,
-  TableRow,
-  Select,
-  MenuItem,
-  Tooltip,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
 import { MdDeleteForever } from "react-icons/md";
 import updateUserRoleInOrg from "../../../api/orgs/updateUserRoleInOrg";
 import { useUsers } from "../../../api/orgs/useUsers";
@@ -37,17 +15,37 @@ import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken
 import { useOrg } from "../../../api/orgs/useOrg";
 import deleteOrg from "../../../api/orgs/deleteOrg";
 import updateUserInviteRoleInOrg from "../../../api/orgs/updateUserInviteRoleInOrg";
+import {
+  Input,
+  useToast,
+  Button,
+  Table,
+  Tooltip,
+  IconButton,
+  Select,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
+import React from "react";
 
 export default function EditOrgPage() {
   const router = useRouter();
+  const toast = useToast();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef(null);
 
   const orgId = Number(router.query.orgId);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [orgName, setOrgName] = useState("");
 
@@ -69,14 +67,18 @@ export default function EditOrgPage() {
         const org = await getOrg(orgId);
         fillForm(org);
       } catch (error) {
-        setAlertMessage(`Error while fetching org: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while fetching organisation!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     };
 
     fetchOrgData();
-  }, [router.isReady, orgId]);
+  }, [router.isReady, orgId, toast]);
 
   const { data: session } = useSession();
 
@@ -103,15 +105,23 @@ export default function EditOrgPage() {
     try {
       await updateOrg(newOrg);
 
-      setAlertMessage("Org edited successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "Organisation has been updated.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToDashboardPage();
     } catch (error) {
-      setAlertMessage(`Error while editing org: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while editing organisation!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -133,14 +143,22 @@ export default function EditOrgPage() {
       } else {
         userMutate();
 
-        setAlertMessage(`User successfully removed from organisation!`);
-        setAlertSeverity("success");
-        setShowAlert(true);
+        toast({
+          title: "Success",
+          description: "User has been removed from organisation!",
+          status: "success",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     } catch (error) {
-      setAlertMessage(`Error while removing user: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while removing user!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -148,13 +166,21 @@ export default function EditOrgPage() {
     try {
       await resetOrgInvitationToken(org?.invitationToken as string);
 
-      setAlertMessage("Invitation link changed successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "Invitation link has been changed.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
-      setAlertMessage(`Error while changing invitation link: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while changing invitation link!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -164,22 +190,30 @@ export default function EditOrgPage() {
     try {
       await inviteUser(orgId, userEmail);
 
-      setAlertMessage("User invited successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "User has been invited.",
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
 
       setUserEmail("");
       userMutate();
     } catch (error) {
-      setAlertMessage(`Error while adding new user: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while inviting new user!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
   async function handleRoleChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     if (!users) {
       return;
@@ -204,35 +238,51 @@ export default function EditOrgPage() {
 
       userMutate();
 
-      setAlertMessage(
-        `User ${user.id === -1 ? "invite for" : "with"} email ${user.email} is now ${event.target.value}`
-      );
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: `User ${user.id === -1 ? "invite for" : "with"} email ${
+          user.email
+        } is now ${event.target.value}.`,
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
-      setAlertMessage(`Error while updating user role: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while updating user role!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
   function handleDelete() {
-    setShowDeleteDialog(true);
+    onOpen();
   }
 
   async function delOrg() {
     try {
       await deleteOrg(orgId);
 
-      setAlertMessage(`Organisation with id '${orgId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: `Organisation with id '${orgId}' has been deleted!`,
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToDashboardPage();
     } catch (error) {
-      setAlertMessage(`Error while deleting org with id ${orgId}: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: `Error while deleting org with id ${orgId}!`,
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -244,15 +294,16 @@ export default function EditOrgPage() {
             <div>
               <h1>Edit Organisation</h1>
               <form id="orgForm" onSubmit={submitHandler} className="column">
-                <TextField
-                  required
-                  label="Name"
-                  id="name"
-                  value={orgName}
-                  onChange={(event) => setOrgName(event.target.value)}
-                />
+                <label>
+                  Name
+                  <Input
+                    required
+                    id="name"
+                    value={orgName}
+                    onChange={(event) => setOrgName(event.target.value)}
+                  />
+                </label>
                 <Button
-                  variant="contained"
                   type="submit"
                   className="marginTopMedium"
                 >
@@ -266,15 +317,18 @@ export default function EditOrgPage() {
             <h1>Users</h1>
             {userRole === "ADMIN" && (
               <div className="row">
-                <TextField
-                  disabled
-                  label="Invitation link"
-                  id="invite"
-                  value={baseUrl + "/dashboard?invite=" + org?.invitationToken}
-                />
+                <label>
+                  Invitation Link
+                  <Input
+                    disabled
+                    id="invite"
+                    value={
+                      baseUrl + "/dashboard?invite=" + org?.invitationToken
+                    }
+                  />
+                </label>
                 <div className="column">
                   <Button
-                    variant="contained"
                     sx={{ marginLeft: 5 }}
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -282,15 +336,18 @@ export default function EditOrgPage() {
                           "/dashboard?invite=" +
                           (org?.invitationToken as string)
                       );
-                      setAlertMessage("Invitation link copied to clipboard");
-                      setAlertSeverity("success");
-                      setShowAlert(true);
+                      toast({
+                        title: "Success!",
+                        description: "Invitation link copied to clipboard.",
+                        status: "success",
+                        isClosable: true,
+                        duration: 6000,
+                      });
                     }}
                   >
                     copy
                   </Button>
                   <Button
-                    variant="contained"
                     sx={{ marginLeft: 5, marginTop: 1 }}
                     onClick={() => {
                       resetInvitation();
@@ -307,19 +364,17 @@ export default function EditOrgPage() {
                 onSubmit={userInviteHandler}
                 className="row marginTopMedium"
               >
-                <TextField
-                  required
-                  label="Email"
-                  id="email"
-                  value={userEmail}
-                  onChange={(event) => setUserEmail(event.target.value)}
-                />
+                <label>
+                  Email
+                  <Input
+                    required
+                    id="email"
+                    value={userEmail}
+                    onChange={(event) => setUserEmail(event.target.value)}
+                  />
+                </label>
                 <div className="addButton">
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    sx={{ marginLeft: 5 }}
-                  >
+                  <Button type="submit" sx={{ marginLeft: 5 }}>
                     Invite User
                   </Button>
                 </div>
@@ -329,55 +384,56 @@ export default function EditOrgPage() {
               sx={{ minWidth: 650, maxWidth: 1000 }}
               aria-label="simple table"
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>
+              <Thead>
+                <Tr>
+                  <Th>
                     <strong>Name</strong>
-                  </TableCell>
-                  <TableCell>
+                  </Th>
+                  <Th>
                     <strong>Email</strong>
-                  </TableCell>
-                  <TableCell>
+                  </Th>
+                  <Th>
                     <strong>Role</strong>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                  </Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {users?.map((user, index) => {
                   return (
-                    <TableRow key={index}>
-                      <TableCell>
-                        {user.firstName + " " + user.lastName}
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
+                    <Tr key={index}>
+                      <Th>{user.firstName + " " + user.lastName}</Th>
+                      <Th>{user.email}</Th>
+                      <Th>
                         {userRole === "ADMIN" && (
                           <div>
-                            <Select
-                              disabled={user.email === session?.user?.email}
-                              label="Role"
-                              value={user.role}
-                              onChange={(event) =>
-                                handleRoleChange(index, event)
-                              }
-                            >
-                              {roles.map((value, index) => {
-                                return (
-                                  <MenuItem key={index} value={value}>
-                                    {value}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
+                            <label>
+                              Role
+                              <Select
+                                disabled={user.email === session?.user?.email}
+                                value={user.role}
+                                onChange={(event) =>
+                                  handleRoleChange(index, event)
+                                }
+                              >
+                                {roles.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </label>
                             <Tooltip
-                              title={
+                              label={
                                 user.email === session?.user?.email
                                   ? "leave organisation"
                                   : "remove from organisation"
                               }
                             >
                               <IconButton
+                                aria-label={"remove user"}
                                 onClick={() => removeUser(user.email)}
                               >
                                 <MdDeleteForever />
@@ -390,8 +446,9 @@ export default function EditOrgPage() {
                             {(user.role as string).toLowerCase()}
 
                             {user.email === session?.user?.email && (
-                              <Tooltip title="leave organisation">
+                              <Tooltip label="leave organisation">
                                 <IconButton
+                                  aria-label={"leave organisation"}
                                   onClick={() => removeUser(user.email)}
                                 >
                                   <MdDeleteForever />
@@ -400,12 +457,12 @@ export default function EditOrgPage() {
                             )}
                           </div>
                         )}
-                      </TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
+                      </Th>
+                      <Th></Th>
+                    </Tr>
                   );
                 })}
-              </TableBody>
+              </Tbody>
             </Table>
             {users?.length == 0 && (
               <p className="marginTopMedium">no data to show</p>
@@ -414,48 +471,42 @@ export default function EditOrgPage() {
             {userRole === "ADMIN" && (
               <div className="column">
                 <h1 className="marginTopLarge">Delete Organisation</h1>
-                <Button
-                  variant="contained"
-                  endIcon={<MdDeleteForever />}
-                  color="error"
-                  onClick={() => handleDelete()}
-                >
+                <Button colorScheme="red" onClick={() => handleDelete()}>
                   delete
                 </Button>
               </div>
             )}
           </div>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
-          <Dialog
-            open={showDeleteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+          <AlertDialog
+            isOpen={isOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelRef}
+            onClose={onClose}
+            isCentered
           >
-            <DialogTitle id="alert-dialog-title">
-              {`Delete Organisation '${org?.name}?`}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                This cannot be undone.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button
-                onClick={() => {
-                  setShowDeleteDialog(false);
-                  delOrg();
-                }}
-                autoFocus
-              >
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>{`Delete Organisation '${org?.name}?`}</AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>This cannot be undone.</AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    delOrg();
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </main>
       </div>
     </>

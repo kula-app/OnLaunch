@@ -1,41 +1,38 @@
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
-
 import { MdDeleteForever, MdClose } from "react-icons/md";
-import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Switch from "@mui/material/Switch";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import createMessage from "../../../../../../api/messages/createMessage";
 import Routes from "../../../../../../routes/routes";
 import { Action } from "../../../../../../models/action";
 import { Message } from "../../../../../../models/message";
-import CustomSnackbar from "../../../../../../components/CustomSnackbar";
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  Select,
+  Switch,
+  Table,
+  Tbody,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from "@chakra-ui/react";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   const [actions, setActions] = useState<Action[]>([]);
 
@@ -67,16 +64,24 @@ export default function NewMessageForAppPage() {
     try {
       await createMessage(orgId, appId, message);
 
-      setAlertMessage("Message created successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "New message created.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       resetForm();
       navigateToAppMessagesPage();
     } catch (error) {
-      setAlertMessage(`Error while creating new message: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while creating new message!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -109,7 +114,7 @@ export default function NewMessageForAppPage() {
 
   function handleActionTypeChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
@@ -118,7 +123,7 @@ export default function NewMessageForAppPage() {
 
   function handleButtonDesignChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
@@ -128,90 +133,83 @@ export default function NewMessageForAppPage() {
   return (
     <>
       <div>
-        <div className="row">
-          <main className={styles.main}>
-            <h1>New Message</h1>
-            <form id="messageForm" onSubmit={submitHandler} className="column">
-              <TextField
-                required
-                label="Title"
-                id="title"
-                variant="outlined"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              />
-              <TextField
-                required
-                multiline
-                label="Body"
-                minRows={10}
-                maxRows={10}
-                id="body"
-                className="marginTopMedium"
-                value={body}
-                onChange={(event) => setBody(event.target.value)}
-              />
-              <div>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={blocking}
-                      onChange={() => setBlocking(!blocking)}
-                    ></Switch>
-                  }
-                  label="Blocking"
-                  labelPlacement="start"
-                  sx={{ marginLeft: 0 }}
-                  className="marginTopMedium"
+        <div className="flex flex-row pt-8 px-8 justify-center">
+          <div className="" style={{ marginRight: "8%" }}>
+            <form
+              id="messageForm"
+              onSubmit={submitHandler}
+              className="shrink-0 flex flex-col"
+              style={{ width: "400px" }}
+            >
+              <h1 className="text-3xl font-bold text-center">New Message</h1>
+              <FormControl isRequired className="mt-8">
+                <FormLabel>Title</FormLabel>
+                <Input
+                  placeholder="Title"
+                  type="text"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
                 />
-              </div>
-              <TextField
-                label="Start Date"
-                type="datetime-local"
-                id="startDate"
-                InputLabelProps={{ shrink: true }}
-                className="marginTopMedium"
-                value={startDate}
-                onChange={(event) => setStartDate(event.target.value)}
-              />
-              <TextField
-                required
-                label="End Date"
-                type="datetime-local"
-                id="endDate"
-                InputLabelProps={{ shrink: true }}
-                className="marginTopMedium"
-                value={endDate}
-                onChange={(event) => setEndDate(event.target.value)}
-              />
-              <h3 className="marginTopMedium centeredElement">Actions</h3>
-              <Table
-                sx={{ minWidth: 650, maxWidth: 1300 }}
-                aria-label="simple table"
-                className="messageTable"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <strong>Design</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Type</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Title</strong>
-                    </TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+              </FormControl>
+              <FormControl isRequired className="mt-4">
+                <FormLabel>Body</FormLabel>
+                <Textarea
+                  placeholder="Body"
+                  value={body}
+                  resize="none"
+                  rows={6}
+                  onChange={(event) => setBody(event.target.value)}
+                />
+              </FormControl>
+              <FormControl display="flex" alignItems="center" className="mt-4">
+                <FormLabel htmlFor="blocking-toggle" mb="0">
+                  Blocking
+                </FormLabel>
+                <Switch
+                  id="blocking-toggle"
+                  isChecked={blocking}
+                  onChange={() => setBlocking(!blocking)}
+                />
+              </FormControl>
+              <FormControl className="mt-4">
+                <FormLabel>Start Date</FormLabel>
+                <Input
+                  placeholder="Start Date"
+                  type="datetime-local"
+                  id="startDate"
+                  value={startDate}
+                  onChange={(event) => setStartDate(event.target.value)}
+                />
+              </FormControl>
+              <FormControl className="mt-4">
+                <FormLabel>End Date</FormLabel>
+                <Input
+                  required
+                  placeholder="End Date"
+                  type="datetime-local"
+                  id="endDate"
+                  className="mt-8"
+                  value={endDate}
+                  onChange={(event) => setEndDate(event.target.value)}
+                />
+              </FormControl>
+              <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
+              <Table aria-label="simple table" className="mt-4">
+                <Thead>
+                  <Tr>
+                    <Th>Design</Th>
+                    <Th>Type</Th>
+                    <Th>Title</Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {actions &&
                     actions.map((action: Action, index: number) => {
                       return (
-                        <TableRow key={index}>
-                          <TableCell>
+                        <Tr key={index}>
+                          <Th>
                             <Select
-                              label="ButtonDesign"
                               value={action.buttonDesign}
                               onChange={(event) =>
                                 handleButtonDesignChange(index, event)
@@ -219,16 +217,15 @@ export default function NewMessageForAppPage() {
                             >
                               {buttonDesigns.map((value, index) => {
                                 return (
-                                  <MenuItem key={index} value={value}>
+                                  <option key={index} value={value}>
                                     {value}
-                                  </MenuItem>
+                                  </option>
                                 );
                               })}
                             </Select>
-                          </TableCell>
-                          <TableCell>
+                          </Th>
+                          <Th>
                             <Select
-                              label="ActionType"
                               value={action.actionType}
                               onChange={(event) =>
                                 handleActionTypeChange(index, event)
@@ -236,15 +233,15 @@ export default function NewMessageForAppPage() {
                             >
                               {actionTypes.map((value, index) => {
                                 return (
-                                  <MenuItem key={index} value={value}>
+                                  <option key={index} value={value}>
                                     {value}
-                                  </MenuItem>
+                                  </option>
                                 );
                               })}
                             </Select>
-                          </TableCell>
-                          <TableCell>
-                            <TextField
+                          </Th>
+                          <Th>
+                            <Input
                               type="text"
                               name="actionTitle"
                               value={action.title}
@@ -252,25 +249,26 @@ export default function NewMessageForAppPage() {
                                 handleActionTitleChange(index, event)
                               }
                             />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton onClick={() => deleteAction(index)}>
+                          </Th>
+                          <Th>
+                            <IconButton
+                              onClick={() => deleteAction(index)}
+                              aria-label={""}
+                            >
                               <MdDeleteForever />
                             </IconButton>
-                          </TableCell>
-                        </TableRow>
+                          </Th>
+                        </Tr>
                       );
                     })}
-                </TableBody>
+                </Tbody>
               </Table>
               {actions.length == 0 && (
-                <p className="marginTopSmall centeredElement">
-                  no actions added
-                </p>
+                <p className="text-center mt-4 ">no actions added</p>
               )}
-              <div className="addButton centeredElement">
+              <div className="mt-4 flex justify-center">
                 <Button
-                  variant="contained"
+                  colorScheme="blue"
                   onClick={() => {
                     addAction();
                   }}
@@ -278,50 +276,52 @@ export default function NewMessageForAppPage() {
                   New Action
                 </Button>
               </div>
-              <Button variant="contained" type="submit">
-                save
+              <Button className="my-4" colorScheme="blue" type="submit">
+                Save
               </Button>
             </form>
-            <CustomSnackbar
-              message={alertMessage}
-              severity={alertSeverity}
-              isOpenState={[showAlert, setShowAlert]}
-            />
-          </main>
-          <div className={styles.phoneContainer}>
-            <div className={styles.phoneScreen}>
-              <div>
-                <div className={styles.closeIconContainer}>
-                  {!blocking && (
-                    <MdClose
-                      className={styles.closeIcon}
-                      style={{ color: "grey" }}
-                    ></MdClose>
-                  )}
+          </div>
+          <div className="">
+            <div className={styles.phoneContainer}>
+              <div className={styles.phoneScreen}>
+                <div>
+                  <div className={styles.closeIconContainer}>
+                    {!blocking && (
+                      <MdClose
+                        className={styles.closeIcon}
+                        style={{ color: "grey" }}
+                      ></MdClose>
+                    )}
+                  </div>
+                  <h1 style={{ marginTop: blocking ? "72px" : "16px" }}>
+                    {title}
+                  </h1>
                 </div>
-                <h1 style={{ marginTop: blocking ? "72px" : "16px" }}>
-                  {title}
-                </h1>
-              </div>
-              <div>
-                <p>{body}</p>
-              </div>
-              <div>
-                {actions &&
-                  actions.map((action: Action, index: number) => {
-                    return (
-                      <Button
-                        key={index}
-                        variant={
-                          action.buttonDesign === "FILLED"
-                            ? "contained"
-                            : "text"
-                        }
-                      >
-                        {action.title}
-                      </Button>
-                    );
-                  })}
+                <div>
+                  <p>{body}</p>
+                </div>
+                <div>
+                  {actions &&
+                    actions.map((action: Action, index: number) => {
+                      if (action.buttonDesign === "FILLED") {
+                        return (
+                          <Button colorScheme="blue" key={index}>
+                            {action.title}
+                          </Button>
+                        );
+                      } else {
+                        return (
+                          <Button
+                            colorScheme="blue"
+                            variant="ghost"
+                            key={index}
+                          >
+                            {action.title}
+                          </Button>
+                        );
+                      }
+                    })}
+                </div>
               </div>
             </div>
           </div>

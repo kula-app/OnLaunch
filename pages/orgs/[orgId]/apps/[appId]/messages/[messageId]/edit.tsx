@@ -1,43 +1,39 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../../../styles/Home.module.css";
-
 import { MdDeleteForever, MdClose } from "react-icons/md";
-import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Switch from "@mui/material/Switch";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
 import getMessage from "../../../../../../../api/messages/getMessage";
 import updateMessage from "../../../../../../../api/messages/updateMessage";
-import CustomSnackbar from "../../../../../../../components/CustomSnackbar";
+import {
+  Button,
+  FormControl,
+  IconButton,
+  Input,
+  Select,
+  Switch,
+  Table,
+  Tbody,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from "@chakra-ui/react";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   const [actions, setActions] = useState<Action[]>([]);
 
@@ -56,14 +52,18 @@ export default function EditMessageOfAppPage() {
       try {
         fillForm(await getMessage(orgId, appId, messageId));
       } catch (error) {
-        setAlertMessage(`Error while fetching message: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while fetching message!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     };
 
     fetchMessageData();
-  }, [router.isReady, orgId, appId, messageId]);
+  }, [router.isReady, orgId, appId, messageId, toast]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,15 +83,23 @@ export default function EditMessageOfAppPage() {
     try {
       await updateMessage(orgId, appId, messageId, message);
 
-      setAlertMessage("Message edited successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success",
+        description: "Message has been updated.",
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToAppMessagesPage();
     } catch (error) {
-      setAlertMessage(`Error while editing message: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while editing message!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -135,7 +143,7 @@ export default function EditMessageOfAppPage() {
 
   function handleActionTypeChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
@@ -144,7 +152,7 @@ export default function EditMessageOfAppPage() {
 
   function handleButtonDesignChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
@@ -157,119 +165,120 @@ export default function EditMessageOfAppPage() {
         <main className={styles.main}>
           <h1>Edit Message</h1>
           <form id="messageForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Title"
-              id="title"
-              variant="outlined"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-            <TextField
-              required
-              multiline
-              label="Body"
-              minRows={10}
-              maxRows={10}
-              id="body"
-              className="marginTopMedium"
-              value={body}
-              onChange={(event) => setBody(event.target.value)}
-            />
-            <div>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={switchValue}
-                    onChange={() => setSwitchValue(!switchValue)}
-                  ></Switch>
-                }
-                label="Blocking"
-                labelPlacement="start"
-                sx={{ marginLeft: 0 }}
-                className="marginTopMedium"
+            <label>
+              Title
+              <Input
+                required
+                id="title"
+                variant="outlined"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
               />
+            </label>
+            <label>
+              Body
+              <Textarea
+                required
+                id="body"
+                className="marginTopMedium"
+                value={body}
+                onChange={(event) => setBody(event.target.value)}
+              />
+            </label>
+            <div>
+              <FormControl display="flex" alignItems="center">
+                <Switch
+                  checked={switchValue}
+                  onChange={() => setSwitchValue(!switchValue)}
+                ></Switch>
+              </FormControl>
             </div>
-            <TextField
-              label="Start Date"
-              type="datetime-local"
-              id="startDate"
-              InputLabelProps={{ shrink: true }}
-              className="marginTopMedium"
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-            />
-            <TextField
-              required
-              label="End Date"
-              type="datetime-local"
-              id="endDate"
-              InputLabelProps={{ shrink: true }}
-              className="marginTopMedium"
-              value={endDate}
-              onChange={(event) => setEndDate(event.target.value)}
-            />
+            <label>
+              Start Date
+              <Input
+                type="datetime-local"
+                id="startDate"
+                className="marginTopMedium"
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+              />
+            </label>
+            <label>
+              End Date
+              <Input
+                required
+                type="datetime-local"
+                id="endDate"
+                className="marginTopMedium"
+                value={endDate}
+                onChange={(event) => setEndDate(event.target.value)}
+              />
+            </label>
             <h3 className="marginTopMedium centeredElement">Actions</h3>
             <Table
               sx={{ minWidth: 650, maxWidth: 1300 }}
               aria-label="simple table"
               className="messageTable"
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>
+              <Thead>
+                <Tr>
+                  <Th>
                     <strong>Design</strong>
-                  </TableCell>
-                  <TableCell>
+                  </Th>
+                  <Th>
                     <strong>Type</strong>
-                  </TableCell>
-                  <TableCell>
+                  </Th>
+                  <Th>
                     <strong>Title</strong>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                  </Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {actions &&
                   actions.map((action: Action, index: number) => {
                     return (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <Select
-                            label="ButtonDesign"
-                            value={action.buttonDesign}
-                            onChange={(event) =>
-                              handleButtonDesignChange(index, event)
-                            }
-                          >
-                            {buttonDesigns.map((value, index) => {
-                              return (
-                                <MenuItem key={index} value={value}>
-                                  {value}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            label="ActionType"
-                            value={action.actionType}
-                            onChange={(event) =>
-                              handleActionTypeChange(index, event)
-                            }
-                          >
-                            {actionTypes.map((value, index) => {
-                              return (
-                                <MenuItem key={index} value={value}>
-                                  {value}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
+                      <Tr key={index}>
+                        <Th>
+                          <label>
+                            ButtonDesign
+                            <Select
+                              value={action.buttonDesign}
+                              onChange={(event) =>
+                                handleButtonDesignChange(index, event)
+                              }
+                            >
+                              {buttonDesigns.map((value, index) => {
+                                return (
+                                  <option key={index} value={value}>
+                                    {value}
+                                  </option>
+                                );
+                              })}
+                            </Select>
+                          </label>
+                        </Th>
+                        <Th>
+                          <label>
+                            ActionType
+                            <Select
+                              value={action.actionType}
+                              onChange={(event) =>
+                                handleActionTypeChange(index, event)
+                              }
+                            >
+                              {actionTypes.map((value, index) => {
+                                return (
+                                  <option key={index} value={value}>
+                                    {value}
+                                  </option>
+                                );
+                              })}
+                            </Select>
+                          </label>
+                        </Th>
+                        <Th>
+                          <Input
                             type="text"
                             name="actionTitle"
                             value={action.title}
@@ -277,23 +286,25 @@ export default function EditMessageOfAppPage() {
                               handleActionTitleChange(index, event)
                             }
                           />
-                        </TableCell>
-                        <TableCell width="5%">
-                          <IconButton onClick={() => deleteAction(index)}>
+                        </Th>
+                        <Th width="5%">
+                          <IconButton
+                            onClick={() => deleteAction(index)}
+                            aria-label={""}
+                          >
                             <MdDeleteForever />
                           </IconButton>
-                        </TableCell>
-                      </TableRow>
+                        </Th>
+                      </Tr>
                     );
                   })}
-              </TableBody>
+              </Tbody>
             </Table>
             {actions.length == 0 && (
               <p className="marginTopSmall centeredElement">no actions added</p>
             )}
             <div className="addButton centeredElement">
               <Button
-                variant="contained"
                 onClick={() => {
                   addAction();
                 }}
@@ -301,15 +312,10 @@ export default function EditMessageOfAppPage() {
                 New Action
               </Button>
             </div>
-            <Button variant="contained" type="submit">
+            <Button type="submit">
               update
             </Button>
           </form>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
         </main>
       </div>
     </>

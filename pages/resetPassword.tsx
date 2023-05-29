@@ -1,19 +1,15 @@
-import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
 import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
-import CustomSnackbar from "../components/CustomSnackbar";
-import { CircularProgress } from "@mui/material";
+import { Button, Spinner, Input, useToast } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const { token } = router.query;
 
@@ -21,10 +17,6 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -38,15 +30,19 @@ export default function ResetPasswordPage() {
         } catch (error) {
           setLoading(false);
 
-          setAlertMessage(`Error while fetching token: ${error}`);
-          setAlertSeverity("error");
-          setShowAlert(true);
+          toast({
+            title: "Error while fetching token!",
+            description: `${error}`,
+            status: "error",
+            isClosable: true,
+            duration: 6000,
+          });
         }
       };
 
       fetchEmailChangeToken();
     }
-  }, [router.isReady, token]);
+  }, [router.isReady, token, toast]);
 
   function navigateToAuthPage() {
     router.push(Routes.AUTH);
@@ -59,14 +55,22 @@ export default function ResetPasswordPage() {
 
         navigateToAuthPage();
       } catch (error) {
-        setAlertMessage(`Error while sending request: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while sending request!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     } else {
-      setAlertMessage("The passwords do not match!");
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error!",
+        description: "The passwords do not match.",
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -84,24 +88,29 @@ export default function ResetPasswordPage() {
         {!loading && validToken && (
           <div className="centeredElement column">
             <h1 className="centeredElement">Enter your new password</h1>
-            <TextField
-              required
-              label="Password"
-              id="password"
-              type="password"
-              className="marginTopMedium"
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <TextField
-              required
-              label="Password (repeat)"
-              id="passwordConfirmation"
-              type="password"
-              className="marginTopMedium"
-              onChange={(event) => setPasswordConfirmation(event.target.value)}
-            />
+            <label>
+              Password
+              <Input
+                required
+                id="password"
+                type="password"
+                className="marginTopMedium"
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
+            <label>
+              Password (repeat)
+              <Input
+                required
+                id="passwordConfirmation"
+                type="password"
+                className="marginTopMedium"
+                onChange={(event) =>
+                  setPasswordConfirmation(event.target.value)
+                }
+              />
+            </label>
             <Button
-              variant="contained"
               color="info"
               sx={{ marginTop: 5 }}
               onClick={() => sendNewPassword()}
@@ -113,15 +122,10 @@ export default function ResetPasswordPage() {
         {loading && (
           <div>
             <h1>loading ...</h1>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
       </main>
-      <CustomSnackbar
-        message={alertMessage}
-        severity={alertSeverity}
-        isOpenState={[showAlert, setShowAlert]}
-      />
     </>
   );
 }
