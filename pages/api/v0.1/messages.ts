@@ -22,6 +22,54 @@ type ResponseDto = {
   actions: ActionDto[];
 };
 
+/**
+ * @swagger
+ * /api/v0.1/messages:
+ *   get:
+ *     summary: Get messages for an app.
+ *     description: Retrieves all messages for an app based on the provided API key.
+ *     parameters:
+ *       - name: x-api-key
+ *         in: header
+ *         description: The API key for the app.
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successful response. Returns an array of messages.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   blocking:
+ *                     type: boolean
+ *                   title:
+ *                     type: string
+ *                   body:
+ *                     type: string
+ *                   actions:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         actionType:
+ *                           type: string
+ *                           enum:
+ *                             - DISMISS
+ *                         title:
+ *                           type: string
+ *       400:
+ *         description: Bad request. No API key provided.
+ *       404:
+ *         description: App not found. No app found for the provided API key.
+ *       405:
+ *         description: Method not allowed. Only GET requests are supported.
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseDto[]>
