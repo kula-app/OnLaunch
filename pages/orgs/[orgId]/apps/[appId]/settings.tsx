@@ -135,7 +135,7 @@ export default function EditAppPage() {
       <div>
         <main className={styles.main}>
           <h1>Edit App</h1>
-          <form id="appForm" onSubmit={submitHandler} className="column">
+          <form id="appForm" onSubmit={submitHandler}>
             <label>
               Name
               <Input
@@ -145,12 +145,10 @@ export default function EditAppPage() {
                 onChange={(event) => setAppName(event.target.value)}
               />
             </label>
-            <Button type="submit" className="marginTopMedium">
-              update
-            </Button>
+            <Button type="submit">update</Button>
           </form>
           <h1>Client API Key</h1>
-          <div className="row">
+          <div>
             <label>
               Public Key for Clients
               <Input disabled id="publicKey" value={appKey} />
@@ -171,8 +169,8 @@ export default function EditAppPage() {
               copy
             </Button>
           </div>
-          <div className="column">
-            <h1 className="marginTopLarge">Delete App</h1>
+          <div>
+            <h1>Delete App</h1>
             <Button colorScheme="red" onClick={() => handleDelete()}>
               delete
             </Button>

@@ -54,7 +54,7 @@ export default function NewAppPage() {
       <div>
         <main className={styles.main}>
           <h1>New App</h1>
-          <form id="appForm" onSubmit={submitHandler} className="column">
+          <form id="appForm" onSubmit={submitHandler}>
             <label>
               Name
               <Input
@@ -63,12 +63,7 @@ export default function NewAppPage() {
                 onChange={(event) => setAppName(event.target.value)}
               />
             </label>
-            <Button
-              type="submit"
-              className="marginTopMedium"
-            >
-              save
-            </Button>
+            <Button type="submit">save</Button>
           </form>
         </main>
       </div>

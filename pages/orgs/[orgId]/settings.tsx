@@ -293,7 +293,7 @@ export default function EditOrgPage() {
           {userRole === "ADMIN" && (
             <div>
               <h1>Edit Organisation</h1>
-              <form id="orgForm" onSubmit={submitHandler} className="column">
+              <form id="orgForm" onSubmit={submitHandler}>
                 <label>
                   Name
                   <Input
@@ -303,12 +303,7 @@ export default function EditOrgPage() {
                     onChange={(event) => setOrgName(event.target.value)}
                   />
                 </label>
-                <Button
-                  type="submit"
-                  className="marginTopMedium"
-                >
-                  update
-                </Button>
+                <Button type="submit">update</Button>
               </form>
             </div>
           )}
@@ -316,7 +311,7 @@ export default function EditOrgPage() {
           <div className={styles.main}>
             <h1>Users</h1>
             {userRole === "ADMIN" && (
-              <div className="row">
+              <div>
                 <label>
                   Invitation Link
                   <Input
@@ -327,7 +322,7 @@ export default function EditOrgPage() {
                     }
                   />
                 </label>
-                <div className="column">
+                <div>
                   <Button
                     sx={{ marginLeft: 5 }}
                     onClick={() => {
@@ -359,11 +354,7 @@ export default function EditOrgPage() {
               </div>
             )}
             {userRole === "ADMIN" && (
-              <form
-                id="emailForm"
-                onSubmit={userInviteHandler}
-                className="row marginTopMedium"
-              >
+              <form id="emailForm" onSubmit={userInviteHandler}>
                 <label>
                   Email
                   <Input
@@ -373,7 +364,7 @@ export default function EditOrgPage() {
                     onChange={(event) => setUserEmail(event.target.value)}
                   />
                 </label>
-                <div className="addButton">
+                <div>
                   <Button type="submit" sx={{ marginLeft: 5 }}>
                     Invite User
                   </Button>
@@ -464,13 +455,11 @@ export default function EditOrgPage() {
                 })}
               </Tbody>
             </Table>
-            {users?.length == 0 && (
-              <p className="marginTopMedium">no data to show</p>
-            )}
+            {users?.length == 0 && <p>no data to show</p>}
 
             {userRole === "ADMIN" && (
-              <div className="column">
-                <h1 className="marginTopLarge">Delete Organisation</h1>
+              <div>
+                <h1>Delete Organisation</h1>
                 <Button colorScheme="red" onClick={() => handleDelete()}>
                   delete
                 </Button>

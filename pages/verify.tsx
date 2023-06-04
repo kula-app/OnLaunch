@@ -85,13 +85,13 @@ export default function VerifyPage() {
       <main className={styles.main}>
         {(signup || email) && !expired && (
           <div>
-            <h1 className="centeredElement">Verify your account</h1>
+            <h1>Verify your account</h1>
             <div>Please check your mails for the verification link!</div>
           </div>
         )}
         {verified && !expired && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">Thank you for verifying!</h1>
+          <div>
+            <h1>Thank you for verifying!</h1>
             <div>
               If you want to use the full functionality of OnLaunch please log
               in
@@ -106,8 +106,8 @@ export default function VerifyPage() {
           </div>
         )}
         {!signup && !verified && (expired || obsolete) && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">
+          <div>
+            <h1>
               Link is {expired ? "expired" : "obsolete"}!
             </h1>
             <div>No worries, we can send you a new one </div>
@@ -125,7 +125,6 @@ export default function VerifyPage() {
           !disabled && (
             <Button
               type="button"
-              className="marginTopMedium"
               onClick={() => resendLink()}
             >
               resend link
@@ -134,7 +133,6 @@ export default function VerifyPage() {
         {!signup && !verified && !!email && disabled && (
           <Button
             type="button"
-            className="marginTopMedium"
             disabled
             onClick={() => resendLink()}
           >

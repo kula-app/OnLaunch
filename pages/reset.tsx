@@ -40,7 +40,7 @@ export default function ResetPage() {
       <main className={styles.main}>
         {!sentMail && <h1>Enter your mail address for password reset</h1>}
         {!sentMail && (
-          <form className="column" onSubmit={submitHandler}>
+          <form onSubmit={submitHandler}>
             <label>
               Email
               <Input
@@ -51,14 +51,12 @@ export default function ResetPage() {
             </label>
             <Button
               type="submit"
-              className="marginTopMedium"
             >
               reset password
             </Button>
             <Button
               variant="text"
               type="button"
-              className="marginTopMedium"
               onClick={() => navigateToAuthPage()}
             >
               go back to login
@@ -67,7 +65,7 @@ export default function ResetPage() {
         )}
         {sentMail && (
           <div>
-            <h1 className="centeredElement">Check your mails</h1>
+            <h1>Check your mails</h1>
             <div>
               You should receive a mail within the next minutes with the reset
               link!
