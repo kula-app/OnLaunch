@@ -56,7 +56,7 @@ export default function AppsPage() {
         </Button>
         <h1>Apps</h1>
         {org?.role === "ADMIN" && (
-          <div className="addButton">
+          <div>
             <Button
               onClick={() => {
                 navigateToNewAppPage();
@@ -74,7 +74,7 @@ export default function AppsPage() {
             <Th>
               <strong>App Name</strong>
             </Th>
-            <Th width="5%" className="centeredText">
+            <Th width="5%">
               <strong># Active Messages</strong>
             </Th>
           </Thead>
@@ -88,7 +88,7 @@ export default function AppsPage() {
                 >
                   <Th width="5%">{app.id}</Th>
                   <Th>{app.name}</Th>
-                  <Th width="5%" className="centeredText">
+                  <Th width="5%">
                     <Tooltip label="this many messages are currently shown in mobile apps">
                       <div>{app.activeMessages}</div>
                     </Tooltip>
@@ -99,7 +99,7 @@ export default function AppsPage() {
           </Tbody>
         </Table>
         {apps?.length == 0 && (
-          <p className="marginTopMedium">no data to show</p>
+          <p>no data to show</p>
         )}
       </main>
     </>

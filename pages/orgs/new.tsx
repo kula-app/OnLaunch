@@ -52,7 +52,7 @@ export default function NewOrgPage() {
       <div>
         <main className={styles.main}>
           <h1>New Organisation</h1>
-          <form id="orgForm" onSubmit={submitHandler} className="column">
+          <form id="orgForm" onSubmit={submitHandler}>
             <label>
               Name
               <Input
@@ -61,12 +61,7 @@ export default function NewOrgPage() {
                 onChange={(event) => setOrgName(event.target.value)}
               />
             </label>
-            <Button
-              type="submit"
-              className="marginTopMedium"
-            >
-              save
-            </Button>
+            <Button type="submit">save</Button>
           </form>
         </main>
       </div>

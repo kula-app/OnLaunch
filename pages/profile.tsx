@@ -145,9 +145,9 @@ export default function ProfilePage() {
     <>
       <main className={styles.main}>
         <h1>Hello, {user?.firstName}!</h1>
-        <div className="marginTopMedium column">
-          <h2 className="centeredElement">Change email</h2>
-          <div className="marginTopMedium centeredElement">
+        <div>
+          <h2>Change email</h2>
+          <div>
             Your email: {user?.email}
           </div>
           <label>
@@ -155,7 +155,6 @@ export default function ProfilePage() {
             <Input
               required
               id="email"
-              className="marginTopMedium"
               value={emailNew}
               onChange={(event) => setEmailNew(event.target.value)}
             />
@@ -168,7 +167,7 @@ export default function ProfilePage() {
             change email
           </Button>
           {displayEmailMessage && (
-            <div className="marginTopMedium">
+            <div>
               We have sent a mail <br />
               to your new email <br />
               address, please check <br />
@@ -177,7 +176,7 @@ export default function ProfilePage() {
             </div>
           )}
         </div>
-        <div className="marginTopLarge column">
+        <div>
           <h2>Change password</h2>
           <label>
             Current Password
@@ -186,7 +185,6 @@ export default function ProfilePage() {
               id="passwordOld"
               type="password"
               value={passwordOld}
-              className="marginTopMedium"
               onChange={(event) => setPasswordOld(event.target.value)}
             />
           </label>
@@ -197,7 +195,6 @@ export default function ProfilePage() {
               id="password"
               type="password"
               value={password}
-              className="marginTopMedium"
               onChange={(event) => setPassword(event.target.value)}
             />
           </label>
@@ -208,7 +205,6 @@ export default function ProfilePage() {
               id="passwordConfirmation"
               type="password"
               value={passwordConfirmation}
-              className="marginTopMedium"
               onChange={(event) => setPasswordConfirmation(event.target.value)}
             />
           </label>
@@ -220,7 +216,7 @@ export default function ProfilePage() {
             change password
           </Button>
         </div>
-        <div className="marginTopLarge column">
+        <div>
           <h2>Delete profile</h2>
           <Button
             colorScheme="red"

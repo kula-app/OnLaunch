@@ -41,7 +41,6 @@ export default function MessagesOfAppPage() {
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [messageId, setMessageId] = useState(-1);
 
   const [showHistory, setShowHistory] = useState(false);
@@ -78,7 +77,7 @@ export default function MessagesOfAppPage() {
         Moment(message.startDate).isBefore(now) &&
         Moment(message.endDate).isAfter(now)
       ) {
-        setShowDeleteDialog(true);
+        onOpen();
       } else {
         callDeleteMessage(messageId);
       }
@@ -120,6 +119,7 @@ export default function MessagesOfAppPage() {
           <h1>{data?.name}</h1>
           {data?.role === "ADMIN" && (
             <Button
+              colorScheme="blue"
               onClick={() => {
                 navigateToAppSettingsPage();
               }}
@@ -127,8 +127,9 @@ export default function MessagesOfAppPage() {
               App Settings
             </Button>
           )}
-          <div className="addButton marginTopLarge">
+          <div>
             <Button
+            colorScheme="blue"
               onClick={() => {
                 navigateToNewMessagePage();
               }}
@@ -136,7 +137,7 @@ export default function MessagesOfAppPage() {
               New Message
             </Button>
           </div>
-          <div className="addButton marginTopLarge">
+          <div>
             <Button
               variant="text"
               onClick={() => {
@@ -157,11 +158,10 @@ export default function MessagesOfAppPage() {
           <Table
             sx={{ minWidth: 650, maxWidth: 1300 }}
             aria-label="simple table"
-            className="messageTable"
           >
             <Thead>
               <Tr>
-                <Th className="centeredText">
+                <Th>
                   <strong>ID</strong>
                 </Th>
                 <Th></Th>
@@ -171,7 +171,7 @@ export default function MessagesOfAppPage() {
                 <Th>
                   <strong>Body</strong>
                 </Th>
-                <Th className="centeredText">
+                <Th>
                   <strong>Blocking</strong>
                 </Th>
                 <Th>
@@ -180,7 +180,7 @@ export default function MessagesOfAppPage() {
                 <Th>
                   <strong>End Date</strong>
                 </Th>
-                <Th className="centeredText">
+                <Th>
                   <strong># Actions</strong>
                 </Th>
                 <Th></Th>
@@ -192,9 +192,9 @@ export default function MessagesOfAppPage() {
                 messages.map((message: Message, index: number) => {
                   return (
                     <Tr key={index}>
-                      <Th className="centeredText">{message.id}</Th>
+                      <Th>{message.id}</Th>
                       <Th>
-                        <div className="centeredElement">
+                        <div>
                           {Moment(message.startDate).isBefore(now) &&
                             Moment(message.endDate).isAfter(now) && (
                               <Tooltip label="this message is currently displayed in apps">
@@ -239,7 +239,7 @@ export default function MessagesOfAppPage() {
                       </Th>
                       <Th>{message.title}</Th>
                       <Th>{message.body}</Th>
-                      <Th className="centeredText">
+                      <Th>
                         {String(message.blocking)}
                       </Th>
                       <Th>
@@ -250,11 +250,11 @@ export default function MessagesOfAppPage() {
                       <Th>
                         {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
                       </Th>
-                      <Th className="centeredText">
+                      <Th>
                         {!!message.actions ? message.actions.length : 0}
                       </Th>
                       <Th>
-                        <div className="hiddenTableElement">
+                        <div>
                           <Tooltip label="edit">
                             <IconButton
                               aria-label={"view message details"}
@@ -281,11 +281,11 @@ export default function MessagesOfAppPage() {
             </Tbody>
           </Table>
           {data?.messages && messages && messages.length == 0 && (
-            <p className="marginTopMedium">no data to show</p>
+            <p>no data to show</p>
           )}
           {isLoading && (
             <div>
-              <div className="marginTopMedium">Loading...</div>
+              <div>Loading...</div>
               <Spinner />
             </div>
           )}
@@ -300,7 +300,7 @@ export default function MessagesOfAppPage() {
 
             <AlertDialogContent>
               <AlertDialogHeader>
-                {`Delete currently active Message with id '${messageId}?`}
+                {`Delete message with id '${messageId}'?`}
               </AlertDialogHeader>
               <AlertDialogCloseButton />
               <AlertDialogBody>

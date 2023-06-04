@@ -164,7 +164,7 @@ export default function EditMessageOfAppPage() {
       <div>
         <main className={styles.main}>
           <h1>Edit Message</h1>
-          <form id="messageForm" onSubmit={submitHandler} className="column">
+          <form id="messageForm" onSubmit={submitHandler}>
             <label>
               Title
               <Input
@@ -180,7 +180,6 @@ export default function EditMessageOfAppPage() {
               <Textarea
                 required
                 id="body"
-                className="marginTopMedium"
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
               />
@@ -198,7 +197,6 @@ export default function EditMessageOfAppPage() {
               <Input
                 type="datetime-local"
                 id="startDate"
-                className="marginTopMedium"
                 value={startDate}
                 onChange={(event) => setStartDate(event.target.value)}
               />
@@ -209,16 +207,14 @@ export default function EditMessageOfAppPage() {
                 required
                 type="datetime-local"
                 id="endDate"
-                className="marginTopMedium"
                 value={endDate}
                 onChange={(event) => setEndDate(event.target.value)}
               />
             </label>
-            <h3 className="marginTopMedium centeredElement">Actions</h3>
+            <h3>Actions</h3>
             <Table
               sx={{ minWidth: 650, maxWidth: 1300 }}
               aria-label="simple table"
-              className="messageTable"
             >
               <Thead>
                 <Tr>
@@ -301,9 +297,9 @@ export default function EditMessageOfAppPage() {
               </Tbody>
             </Table>
             {actions.length == 0 && (
-              <p className="marginTopSmall centeredElement">no actions added</p>
+              <p>no actions added</p>
             )}
-            <div className="addButton centeredElement">
+            <div>
               <Button
                 onClick={() => {
                   addAction();

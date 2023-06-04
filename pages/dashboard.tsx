@@ -35,7 +35,6 @@ export default function DashboardPage() {
   const { invite, directinvite } = router.query;
 
   const [orgInvite, setOrgInvite] = useState<OrgInvite>();
-  const [showInviteDialog, setShowInviteDialog] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
@@ -48,10 +47,10 @@ export default function DashboardPage() {
       try {
         if (!!invite) {
           setOrgInvite(await getOrgInviteToken(invite as string));
-          setShowInviteDialog(true);
+          onOpen();
         } else if (!!directinvite) {
           setOrgInvite(await getDirectInviteToken(directinvite as string));
-          setShowInviteDialog(true);
+          onOpen();
         }
       } catch (error) {
         toast({
@@ -66,7 +65,7 @@ export default function DashboardPage() {
     if (!!invite || !!directinvite) {
       showInvitation();
     }
-  }, [router.isReady, invite, directinvite, toast]);
+  }, [router.isReady, invite, directinvite, toast, onOpen]);
 
   function navigateToAppsPage(id: number) {
     router.push(Routes.getOrgAppsByOrgId(id));
@@ -116,7 +115,7 @@ export default function DashboardPage() {
     <>
       <main className={styles.main}>
         <h1>Organisations</h1>
-        <div className="addButton">
+        <div>
           <Button
             onClick={() => {
               navigateToNewOrgPage();
@@ -152,16 +151,16 @@ export default function DashboardPage() {
           </Tbody>
         </Table>
         {orgs?.length == 0 && (
-          <p className="marginTopMedium">no data to show</p>
+          <p>no data to show</p>
         )}
         {isLoading && (
           <div>
-            <p className="marginTopMedium">Loading...</p>
+            <p>Loading...</p>
             <Spinner />
           </div>
         )}
         <AlertDialog
-          isOpen={showInviteDialog}
+          isOpen={isOpen}
           motionPreset="slideInBottom"
           leastDestructiveRef={cancelRef}
           onClose={onClose}

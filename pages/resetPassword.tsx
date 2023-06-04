@@ -79,22 +79,21 @@ export default function ResetPasswordPage() {
       <main className={styles.main}>
         {!loading && !validToken && (
           <div>
-            <h1 className="centeredElement">Invalid link</h1>
+            <h1>Invalid link</h1>
             <div>
               If you want to reset your password please restart the process
             </div>
           </div>
         )}
         {!loading && validToken && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">Enter your new password</h1>
+          <div>
+            <h1>Enter your new password</h1>
             <label>
               Password
               <Input
                 required
                 id="password"
                 type="password"
-                className="marginTopMedium"
                 onChange={(event) => setPassword(event.target.value)}
               />
             </label>
@@ -104,7 +103,6 @@ export default function ResetPasswordPage() {
                 required
                 id="passwordConfirmation"
                 type="password"
-                className="marginTopMedium"
                 onChange={(event) =>
                   setPasswordConfirmation(event.target.value)
                 }

@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
       <main className={styles.main}>
         {!loading && !emailChanged && (
           <div>
-            <h1 className="centeredElement">Invalid link</h1>
+            <h1>Invalid link</h1>
             <div>
               If you want to change your email address please restart the
               process
@@ -60,8 +60,8 @@ export default function ResetPasswordPage() {
           </div>
         )}
         {!loading && emailChanged && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">
+          <div>
+            <h1>
               Your email address has been changed
             </h1>
             <div>please log in with your new email address</div>

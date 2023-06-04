@@ -53,9 +53,14 @@ export default function AuthForm() {
         if (result.error === "Verify account!") {
           navigateToVerifyPageWithEmail(email);
         }
-        setAlertMessage(`Error while logging in: ${result.error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+
+        toast({
+          title: 'Error while logging in!',
+          description: `${result.error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       } else {
         navigateToHomePage();
       }
@@ -64,9 +69,13 @@ export default function AuthForm() {
         await signupUser(email, password, firstName, lastName);
         navigateToVerifyPage();
       } catch (error) {
-        setAlertMessage(`Error while creating user: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: 'Error while creating user',
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     }
   }
@@ -75,7 +84,7 @@ export default function AuthForm() {
     <>
       <main className={styles.main}>
         <h1>{isLoginMode ? "Login" : "Sign up"}</h1>
-        <form className="column" onSubmit={submitHandler}>
+        <form onSubmit={submitHandler}>
           <label>
             Email
             <Input
@@ -90,7 +99,6 @@ export default function AuthForm() {
               required
               id="password"
               type="password"
-              className="marginTopMedium"
               onChange={(event) => setPassword(event.target.value)}
             />
           </label>
@@ -100,7 +108,6 @@ export default function AuthForm() {
               <Input
                 required
                 id="firstName"
-                className="marginTopMedium"
                 onChange={(event) => setFirstName(event.target.value)}
               />
             </label>
@@ -111,18 +118,16 @@ export default function AuthForm() {
               <Input
                 required
                 id="lastName"
-                className="marginTopMedium"
                 onChange={(event) => setLastName(event.target.value)}
               />
             </label>
           )}
-          <Button colorScheme="blue" type="submit" className="marginTopMedium">
+          <Button colorScheme="blue" type="submit">
             {isLoginMode ? "login" : "create account"}
           </Button>
           <Button
             variant="text"
             type="button"
-            className="marginTopMedium"
             onClick={() => switchLoginMode()}
           >
             {isLoginMode
