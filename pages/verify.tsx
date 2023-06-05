@@ -85,14 +85,20 @@ export default function VerifyPage() {
       <main className={styles.main}>
         {(signup || email) && !expired && (
           <div>
-            <h1>Verify your account</h1>
-            <div>Please check your mails for the verification link!</div>
+            <h1 className="text-3xl font-bold text-center">
+              Verify your account
+            </h1>
+            <div className="mt-8">
+              Please check your mails for the verification link!
+            </div>
           </div>
         )}
         {verified && !expired && (
           <div>
-            <h1>Thank you for verifying!</h1>
-            <div>
+            <h1 className="text-3xl font-bold text-center">
+              Thank you for verifying!
+            </h1>
+            <div className="mt-8">
               If you want to use the full functionality of OnLaunch please log
               in
             </div>
@@ -107,15 +113,15 @@ export default function VerifyPage() {
         )}
         {!signup && !verified && (expired || obsolete) && (
           <div>
-            <h1>
+            <h1 className="text-3xl font-bold text-center">
               Link is {expired ? "expired" : "obsolete"}!
             </h1>
-            <div>No worries, we can send you a new one </div>
+            <div className="mt-8">No worries, we can send you a new one </div>
           </div>
         )}
         {!verified && !signup && !expired && !obsolete && !email && (
           <div>
-            <h1>loading ...</h1>
+            <h1 className="text-3xl font-bold text-center">loading ...</h1>
             <Spinner />
           </div>
         )}
@@ -123,19 +129,12 @@ export default function VerifyPage() {
           !verified &&
           (!!email || !!expired || !!obsolete) &&
           !disabled && (
-            <Button
-              type="button"
-              onClick={() => resendLink()}
-            >
+            <Button type="button" onClick={() => resendLink()}>
               resend link
             </Button>
           )}
         {!signup && !verified && !!email && disabled && (
-          <Button
-            type="button"
-            disabled
-            onClick={() => resendLink()}
-          >
+          <Button type="button" disabled onClick={() => resendLink()}>
             resend link
           </Button>
         )}

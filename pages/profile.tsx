@@ -19,6 +19,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogCloseButton,
+  Text,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -105,7 +106,7 @@ export default function ProfilePage() {
         toast({
           title: "Success!",
           description: "Please check your mails.",
-          status: "error",
+          status: "success",
           isClosable: true,
           duration: 6000,
         });
@@ -144,43 +145,47 @@ export default function ProfilePage() {
   return (
     <>
       <main className={styles.main}>
-        <h1>Hello, {user?.firstName}!</h1>
+        <h1 className="text-3xl font-bold text-center">
+          Hello, {user?.firstName}!
+        </h1>
         <div>
-          <h2>Change email</h2>
-          <div>
-            Your email: {user?.email}
+          <h2 className="text-2xl font-bold text-center mt-16 mb-8">Change email</h2>
+          <div className="mb-2">
+            Your email: <Text as="b">{user?.email}</Text>
           </div>
           <label>
-            Email
+            <Text as="b">Email</Text>
             <Input
+              className="mt-2"
               required
               id="email"
               value={emailNew}
               onChange={(event) => setEmailNew(event.target.value)}
             />
           </label>
-          <Button
-            color="info"
-            sx={{ marginTop: 5 }}
-            onClick={() => sendNewEmail()}
-          >
-            change email
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              colorScheme="blue"
+              className="mt-4"
+              onClick={() => sendNewEmail()}
+            >
+              change email
+            </Button>
+          </div>
           {displayEmailMessage && (
-            <div>
-              We have sent a mail <br />
-              to your new email <br />
-              address, please check <br />
-              and verify your <br />
-              new address!
+            <div className="mt-4" style={{ width: 250 }}>
+              We have sent a mail to your new Email address, please check and verify your new address!
             </div>
           )}
         </div>
-        <div>
-          <h2>Change password</h2>
+        <div style={{ width: 300 }}>
+          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+            Change password
+          </h2>
           <label>
-            Current Password
+            <Text as="b">Current Password</Text>
             <Input
+              className="mt-2"
               required
               id="passwordOld"
               type="password"
@@ -189,8 +194,9 @@ export default function ProfilePage() {
             />
           </label>
           <label>
-            New Password
+            <Text as="b">New Password</Text>
             <Input
+              className="mt-2"
               required
               id="password"
               type="password"
@@ -199,8 +205,9 @@ export default function ProfilePage() {
             />
           </label>
           <label>
-            New Password (repeat)
+            <Text as="b">New Password (repeat)</Text>
             <Input
+              className="mt-2"
               required
               id="passwordConfirmation"
               type="password"
@@ -208,23 +215,25 @@ export default function ProfilePage() {
               onChange={(event) => setPasswordConfirmation(event.target.value)}
             />
           </label>
-          <Button
-            color="info"
-            sx={{ marginTop: 5 }}
-            onClick={() => sendNewPassword()}
-          >
-            change password
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              colorScheme="blue"
+              className="mt-4"
+              onClick={() => sendNewPassword()}
+            >
+              change password
+            </Button>
+          </div>
         </div>
         <div>
-          <h2>Delete profile</h2>
-          <Button
-            colorScheme="red"
-            sx={{ marginTop: 5 }}
-            onClick={() => openDeleteDialog()}
-          >
-            delete
-          </Button>
+          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+            Delete profile
+          </h2>
+          <div className="flex justify-center">
+            <Button colorScheme="red" onClick={() => openDeleteDialog()}>
+              delete
+            </Button>
+          </div>
         </div>
       </main>
       <AlertDialog
@@ -247,7 +256,10 @@ export default function ProfilePage() {
             <Button
               colorScheme="red"
               ml={3}
-              onClick={() => {sendDeleteProfile(); onClose()}}
+              onClick={() => {
+                sendDeleteProfile();
+                onClose();
+              }}
             >
               Confirm
             </Button>

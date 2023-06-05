@@ -5,7 +5,7 @@ import { getSession } from "next-auth/react";
 import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
 import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
-import { Button, Spinner, Input, useToast } from "@chakra-ui/react";
+import { Button, Spinner, Input, useToast, Text } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -79,18 +79,23 @@ export default function ResetPasswordPage() {
       <main className={styles.main}>
         {!loading && !validToken && (
           <div>
-            <h1>Invalid link</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">
+              Invalid link
+            </h1>
             <div>
               If you want to reset your password please restart the process
             </div>
           </div>
         )}
         {!loading && validToken && (
-          <div>
-            <h1>Enter your new password</h1>
+          <div style={{ width: 370 }}>
+            <h1 className="text-3xl font-bold text-center mb-8">
+              Enter your new password
+            </h1>
             <label>
-              Password
+              <Text as="b">Password</Text>
               <Input
+                className="mt-2"
                 required
                 id="password"
                 type="password"
@@ -98,8 +103,9 @@ export default function ResetPasswordPage() {
               />
             </label>
             <label>
-              Password (repeat)
+              <Text as="b">Password (repeat)</Text>
               <Input
+                className="mt-2"
                 required
                 id="passwordConfirmation"
                 type="password"
@@ -108,18 +114,20 @@ export default function ResetPasswordPage() {
                 }
               />
             </label>
-            <Button
-              color="info"
-              sx={{ marginTop: 5 }}
-              onClick={() => sendNewPassword()}
-            >
-              change password
-            </Button>
+            <div className="flex flex-col">
+              <Button
+                colorScheme="blue"
+                className="mt-4"
+                onClick={() => sendNewPassword()}
+              >
+                change password
+              </Button>
+            </div>
           </div>
         )}
         {loading && (
           <div>
-            <h1>loading ...</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">loading ...</h1>
             <Spinner />
           </div>
         )}

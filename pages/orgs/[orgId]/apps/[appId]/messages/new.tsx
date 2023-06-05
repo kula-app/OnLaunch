@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
-
 import { MdDeleteForever, MdClose } from "react-icons/md";
 import { getSession } from "next-auth/react";
 import createMessage from "../../../../../../api/messages/createMessage";
@@ -22,68 +21,88 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
+  const toast = useToast();
+
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["FILLED", "TEXT"];
+
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
   const [actions, setActions] = useState<Action[]>([]);
+
   const [blocking, setBlocking] = useState(false);
+
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
   function navigateToAppMessagesPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
   }
+
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     // load data from form
     let message: Message = {
       title: title,
       body: body,
       blocking: blocking,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: String(new Date(startDate)),
+      endDate: String(new Date(endDate)),
       appId: appId,
       actions: actions,
     };
+
     try {
       await createMessage(orgId, appId, message);
-      setAlertMessage("Message created successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+
+      toast({
+        title: "Success!",
+        description: "New message created.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
+
       resetForm();
       navigateToAppMessagesPage();
     } catch (error) {
-      setAlertMessage(`Error while creating new message: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while creating new message!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
+
   function resetForm() {
     (document.getElementById("messageForm") as HTMLFormElement)?.reset();
     setBlocking(false);
   }
+
   function addAction() {
     setActions((oldActions) => [
       ...oldActions,
       { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" },
     ]);
   }
+
   function deleteAction(index: number) {
     const newActions = [...actions];
     newActions.splice(index, 1);
     setActions(newActions);
   }
+
   function handleActionTitleChange(
     index: number,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -110,16 +129,17 @@ export default function NewMessageForAppPage() {
     data[index]["buttonDesign"] = event.target.value as string;
     setActions(data);
   }
+
   return (
     <>
       <div>
         <div className="flex flex-row pt-8 px-8 justify-center">
-          <div className="" style={{marginRight:"8%"}}>
+          <div style={{ marginRight: "8%" }}>
             <form
               id="messageForm"
               onSubmit={submitHandler}
               className="shrink-0 flex flex-col"
-              style={{width:"400px"}}
+              style={{ width: "400px" }}
             >
               <h1 className="text-3xl font-bold text-center">New Message</h1>
               <FormControl isRequired className="mt-8">
@@ -310,8 +330,10 @@ export default function NewMessageForAppPage() {
     </>
   );
 }
+
 export async function getServerSideProps(context: any) {
   const session = await getSession({ req: context.req });
+
   if (!session) {
     return {
       redirect: {
@@ -320,6 +342,7 @@ export async function getServerSideProps(context: any) {
       },
     };
   }
+
   return {
     props: { session },
   };

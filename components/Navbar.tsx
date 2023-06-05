@@ -67,13 +67,17 @@ export default function WithSubnavigation(props: Props) {
           )}
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Text
-            textAlign={useBreakpointValue({ base: "center", md: "left" })}
-            fontFamily={"heading"}
-            color={useColorModeValue("gray.800", "white")}
-          >
-            OnLaunch &#128640;
-          </Text>
+          <Link href={Routes.DASHBOARD}>
+            <Text
+              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              fontFamily={"heading"}
+              color={useColorModeValue("gray.800", "white")}
+              as='b'
+              textDecoration='none'
+            >
+              OnLaunch &#128640;
+            </Text>
+          </Link>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             {!!props.session && <DesktopNav />}
@@ -127,7 +131,7 @@ export default function WithSubnavigation(props: Props) {
                 <br />
                 <MenuDivider />
                 <MenuItem as="a" href={Routes.DASHBOARD}>
-                  Your Teams
+                  Your Organisations
                 </MenuItem>
                 <MenuItem as="a" href="/profile">
                   Your Profile
