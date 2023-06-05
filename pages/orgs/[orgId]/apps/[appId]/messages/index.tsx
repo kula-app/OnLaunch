@@ -207,7 +207,7 @@ export default function MessagesOfAppPage() {
                               Moment(message.endDate).isAfter(now) && (
                                 <Tooltip label="this message is currently displayed in apps">
                                   <Tag
-                                    size={"sm"}
+                                    size={"md"}
                                     key={index}
                                     borderRadius="full"
                                     variant="solid"
@@ -220,7 +220,7 @@ export default function MessagesOfAppPage() {
                             {Moment(message.endDate).isBefore(now) && (
                               <Tooltip label="this message will not be displayed again in apps">
                                 <Tag
-                                  size={"sm"}
+                                  size={"md"}
                                   key={index}
                                   borderRadius="full"
                                   variant="outline"
@@ -233,7 +233,7 @@ export default function MessagesOfAppPage() {
                             {Moment(message.startDate).isAfter(now) && (
                               <Tooltip label="this message will be displayed in apps in the future">
                                 <Tag
-                                  size={"sm"}
+                                  size={"md"}
                                   key={index}
                                   borderRadius="full"
                                   variant="outline"
