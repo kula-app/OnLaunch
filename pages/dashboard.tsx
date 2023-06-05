@@ -15,6 +15,7 @@ import {
   Thead,
   Th,
   Tr,
+  Td,
   Tbody,
   AlertDialog,
   AlertDialogBody,
@@ -151,8 +152,8 @@ export default function DashboardPage() {
                   key={index}
                   onClick={() => navigateToAppsPage(org.id)}
                 >
-                  <Th width="5%">{org.id}</Th>
-                  <Th>{org.name}</Th>
+                  <Td width="5%">{org.id}</Td>
+                  <Td>{org.name}</Td>
                 </Tr>
               );
             })}
