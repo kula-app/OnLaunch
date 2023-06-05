@@ -21,6 +21,7 @@ import {
   Tooltip,
   Tr,
   Text,
+  Td,
   useToast,
   useDisclosure,
   AlertDialog,
@@ -199,8 +200,8 @@ export default function MessagesOfAppPage() {
                   messages.map((message: Message, index: number) => {
                     return (
                       <Tr key={index}>
-                        <Th>{message.id}</Th>
-                        <Th>
+                        <Td>{message.id}</Td>
+                        <Td>
                           <div>
                             {Moment(message.startDate).isBefore(now) &&
                               Moment(message.endDate).isAfter(now) && (
@@ -243,28 +244,28 @@ export default function MessagesOfAppPage() {
                               </Tooltip>
                             )}
                           </div>
-                        </Th>
-                        <Th>{message.title}</Th>
-                        <Th>
+                        </Td>
+                        <Td>{message.title}</Td>
+                        <Td>
                           {message.body.length >= 70
                             ? message.body.slice(0, 50) + "..."
                             : message.body}
-                        </Th>
-                        <Th>{String(message.blocking)}</Th>
-                        <Th>
+                        </Td>
+                        <Td>{String(message.blocking)}</Td>
+                        <Td>
                           {Moment(message.startDate).format(
                             "DD.MM.YYYY HH:mm:ss"
                           )}
-                        </Th>
-                        <Th>
+                        </Td>
+                        <Td>
                           {Moment(message.endDate).format(
                             "DD.MM.YYYY HH:mm:ss"
                           )}
-                        </Th>
-                        <Th>
+                        </Td>
+                        <Td>
                           {!!message.actions ? message.actions.length : 0}
-                        </Th>
-                        <Th>
+                        </Td>
+                        <Td>
                           <div className="flex flex-row">
                             <Tooltip label="edit">
                               <IconButton
@@ -286,7 +287,7 @@ export default function MessagesOfAppPage() {
                               </IconButton>
                             </Tooltip>
                           </div>
-                        </Th>
+                        </Td>
                       </Tr>
                     );
                   })}

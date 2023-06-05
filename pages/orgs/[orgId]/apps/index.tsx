@@ -12,6 +12,7 @@ import {
   Thead,
   Tbody,
   Tr,
+  Td,
   Stack,
   Skeleton,
 } from "@chakra-ui/react";
@@ -92,9 +93,9 @@ export default function AppsPage() {
                     className="clickable-row h-16"
                     onClick={() => navigateToMessagesPage(app.id)}
                   >
-                    <Th width="5%">{app.id}</Th>
-                    <Th>{app.name}</Th>
-                    <Th width="5%">
+                    <Td width="5%">{app.id}</Td>
+                    <Td>{app.name}</Td>
+                    <Td width="5%">
                       <Tooltip
                         label={
                           app.activeMessages +
@@ -107,7 +108,7 @@ export default function AppsPage() {
                           {app.activeMessages}
                         </div>
                       </Tooltip>
-                    </Th>
+                    </Td>
                   </Tr>
                 );
               })}
