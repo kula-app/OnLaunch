@@ -8,7 +8,6 @@ import {
   Button,
   Input,
   useToast,
-  Text,
   Heading,
   FormLabel,
   FormControl,
