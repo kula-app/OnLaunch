@@ -150,9 +150,9 @@ export default function ProfilePage() {
       <main className={styles.main}>
         <Heading className="text-center">Hello, {user?.firstName}!</Heading>
         <div>
-          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+          <Heading size="lg" className="text-center mt-16 mb-8">
             Change email
-          </h2>
+          </Heading>
           <div className="mb-2">
             Your email: <Text as="b">{user?.email}</Text>
           </div>
@@ -183,9 +183,9 @@ export default function ProfilePage() {
           )}
         </div>
         <div style={{ width: 300 }}>
-          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+          <Heading size="lg" className="text-2xl font-bold text-center mt-16 mb-8">
             Change password
-          </h2>
+          </Heading>
           <FormControl className="mt-4">
             <FormLabel>Current password</FormLabel>
             <Input
@@ -228,9 +228,9 @@ export default function ProfilePage() {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+          <Heading size="lg" className="text-2xl font-bold text-center mt-16 mb-8">
             Delete profile
-          </h2>
+          </Heading>
           <div className="flex justify-center">
             <Button colorScheme="red" onClick={() => openDeleteDialog()}>
               delete
