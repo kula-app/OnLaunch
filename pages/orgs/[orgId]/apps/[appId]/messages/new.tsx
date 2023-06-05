@@ -21,6 +21,7 @@ import {
   Th,
   Thead,
   Tr,
+  Td,
   useToast,
 } from "@chakra-ui/react";
 
@@ -138,145 +139,152 @@ export default function NewMessageForAppPage() {
             <form
               id="messageForm"
               onSubmit={submitHandler}
-              className="shrink-0 flex flex-col"
-              style={{ width: "400px" }}
+              className="shrink-0 flex flex-col justify-center items-center"
             >
-              <h1 className="text-3xl font-bold text-center">New Message</h1>
-              <FormControl isRequired className="mt-8">
-                <FormLabel>Title</FormLabel>
-                <Input
-                  placeholder="Title"
-                  type="text"
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                />
-              </FormControl>
-              <FormControl isRequired className="mt-4">
-                <FormLabel>Body</FormLabel>
-                <Textarea
-                  placeholder="Body"
-                  value={body}
-                  resize="none"
-                  rows={6}
-                  onChange={(event) => setBody(event.target.value)}
-                />
-              </FormControl>
-              <FormControl display="flex" alignItems="center" className="mt-4">
-                <FormLabel htmlFor="blocking-toggle" mb="0">
-                  Blocking
-                </FormLabel>
-                <Switch
-                  id="blocking-toggle"
-                  isChecked={blocking}
-                  onChange={() => setBlocking(!blocking)}
-                />
-              </FormControl>
-              <FormControl className="mt-4">
-                <FormLabel>Start Date</FormLabel>
-                <Input
-                  placeholder="Start Date"
-                  type="datetime-local"
-                  id="startDate"
-                  value={startDate}
-                  onChange={(event) => setStartDate(event.target.value)}
-                />
-              </FormControl>
-              <FormControl className="mt-4">
-                <FormLabel>End Date</FormLabel>
-                <Input
-                  required
-                  placeholder="End Date"
-                  type="datetime-local"
-                  id="endDate"
-                  className="mt-8"
-                  value={endDate}
-                  onChange={(event) => setEndDate(event.target.value)}
-                />
-              </FormControl>
-              <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
-              <Table aria-label="simple table" className="mt-4">
-                <Thead>
-                  <Tr>
-                    <Th>Design</Th>
-                    <Th>Type</Th>
-                    <Th>Title</Th>
-                    <Th></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {actions &&
-                    actions.map((action: Action, index: number) => {
-                      return (
-                        <Tr key={index}>
-                          <Th>
-                            <Select
-                              value={action.buttonDesign}
-                              onChange={(event) =>
-                                handleButtonDesignChange(index, event)
-                              }
-                            >
-                              {buttonDesigns.map((value, index) => {
-                                return (
-                                  <option key={index} value={value}>
-                                    {value}
-                                  </option>
-                                );
-                              })}
-                            </Select>
-                          </Th>
-                          <Th>
-                            <Select
-                              value={action.actionType}
-                              onChange={(event) =>
-                                handleActionTypeChange(index, event)
-                              }
-                            >
-                              {actionTypes.map((value, index) => {
-                                return (
-                                  <option key={index} value={value}>
-                                    {value}
-                                  </option>
-                                );
-                              })}
-                            </Select>
-                          </Th>
-                          <Th>
-                            <Input
-                              type="text"
-                              name="actionTitle"
-                              value={action.title}
-                              onChange={(event) =>
-                                handleActionTitleChange(index, event)
-                              }
-                            />
-                          </Th>
-                          <Th>
-                            <IconButton
-                              onClick={() => deleteAction(index)}
-                              aria-label={""}
-                            >
-                              <MdDeleteForever />
-                            </IconButton>
-                          </Th>
-                        </Tr>
-                      );
-                    })}
-                </Tbody>
-              </Table>
-              {actions.length == 0 && (
-                <p className="text-center mt-4 ">no actions added</p>
-              )}
-              <div className="mt-4 flex justify-center">
-                <Button
-                  colorScheme="blue"
-                  onClick={() => {
-                    addAction();
-                  }}
+              <div style={{ width: "400px" }}>
+                <h1 className="text-3xl font-bold text-center">New Message</h1>
+                <FormControl isRequired className="mt-8">
+                  <FormLabel>Title</FormLabel>
+                  <Input
+                    placeholder="Title"
+                    type="text"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl isRequired className="mt-4">
+                  <FormLabel>Body</FormLabel>
+                  <Textarea
+                    placeholder="Body"
+                    value={body}
+                    resize="none"
+                    rows={6}
+                    onChange={(event) => setBody(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl
+                  display="flex"
+                  alignItems="center"
+                  className="mt-4"
                 >
-                  New Action
-                </Button>
+                  <FormLabel htmlFor="blocking-toggle" mb="0">
+                    Blocking
+                  </FormLabel>
+                  <Switch
+                    id="blocking-toggle"
+                    isChecked={blocking}
+                    onChange={() => setBlocking(!blocking)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>Start Date</FormLabel>
+                  <Input
+                    placeholder="Start Date"
+                    type="datetime-local"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>End Date</FormLabel>
+                  <Input
+                    required
+                    placeholder="End Date"
+                    type="datetime-local"
+                    id="endDate"
+                    className="mt-8"
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                  />
+                </FormControl>
               </div>
-              <Button className="my-4" colorScheme="blue" type="submit">
+              <div style={{ width: "655px" }}>
+                <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
+                <Table aria-label="simple table" className="mt-4">
+                  <Thead>
+                    <Tr>
+                      <Th>Design</Th>
+                      <Th>Type</Th>
+                      <Th>Title</Th>
+                      <Th></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {actions &&
+                      actions.map((action: Action, index: number) => {
+                        return (
+                          <Tr key={index}>
+                            <Td>
+                              <Select
+                                value={action.buttonDesign}
+                                onChange={(event) =>
+                                  handleButtonDesignChange(index, event)
+                                }
+                              >
+                                {buttonDesigns.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Select
+                                value={action.actionType}
+                                onChange={(event) =>
+                                  handleActionTypeChange(index, event)
+                                }
+                              >
+                                {actionTypes.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Input
+                                type="text"
+                                name="actionTitle"
+                                value={action.title}
+                                onChange={(event) =>
+                                  handleActionTitleChange(index, event)
+                                }
+                              />
+                            </Td>
+                            <Td>
+                              <IconButton
+                                onClick={() => deleteAction(index)}
+                                aria-label={""}
+                              >
+                                <MdDeleteForever />
+                              </IconButton>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                  </Tbody>
+                </Table>
+                {actions.length == 0 && (
+                  <p className="text-center mt-4 ">no actions added</p>
+                )}
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    colorScheme="blue"
+                    onClick={() => {
+                      addAction();
+                    }}
+                  >
+                    New Action
+                  </Button>
+                </div>
+              </div>
+              <Button style={{ width: 655 }} className="my-4" colorScheme="blue" type="submit">
                 Save
               </Button>
             </form>
