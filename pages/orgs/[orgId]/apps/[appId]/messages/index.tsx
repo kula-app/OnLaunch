@@ -31,6 +31,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogCloseButton,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -119,7 +120,7 @@ export default function MessagesOfAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1 className="text-3xl font-bold text-center">{data?.name}</h1>
+          <Heading className="text-center">{data?.name}</Heading>
           {data?.role === "ADMIN" && (
             <Button
               colorScheme="blue"

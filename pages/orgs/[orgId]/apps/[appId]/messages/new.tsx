@@ -23,6 +23,7 @@ import {
   Tr,
   Td,
   useToast,
+  Heading,
 } from "@chakra-ui/react";
 
 export default function NewMessageForAppPage() {
@@ -142,7 +143,7 @@ export default function NewMessageForAppPage() {
               className="shrink-0 flex flex-col justify-center items-center"
             >
               <div style={{ width: "400px" }}>
-                <h1 className="text-3xl font-bold text-center">New Message</h1>
+                <Heading className="text-center">New Message</Heading>
                 <FormControl isRequired className="mt-8">
                   <FormLabel>Title</FormLabel>
                   <Input
@@ -284,7 +285,12 @@ export default function NewMessageForAppPage() {
                   </Button>
                 </div>
               </div>
-              <Button style={{ width: 655 }} className="my-4" colorScheme="blue" type="submit">
+              <Button
+                style={{ width: 655 }}
+                className="my-4"
+                colorScheme="blue"
+                type="submit"
+              >
                 Save
               </Button>
             </form>

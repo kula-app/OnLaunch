@@ -6,7 +6,7 @@ import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
 import createVerifyToken from "../api/tokens/createVerifyToken";
-import { Button, useToast, Spinner } from "@chakra-ui/react";
+import { Button, useToast, Spinner, Heading } from "@chakra-ui/react";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -85,9 +85,7 @@ export default function VerifyPage() {
       <main className={styles.main}>
         {(signup || email) && !expired && (
           <div>
-            <h1 className="text-3xl font-bold text-center">
-              Verify your account
-            </h1>
+            <Heading className="text-center">Verify your account</Heading>
             <div className="mt-8">
               Please check your mails for the verification link!
             </div>
@@ -95,9 +93,7 @@ export default function VerifyPage() {
         )}
         {verified && !expired && (
           <div>
-            <h1 className="text-3xl font-bold text-center">
-              Thank you for verifying!
-            </h1>
+            <Heading className="text-center">Thank you for verifying!</Heading>
             <div className="mt-8">
               If you want to use the full functionality of OnLaunch please log
               in
@@ -113,15 +109,15 @@ export default function VerifyPage() {
         )}
         {!signup && !verified && (expired || obsolete) && (
           <div>
-            <h1 className="text-3xl font-bold text-center">
+            <Heading className="text-center">
               Link is {expired ? "expired" : "obsolete"}!
-            </h1>
+            </Heading>
             <div className="mt-8">No worries, we can send you a new one </div>
           </div>
         )}
         {!verified && !signup && !expired && !obsolete && !email && (
           <div>
-            <h1 className="text-3xl font-bold text-center">loading ...</h1>
+            <Heading className="text-center">loading ...</Heading>
             <Spinner />
           </div>
         )}

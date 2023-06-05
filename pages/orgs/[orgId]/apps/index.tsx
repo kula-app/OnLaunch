@@ -15,6 +15,7 @@ import {
   Td,
   Stack,
   Skeleton,
+  Heading,
 } from "@chakra-ui/react";
 
 export default function AppsPage() {
@@ -42,9 +43,9 @@ export default function AppsPage() {
   return (
     <>
       <main className={styles.main}>
-        <h1 className="text-3xl font-bold text-center">
+        <Heading className="text-center">
           Organisation &apos;{org?.name}&apos;
-        </h1>
+        </Heading>
         <Button
           className="mt-8"
           colorScheme="blue"
@@ -54,7 +55,7 @@ export default function AppsPage() {
         >
           Organisation Settings
         </Button>
-        <h1 className="text-2xl font-bold text-center mt-12">Apps</h1>
+        <Heading className="text-center mt-12">Apps</Heading>
         {org?.role === "ADMIN" && (
           <div>
             <Button

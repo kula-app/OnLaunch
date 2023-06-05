@@ -5,7 +5,14 @@ import { getSession } from "next-auth/react";
 import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
 import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
-import { Button, Spinner, Input, useToast, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Spinner,
+  Input,
+  useToast,
+  Text,
+  Heading,
+} from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -79,9 +86,7 @@ export default function ResetPasswordPage() {
       <main className={styles.main}>
         {!loading && !validToken && (
           <div>
-            <h1 className="text-3xl font-bold text-center mb-8">
-              Invalid link
-            </h1>
+            <Heading className="text-center mb-8">Invalid link</Heading>
             <div>
               If you want to reset your password please restart the process
             </div>
@@ -89,9 +94,9 @@ export default function ResetPasswordPage() {
         )}
         {!loading && validToken && (
           <div style={{ width: 370 }}>
-            <h1 className="text-3xl font-bold text-center mb-8">
+            <Heading className="text-center mb-8">
               Enter your new password
-            </h1>
+            </Heading>
             <label>
               <Text as="b">Password</Text>
               <Input
@@ -127,7 +132,7 @@ export default function ResetPasswordPage() {
         )}
         {loading && (
           <div>
-            <h1 className="text-3xl font-bold text-center mb-8">loading ...</h1>
+            <Heading className="text-center mb-8">loading ...</Heading>
             <Spinner />
           </div>
         )}

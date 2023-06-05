@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
-import { Input, Button, useToast, Text } from "@chakra-ui/react";
+import { Input, Button, useToast, Text, Heading } from "@chakra-ui/react";
 
 export default function ResetPage() {
   const router = useRouter();
@@ -39,9 +39,9 @@ export default function ResetPage() {
     <>
       <main className={styles.main}>
         {!sentMail && (
-          <h1 className="text-3xl font-bold text-center mb-8">
+          <Heading className="text-center mb-8">
             Enter your mail address for password reset
-          </h1>
+          </Heading>
         )}
         {!sentMail && (
           <form onSubmit={submitHandler}>
@@ -71,7 +71,7 @@ export default function ResetPage() {
         )}
         {sentMail && (
           <div>
-            <h1 className="text-3xl font-bold text-center mb-8">Check your mails</h1>
+            <Heading className="text-center mb-8">Check your mails</Heading>
             <div>
               You should receive a mail within the next minutes with the reset
               link!

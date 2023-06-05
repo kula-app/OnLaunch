@@ -25,6 +25,7 @@ import {
   Td,
   useToast,
   FormLabel,
+  Heading,
 } from "@chakra-ui/react";
 
 export default function EditMessageOfAppPage() {
@@ -165,14 +166,13 @@ export default function EditMessageOfAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1 className="text-3xl font-bold text-center">Edit Message</h1>
+          <Heading className="text-center">Edit Message</Heading>
           <form
             id="messageForm"
             onSubmit={submitHandler}
             className="shrink-0 flex flex-col justify-center items-center"
           >
             <div style={{ width: "400px" }}>
-              <h1 className="text-3xl font-bold text-center">New Message</h1>
               <FormControl isRequired className="mt-8">
                 <FormLabel>Title</FormLabel>
                 <Input

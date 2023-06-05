@@ -37,6 +37,7 @@ import {
   AlertDialogCloseButton,
   useDisclosure,
   Text,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -294,9 +295,7 @@ export default function EditOrgPage() {
         <main className={styles.main}>
           {userRole === "ADMIN" && (
             <div>
-              <h1 className="text-3xl font-bold text-center">
-                Edit Organisation
-              </h1>
+              <Heading className="text-center">Edit Organisation</Heading>
               <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
                 <label>
                   <Text as="b">Name</Text>
@@ -318,7 +317,7 @@ export default function EditOrgPage() {
           )}
 
           <div className={styles.main}>
-            <h1 className="text-3xl font-bold text-center">Users</h1>
+            <Heading className="text-center">Users</Heading>
             {userRole === "ADMIN" && (
               <div className="flex flex-row mt-8">
                 <label>
@@ -381,7 +380,11 @@ export default function EditOrgPage() {
                       value={userEmail}
                       onChange={(event) => setUserEmail(event.target.value)}
                     />
-                    <Button className="mt-2 ml-4" colorScheme="blue" type="submit">
+                    <Button
+                      className="mt-2 ml-4"
+                      colorScheme="blue"
+                      type="submit"
+                    >
                       Invite User
                     </Button>
                   </div>
@@ -475,9 +478,9 @@ export default function EditOrgPage() {
 
             {userRole === "ADMIN" && (
               <div>
-                <h1 className="text-3xl font-bold text-center mt-16">
+                <Heading className="text-center mt-16">
                   Delete Organisation
-                </h1>
+                </Heading>
                 <div className="flex justify-center">
                   <Button
                     className="mt-8"

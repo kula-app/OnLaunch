@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
 import signupUser from "../api/users/signupUser";
-import { Button, Input, useToast, Text } from "@chakra-ui/react";
+import { Button, Input, useToast, Text, Heading } from "@chakra-ui/react";
 
 export default function AuthForm() {
   const router = useRouter();
@@ -79,10 +79,10 @@ export default function AuthForm() {
   return (
     <>
       <main className={styles.main}>
-        <h1 className="text-3xl font-bold text-center">
+        <Heading className="text-center">
           {isLoginMode ? "Login" : "Sign up"}
-        </h1>
-        <div style={{width: 340}} className="mt-8">
+        </Heading>
+        <div style={{ width: 340 }} className="mt-8">
           <form onSubmit={submitHandler}>
             <label>
               <Text as="b">Email</Text>

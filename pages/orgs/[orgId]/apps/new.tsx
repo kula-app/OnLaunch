@@ -4,7 +4,7 @@ import styles from "../../../../styles/Home.module.css";
 import { getSession } from "next-auth/react";
 import createApp from "../../../../api/apps/createApp";
 import Routes from "../../../../routes/routes";
-import { Input, Button, Text, useToast } from "@chakra-ui/react";
+import { Input, Button, Text, useToast, Heading } from "@chakra-ui/react";
 
 export default function NewAppPage() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export default function NewAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1 className="text-3xl font-bold text-center">New App</h1>
+          <Heading className="text-center">New App</Heading>
           <form className="mt-8" id="appForm" onSubmit={submitHandler}>
             <label>
               <Text as="b">Name</Text>

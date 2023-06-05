@@ -20,6 +20,7 @@ import {
   AlertDialogOverlay,
   AlertDialogCloseButton,
   Text,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -145,11 +146,11 @@ export default function ProfilePage() {
   return (
     <>
       <main className={styles.main}>
-        <h1 className="text-3xl font-bold text-center">
-          Hello, {user?.firstName}!
-        </h1>
+        <Heading className="text-center">Hello, {user?.firstName}!</Heading>
         <div>
-          <h2 className="text-2xl font-bold text-center mt-16 mb-8">Change email</h2>
+          <h2 className="text-2xl font-bold text-center mt-16 mb-8">
+            Change email
+          </h2>
           <div className="mb-2">
             Your email: <Text as="b">{user?.email}</Text>
           </div>
@@ -174,7 +175,8 @@ export default function ProfilePage() {
           </div>
           {displayEmailMessage && (
             <div className="mt-4" style={{ width: 250 }}>
-              We have sent a mail to your new Email address, please check and verify your new address!
+              We have sent a mail to your new Email address, please check and
+              verify your new address!
             </div>
           )}
         </div>

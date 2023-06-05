@@ -20,6 +20,7 @@ import {
   AlertDialogOverlay,
   AlertDialogCloseButton,
   Text,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -135,7 +136,7 @@ export default function EditAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1 className="text-3xl font-bold text-center">Edit App</h1>
+          <Heading className="text-center">Edit App</Heading>
           <form className="mt-8" id="appForm" onSubmit={submitHandler}>
             <label>
               <Text as="b">Name</Text>
@@ -153,9 +154,9 @@ export default function EditAppPage() {
               </Button>
             </div>
           </form>
-          <h1 className="text-3xl font-bold text-center mt-16">
+          <Heading className="text-center mt-16">
             Client API Key
-          </h1>
+          </Heading>
           <div className="mt-8">
             <label>
               <Text as="b">Public Key for Clients</Text>
@@ -180,7 +181,7 @@ export default function EditAppPage() {
               </div>
             </label>
           </div>
-          <h1 className="text-3xl font-bold text-center mt-16">Delete App</h1>
+          <Heading className="text-center mt-16">Delete App</Heading>
           <Button
             className="mt-8"
             colorScheme="red"

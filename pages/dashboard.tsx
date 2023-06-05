@@ -28,6 +28,7 @@ import {
   useDisclosure,
   Skeleton,
   Stack,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -116,7 +117,7 @@ export default function DashboardPage() {
   return (
     <>
       <main className={styles.main}>
-        <h1 className="text-3xl font-bold text-center">Organisations</h1>
+        <Heading className="text-center">Organisations</Heading>
         <div>
           <Button
             className="mt-8"
@@ -129,48 +130,48 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="min-w-min">
-        <Table
-          className="mt-8"
-          sx={{ minWidth: 650, maxWidth: 1000 }}
-          aria-label="table"
-        >
-          <Thead>
-            <Tr>
-              <Th width="5%">
-                <strong>ID</strong>
-              </Th>
-              <Th>
-                <strong>Name</strong>
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {orgs?.map((org, index) => {
-              return (
-                <Tr
-                  className="clickable-row h-16"
-                  key={index}
-                  onClick={() => navigateToAppsPage(org.id)}
-                >
-                  <Td width="5%">{org.id}</Td>
-                  <Td>{org.name}</Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-        {isLoading && (
-          <div className="w-full">
-            <Stack>
-              <Skeleton height="60px" />
-              <Skeleton height="60px" />
-              <Skeleton height="60px" />
-            </Stack>
-          </div>
-        )}
+          <Table
+            className="mt-8"
+            sx={{ minWidth: 650, maxWidth: 1000 }}
+            aria-label="table"
+          >
+            <Thead>
+              <Tr>
+                <Th width="5%">
+                  <strong>ID</strong>
+                </Th>
+                <Th>
+                  <strong>Name</strong>
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {orgs?.map((org, index) => {
+                return (
+                  <Tr
+                    className="clickable-row h-16"
+                    key={index}
+                    onClick={() => navigateToAppsPage(org.id)}
+                  >
+                    <Td width="5%">{org.id}</Td>
+                    <Td>{org.name}</Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+          {isLoading && (
+            <div className="w-full">
+              <Stack>
+                <Skeleton height="60px" />
+                <Skeleton height="60px" />
+                <Skeleton height="60px" />
+              </Stack>
+            </div>
+          )}
         </div>
         {orgs?.length == 0 && <p className="mt-4">no data to show</p>}
-        
+
         <AlertDialog
           isOpen={isOpen}
           motionPreset="slideInBottom"
