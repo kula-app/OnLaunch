@@ -184,7 +184,7 @@ export default function EditAppPage() {
           <Button
             className="mt-8"
             colorScheme="red"
-            onClick={() => handleDelete()}
+            onClick={handleDelete}
           >
             delete
           </Button>

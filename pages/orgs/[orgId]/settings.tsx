@@ -356,9 +356,7 @@ export default function EditOrgPage() {
                   <Button
                     colorScheme="blue"
                     sx={{ marginLeft: 5, marginTop: 1 }}
-                    onClick={() => {
-                      resetInvitation();
-                    }}
+                    onClick={resetInvitation}
                   >
                     reset
                   </Button>
@@ -489,7 +487,7 @@ export default function EditOrgPage() {
                   <Button
                     className="mt-8"
                     colorScheme="red"
-                    onClick={() => handleDelete()}
+                    onClick={handleDelete}
                   >
                     delete
                   </Button>

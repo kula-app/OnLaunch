@@ -123,7 +123,7 @@ export default function ResetPasswordPage() {
               <Button
                 colorScheme="blue"
                 className="mt-4"
-                onClick={() => sendNewPassword()}
+                onClick={sendNewPassword}
               >
                 change password
               </Button>

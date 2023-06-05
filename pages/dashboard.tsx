@@ -122,9 +122,7 @@ export default function DashboardPage() {
           <Button
             className="mt-8"
             colorScheme="blue"
-            onClick={() => {
-              navigateToNewOrgPage();
-            }}
+            onClick={navigateToNewOrgPage}
           >
             New Organisation
           </Button>

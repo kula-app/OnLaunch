@@ -277,9 +277,7 @@ export default function NewMessageForAppPage() {
                 <div className="mt-4 flex justify-center">
                   <Button
                     colorScheme="blue"
-                    onClick={() => {
-                      addAction();
-                    }}
+                    onClick={addAction}
                   >
                     New Action
                   </Button>

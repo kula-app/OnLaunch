@@ -96,7 +96,7 @@ export default function WithSubnavigation(props: Props) {
               fontSize={"sm"}
               fontWeight={400}
               variant={"link"}
-              onClick={() => navigateToAuthPage()}
+              onClick={navigateToAuthPage}
               href={"#"}
             >
               Sign In

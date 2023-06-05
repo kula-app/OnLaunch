@@ -101,7 +101,7 @@ export default function VerifyPage() {
             <Button
               color="info"
               sx={{ marginTop: 5 }}
-              onClick={() => navigateToAuthPage()}
+              onClick={navigateToAuthPage}
             >
               login
             </Button>
@@ -125,12 +125,12 @@ export default function VerifyPage() {
           !verified &&
           (!!email || !!expired || !!obsolete) &&
           !disabled && (
-            <Button type="button" onClick={() => resendLink()}>
+            <Button type="button" onClick={resendLink}>
               resend link
             </Button>
           )}
         {!signup && !verified && !!email && disabled && (
-          <Button type="button" disabled onClick={() => resendLink()}>
+          <Button type="button" disabled onClick={resendLink}>
             resend link
           </Button>
         )}

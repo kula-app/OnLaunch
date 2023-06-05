@@ -69,7 +69,7 @@ export default function ResetPage() {
                 variant="ghost"
                 colorScheme="blue"
                 type="button"
-                onClick={() => navigateToAuthPage()}
+                onClick={navigateToAuthPage}
               >
                 go back to login
               </Button>

@@ -138,7 +138,7 @@ export default function AuthForm() {
                 variant="ghost"
                 colorScheme="blue"
                 type="button"
-                onClick={() => switchLoginMode()}
+                onClick={switchLoginMode}
               >
                 {isLoginMode
                   ? "create new account"
@@ -149,7 +149,7 @@ export default function AuthForm() {
                   variant="ghost"
                   colorScheme="blue"
                   type="button"
-                  onClick={() => navigateToPasswordResetPage()}
+                  onClick={navigateToPasswordResetPage}
                 >
                   forgot password
                 </Button>

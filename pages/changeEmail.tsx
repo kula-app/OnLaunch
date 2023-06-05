@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
               <Button
                 colorScheme="blue"
                 sx={{ marginTop: 5 }}
-                onClick={() => navigateToAuthPage()}
+                onClick={navigateToAuthPage}
               >
                 login
               </Button>

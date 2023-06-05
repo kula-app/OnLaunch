@@ -125,9 +125,7 @@ export default function MessagesOfAppPage() {
             <Button
               colorScheme="blue"
               className="mt-8"
-              onClick={() => {
-                navigateToAppSettingsPage();
-              }}
+              onClick={navigateToAppSettingsPage}
             >
               App Settings
             </Button>
@@ -136,9 +134,7 @@ export default function MessagesOfAppPage() {
             <Button
               colorScheme="blue"
               className="mt-8"
-              onClick={() => {
-                navigateToNewMessagePage();
-              }}
+              onClick={navigateToNewMessagePage}
             >
               New Message
             </Button>

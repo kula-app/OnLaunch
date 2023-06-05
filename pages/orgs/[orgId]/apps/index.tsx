@@ -61,9 +61,7 @@ export default function AppsPage() {
             <Button
               className="mt-8"
               colorScheme="blue"
-              onClick={() => {
-                navigateToNewAppPage();
-              }}
+              onClick={navigateToNewAppPage}
             >
               New App
             </Button>

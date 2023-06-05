@@ -302,9 +302,7 @@ export default function EditMessageOfAppPage() {
               <div className="mt-4 flex justify-center">
                 <Button
                   colorScheme="blue"
-                  onClick={() => {
-                    addAction();
-                  }}
+                  onClick={addAction}
                 >
                   New Action
                 </Button>

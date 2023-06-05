@@ -170,7 +170,7 @@ export default function ProfilePage() {
             <Button
               colorScheme="blue"
               className="mt-4"
-              onClick={() => sendNewEmail()}
+              onClick={sendNewEmail}
             >
               change email
             </Button>
@@ -221,7 +221,7 @@ export default function ProfilePage() {
             <Button
               colorScheme="blue"
               className="mt-4"
-              onClick={() => sendNewPassword()}
+              onClick={sendNewPassword}
             >
               change password
             </Button>
@@ -232,7 +232,7 @@ export default function ProfilePage() {
             Delete profile
           </Heading>
           <div className="flex justify-center">
-            <Button colorScheme="red" onClick={() => openDeleteDialog()}>
+            <Button colorScheme="red" onClick={openDeleteDialog}>
               delete
             </Button>
           </div>
