@@ -202,7 +202,7 @@ export default function MessagesOfAppPage() {
                       <Tr key={index}>
                         <Td>{message.id}</Td>
                         <Td>
-                          <div>
+                          <div className="flex justify-center">
                             {Moment(message.startDate).isBefore(now) &&
                               Moment(message.endDate).isAfter(now) && (
                                 <Tooltip label="this message is currently displayed in apps">
@@ -251,7 +251,11 @@ export default function MessagesOfAppPage() {
                             ? message.body.slice(0, 50) + "..."
                             : message.body}
                         </Td>
-                        <Td>{String(message.blocking)}</Td>
+                        <Td>
+                          <div className="flex justify-center">
+                            {String(message.blocking)}
+                          </div>
+                        </Td>
                         <Td>
                           {Moment(message.startDate).format(
                             "DD.MM.YYYY HH:mm:ss"
@@ -263,7 +267,9 @@ export default function MessagesOfAppPage() {
                           )}
                         </Td>
                         <Td>
-                          {!!message.actions ? message.actions.length : 0}
+                          <div className="flex justify-center">
+                            {!!message.actions ? message.actions.length : 0}
+                          </div>
                         </Td>
                         <Td>
                           <div className="flex flex-row">
