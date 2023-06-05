@@ -22,6 +22,7 @@ import {
   Th,
   Thead,
   Tr,
+  Td,
   useToast,
   FormLabel,
 } from "@chakra-ui/react";
@@ -166,11 +167,12 @@ export default function EditMessageOfAppPage() {
         <main className={styles.main}>
           <h1 className="text-3xl font-bold text-center">Edit Message</h1>
           <form
-              id="messageForm"
-              onSubmit={submitHandler}
-              className="shrink-0 flex flex-col"
-              style={{ width: "400px" }}
-            >
+            id="messageForm"
+            onSubmit={submitHandler}
+            className="shrink-0 flex flex-col justify-center items-center"
+          >
+            <div style={{ width: "400px" }}>
+              <h1 className="text-3xl font-bold text-center">New Message</h1>
               <FormControl isRequired className="mt-8">
                 <FormLabel>Title</FormLabel>
                 <Input
@@ -222,6 +224,8 @@ export default function EditMessageOfAppPage() {
                   onChange={(event) => setEndDate(event.target.value)}
                 />
               </FormControl>
+            </div>
+            <div style={{ width: "655px" }}>
               <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
               <Table aria-label="simple table" className="mt-4">
                 <Thead>
@@ -237,7 +241,7 @@ export default function EditMessageOfAppPage() {
                     actions.map((action: Action, index: number) => {
                       return (
                         <Tr key={index}>
-                          <Th>
+                          <Td>
                             <Select
                               value={action.buttonDesign}
                               onChange={(event) =>
@@ -252,8 +256,8 @@ export default function EditMessageOfAppPage() {
                                 );
                               })}
                             </Select>
-                          </Th>
-                          <Th>
+                          </Td>
+                          <Td>
                             <Select
                               value={action.actionType}
                               onChange={(event) =>
@@ -268,8 +272,8 @@ export default function EditMessageOfAppPage() {
                                 );
                               })}
                             </Select>
-                          </Th>
-                          <Th>
+                          </Td>
+                          <Td>
                             <Input
                               type="text"
                               name="actionTitle"
@@ -278,15 +282,15 @@ export default function EditMessageOfAppPage() {
                                 handleActionTitleChange(index, event)
                               }
                             />
-                          </Th>
-                          <Th>
+                          </Td>
+                          <Td>
                             <IconButton
                               onClick={() => deleteAction(index)}
                               aria-label={""}
                             >
                               <MdDeleteForever />
                             </IconButton>
-                          </Th>
+                          </Td>
                         </Tr>
                       );
                     })}
@@ -305,10 +309,16 @@ export default function EditMessageOfAppPage() {
                   New Action
                 </Button>
               </div>
-              <Button className="my-4" colorScheme="blue" type="submit">
-                Save
-              </Button>
-            </form>
+            </div>
+            <Button
+              style={{ width: 655 }}
+              className="my-4"
+              colorScheme="blue"
+              type="submit"
+            >
+              Save
+            </Button>
+          </form>
         </main>
       </div>
     </>

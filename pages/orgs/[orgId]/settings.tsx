@@ -27,6 +27,7 @@ import {
   Thead,
   Tbody,
   Tr,
+  Td,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -410,9 +411,9 @@ export default function EditOrgPage() {
                 {users?.map((user, index) => {
                   return (
                     <Tr key={index}>
-                      <Th>{user.firstName + " " + user.lastName}</Th>
-                      <Th>{user.email}</Th>
-                      <Th>
+                      <Td>{user.firstName + " " + user.lastName}</Td>
+                      <Td>{user.email}</Td>
+                      <Td>
                         {userRole === "ADMIN" && (
                           <div className="flex flex-row">
                             <Select
@@ -464,8 +465,7 @@ export default function EditOrgPage() {
                             )}
                           </div>
                         )}
-                      </Th>
-                      <Th></Th>
+                      </Td>
                     </Tr>
                   );
                 })}
