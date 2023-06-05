@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 import { signOut, useSession } from "next-auth/react";
 import validateEmailChange from "../api/tokens/validateEmailChange";
 import Routes from "../routes/routes";
-import { Button, Heading, Spinner, useToast } from "@chakra-ui/react";
+import { Button, Center, Heading, Spinner, useToast } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -59,15 +59,17 @@ export default function ResetPasswordPage() {
             </div>
           </div>
         )}
-        {!loading && emailChanged && (
+        {true && (
           <div>
             <Heading className="text-center">
               Your email address has been changed
             </Heading>
-            <div className="flex flex-col justify-center">
+            <Center>
               <div className="mt-8">
-                please log in with your new email address
+                Please log in with your new email address
               </div>
+            </Center>
+            <Center>
               <Button
                 colorScheme="blue"
                 sx={{ marginTop: 5 }}
@@ -75,7 +77,7 @@ export default function ResetPasswordPage() {
               >
                 login
               </Button>
-            </div>
+            </Center>
           </div>
         )}
         {loading && (

@@ -14,6 +14,7 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  Center,
 } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
@@ -119,7 +120,7 @@ export default function ResetPasswordPage() {
                 }
               />
             </FormControl>
-            <div className="flex flex-col">
+            <Center>
               <Button
                 colorScheme="blue"
                 className="mt-4"
@@ -127,7 +128,7 @@ export default function ResetPasswordPage() {
               >
                 change password
               </Button>
-            </div>
+            </Center>
           </div>
         )}
         {loading && (

@@ -36,11 +36,12 @@ import {
   AlertDialogOverlay,
   AlertDialogCloseButton,
   useDisclosure,
-  Text,
+  Stack,
   Heading,
   FormControl,
   FormLabel,
   Avatar,
+  Center,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -309,11 +310,11 @@ export default function EditOrgPage() {
                     onChange={(event) => setOrgName(event.target.value)}
                   />
                 </FormControl>
-                <div className="flex justify-center">
+                <Center>
                   <Button colorScheme="blue" className="mt-4" type="submit">
                     update
                   </Button>
-                </div>
+                </Center>
               </form>
             </div>
           )}
@@ -332,35 +333,35 @@ export default function EditOrgPage() {
                     }
                   />
                 </FormControl>
-                <div className="flex flex-col">
-                  <Button
-                    colorScheme="blue"
-                    sx={{ marginLeft: 5 }}
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        baseUrl +
-                          "/dashboard?invite=" +
-                          (org?.invitationToken as string)
-                      );
-                      toast({
-                        title: "Success!",
-                        description: "Invitation link copied to clipboard.",
-                        status: "success",
-                        isClosable: true,
-                        duration: 6000,
-                      });
-                    }}
-                  >
-                    copy
-                  </Button>
-                  <Button
-                    colorScheme="blue"
-                    sx={{ marginLeft: 5, marginTop: 1 }}
-                    onClick={resetInvitation}
-                  >
-                    reset
-                  </Button>
-                </div>
+                  <Stack>
+                    <Button
+                      colorScheme="blue"
+                      className="ml-5 mt-5"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          baseUrl +
+                            "/dashboard?invite=" +
+                            (org?.invitationToken as string)
+                        );
+                        toast({
+                          title: "Success!",
+                          description: "Invitation link copied to clipboard.",
+                          status: "success",
+                          isClosable: true,
+                          duration: 6000,
+                        });
+                      }}
+                    >
+                      copy
+                    </Button>
+                    <Button
+                      colorScheme="blue"
+                      className="ml-5 mt-1"
+                      onClick={resetInvitation}
+                    >
+                      reset
+                    </Button>
+                  </Stack>
               </div>
             )}
             {userRole === "ADMIN" && (
@@ -379,9 +380,11 @@ export default function EditOrgPage() {
                       value={userEmail}
                       onChange={(event) => setUserEmail(event.target.value)}
                     />
-                    <Button className="ml-4" colorScheme="blue" type="submit">
-                      Invite User
-                    </Button>
+                    <Center>
+                      <Button className="ml-4" colorScheme="blue" type="submit">
+                        invite user
+                      </Button>
+                    </Center>
                   </div>
                 </FormControl>
               </form>

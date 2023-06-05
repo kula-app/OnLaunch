@@ -4,7 +4,16 @@ import styles from "../../styles/Home.module.css";
 import { getSession } from "next-auth/react";
 import createOrg from "../../api/orgs/createOrg";
 import Routes from "../../routes/routes";
-import { Input, Button, useToast, Text, Heading, FormControl, FormLabel } from "@chakra-ui/react";
+import {
+  Input,
+  Button,
+  useToast,
+  Text,
+  Heading,
+  FormControl,
+  FormLabel,
+  Center,
+} from "@chakra-ui/react";
 
 export default function NewOrgPage() {
   const router = useRouter();
@@ -61,11 +70,11 @@ export default function NewOrgPage() {
                 onChange={(event) => setOrgName(event.target.value)}
               />
             </FormControl>
-            <div className="flex justify-center">
+            <Center>
               <Button colorScheme="blue" className="mt-4" type="submit">
                 save
               </Button>
-            </div>
+            </Center>
           </form>
         </main>
       </div>

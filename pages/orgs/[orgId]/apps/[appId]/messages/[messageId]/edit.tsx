@@ -2,7 +2,7 @@ import Moment from "moment";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../../../styles/Home.module.css";
-import { MdDeleteForever } from "react-icons/md";
+import { MdDeleteForever, MdClose } from "react-icons/md";
 import { getSession } from "next-auth/react";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
@@ -165,159 +165,206 @@ export default function EditMessageOfAppPage() {
   return (
     <>
       <div>
-        <main className={styles.main}>
-          <Heading className="text-center">Edit Message</Heading>
-          <form
-            id="messageForm"
-            onSubmit={submitHandler}
-            className="shrink-0 flex flex-col justify-center items-center"
-          >
-            <div style={{ width: "400px" }}>
-              <FormControl isRequired className="mt-8">
-                <FormLabel>Title</FormLabel>
-                <Input
-                  placeholder="Title"
-                  type="text"
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                />
-              </FormControl>
-              <FormControl isRequired className="mt-4">
-                <FormLabel>Body</FormLabel>
-                <Textarea
-                  placeholder="Body"
-                  value={body}
-                  resize="none"
-                  rows={6}
-                  onChange={(event) => setBody(event.target.value)}
-                />
-              </FormControl>
-              <FormControl display="flex" alignItems="center" className="mt-4">
-                <FormLabel htmlFor="blocking-toggle" mb="0">
-                  Blocking
-                </FormLabel>
-                <Switch
-                  id="blocking-toggle"
-                  isChecked={blocking}
-                  onChange={() => setBlocking(!blocking)}
-                />
-              </FormControl>
-              <FormControl className="mt-4">
-                <FormLabel>Start Date</FormLabel>
-                <Input
-                  placeholder="Start Date"
-                  type="datetime-local"
-                  id="startDate"
-                  value={startDate}
-                  onChange={(event) => setStartDate(event.target.value)}
-                />
-              </FormControl>
-              <FormControl className="mt-4">
-                <FormLabel>End Date</FormLabel>
-                <Input
-                  required
-                  placeholder="End Date"
-                  type="datetime-local"
-                  id="endDate"
-                  className="mt-8"
-                  value={endDate}
-                  onChange={(event) => setEndDate(event.target.value)}
-                />
-              </FormControl>
-            </div>
-            <div style={{ width: "655px" }}>
-              <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
-              <Table aria-label="simple table" className="mt-4">
-                <Thead>
-                  <Tr>
-                    <Th>Design</Th>
-                    <Th>Type</Th>
-                    <Th>Title</Th>
-                    <Th></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
+        <div className="flex flex-row pt-8 px-8 justify-center">
+          <div style={{ marginRight: "8%" }}>
+            <form
+              id="messageForm"
+              onSubmit={submitHandler}
+              className="shrink-0 flex flex-col justify-center items-center"
+            >
+              <div style={{ width: "400px" }}>
+                <Heading className="text-center">Edit Message</Heading>
+                <FormControl isRequired className="mt-8">
+                  <FormLabel>Title</FormLabel>
+                  <Input
+                    placeholder="Title"
+                    type="text"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl isRequired className="mt-4">
+                  <FormLabel>Body</FormLabel>
+                  <Textarea
+                    placeholder="Body"
+                    value={body}
+                    resize="none"
+                    rows={6}
+                    onChange={(event) => setBody(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl
+                  display="flex"
+                  alignItems="center"
+                  className="mt-4"
+                >
+                  <FormLabel htmlFor="blocking-toggle" mb="0">
+                    Blocking
+                  </FormLabel>
+                  <Switch
+                    id="blocking-toggle"
+                    isChecked={blocking}
+                    onChange={() => setBlocking(!blocking)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>Start Date</FormLabel>
+                  <Input
+                    placeholder="Start Date"
+                    type="datetime-local"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>End Date</FormLabel>
+                  <Input
+                    required
+                    placeholder="End Date"
+                    type="datetime-local"
+                    id="endDate"
+                    className="mt-8"
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                  />
+                </FormControl>
+              </div>
+              <div style={{ width: "655px" }}>
+                <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
+                <Table aria-label="simple table" className="mt-4">
+                  <Thead>
+                    <Tr>
+                      <Th>Design</Th>
+                      <Th>Type</Th>
+                      <Th>Title</Th>
+                      <Th></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {actions &&
+                      actions.map((action: Action, index: number) => {
+                        return (
+                          <Tr key={index}>
+                            <Td>
+                              <Select
+                                value={action.buttonDesign}
+                                onChange={(event) =>
+                                  handleButtonDesignChange(index, event)
+                                }
+                              >
+                                {buttonDesigns.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Select
+                                value={action.actionType}
+                                onChange={(event) =>
+                                  handleActionTypeChange(index, event)
+                                }
+                              >
+                                {actionTypes.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Input
+                                type="text"
+                                name="actionTitle"
+                                value={action.title}
+                                onChange={(event) =>
+                                  handleActionTitleChange(index, event)
+                                }
+                              />
+                            </Td>
+                            <Td>
+                              <IconButton
+                                onClick={() => deleteAction(index)}
+                                aria-label={""}
+                              >
+                                <MdDeleteForever />
+                              </IconButton>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                  </Tbody>
+                </Table>
+                {actions.length == 0 && (
+                  <p className="text-center mt-4 ">no actions added</p>
+                )}
+                <div className="mt-4 flex justify-center">
+                  <Button colorScheme="blue" onClick={addAction}>
+                    New Action
+                  </Button>
+                </div>
+              </div>
+              <Button
+                style={{ width: 655 }}
+                className="my-4"
+                colorScheme="blue"
+                type="submit"
+              >
+                Save
+              </Button>
+            </form>
+          </div>
+          <div className="">
+            <div className={styles.phoneContainer}>
+              <div className={styles.phoneScreen}>
+                <div>
+                  <div className={styles.closeIconContainer}>
+                    {!blocking && (
+                      <MdClose
+                        className={styles.closeIcon}
+                        style={{ color: "grey" }}
+                      ></MdClose>
+                    )}
+                  </div>
+                  <h1 style={{ marginTop: blocking ? "72px" : "16px" }}>
+                    {title}
+                  </h1>
+                </div>
+                <div>
+                  <p>{body}</p>
+                </div>
+                <div>
                   {actions &&
                     actions.map((action: Action, index: number) => {
-                      return (
-                        <Tr key={index}>
-                          <Td>
-                            <Select
-                              value={action.buttonDesign}
-                              onChange={(event) =>
-                                handleButtonDesignChange(index, event)
-                              }
-                            >
-                              {buttonDesigns.map((value, index) => {
-                                return (
-                                  <option key={index} value={value}>
-                                    {value}
-                                  </option>
-                                );
-                              })}
-                            </Select>
-                          </Td>
-                          <Td>
-                            <Select
-                              value={action.actionType}
-                              onChange={(event) =>
-                                handleActionTypeChange(index, event)
-                              }
-                            >
-                              {actionTypes.map((value, index) => {
-                                return (
-                                  <option key={index} value={value}>
-                                    {value}
-                                  </option>
-                                );
-                              })}
-                            </Select>
-                          </Td>
-                          <Td>
-                            <Input
-                              type="text"
-                              name="actionTitle"
-                              value={action.title}
-                              onChange={(event) =>
-                                handleActionTitleChange(index, event)
-                              }
-                            />
-                          </Td>
-                          <Td>
-                            <IconButton
-                              onClick={() => deleteAction(index)}
-                              aria-label={""}
-                            >
-                              <MdDeleteForever />
-                            </IconButton>
-                          </Td>
-                        </Tr>
-                      );
+                      if (action.buttonDesign === "FILLED") {
+                        return (
+                          <Button colorScheme="blue" key={index}>
+                            {action.title}
+                          </Button>
+                        );
+                      } else {
+                        return (
+                          <Button
+                            colorScheme="blue"
+                            variant="ghost"
+                            key={index}
+                          >
+                            {action.title}
+                          </Button>
+                        );
+                      }
                     })}
-                </Tbody>
-              </Table>
-              {actions.length == 0 && (
-                <p className="text-center mt-4 ">no actions added</p>
-              )}
-              <div className="mt-4 flex justify-center">
-                <Button
-                  colorScheme="blue"
-                  onClick={addAction}
-                >
-                  New Action
-                </Button>
+                </div>
               </div>
             </div>
-            <Button
-              style={{ width: 655 }}
-              className="my-4"
-              colorScheme="blue"
-              type="submit"
-            >
-              Save
-            </Button>
-          </form>
-        </main>
+          </div>
+        </div>
       </div>
     </>
   );

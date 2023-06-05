@@ -23,6 +23,7 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  Center,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -166,15 +167,11 @@ export default function ProfilePage() {
               onChange={(event) => setEmailNew(event.target.value)}
             />
           </FormControl>
-          <div className="flex justify-center">
-            <Button
-              colorScheme="blue"
-              className="mt-4"
-              onClick={sendNewEmail}
-            >
+          <Center>
+            <Button colorScheme="blue" className="mt-4" onClick={sendNewEmail}>
               change email
             </Button>
-          </div>
+          </Center>
           {displayEmailMessage && (
             <div className="mt-4" style={{ width: 250 }}>
               We have sent a mail to your new Email address, please check and
@@ -183,7 +180,7 @@ export default function ProfilePage() {
           )}
         </div>
         <div style={{ width: 300 }}>
-          <Heading size="lg" className="text-2xl font-bold text-center mt-16 mb-8">
+          <Heading size="lg" className="text-center mt-16 mb-8">
             Change password
           </Heading>
           <FormControl className="mt-4">
@@ -217,7 +214,7 @@ export default function ProfilePage() {
               onChange={(event) => setPasswordConfirmation(event.target.value)}
             />
           </FormControl>
-          <div className="flex justify-center">
+          <Center>
             <Button
               colorScheme="blue"
               className="mt-4"
@@ -225,17 +222,17 @@ export default function ProfilePage() {
             >
               change password
             </Button>
-          </div>
+          </Center>
         </div>
         <div>
-          <Heading size="lg" className="text-2xl font-bold text-center mt-16 mb-8">
+          <Heading size="lg" className="text-center mt-16 mb-8">
             Delete profile
           </Heading>
-          <div className="flex justify-center">
+          <Center>
             <Button colorScheme="red" onClick={openDeleteDialog}>
               delete
             </Button>
-          </div>
+          </Center>
         </div>
       </main>
       <AlertDialog
