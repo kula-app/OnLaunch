@@ -4,7 +4,15 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
 import signupUser from "../api/users/signupUser";
-import { Button, Input, useToast, Text, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Input,
+  useToast,
+  Text,
+  Heading,
+  FormLabel,
+  FormControl,
+} from "@chakra-ui/react";
 
 export default function AuthForm() {
   const router = useRouter();
@@ -84,48 +92,43 @@ export default function AuthForm() {
         </Heading>
         <div style={{ width: 340 }} className="mt-8">
           <form onSubmit={submitHandler}>
-            <label>
-              <Text as="b">Email</Text>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
               <Input
-                className="mt-2"
                 required
                 id="email"
+                type="email"
                 onChange={(event) => setEmail(event.target.value)}
               />
-            </label>
-            <div>
-              <label>
-                <Text as="b">Password</Text>
-                <Input
-                  className="mt-2"
-                  required
-                  id="password"
-                  type="password"
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </label>
-            </div>
+            </FormControl>
+            <FormControl className="mt-4">
+              <FormLabel>Password</FormLabel>
+              <Input
+                required
+                id="password"
+                type="password"
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </FormControl>
             {!isLoginMode && (
-              <label>
-                <Text as="b">First name</Text>
+              <FormControl className="mt-4">
+                <FormLabel>First name</FormLabel>
                 <Input
-                  className="mt-2"
                   required
                   id="firstName"
                   onChange={(event) => setFirstName(event.target.value)}
                 />
-              </label>
+              </FormControl>
             )}
             {!isLoginMode && (
-              <label>
-                <Text as="b">Last name</Text>
+              <FormControl className="mt-4">
+                <FormLabel>Last name</FormLabel>
                 <Input
-                  className="mt-2"
                   required
                   id="lastName"
                   onChange={(event) => setLastName(event.target.value)}
                 />
-              </label>
+              </FormControl>
             )}
             <div className="flex flex-col mt-8">
               <Button colorScheme="blue" type="submit">

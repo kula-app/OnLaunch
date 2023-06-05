@@ -21,6 +21,8 @@ import {
   AlertDialogCloseButton,
   Text,
   Heading,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -154,16 +156,16 @@ export default function ProfilePage() {
           <div className="mb-2">
             Your email: <Text as="b">{user?.email}</Text>
           </div>
-          <label>
-            <Text as="b">Email</Text>
+          <FormControl className="mt-4">
+            <FormLabel>Email</FormLabel>
             <Input
-              className="mt-2"
               required
               id="email"
+              type="email"
               value={emailNew}
               onChange={(event) => setEmailNew(event.target.value)}
             />
-          </label>
+          </FormControl>
           <div className="flex justify-center">
             <Button
               colorScheme="blue"
@@ -184,30 +186,28 @@ export default function ProfilePage() {
           <h2 className="text-2xl font-bold text-center mt-16 mb-8">
             Change password
           </h2>
-          <label>
-            <Text as="b">Current Password</Text>
+          <FormControl className="mt-4">
+            <FormLabel>Current password</FormLabel>
             <Input
-              className="mt-2"
               required
               id="passwordOld"
               type="password"
               value={passwordOld}
               onChange={(event) => setPasswordOld(event.target.value)}
             />
-          </label>
-          <label>
-            <Text as="b">New Password</Text>
+          </FormControl>
+          <FormControl className="mt-4">
+            <FormLabel>New password</FormLabel>
             <Input
-              className="mt-2"
               required
               id="password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
-          </label>
-          <label>
-            <Text as="b">New Password (repeat)</Text>
+          </FormControl>
+          <FormControl className="mt-4">
+            <FormLabel>New password (repeat)</FormLabel>
             <Input
               className="mt-2"
               required
@@ -216,7 +216,7 @@ export default function ProfilePage() {
               value={passwordConfirmation}
               onChange={(event) => setPasswordConfirmation(event.target.value)}
             />
-          </label>
+          </FormControl>
           <div className="flex justify-center">
             <Button
               colorScheme="blue"

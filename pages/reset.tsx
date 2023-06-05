@@ -4,7 +4,15 @@ import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
-import { Input, Button, useToast, Text, Heading } from "@chakra-ui/react";
+import {
+  Input,
+  Button,
+  useToast,
+  Text,
+  Heading,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 
 export default function ResetPage() {
   const router = useRouter();
@@ -45,15 +53,14 @@ export default function ResetPage() {
         )}
         {!sentMail && (
           <form onSubmit={submitHandler}>
-            <label>
-              <Text as="b">Email</Text>
+            <FormControl className="mt-4">
+              <FormLabel>Email</FormLabel>
               <Input
-                className="mt-2"
                 required
                 id="email"
                 onChange={(event) => setEmail(event.target.value)}
               />
-            </label>
+            </FormControl>
             <div className="flex flex-col">
               <Button className="mt-4" colorScheme="blue" type="submit">
                 reset password

@@ -38,6 +38,8 @@ import {
   useDisclosure,
   Text,
   Heading,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -297,16 +299,15 @@ export default function EditOrgPage() {
             <div>
               <Heading className="text-center">Edit Organisation</Heading>
               <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
-                <label>
-                  <Text as="b">Name</Text>
+                <FormControl className="mt-4">
+                  <FormLabel>Name</FormLabel>
                   <Input
-                    className="mt-2"
                     required
                     id="name"
                     value={orgName}
                     onChange={(event) => setOrgName(event.target.value)}
                   />
-                </label>
+                </FormControl>
                 <div className="flex justify-center">
                   <Button colorScheme="blue" className="mt-4" type="submit">
                     update
@@ -320,17 +321,16 @@ export default function EditOrgPage() {
             <Heading className="text-center">Users</Heading>
             {userRole === "ADMIN" && (
               <div className="flex flex-row mt-8">
-                <label>
-                  <Text as="b">Invitation Link</Text>
+                <FormControl className="mt-4">
+                  <FormLabel>Invitation link</FormLabel>
                   <Input
-                    className="mt-2"
                     disabled
                     id="invite"
                     value={
                       baseUrl + "/dashboard?invite=" + org?.invitationToken
                     }
                   />
-                </label>
+                </FormControl>
                 <div className="flex flex-col">
                   <Button
                     colorScheme="blue"
@@ -370,25 +370,25 @@ export default function EditOrgPage() {
                 id="emailForm"
                 onSubmit={userInviteHandler}
               >
-                <label>
-                  <Text as="b">Email</Text>
+                <FormControl className="mt-4">
+                  <FormLabel>Email</FormLabel>
                   <div className="flex flex-row">
                     <Input
-                      className="mt-2"
                       required
                       id="email"
+                      type="email"
                       value={userEmail}
                       onChange={(event) => setUserEmail(event.target.value)}
                     />
                     <Button
-                      className="mt-2 ml-4"
+                      className="ml-4"
                       colorScheme="blue"
                       type="submit"
                     >
                       Invite User
                     </Button>
                   </div>
-                </label>
+                </FormControl>
               </form>
             )}
             <Table

@@ -12,6 +12,8 @@ import {
   useToast,
   Text,
   Heading,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 
 export default function ResetPasswordPage() {
@@ -97,20 +99,18 @@ export default function ResetPasswordPage() {
             <Heading className="text-center mb-8">
               Enter your new password
             </Heading>
-            <label>
-              <Text as="b">Password</Text>
+            <FormControl className="mt-4">
+              <FormLabel>Password</FormLabel>
               <Input
-                className="mt-2"
                 required
                 id="password"
                 type="password"
                 onChange={(event) => setPassword(event.target.value)}
               />
-            </label>
-            <label>
-              <Text as="b">Password (repeat)</Text>
+            </FormControl>
+            <FormControl className="mt-4">
+              <FormLabel>Password (repeat)</FormLabel>
               <Input
-                className="mt-2"
                 required
                 id="passwordConfirmation"
                 type="password"
@@ -118,7 +118,7 @@ export default function ResetPasswordPage() {
                   setPasswordConfirmation(event.target.value)
                 }
               />
-            </label>
+            </FormControl>
             <div className="flex flex-col">
               <Button
                 colorScheme="blue"

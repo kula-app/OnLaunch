@@ -21,6 +21,8 @@ import {
   AlertDialogCloseButton,
   Text,
   Heading,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -138,28 +140,25 @@ export default function EditAppPage() {
         <main className={styles.main}>
           <Heading className="text-center">Edit App</Heading>
           <form className="mt-8" id="appForm" onSubmit={submitHandler}>
-            <label>
-              <Text as="b">Name</Text>
+            <FormControl className="mt-4">
+              <FormLabel>Name</FormLabel>
               <Input
-                className="mt-2"
                 required
                 id="name"
                 value={appName}
                 onChange={(event) => setAppName(event.target.value)}
               />
-            </label>
+            </FormControl>
             <div className="flex justify-center">
               <Button colorScheme="blue" className="mt-4" type="submit">
                 update
               </Button>
             </div>
           </form>
-          <Heading className="text-center mt-16">
-            Client API Key
-          </Heading>
+          <Heading className="text-center mt-16">Client API Key</Heading>
           <div className="mt-8">
-            <label>
-              <Text as="b">Public Key for Clients</Text>
+            <FormControl className="mt-4">
+              <FormLabel>Public Key for Clients</FormLabel>
               <div className="flex flex-row">
                 <Input disabled id="publicKey" value={appKey} />
                 <Button
@@ -179,7 +178,7 @@ export default function EditAppPage() {
                   copy
                 </Button>
               </div>
-            </label>
+            </FormControl>
           </div>
           <Heading className="text-center mt-16">Delete App</Heading>
           <Button
