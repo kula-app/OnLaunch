@@ -40,6 +40,7 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  Avatar,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -380,11 +381,7 @@ export default function EditOrgPage() {
                       value={userEmail}
                       onChange={(event) => setUserEmail(event.target.value)}
                     />
-                    <Button
-                      className="ml-4"
-                      colorScheme="blue"
-                      type="submit"
-                    >
+                    <Button className="ml-4" colorScheme="blue" type="submit">
                       Invite User
                     </Button>
                   </div>
@@ -398,6 +395,7 @@ export default function EditOrgPage() {
             >
               <Thead>
                 <Tr>
+                  <Th></Th>
                   <Th>
                     <strong>Name</strong>
                   </Th>
@@ -414,6 +412,12 @@ export default function EditOrgPage() {
                 {users?.map((user, index) => {
                   return (
                     <Tr key={index}>
+                      <Td>
+                        <Avatar
+                          size={"sm"}
+                          name={user.firstName + " " + user.lastName}
+                        />
+                      </Td>
                       <Td>{user.firstName + " " + user.lastName}</Td>
                       <Td>{user.email}</Td>
                       <Td>

@@ -113,7 +113,7 @@ export default function WithSubnavigation(props: Props) {
               >
                 <Avatar
                   size={"sm"}
-                  src={"https://avatars.githubusercontent.com/u/38766452"}
+                  name={props.session.user.name}
                 />
               </MenuButton>
               <MenuList alignItems={"center"}>
@@ -121,7 +121,7 @@ export default function WithSubnavigation(props: Props) {
                 <Center>
                   <Avatar
                     size={"2xl"}
-                    src={"https://avatars.githubusercontent.com/u/38766452"}
+                    name={props.session.user.name}
                   />
                 </Center>
                 <br />
