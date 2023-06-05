@@ -35,6 +35,7 @@ import {
   AlertDialogOverlay,
   AlertDialogCloseButton,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -292,29 +293,37 @@ export default function EditOrgPage() {
         <main className={styles.main}>
           {userRole === "ADMIN" && (
             <div>
-              <h1>Edit Organisation</h1>
-              <form id="orgForm" onSubmit={submitHandler}>
+              <h1 className="text-3xl font-bold text-center">
+                Edit Organisation
+              </h1>
+              <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
                 <label>
-                  Name
+                  <Text as="b">Name</Text>
                   <Input
+                    className="mt-2"
                     required
                     id="name"
                     value={orgName}
                     onChange={(event) => setOrgName(event.target.value)}
                   />
                 </label>
-                <Button type="submit">update</Button>
+                <div className="flex justify-center">
+                  <Button colorScheme="blue" className="mt-4" type="submit">
+                    update
+                  </Button>
+                </div>
               </form>
             </div>
           )}
 
           <div className={styles.main}>
-            <h1>Users</h1>
+            <h1 className="text-3xl font-bold text-center">Users</h1>
             {userRole === "ADMIN" && (
-              <div>
+              <div className="flex flex-row mt-8">
                 <label>
-                  Invitation Link
+                  <Text as="b">Invitation Link</Text>
                   <Input
+                    className="mt-2"
                     disabled
                     id="invite"
                     value={
@@ -322,8 +331,9 @@ export default function EditOrgPage() {
                     }
                   />
                 </label>
-                <div>
+                <div className="flex flex-col">
                   <Button
+                    colorScheme="blue"
                     sx={{ marginLeft: 5 }}
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -343,6 +353,7 @@ export default function EditOrgPage() {
                     copy
                   </Button>
                   <Button
+                    colorScheme="blue"
                     sx={{ marginLeft: 5, marginTop: 1 }}
                     onClick={() => {
                       resetInvitation();
@@ -354,24 +365,30 @@ export default function EditOrgPage() {
               </div>
             )}
             {userRole === "ADMIN" && (
-              <form id="emailForm" onSubmit={userInviteHandler}>
+              <form
+                className="mt-8 flex flex-row"
+                id="emailForm"
+                onSubmit={userInviteHandler}
+              >
                 <label>
-                  Email
-                  <Input
-                    required
-                    id="email"
-                    value={userEmail}
-                    onChange={(event) => setUserEmail(event.target.value)}
-                  />
+                  <Text as="b">Email</Text>
+                  <div className="flex flex-row">
+                    <Input
+                      className="mt-2"
+                      required
+                      id="email"
+                      value={userEmail}
+                      onChange={(event) => setUserEmail(event.target.value)}
+                    />
+                    <Button className="mt-2 ml-4" colorScheme="blue" type="submit">
+                      Invite User
+                    </Button>
+                  </div>
                 </label>
-                <div>
-                  <Button type="submit" sx={{ marginLeft: 5 }}>
-                    Invite User
-                  </Button>
-                </div>
               </form>
             )}
             <Table
+              className="mt-8"
               sx={{ minWidth: 650, maxWidth: 1000 }}
               aria-label="simple table"
             >
@@ -397,25 +414,22 @@ export default function EditOrgPage() {
                       <Th>{user.email}</Th>
                       <Th>
                         {userRole === "ADMIN" && (
-                          <div>
-                            <label>
-                              Role
-                              <Select
-                                disabled={user.email === session?.user?.email}
-                                value={user.role}
-                                onChange={(event) =>
-                                  handleRoleChange(index, event)
-                                }
-                              >
-                                {roles.map((value, index) => {
-                                  return (
-                                    <option key={index} value={value}>
-                                      {value}
-                                    </option>
-                                  );
-                                })}
-                              </Select>
-                            </label>
+                          <div className="flex flex-row">
+                            <Select
+                              disabled={user.email === session?.user?.email}
+                              value={user.role}
+                              onChange={(event) =>
+                                handleRoleChange(index, event)
+                              }
+                            >
+                              {roles.map((value, index) => {
+                                return (
+                                  <option key={index} value={value}>
+                                    {value}
+                                  </option>
+                                );
+                              })}
+                            </Select>
                             <Tooltip
                               label={
                                 user.email === session?.user?.email
@@ -424,6 +438,7 @@ export default function EditOrgPage() {
                               }
                             >
                               <IconButton
+                                className="ml-4"
                                 aria-label={"remove user"}
                                 onClick={() => removeUser(user.email)}
                               >
@@ -439,6 +454,7 @@ export default function EditOrgPage() {
                             {user.email === session?.user?.email && (
                               <Tooltip label="leave organisation">
                                 <IconButton
+                                  className="ml-4"
                                   aria-label={"leave organisation"}
                                   onClick={() => removeUser(user.email)}
                                 >
@@ -455,14 +471,22 @@ export default function EditOrgPage() {
                 })}
               </Tbody>
             </Table>
-            {users?.length == 0 && <p>no data to show</p>}
+            {users?.length == 0 && <p className="mt-4">no data to show</p>}
 
             {userRole === "ADMIN" && (
               <div>
-                <h1>Delete Organisation</h1>
-                <Button colorScheme="red" onClick={() => handleDelete()}>
-                  delete
-                </Button>
+                <h1 className="text-3xl font-bold text-center mt-16">
+                  Delete Organisation
+                </h1>
+                <div className="flex justify-center">
+                  <Button
+                    className="mt-8"
+                    colorScheme="red"
+                    onClick={() => handleDelete()}
+                  >
+                    delete
+                  </Button>
+                </div>
               </div>
             )}
           </div>

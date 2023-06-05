@@ -55,7 +55,7 @@ class ApiRoutes {
   }
 
   static getPasswordResetByToken(token: string): string {
-    return `${ApiRoutes.API_BASE_URL}/users/resetPassword/${token}`;
+    return `${ApiRoutes.API_BASE_URL}/tokens/resetPassword/${token}`;
   }
 }
 

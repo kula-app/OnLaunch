@@ -2,7 +2,7 @@ import Moment from "moment";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdClose } from "react-icons/md";
+import { MdDeleteForever } from "react-icons/md";
 import { getSession } from "next-auth/react";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
@@ -23,6 +23,7 @@ import {
   Thead,
   Tr,
   useToast,
+  FormLabel,
 } from "@chakra-ui/react";
 
 export default function EditMessageOfAppPage() {
@@ -37,7 +38,7 @@ export default function EditMessageOfAppPage() {
 
   const [actions, setActions] = useState<Action[]>([]);
 
-  const [switchValue, setSwitchValue] = useState(false);
+  const [blocking, setBlocking] = useState(false);
   const messageId = Number(router.query.messageId);
 
   const [title, setTitle] = useState("");
@@ -73,7 +74,7 @@ export default function EditMessageOfAppPage() {
       id: messageId,
       title: title,
       body: body,
-      blocking: switchValue,
+      blocking: blocking,
       startDate: String(new Date(startDate)),
       endDate: String(new Date(endDate)),
       appId: appId,
@@ -86,7 +87,7 @@ export default function EditMessageOfAppPage() {
       toast({
         title: "Success",
         description: "Message has been updated.",
-        status: "error",
+        status: "success",
         isClosable: true,
         duration: 6000,
       });
@@ -111,7 +112,7 @@ export default function EditMessageOfAppPage() {
     // fill the form
     setTitle(msg.title);
     setBody(msg.body);
-    setSwitchValue(msg.blocking);
+    setBlocking(msg.blocking);
     setStartDate(Moment(msg.startDate).format("YYYY-MM-DDTHH:mm:ss"));
     setEndDate(Moment(msg.endDate).format("YYYY-MM-DDTHH:mm:ss"));
     if (msg.actions) {
@@ -163,81 +164,80 @@ export default function EditMessageOfAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>Edit Message</h1>
-          <form id="messageForm" onSubmit={submitHandler}>
-            <label>
-              Title
-              <Input
-                required
-                id="title"
-                variant="outlined"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              />
-            </label>
-            <label>
-              Body
-              <Textarea
-                required
-                id="body"
-                value={body}
-                onChange={(event) => setBody(event.target.value)}
-              />
-            </label>
-            <div>
-              <FormControl display="flex" alignItems="center">
-                <Switch
-                  checked={switchValue}
-                  onChange={() => setSwitchValue(!switchValue)}
-                ></Switch>
-              </FormControl>
-            </div>
-            <label>
-              Start Date
-              <Input
-                type="datetime-local"
-                id="startDate"
-                value={startDate}
-                onChange={(event) => setStartDate(event.target.value)}
-              />
-            </label>
-            <label>
-              End Date
-              <Input
-                required
-                type="datetime-local"
-                id="endDate"
-                value={endDate}
-                onChange={(event) => setEndDate(event.target.value)}
-              />
-            </label>
-            <h3>Actions</h3>
-            <Table
-              sx={{ minWidth: 650, maxWidth: 1300 }}
-              aria-label="simple table"
+          <h1 className="text-3xl font-bold text-center">Edit Message</h1>
+          <form
+              id="messageForm"
+              onSubmit={submitHandler}
+              className="shrink-0 flex flex-col"
+              style={{ width: "400px" }}
             >
-              <Thead>
-                <Tr>
-                  <Th>
-                    <strong>Design</strong>
-                  </Th>
-                  <Th>
-                    <strong>Type</strong>
-                  </Th>
-                  <Th>
-                    <strong>Title</strong>
-                  </Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {actions &&
-                  actions.map((action: Action, index: number) => {
-                    return (
-                      <Tr key={index}>
-                        <Th>
-                          <label>
-                            ButtonDesign
+              <FormControl isRequired className="mt-8">
+                <FormLabel>Title</FormLabel>
+                <Input
+                  placeholder="Title"
+                  type="text"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                />
+              </FormControl>
+              <FormControl isRequired className="mt-4">
+                <FormLabel>Body</FormLabel>
+                <Textarea
+                  placeholder="Body"
+                  value={body}
+                  resize="none"
+                  rows={6}
+                  onChange={(event) => setBody(event.target.value)}
+                />
+              </FormControl>
+              <FormControl display="flex" alignItems="center" className="mt-4">
+                <FormLabel htmlFor="blocking-toggle" mb="0">
+                  Blocking
+                </FormLabel>
+                <Switch
+                  id="blocking-toggle"
+                  isChecked={blocking}
+                  onChange={() => setBlocking(!blocking)}
+                />
+              </FormControl>
+              <FormControl className="mt-4">
+                <FormLabel>Start Date</FormLabel>
+                <Input
+                  placeholder="Start Date"
+                  type="datetime-local"
+                  id="startDate"
+                  value={startDate}
+                  onChange={(event) => setStartDate(event.target.value)}
+                />
+              </FormControl>
+              <FormControl className="mt-4">
+                <FormLabel>End Date</FormLabel>
+                <Input
+                  required
+                  placeholder="End Date"
+                  type="datetime-local"
+                  id="endDate"
+                  className="mt-8"
+                  value={endDate}
+                  onChange={(event) => setEndDate(event.target.value)}
+                />
+              </FormControl>
+              <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
+              <Table aria-label="simple table" className="mt-4">
+                <Thead>
+                  <Tr>
+                    <Th>Design</Th>
+                    <Th>Type</Th>
+                    <Th>Title</Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {actions &&
+                    actions.map((action: Action, index: number) => {
+                      return (
+                        <Tr key={index}>
+                          <Th>
                             <Select
                               value={action.buttonDesign}
                               onChange={(event) =>
@@ -252,11 +252,8 @@ export default function EditMessageOfAppPage() {
                                 );
                               })}
                             </Select>
-                          </label>
-                        </Th>
-                        <Th>
-                          <label>
-                            ActionType
+                          </Th>
+                          <Th>
                             <Select
                               value={action.actionType}
                               onChange={(event) =>
@@ -271,47 +268,47 @@ export default function EditMessageOfAppPage() {
                                 );
                               })}
                             </Select>
-                          </label>
-                        </Th>
-                        <Th>
-                          <Input
-                            type="text"
-                            name="actionTitle"
-                            value={action.title}
-                            onChange={(event) =>
-                              handleActionTitleChange(index, event)
-                            }
-                          />
-                        </Th>
-                        <Th width="5%">
-                          <IconButton
-                            onClick={() => deleteAction(index)}
-                            aria-label={""}
-                          >
-                            <MdDeleteForever />
-                          </IconButton>
-                        </Th>
-                      </Tr>
-                    );
-                  })}
-              </Tbody>
-            </Table>
-            {actions.length == 0 && (
-              <p>no actions added</p>
-            )}
-            <div>
-              <Button
-                onClick={() => {
-                  addAction();
-                }}
-              >
-                New Action
+                          </Th>
+                          <Th>
+                            <Input
+                              type="text"
+                              name="actionTitle"
+                              value={action.title}
+                              onChange={(event) =>
+                                handleActionTitleChange(index, event)
+                              }
+                            />
+                          </Th>
+                          <Th>
+                            <IconButton
+                              onClick={() => deleteAction(index)}
+                              aria-label={""}
+                            >
+                              <MdDeleteForever />
+                            </IconButton>
+                          </Th>
+                        </Tr>
+                      );
+                    })}
+                </Tbody>
+              </Table>
+              {actions.length == 0 && (
+                <p className="text-center mt-4 ">no actions added</p>
+              )}
+              <div className="mt-4 flex justify-center">
+                <Button
+                  colorScheme="blue"
+                  onClick={() => {
+                    addAction();
+                  }}
+                >
+                  New Action
+                </Button>
+              </div>
+              <Button className="my-4" colorScheme="blue" type="submit">
+                Save
               </Button>
-            </div>
-            <Button type="submit">
-              update
-            </Button>
-          </form>
+            </form>
         </main>
       </div>
     </>

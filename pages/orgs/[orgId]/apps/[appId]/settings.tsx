@@ -19,6 +19,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogCloseButton,
+  Text,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -134,47 +135,59 @@ export default function EditAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>Edit App</h1>
-          <form id="appForm" onSubmit={submitHandler}>
+          <h1 className="text-3xl font-bold text-center">Edit App</h1>
+          <form className="mt-8" id="appForm" onSubmit={submitHandler}>
             <label>
-              Name
+              <Text as="b">Name</Text>
               <Input
+                className="mt-2"
                 required
                 id="name"
                 value={appName}
                 onChange={(event) => setAppName(event.target.value)}
               />
             </label>
-            <Button type="submit">update</Button>
+            <div className="flex justify-center">
+              <Button colorScheme="blue" className="mt-4" type="submit">
+                update
+              </Button>
+            </div>
           </form>
-          <h1>Client API Key</h1>
-          <div>
+          <h1 className="text-3xl font-bold text-center mt-16">
+            Client API Key
+          </h1>
+          <div className="mt-8">
             <label>
-              Public Key for Clients
-              <Input disabled id="publicKey" value={appKey} />
+              <Text as="b">Public Key for Clients</Text>
+              <div className="flex flex-row">
+                <Input disabled id="publicKey" value={appKey} />
+                <Button
+                  className="ml-2"
+                  colorScheme="blue"
+                  onClick={() => {
+                    navigator.clipboard.writeText(appKey as string);
+                    toast({
+                      title: "Success!",
+                      description: "Public key copied to clipboard.",
+                      status: "success",
+                      isClosable: true,
+                      duration: 3000,
+                    });
+                  }}
+                >
+                  copy
+                </Button>
+              </div>
             </label>
-            <Button
-              sx={{ marginLeft: 2 }}
-              onClick={() => {
-                navigator.clipboard.writeText(appKey as string);
-                toast({
-                  title: "Success!",
-                  description: "Public key copied to clipboard.",
-                  status: "success",
-                  isClosable: true,
-                  duration: 6000,
-                });
-              }}
-            >
-              copy
-            </Button>
           </div>
-          <div>
-            <h1>Delete App</h1>
-            <Button colorScheme="red" onClick={() => handleDelete()}>
-              delete
-            </Button>
-          </div>
+          <h1 className="text-3xl font-bold text-center mt-16">Delete App</h1>
+          <Button
+            className="mt-8"
+            colorScheme="red"
+            onClick={() => handleDelete()}
+          >
+            delete
+          </Button>
           <AlertDialog
             isOpen={isOpen}
             motionPreset="slideInBottom"

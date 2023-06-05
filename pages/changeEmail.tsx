@@ -52,8 +52,8 @@ export default function ResetPasswordPage() {
       <main className={styles.main}>
         {!loading && !emailChanged && (
           <div>
-            <h1>Invalid link</h1>
-            <div>
+            <h1 className="text-3xl font-bold text-center">Invalid link</h1>
+            <div className="mt-8">
               If you want to change your email address please restart the
               process
             </div>
@@ -61,22 +61,26 @@ export default function ResetPasswordPage() {
         )}
         {!loading && emailChanged && (
           <div>
-            <h1>
+            <h1 className="text-3xl font-bold text-center">
               Your email address has been changed
             </h1>
-            <div>please log in with your new email address</div>
-            <Button
-              color="info"
-              sx={{ marginTop: 5 }}
-              onClick={() => navigateToAuthPage()}
-            >
-              login
-            </Button>
+          <div className="flex flex-col justify-center">
+            <div className="mt-8">
+              please log in with your new email address
+            </div>
+              <Button
+                colorScheme="blue"
+                sx={{ marginTop: 5 }}
+                onClick={() => navigateToAuthPage()}
+              >
+                login
+              </Button>
+            </div>
           </div>
         )}
         {loading && (
           <div>
-            <h1>loading ...</h1>
+            <h1 className="text-3xl font-bold text-center">loading ...</h1>
             <Spinner />
           </div>
         )}

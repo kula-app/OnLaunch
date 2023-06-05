@@ -16,7 +16,6 @@ import {
   Th,
   Tr,
   Tbody,
-  Spinner,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -26,6 +25,8 @@ import {
   AlertDialogCloseButton,
   useToast,
   useDisclosure,
+  Skeleton,
+  Stack,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -71,7 +72,7 @@ export default function DashboardPage() {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
 
-  const { orgs, isLoading, isError, mutate } = useOrgs();
+  const { orgs, isLoading, isError } = useOrgs();
   if (isError) return <div>Failed to load</div>;
 
   function navigateToNewOrgPage() {
@@ -114,9 +115,11 @@ export default function DashboardPage() {
   return (
     <>
       <main className={styles.main}>
-        <h1>Organisations</h1>
+        <h1 className="text-3xl font-bold text-center">Organisations</h1>
         <div>
           <Button
+            className="mt-8"
+            colorScheme="blue"
             onClick={() => {
               navigateToNewOrgPage();
             }}
@@ -124,14 +127,19 @@ export default function DashboardPage() {
             New Organisation
           </Button>
         </div>
-        <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
+        <div className="min-w-min">
+        <Table
+          className="mt-8"
+          sx={{ minWidth: 650, maxWidth: 1000 }}
+          aria-label="table"
+        >
           <Thead>
             <Tr>
               <Th width="5%">
                 <strong>ID</strong>
               </Th>
               <Th>
-                <strong>Org Name</strong>
+                <strong>Name</strong>
               </Th>
             </Tr>
           </Thead>
@@ -139,7 +147,7 @@ export default function DashboardPage() {
             {orgs?.map((org, index) => {
               return (
                 <Tr
-                  className="clickable-row"
+                  className="clickable-row h-16"
                   key={index}
                   onClick={() => navigateToAppsPage(org.id)}
                 >
@@ -150,15 +158,18 @@ export default function DashboardPage() {
             })}
           </Tbody>
         </Table>
-        {orgs?.length == 0 && (
-          <p>no data to show</p>
-        )}
         {isLoading && (
-          <div>
-            <p>Loading...</p>
-            <Spinner />
+          <div className="w-full">
+            <Stack>
+              <Skeleton height="60px" />
+              <Skeleton height="60px" />
+              <Skeleton height="60px" />
+            </Stack>
           </div>
         )}
+        </div>
+        {orgs?.length == 0 && <p className="mt-4">no data to show</p>}
+        
         <AlertDialog
           isOpen={isOpen}
           motionPreset="slideInBottom"

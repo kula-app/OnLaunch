@@ -11,7 +11,8 @@ import { Message } from "../../../../../../models/message";
 import {
   Button,
   IconButton,
-  Spinner,
+  Stack,
+  Skeleton,
   Table,
   Tag,
   Tbody,
@@ -19,6 +20,7 @@ import {
   Thead,
   Tooltip,
   Tr,
+  Text,
   useToast,
   useDisclosure,
   AlertDialog,
@@ -116,10 +118,11 @@ export default function MessagesOfAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>{data?.name}</h1>
+          <h1 className="text-3xl font-bold text-center">{data?.name}</h1>
           {data?.role === "ADMIN" && (
             <Button
               colorScheme="blue"
+              className="mt-8"
               onClick={() => {
                 navigateToAppSettingsPage();
               }}
@@ -129,7 +132,8 @@ export default function MessagesOfAppPage() {
           )}
           <div>
             <Button
-            colorScheme="blue"
+              colorScheme="blue"
+              className="mt-8"
               onClick={() => {
                 navigateToNewMessagePage();
               }}
@@ -139,7 +143,9 @@ export default function MessagesOfAppPage() {
           </div>
           <div>
             <Button
-              variant="text"
+              variant="ghost"
+              colorScheme="blue"
+              className="mt-8"
               onClick={() => {
                 setShowHistory(!showHistory);
               }}
@@ -155,139 +161,149 @@ export default function MessagesOfAppPage() {
                   })`}
             </Button>
           </div>
-          <Table
-            sx={{ minWidth: 650, maxWidth: 1300 }}
-            aria-label="simple table"
-          >
-            <Thead>
-              <Tr>
-                <Th>
-                  <strong>ID</strong>
-                </Th>
-                <Th></Th>
-                <Th>
-                  <strong>Title</strong>
-                </Th>
-                <Th>
-                  <strong>Body</strong>
-                </Th>
-                <Th>
-                  <strong>Blocking</strong>
-                </Th>
-                <Th>
-                  <strong>Start Date</strong>
-                </Th>
-                <Th>
-                  <strong>End Date</strong>
-                </Th>
-                <Th>
-                  <strong># Actions</strong>
-                </Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data?.messages &&
-                messages &&
-                messages.map((message: Message, index: number) => {
-                  return (
-                    <Tr key={index}>
-                      <Th>{message.id}</Th>
-                      <Th>
-                        <div>
-                          {Moment(message.startDate).isBefore(now) &&
-                            Moment(message.endDate).isAfter(now) && (
-                              <Tooltip label="this message is currently displayed in apps">
+          <div>
+            <Table
+              sx={{ minWidth: 650, maxWidth: 1300 }}
+              aria-label="simple table"
+            >
+              <Thead>
+                <Tr>
+                  <Th>
+                    <strong>ID</strong>
+                  </Th>
+                  <Th></Th>
+                  <Th>
+                    <strong>Title</strong>
+                  </Th>
+                  <Th>
+                    <strong>Body</strong>
+                  </Th>
+                  <Th>
+                    <strong>Blocking</strong>
+                  </Th>
+                  <Th>
+                    <strong>Start Date</strong>
+                  </Th>
+                  <Th>
+                    <strong>End Date</strong>
+                  </Th>
+                  <Th>
+                    <strong># Actions</strong>
+                  </Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {data?.messages &&
+                  messages &&
+                  messages.map((message: Message, index: number) => {
+                    return (
+                      <Tr key={index}>
+                        <Th>{message.id}</Th>
+                        <Th>
+                          <div>
+                            {Moment(message.startDate).isBefore(now) &&
+                              Moment(message.endDate).isAfter(now) && (
+                                <Tooltip label="this message is currently displayed in apps">
+                                  <Tag
+                                    size={"sm"}
+                                    key={index}
+                                    borderRadius="full"
+                                    variant="solid"
+                                    colorScheme="green"
+                                  >
+                                    live
+                                  </Tag>
+                                </Tooltip>
+                              )}
+                            {Moment(message.endDate).isBefore(now) && (
+                              <Tooltip label="this message will not be displayed again in apps">
                                 <Tag
                                   size={"sm"}
                                   key={index}
                                   borderRadius="full"
-                                  variant="solid"
-                                  colorScheme="green"
+                                  variant="outline"
+                                  colorScheme="blackAlpha"
                                 >
-                                  live
+                                  over
                                 </Tag>
                               </Tooltip>
                             )}
-                          {Moment(message.endDate).isBefore(now) && (
-                            <Tooltip label="this message will not be displayed again in apps">
-                              <Tag
-                                size={"sm"}
-                                key={index}
-                                borderRadius="full"
-                                variant="outline"
-                                colorScheme="blackAlpha"
-                              >
-                                over
-                              </Tag>
-                            </Tooltip>
+                            {Moment(message.startDate).isAfter(now) && (
+                              <Tooltip label="this message will be displayed in apps in the future">
+                                <Tag
+                                  size={"sm"}
+                                  key={index}
+                                  borderRadius="full"
+                                  variant="outline"
+                                  colorScheme="green"
+                                >
+                                  upcoming
+                                </Tag>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </Th>
+                        <Th>{message.title}</Th>
+                        <Th>
+                          {message.body.length >= 70
+                            ? message.body.slice(0, 50) + "..."
+                            : message.body}
+                        </Th>
+                        <Th>{String(message.blocking)}</Th>
+                        <Th>
+                          {Moment(message.startDate).format(
+                            "DD.MM.YYYY HH:mm:ss"
                           )}
-                          {Moment(message.startDate).isAfter(now) && (
-                            <Tooltip label="this message will be displayed in apps in the future">
-                              <Tag
-                                size={"sm"}
-                                key={index}
-                                borderRadius="full"
-                                variant="outline"
-                                colorScheme="green"
-                              >
-                                upcoming
-                              </Tag>
-                            </Tooltip>
+                        </Th>
+                        <Th>
+                          {Moment(message.endDate).format(
+                            "DD.MM.YYYY HH:mm:ss"
                           )}
-                        </div>
-                      </Th>
-                      <Th>{message.title}</Th>
-                      <Th>{message.body}</Th>
-                      <Th>
-                        {String(message.blocking)}
-                      </Th>
-                      <Th>
-                        {Moment(message.startDate).format(
-                          "DD.MM.YYYY HH:mm:ss"
-                        )}
-                      </Th>
-                      <Th>
-                        {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
-                      </Th>
-                      <Th>
-                        {!!message.actions ? message.actions.length : 0}
-                      </Th>
-                      <Th>
-                        <div>
-                          <Tooltip label="edit">
-                            <IconButton
-                              aria-label={"view message details"}
-                              onClick={() =>
-                                navigateToEditMessagePage(Number(message.id))
-                              }
-                            >
-                              <MdEdit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip label="delete">
-                            <IconButton
-                              aria-label={"delete message"}
-                              onClick={() => handleDelete(Number(message.id))}
-                            >
-                              <MdDeleteForever />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </Th>
-                    </Tr>
-                  );
-                })}
-            </Tbody>
-          </Table>
+                        </Th>
+                        <Th>
+                          {!!message.actions ? message.actions.length : 0}
+                        </Th>
+                        <Th>
+                          <div className="flex flex-row">
+                            <Tooltip label="edit">
+                              <IconButton
+                                className="mr-2"
+                                aria-label={"view message details"}
+                                onClick={() =>
+                                  navigateToEditMessagePage(Number(message.id))
+                                }
+                              >
+                                <MdEdit />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip label="delete">
+                              <IconButton
+                                aria-label={"delete message"}
+                                onClick={() => handleDelete(Number(message.id))}
+                              >
+                                <MdDeleteForever />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        </Th>
+                      </Tr>
+                    );
+                  })}
+              </Tbody>
+            </Table>
+            {isLoading && (
+              <div className="w-full">
+                <Stack>
+                  <Skeleton height="60px" />
+                  <Skeleton height="60px" />
+                  <Skeleton height="60px" />
+                </Stack>
+              </div>
+            )}
+          </div>
           {data?.messages && messages && messages.length == 0 && (
-            <p>no data to show</p>
-          )}
-          {isLoading && (
-            <div>
-              <div>Loading...</div>
-              <Spinner />
-            </div>
+            <p className="mt-4">no data to show</p>
           )}
           <AlertDialog
             isOpen={isOpen}

@@ -4,11 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import Routes from "../routes/routes";
 import signupUser from "../api/users/signupUser";
-import {
-  Button,
-  Input,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Input, useToast, Text } from "@chakra-ui/react";
 
 export default function AuthForm() {
   const router = useRouter();
@@ -55,7 +51,7 @@ export default function AuthForm() {
         }
 
         toast({
-          title: 'Error while logging in!',
+          title: "Error while logging in!",
           description: `${result.error}`,
           status: "error",
           isClosable: true,
@@ -70,7 +66,7 @@ export default function AuthForm() {
         navigateToVerifyPage();
       } catch (error) {
         toast({
-          title: 'Error while creating user',
+          title: "Error while creating user",
           description: `${error}`,
           status: "error",
           isClosable: true,
@@ -83,67 +79,81 @@ export default function AuthForm() {
   return (
     <>
       <main className={styles.main}>
-        <h1>{isLoginMode ? "Login" : "Sign up"}</h1>
-        <form onSubmit={submitHandler}>
-          <label>
-            Email
-            <Input
-              required
-              id="email"
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-          <label>
-            Password
-            <Input
-              required
-              id="password"
-              type="password"
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-          {!isLoginMode && (
+        <h1 className="text-3xl font-bold text-center">
+          {isLoginMode ? "Login" : "Sign up"}
+        </h1>
+        <div style={{width: 340}} className="mt-8">
+          <form onSubmit={submitHandler}>
             <label>
-              First name
+              <Text as="b">Email</Text>
               <Input
+                className="mt-2"
                 required
-                id="firstName"
-                onChange={(event) => setFirstName(event.target.value)}
+                id="email"
+                onChange={(event) => setEmail(event.target.value)}
               />
             </label>
-          )}
-          {!isLoginMode && (
-            <label>
-              Last name
-              <Input
-                required
-                id="lastName"
-                onChange={(event) => setLastName(event.target.value)}
-              />
-            </label>
-          )}
-          <Button colorScheme="blue" type="submit">
-            {isLoginMode ? "login" : "create account"}
-          </Button>
-          <Button
-            variant="text"
-            type="button"
-            onClick={() => switchLoginMode()}
-          >
-            {isLoginMode
-              ? "create new account"
-              : "log in with existing account"}
-          </Button>
-          {isLoginMode && (
-            <Button
-              variant="text"
-              type="button"
-              onClick={() => navigateToPasswordResetPage()}
-            >
-              forgot password
-            </Button>
-          )}
-        </form>
+            <div>
+              <label>
+                <Text as="b">Password</Text>
+                <Input
+                  className="mt-2"
+                  required
+                  id="password"
+                  type="password"
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+              </label>
+            </div>
+            {!isLoginMode && (
+              <label>
+                <Text as="b">First name</Text>
+                <Input
+                  className="mt-2"
+                  required
+                  id="firstName"
+                  onChange={(event) => setFirstName(event.target.value)}
+                />
+              </label>
+            )}
+            {!isLoginMode && (
+              <label>
+                <Text as="b">Last name</Text>
+                <Input
+                  className="mt-2"
+                  required
+                  id="lastName"
+                  onChange={(event) => setLastName(event.target.value)}
+                />
+              </label>
+            )}
+            <div className="flex flex-col mt-8">
+              <Button colorScheme="blue" type="submit">
+                {isLoginMode ? "login" : "create account"}
+              </Button>
+              <Button
+                variant="ghost"
+                colorScheme="blue"
+                type="button"
+                onClick={() => switchLoginMode()}
+              >
+                {isLoginMode
+                  ? "create new account"
+                  : "log in with existing account"}
+              </Button>
+              {isLoginMode && (
+                <Button
+                  variant="ghost"
+                  colorScheme="blue"
+                  type="button"
+                  onClick={() => navigateToPasswordResetPage()}
+                >
+                  forgot password
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
       </main>
     </>
   );

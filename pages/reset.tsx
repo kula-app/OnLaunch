@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
-import { Input, Button, useToast } from "@chakra-ui/react";
+import { Input, Button, useToast, Text } from "@chakra-ui/react";
 
 export default function ResetPage() {
   const router = useRouter();
@@ -38,34 +38,40 @@ export default function ResetPage() {
   return (
     <>
       <main className={styles.main}>
-        {!sentMail && <h1>Enter your mail address for password reset</h1>}
+        {!sentMail && (
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Enter your mail address for password reset
+          </h1>
+        )}
         {!sentMail && (
           <form onSubmit={submitHandler}>
             <label>
-              Email
+              <Text as="b">Email</Text>
               <Input
+                className="mt-2"
                 required
                 id="email"
                 onChange={(event) => setEmail(event.target.value)}
               />
             </label>
-            <Button
-              type="submit"
-            >
-              reset password
-            </Button>
-            <Button
-              variant="text"
-              type="button"
-              onClick={() => navigateToAuthPage()}
-            >
-              go back to login
-            </Button>
+            <div className="flex flex-col">
+              <Button className="mt-4" colorScheme="blue" type="submit">
+                reset password
+              </Button>
+              <Button
+                variant="ghost"
+                colorScheme="blue"
+                type="button"
+                onClick={() => navigateToAuthPage()}
+              >
+                go back to login
+              </Button>
+            </div>
           </form>
         )}
         {sentMail && (
           <div>
-            <h1>Check your mails</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">Check your mails</h1>
             <div>
               You should receive a mail within the next minutes with the reset
               link!
