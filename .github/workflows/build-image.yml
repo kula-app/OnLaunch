@@ -37,7 +37,7 @@ jobs:
 
       - # only authenticate if publishing image
         name: Login to Docker Hub
-        uses: docker/login-action@v2.1.0
+        uses: docker/login-action@v2.2.0
         if: ${{ env.is_publishing == 'true' }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
