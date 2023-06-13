@@ -43,6 +43,7 @@ COPY prisma ./prisma
 COPY public ./public
 COPY routes ./routes
 COPY styles ./styles
+COPY types ./types
 COPY util ./util
 COPY sentry.client.config.ts .
 COPY sentry.edge.config.ts .

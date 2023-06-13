@@ -2,42 +2,49 @@ import Moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
-
 import { MdDeleteForever, MdEdit } from "react-icons/md";
-import { CircularProgress, TextField } from "@mui/material";
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import { getSession } from "next-auth/react";
 import deleteMessage from "../../../../../../api/messages/deleteMessage";
 import { useApp } from "../../../../../../api/apps/useApp";
 import Routes from "../../../../../../routes/routes";
 import { Message } from "../../../../../../models/message";
-import CustomSnackbar from "../../../../../../components/CustomSnackbar";
+import {
+  Button,
+  IconButton,
+  Stack,
+  Skeleton,
+  Table,
+  Tag,
+  Tbody,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+  Text,
+  Td,
+  useToast,
+  useDisclosure,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  Heading,
+} from "@chakra-ui/react";
+import React from "react";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
+  const toast = useToast();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef(null);
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [messageId, setMessageId] = useState(-1);
 
   const [showHistory, setShowHistory] = useState(false);
@@ -74,7 +81,7 @@ export default function MessagesOfAppPage() {
         Moment(message.startDate).isBefore(now) &&
         Moment(message.endDate).isAfter(now)
       ) {
-        setShowDeleteDialog(true);
+        onOpen();
       } else {
         callDeleteMessage(messageId);
       }
@@ -87,15 +94,21 @@ export default function MessagesOfAppPage() {
 
       mutate();
 
-      setAlertMessage(`Message with id '${messageId}' successfully deleted!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: `Message with id '${messageId}' successfully deleted.`,
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
-      setAlertMessage(
-        `Error while deleting message with id ${messageId}: ${error}`
-      );
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: `Error while deleting message with id ${messageId}!`,
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -107,30 +120,30 @@ export default function MessagesOfAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>{data?.name}</h1>
+          <Heading className="text-center">{data?.name}</Heading>
           {data?.role === "ADMIN" && (
             <Button
-              variant="contained"
-              onClick={() => {
-                navigateToAppSettingsPage();
-              }}
+              colorScheme="blue"
+              className="mt-8"
+              onClick={navigateToAppSettingsPage}
             >
               App Settings
             </Button>
           )}
-          <div className="addButton marginTopLarge">
+          <div>
             <Button
-              variant="contained"
-              onClick={() => {
-                navigateToNewMessagePage();
-              }}
+              colorScheme="blue"
+              className="mt-8"
+              onClick={navigateToNewMessagePage}
             >
               New Message
             </Button>
           </div>
-          <div className="addButton marginTopLarge">
+          <div>
             <Button
-              variant="text"
+              variant="ghost"
+              colorScheme="blue"
+              className="mt-8"
               onClick={() => {
                 setShowHistory(!showHistory);
               }}
@@ -146,162 +159,191 @@ export default function MessagesOfAppPage() {
                   })`}
             </Button>
           </div>
-          <Table
-            sx={{ minWidth: 650, maxWidth: 1300 }}
-            aria-label="simple table"
-            className="messageTable"
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell className="centeredText">
-                  <strong>ID</strong>
-                </TableCell>
-                <TableCell></TableCell>
-                <TableCell>
-                  <strong>Title</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Body</strong>
-                </TableCell>
-                <TableCell className="centeredText">
-                  <strong>Blocking</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Start Date</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>End Date</strong>
-                </TableCell>
-                <TableCell className="centeredText">
-                  <strong># Actions</strong>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data?.messages &&
-                messages &&
-                messages.map((message: Message, index: number) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell className="centeredText">
-                        {message.id}
-                      </TableCell>
-                      <TableCell>
-                        <div className="centeredElement">
-                          {Moment(message.startDate).isBefore(now) &&
-                            Moment(message.endDate).isAfter(now) && (
-                              <Tooltip title="this message is currently displayed in apps">
-                                <Chip
-                                  label="active"
-                                  color="success"
-                                  size="small"
-                                />
+          <div>
+            <Table
+              sx={{ minWidth: 650, maxWidth: 1300 }}
+              aria-label="simple table"
+            >
+              <Thead>
+                <Tr>
+                  <Th>
+                    <strong>ID</strong>
+                  </Th>
+                  <Th></Th>
+                  <Th>
+                    <strong>Title</strong>
+                  </Th>
+                  <Th>
+                    <strong>Body</strong>
+                  </Th>
+                  <Th>
+                    <strong>Blocking</strong>
+                  </Th>
+                  <Th>
+                    <strong>Start Date</strong>
+                  </Th>
+                  <Th>
+                    <strong>End Date</strong>
+                  </Th>
+                  <Th>
+                    <strong># Actions</strong>
+                  </Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {data?.messages &&
+                  messages &&
+                  messages.map((message: Message, index: number) => {
+                    return (
+                      <Tr key={index}>
+                        <Td>{message.id}</Td>
+                        <Td>
+                          <div className="flex justify-center">
+                            {Moment(message.startDate).isBefore(now) &&
+                              Moment(message.endDate).isAfter(now) && (
+                                <Tooltip label="this message is currently displayed in apps">
+                                  <Tag
+                                    size={"md"}
+                                    key={index}
+                                    borderRadius="full"
+                                    variant="solid"
+                                    colorScheme="green"
+                                  >
+                                    live
+                                  </Tag>
+                                </Tooltip>
+                              )}
+                            {Moment(message.endDate).isBefore(now) && (
+                              <Tooltip label="this message will not be displayed again in apps">
+                                <Tag
+                                  size={"md"}
+                                  key={index}
+                                  borderRadius="full"
+                                  variant="outline"
+                                  colorScheme="blackAlpha"
+                                >
+                                  over
+                                </Tag>
                               </Tooltip>
                             )}
-                          {Moment(message.endDate).isBefore(now) && (
-                            <Tooltip title="this message will not be displayed again in apps">
-                              <Chip
-                                label="past"
-                                size="small"
-                                variant="outlined"
-                              />
-                            </Tooltip>
+                            {Moment(message.startDate).isAfter(now) && (
+                              <Tooltip label="this message will be displayed in apps in the future">
+                                <Tag
+                                  size={"md"}
+                                  key={index}
+                                  borderRadius="full"
+                                  variant="outline"
+                                  colorScheme="green"
+                                >
+                                  upcoming
+                                </Tag>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </Td>
+                        <Td>{message.title}</Td>
+                        <Td>
+                          {message.body.length >= 70
+                            ? message.body.slice(0, 50) + "..."
+                            : message.body}
+                        </Td>
+                        <Td>
+                          <div className="flex justify-center">
+                            {String(message.blocking)}
+                          </div>
+                        </Td>
+                        <Td>
+                          {Moment(message.startDate).format(
+                            "DD.MM.YYYY HH:mm:ss"
                           )}
-                          {Moment(message.startDate).isAfter(now) && (
-                            <Tooltip title="this message will be displayed in apps in the future">
-                              <Chip
-                                label="upcoming"
-                                color="secondary"
-                                size="small"
-                                variant="outlined"
-                              />
-                            </Tooltip>
+                        </Td>
+                        <Td>
+                          {Moment(message.endDate).format(
+                            "DD.MM.YYYY HH:mm:ss"
                           )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{message.title}</TableCell>
-                      <TableCell>{message.body}</TableCell>
-                      <TableCell className="centeredText">
-                        {String(message.blocking)}
-                      </TableCell>
-                      <TableCell>
-                        {Moment(message.startDate).format(
-                          "DD.MM.YYYY HH:mm:ss"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {Moment(message.endDate).format("DD.MM.YYYY HH:mm:ss")}
-                      </TableCell>
-                      <TableCell className="centeredText">
-                        {!!message.actions ? message.actions.length : 0}
-                      </TableCell>
-                      <TableCell>
-                        <div className="hiddenTableElement">
-                          <Tooltip title="edit">
-                            <IconButton
-                              onClick={() =>
-                                navigateToEditMessagePage(Number(message.id))
-                              }
-                            >
-                              <MdEdit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="delete">
-                            <IconButton
-                              onClick={() => handleDelete(Number(message.id))}
-                            >
-                              <MdDeleteForever />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
+                        </Td>
+                        <Td>
+                          <div className="flex justify-center">
+                            {!!message.actions ? message.actions.length : 0}
+                          </div>
+                        </Td>
+                        <Td>
+                          <div className="flex flex-row">
+                            <Tooltip label="edit">
+                              <IconButton
+                                className="mr-2"
+                                aria-label={"view message details"}
+                                onClick={() =>
+                                  navigateToEditMessagePage(Number(message.id))
+                                }
+                              >
+                                <MdEdit />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip label="delete">
+                              <IconButton
+                                aria-label={"delete message"}
+                                onClick={() => handleDelete(Number(message.id))}
+                              >
+                                <MdDeleteForever />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+              </Tbody>
+            </Table>
+            {isLoading && (
+              <div className="w-full">
+                <Stack>
+                  <Skeleton height="60px" />
+                  <Skeleton height="60px" />
+                  <Skeleton height="60px" />
+                </Stack>
+              </div>
+            )}
+          </div>
           {data?.messages && messages && messages.length == 0 && (
-            <p className="marginTopMedium">no data to show</p>
+            <p className="mt-4">no data to show</p>
           )}
-          {isLoading && (
-            <div>
-              <div className="marginTopMedium">Loading...</div>
-              <CircularProgress />
-            </div>
-          )}
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
-          <Dialog
-            open={showDeleteDialog}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+          <AlertDialog
+            isOpen={isOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelRef}
+            onClose={onClose}
+            isCentered
           >
-            <DialogTitle id="alert-dialog-title">
-              {`Delete currently active Message with id '${messageId}?`}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                {`Delete message with id '${messageId}'?`}
+              </AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>
                 This message is currently displayed in apps. Deletion cannot be
                 undone.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-              <Button
-                onClick={() => {
-                  setShowDeleteDialog(false);
-                  callDeleteMessage(messageId);
-                }}
-                autoFocus
-              >
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    callDeleteMessage(messageId);
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </main>
       </div>
     </>

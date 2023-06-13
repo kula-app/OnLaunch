@@ -1,23 +1,24 @@
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import styles from "../../../../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import createApp from "../../../../api/apps/createApp";
 import Routes from "../../../../routes/routes";
-import CustomSnackbar from "../../../../components/CustomSnackbar";
+import {
+  Input,
+  Button,
+  Text,
+  useToast,
+  Heading,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 
 export default function NewAppPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const orgId = Number(router.query.orgId);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   const [appName, setAppName] = useState("");
 
@@ -31,16 +32,24 @@ export default function NewAppPage() {
     try {
       await createApp(orgId, appName);
 
-      setAlertMessage("App created successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "Apps has been created.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       resetForm();
       navigateToAppsPage();
     } catch (error) {
-      setAlertMessage(`Error while creating new app: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while creating new app!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -52,27 +61,22 @@ export default function NewAppPage() {
     <>
       <div>
         <main className={styles.main}>
-          <h1>New App</h1>
-          <form id="appForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Name"
-              id="name"
-              onChange={(event) => setAppName(event.target.value)}
-            />
-            <Button
-              variant="contained"
-              type="submit"
-              className="marginTopMedium"
-            >
-              save
-            </Button>
+          <Heading className="text-center">New App</Heading>
+          <form className="mt-8" id="appForm" onSubmit={submitHandler}>
+            <FormControl className="mt-4">
+              <FormLabel>Name</FormLabel>
+              <Input
+                required
+                id="name"
+                onChange={(event) => setAppName(event.target.value)}
+              />
+            </FormControl>
+            <div className="flex justify-center">
+              <Button colorScheme="blue" className="mt-4" type="submit">
+                save
+              </Button>
+            </div>
           </form>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
         </main>
       </div>
     </>

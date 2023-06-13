@@ -2,6 +2,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Routes from "../routes/routes";
+import { Heading } from "@chakra-ui/react";
 
 export default function IndexPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function IndexPage() {
 
   return (
     <>
-      <h1>redirecting ...</h1>
+      <Heading className="text-center">redirecting ...</Heading>
     </>
   );
 }

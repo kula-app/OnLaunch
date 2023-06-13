@@ -1,33 +1,36 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "../../../../../../../styles/Home.module.css";
-
 import { MdDeleteForever, MdClose } from "react-icons/md";
-import { SelectChangeEvent } from "@mui/material";
-import type { AlertColor } from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Switch from "@mui/material/Switch";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
 import { getSession } from "next-auth/react";
 import Routes from "../../../../../../../routes/routes";
 import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
 import getMessage from "../../../../../../../api/messages/getMessage";
 import updateMessage from "../../../../../../../api/messages/updateMessage";
-import CustomSnackbar from "../../../../../../../components/CustomSnackbar";
+import {
+  Button,
+  FormControl,
+  IconButton,
+  Input,
+  Select,
+  Switch,
+  Table,
+  Tbody,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  useToast,
+  FormLabel,
+  Heading,
+} from "@chakra-ui/react";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const actionTypes = ["DISMISS"];
   const buttonDesigns = ["FILLED", "TEXT"];
@@ -35,13 +38,9 @@ export default function EditMessageOfAppPage() {
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
   const [actions, setActions] = useState<Action[]>([]);
 
-  const [switchValue, setSwitchValue] = useState(false);
+  const [blocking, setBlocking] = useState(false);
   const messageId = Number(router.query.messageId);
 
   const [title, setTitle] = useState("");
@@ -56,14 +55,18 @@ export default function EditMessageOfAppPage() {
       try {
         fillForm(await getMessage(orgId, appId, messageId));
       } catch (error) {
-        setAlertMessage(`Error while fetching message: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while fetching message!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     };
 
     fetchMessageData();
-  }, [router.isReady, orgId, appId, messageId]);
+  }, [router.isReady, orgId, appId, messageId, toast]);
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,7 +76,7 @@ export default function EditMessageOfAppPage() {
       id: messageId,
       title: title,
       body: body,
-      blocking: switchValue,
+      blocking: blocking,
       startDate: String(new Date(startDate)),
       endDate: String(new Date(endDate)),
       appId: appId,
@@ -83,15 +86,23 @@ export default function EditMessageOfAppPage() {
     try {
       await updateMessage(orgId, appId, messageId, message);
 
-      setAlertMessage("Message edited successfully!");
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success",
+        description: "Message has been updated.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
 
       navigateToAppMessagesPage();
     } catch (error) {
-      setAlertMessage(`Error while editing message: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while editing message!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
@@ -103,7 +114,7 @@ export default function EditMessageOfAppPage() {
     // fill the form
     setTitle(msg.title);
     setBody(msg.body);
-    setSwitchValue(msg.blocking);
+    setBlocking(msg.blocking);
     setStartDate(Moment(msg.startDate).format("YYYY-MM-DDTHH:mm:ss"));
     setEndDate(Moment(msg.endDate).format("YYYY-MM-DDTHH:mm:ss"));
     if (msg.actions) {
@@ -135,7 +146,7 @@ export default function EditMessageOfAppPage() {
 
   function handleActionTypeChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
@@ -144,7 +155,7 @@ export default function EditMessageOfAppPage() {
 
   function handleButtonDesignChange(
     index: number,
-    event: SelectChangeEvent<unknown>
+    event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
@@ -154,163 +165,206 @@ export default function EditMessageOfAppPage() {
   return (
     <>
       <div>
-        <main className={styles.main}>
-          <h1>Edit Message</h1>
-          <form id="messageForm" onSubmit={submitHandler} className="column">
-            <TextField
-              required
-              label="Title"
-              id="title"
-              variant="outlined"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-            <TextField
-              required
-              multiline
-              label="Body"
-              minRows={10}
-              maxRows={10}
-              id="body"
-              className="marginTopMedium"
-              value={body}
-              onChange={(event) => setBody(event.target.value)}
-            />
-            <div>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={switchValue}
-                    onChange={() => setSwitchValue(!switchValue)}
-                  ></Switch>
-                }
-                label="Blocking"
-                labelPlacement="start"
-                sx={{ marginLeft: 0 }}
-                className="marginTopMedium"
-              />
-            </div>
-            <TextField
-              label="Start Date"
-              type="datetime-local"
-              id="startDate"
-              InputLabelProps={{ shrink: true }}
-              className="marginTopMedium"
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-            />
-            <TextField
-              required
-              label="End Date"
-              type="datetime-local"
-              id="endDate"
-              InputLabelProps={{ shrink: true }}
-              className="marginTopMedium"
-              value={endDate}
-              onChange={(event) => setEndDate(event.target.value)}
-            />
-            <h3 className="marginTopMedium centeredElement">Actions</h3>
-            <Table
-              sx={{ minWidth: 650, maxWidth: 1300 }}
-              aria-label="simple table"
-              className="messageTable"
+        <div className="flex flex-row pt-8 px-8 justify-center">
+          <div style={{ marginRight: "8%" }}>
+            <form
+              id="messageForm"
+              onSubmit={submitHandler}
+              className="shrink-0 flex flex-col justify-center items-center"
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <strong>Design</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Type</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Title</strong>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {actions &&
-                  actions.map((action: Action, index: number) => {
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <Select
-                            label="ButtonDesign"
-                            value={action.buttonDesign}
-                            onChange={(event) =>
-                              handleButtonDesignChange(index, event)
-                            }
-                          >
-                            {buttonDesigns.map((value, index) => {
-                              return (
-                                <MenuItem key={index} value={value}>
-                                  {value}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            label="ActionType"
-                            value={action.actionType}
-                            onChange={(event) =>
-                              handleActionTypeChange(index, event)
-                            }
-                          >
-                            {actionTypes.map((value, index) => {
-                              return (
-                                <MenuItem key={index} value={value}>
-                                  {value}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            type="text"
-                            name="actionTitle"
-                            value={action.title}
-                            onChange={(event) =>
-                              handleActionTitleChange(index, event)
-                            }
-                          />
-                        </TableCell>
-                        <TableCell width="5%">
-                          <IconButton onClick={() => deleteAction(index)}>
-                            <MdDeleteForever />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-            {actions.length == 0 && (
-              <p className="marginTopSmall centeredElement">no actions added</p>
-            )}
-            <div className="addButton centeredElement">
+              <div style={{ width: "400px" }}>
+                <Heading className="text-center">Edit Message</Heading>
+                <FormControl isRequired className="mt-8">
+                  <FormLabel>Title</FormLabel>
+                  <Input
+                    placeholder="Title"
+                    type="text"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl isRequired className="mt-4">
+                  <FormLabel>Body</FormLabel>
+                  <Textarea
+                    placeholder="Body"
+                    value={body}
+                    resize="none"
+                    rows={6}
+                    onChange={(event) => setBody(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl
+                  display="flex"
+                  alignItems="center"
+                  className="mt-4"
+                >
+                  <FormLabel htmlFor="blocking-toggle" mb="0">
+                    Blocking
+                  </FormLabel>
+                  <Switch
+                    id="blocking-toggle"
+                    isChecked={blocking}
+                    onChange={() => setBlocking(!blocking)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>Start Date</FormLabel>
+                  <Input
+                    placeholder="Start Date"
+                    type="datetime-local"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl className="mt-4">
+                  <FormLabel>End Date</FormLabel>
+                  <Input
+                    required
+                    placeholder="End Date"
+                    type="datetime-local"
+                    id="endDate"
+                    className="mt-8"
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                  />
+                </FormControl>
+              </div>
+              <div style={{ width: "655px" }}>
+                <h3 className="text-xl font-bold mt-4 text-center">Actions</h3>
+                <Table aria-label="simple table" className="mt-4">
+                  <Thead>
+                    <Tr>
+                      <Th>Design</Th>
+                      <Th>Type</Th>
+                      <Th>Title</Th>
+                      <Th></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {actions &&
+                      actions.map((action: Action, index: number) => {
+                        return (
+                          <Tr key={index}>
+                            <Td>
+                              <Select
+                                value={action.buttonDesign}
+                                onChange={(event) =>
+                                  handleButtonDesignChange(index, event)
+                                }
+                              >
+                                {buttonDesigns.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Select
+                                value={action.actionType}
+                                onChange={(event) =>
+                                  handleActionTypeChange(index, event)
+                                }
+                              >
+                                {actionTypes.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                            </Td>
+                            <Td>
+                              <Input
+                                type="text"
+                                name="actionTitle"
+                                value={action.title}
+                                onChange={(event) =>
+                                  handleActionTitleChange(index, event)
+                                }
+                              />
+                            </Td>
+                            <Td>
+                              <IconButton
+                                onClick={() => deleteAction(index)}
+                                aria-label={""}
+                              >
+                                <MdDeleteForever />
+                              </IconButton>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                  </Tbody>
+                </Table>
+                {actions.length == 0 && (
+                  <p className="text-center mt-4 ">no actions added</p>
+                )}
+                <div className="mt-4 flex justify-center">
+                  <Button colorScheme="blue" onClick={addAction}>
+                    New Action
+                  </Button>
+                </div>
+              </div>
               <Button
-                variant="contained"
-                onClick={() => {
-                  addAction();
-                }}
+                style={{ width: 655 }}
+                className="my-4"
+                colorScheme="blue"
+                type="submit"
               >
-                New Action
+                Save
               </Button>
+            </form>
+          </div>
+          <div className="">
+            <div className={styles.phoneContainer}>
+              <div className={styles.phoneScreen}>
+                <div>
+                  <div className={styles.closeIconContainer}>
+                    {!blocking && (
+                      <MdClose
+                        className={styles.closeIcon}
+                        style={{ color: "grey" }}
+                      ></MdClose>
+                    )}
+                  </div>
+                  <h1 style={{ marginTop: blocking ? "72px" : "16px" }}>
+                    {title}
+                  </h1>
+                </div>
+                <div>
+                  <p>{body}</p>
+                </div>
+                <div>
+                  {actions &&
+                    actions.map((action: Action, index: number) => {
+                      if (action.buttonDesign === "FILLED") {
+                        return (
+                          <Button colorScheme="blue" key={index}>
+                            {action.title}
+                          </Button>
+                        );
+                      } else {
+                        return (
+                          <Button
+                            colorScheme="blue"
+                            variant="ghost"
+                            key={index}
+                          >
+                            {action.title}
+                          </Button>
+                        );
+                      }
+                    })}
+                </div>
+              </div>
             </div>
-            <Button variant="contained" type="submit">
-              update
-            </Button>
-          </form>
-          <CustomSnackbar
-            message={alertMessage}
-            severity={alertSeverity}
-            isOpenState={[showAlert, setShowAlert]}
-          />
-        </main>
+          </div>
+        </div>
       </div>
     </>
   );

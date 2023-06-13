@@ -1,19 +1,16 @@
-import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
 import { getSession } from "next-auth/react";
 import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
 import { useCallback } from "react";
 import createVerifyToken from "../api/tokens/createVerifyToken";
-import CustomSnackbar from "../components/CustomSnackbar";
-import { CircularProgress } from "@mui/material";
+import { Button, useToast, Spinner, Heading } from "@chakra-ui/react";
 
 export default function VerifyPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const { signup, token, email } = router.query;
 
@@ -21,10 +18,6 @@ export default function VerifyPage() {
   const [expired, setExpired] = useState(false);
   const [obsolete, setObsolete] = useState(false);
   const [disabled, setDisabled] = useState(false);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   const navigateToAuthPage = useCallback(() => {
     router.push(Routes.AUTH);
@@ -47,9 +40,13 @@ export default function VerifyPage() {
         } else if (String(error).includes("obsolete")) {
           setObsolete(true);
         } else {
-          setAlertMessage(`Error while verifying: ${error}`);
-          setAlertSeverity("error");
-          setShowAlert(true);
+          toast({
+            title: "Error while verifying!",
+            description: `${error}`,
+            status: "error",
+            isClosable: true,
+            duration: 6000,
+          });
         }
       }
     }
@@ -57,19 +54,27 @@ export default function VerifyPage() {
     if (!!token) {
       verifyUser();
     }
-  }, [router.isReady, token, signup, navigateToAuthPage]);
+  }, [router.isReady, token, signup, navigateToAuthPage, toast]);
 
   async function resendLink() {
     try {
       await createVerifyToken(email as string);
 
-      setAlertMessage(`Link was successfully resend!`);
-      setAlertSeverity("success");
-      setShowAlert(true);
+      toast({
+        title: "Success!",
+        description: "Link was resend.",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
-      setAlertMessage(`Error while resending link: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while resending link!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
 
     setDisabled(true);
@@ -80,71 +85,56 @@ export default function VerifyPage() {
       <main className={styles.main}>
         {(signup || email) && !expired && (
           <div>
-            <h1 className="centeredElement">Verify your account</h1>
-            <div>Please check your mails for the verification link!</div>
+            <Heading className="text-center">Verify your account</Heading>
+            <div className="mt-8">
+              Please check your mails for the verification link!
+            </div>
           </div>
         )}
         {verified && !expired && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">Thank you for verifying!</h1>
-            <div>
+          <div>
+            <Heading className="text-center">Thank you for verifying!</Heading>
+            <div className="mt-8">
               If you want to use the full functionality of OnLaunch please log
               in
             </div>
             <Button
-              variant="contained"
               color="info"
               sx={{ marginTop: 5 }}
-              onClick={() => navigateToAuthPage()}
+              onClick={navigateToAuthPage}
             >
               login
             </Button>
           </div>
         )}
         {!signup && !verified && (expired || obsolete) && (
-          <div className="centeredElement column">
-            <h1 className="centeredElement">
+          <div>
+            <Heading className="text-center">
               Link is {expired ? "expired" : "obsolete"}!
-            </h1>
-            <div>No worries, we can send you a new one </div>
+            </Heading>
+            <div className="mt-8">No worries, we can send you a new one </div>
           </div>
         )}
         {!verified && !signup && !expired && !obsolete && !email && (
           <div>
-            <h1>loading ...</h1>
-            <CircularProgress />
+            <Heading className="text-center">loading ...</Heading>
+            <Spinner />
           </div>
         )}
         {!signup &&
           !verified &&
           (!!email || !!expired || !!obsolete) &&
           !disabled && (
-            <Button
-              variant="contained"
-              type="button"
-              className="marginTopMedium"
-              onClick={() => resendLink()}
-            >
+            <Button type="button" onClick={resendLink}>
               resend link
             </Button>
           )}
         {!signup && !verified && !!email && disabled && (
-          <Button
-            variant="contained"
-            type="button"
-            className="marginTopMedium"
-            disabled
-            onClick={() => resendLink()}
-          >
+          <Button type="button" disabled onClick={resendLink}>
             resend link
           </Button>
         )}
       </main>
-      <CustomSnackbar
-        message={alertMessage}
-        severity={alertSeverity}
-        isOpenState={[showAlert, setShowAlert]}
-      />
     </>
   );
 }

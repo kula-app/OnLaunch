@@ -1,149 +1,158 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import { MdMenu } from "react-icons/md";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Link from "next/link";
-import Button from "@mui/material/Button";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/router";
+import React from "react";
+import {
+  Box,
+  Flex,
+  Text,
+  IconButton,
+  Button,
+  Stack,
+  Collapse,
+  Link,
+  useColorModeValue,
+  useBreakpointValue,
+  useDisclosure,
+  Avatar,
+  Center,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import { MdMenu, MdClose } from "react-icons/md";
 import Routes from "../routes/routes";
+import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
+import { Session } from "next-auth";
+import MobileNav from "./NavbarMobile";
+import DesktopNav from "./NavbarDesktop";
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  hasSession: boolean;
+  session: Session;
 }
 
-const drawerWidth = 240;
-const navItems = [
-  { id: "home", link: "/", label: "Home" },
-  { id: "profile", link: "/profile", label: "Profile" },
-];
-
-export default function Navbar(props: Props) {
+export default function Header(props: Props) {
+  const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function navigateToAuthPage() {
     router.push(Routes.AUTH);
   }
 
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        OnLaunch
-      </Typography>
-      <Divider sx={{ marginBottom: 2 }}/>
-      {props.hasSession &&
-        navItems.map((item) => (
-          <div key={item.id}>
-          <Link key={item.id} href={item.link}>
-            {item.label}
-          </Link>
-          <Divider sx={{ marginBottom: 2, marginTop: 2 }}/>
-          </div>
-        ))}
-      {props.hasSession && (
-        <Link key={navItems.length} href="/auth">
-          Login
-        </Link>
-      )}
-    </Box>
-  );
-
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar component="nav">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MdMenu />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-          >
-            OnLaunch
-          </Typography>
-          {props.hasSession && (
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.link}
-                  style={{ color: "#fff", marginRight: 20 }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </Box>
-          )}
-          {props.hasSession && (
-            <Button
-              variant="outlined"
-              color="info"
-              sx={{ backgroundColor: "white" }}
-              onClick={() => {
-                signOut({
-                  redirect: false,
-                });
-                navigateToAuthPage();
-              }}
-            >
-              logout
-            </Button>
-          )}
-          {!props.hasSession && (
-            <Button
-              variant="outlined"
-              color="info"
-              sx={{ backgroundColor: "white" }}
-              onClick={() => navigateToAuthPage()}
-            >
-              login
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
-      <Box component="nav">
-        <Drawer
-          container={undefined}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
+    <Box>
+      <Flex
+        bg={useColorModeValue("white", "gray.800")}
+        color={useColorModeValue("gray.600", "white")}
+        minH={"60px"}
+        py={{ base: 2 }}
+        px={{ base: 4 }}
+        borderBottom={1}
+        borderStyle={"solid"}
+        borderColor={useColorModeValue("gray.200", "gray.900")}
+        align={"center"}
+      >
+        <Flex
+          flex={{ base: 1, md: "auto" }}
+          ml={{ base: -2 }}
+          display={{ base: "flex", md: "none" }}
         >
-          {drawer}
-        </Drawer>
-      </Box>
+          {!!props.session && (
+            <IconButton
+              onClick={onToggle}
+              icon={isOpen ? <MdClose /> : <MdMenu />}
+              variant={"ghost"}
+              aria-label={"Toggle Navigation"}
+            />
+          )}
+        </Flex>
+        <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
+          <Link href={Routes.DASHBOARD}>
+            <Text
+              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              fontFamily={"heading"}
+              color={useColorModeValue("gray.800", "white")}
+              as='b'
+              textDecoration='none'
+            >
+              OnLaunch &#128640;
+            </Text>
+          </Link>
+
+          <Flex display={{ base: "none", md: "flex" }} ml={10}>
+            {!!props.session && <DesktopNav />}
+          </Flex>
+        </Flex>
+
+        <Stack
+          flex={{ base: 1, md: 0 }}
+          justify={"flex-end"}
+          direction={"row"}
+          spacing={6}
+        >
+          {!props.session && (
+            <Button
+              as={"a"}
+              fontSize={"sm"}
+              fontWeight={400}
+              variant={"link"}
+              onClick={navigateToAuthPage}
+              href={"#"}
+            >
+              Sign In
+            </Button>
+          )}
+          {!!props.session && (
+            <Menu>
+              <MenuButton
+                as={Button}
+                rounded={"full"}
+                variant={"link"}
+                cursor={"pointer"}
+                minW={0}
+              >
+                <Avatar
+                  size={"sm"}
+                  name={props.session.user.name}
+                />
+              </MenuButton>
+              <MenuList alignItems={"center"}>
+                <br />
+                <Center>
+                  <Avatar
+                    size={"2xl"}
+                    name={props.session.user.name}
+                  />
+                </Center>
+                <br />
+                <Center>
+                  <p>{props?.session?.user?.name}</p>
+                </Center>
+                <br />
+                <MenuDivider />
+                <MenuItem as="a" href={Routes.DASHBOARD}>
+                  Your Organisations
+                </MenuItem>
+                <MenuItem as="a" href="/profile">
+                  Your Profile
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  onClick={() => {
+                    signOut();
+                    navigateToAuthPage();
+                  }}
+                >
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          )}
+        </Stack>
+      </Flex>
+      <Collapse in={isOpen} animateOpacity>
+        <MobileNav />
+      </Collapse>
     </Box>
   );
 }

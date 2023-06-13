@@ -1,24 +1,25 @@
-import Button from "@mui/material/Button";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import type { AlertColor } from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
 import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
-import CustomSnackbar from "../components/CustomSnackbar";
+import {
+  Input,
+  Button,
+  useToast,
+  Text,
+  Heading,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 
 export default function ResetPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const [email, setEmail] = useState("");
   const [sentMail, setSentMail] = useState(false);
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
 
   function navigateToAuthPage() {
     router.replace(Routes.AUTH);
@@ -32,55 +33,58 @@ export default function ResetPage() {
 
       setSentMail(true);
     } catch (error) {
-      setAlertMessage(`Error while sending request: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while sending request!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
   return (
     <>
       <main className={styles.main}>
-        {!sentMail && <h1>Enter your mail address for password reset</h1>}
         {!sentMail && (
-          <form className="column" onSubmit={submitHandler}>
-            <TextField
-              required
-              label="Email"
-              id="email"
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <Button
-              variant="contained"
-              type="submit"
-              className="marginTopMedium"
-            >
-              reset password
-            </Button>
-            <Button
-              variant="text"
-              type="button"
-              className="marginTopMedium"
-              onClick={() => navigateToAuthPage()}
-            >
-              go back to login
-            </Button>
+          <Heading className="text-center mb-8">
+            Enter your mail address for password reset
+          </Heading>
+        )}
+        {!sentMail && (
+          <form onSubmit={submitHandler}>
+            <FormControl className="mt-4">
+              <FormLabel>Email</FormLabel>
+              <Input
+                required
+                id="email"
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </FormControl>
+            <div className="flex flex-col">
+              <Button className="mt-4" colorScheme="blue" type="submit">
+                reset password
+              </Button>
+              <Button
+                variant="ghost"
+                colorScheme="blue"
+                type="button"
+                onClick={navigateToAuthPage}
+              >
+                go back to login
+              </Button>
+            </div>
           </form>
         )}
         {sentMail && (
           <div>
-            <h1 className="centeredElement">Check your mails</h1>
+            <Heading className="text-center mb-8">Check your mails</Heading>
             <div>
               You should receive a mail within the next minutes with the reset
               link!
             </div>
           </div>
         )}
-        <CustomSnackbar
-          message={alertMessage}
-          severity={alertSeverity}
-          isOpenState={[showAlert, setShowAlert]}
-        />
       </main>
     </>
   );

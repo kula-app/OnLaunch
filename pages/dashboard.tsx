@@ -1,20 +1,7 @@
-import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-import type { AlertColor } from "@mui/material/Alert";
 import { getSession } from "next-auth/react";
-
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
@@ -22,20 +9,40 @@ import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
 import { useOrgs } from "../api/orgs/useOrgs";
 import Routes from "../routes/routes";
 import { OrgInvite } from "../models/orgInvite";
-import CustomSnackbar from "../components/CustomSnackbar";
-import { CircularProgress } from "@mui/material";
+import {
+  Button,
+  Table,
+  Thead,
+  Th,
+  Tr,
+  Td,
+  Tbody,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  useToast,
+  useDisclosure,
+  Skeleton,
+  Stack,
+  Heading,
+} from "@chakra-ui/react";
+import React from "react";
 
 export default function DashboardPage() {
   const router = useRouter();
 
   const { invite, directinvite } = router.query;
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor>("success");
-  const [alertMessage, setAlertMessage] = useState("");
-
   const [orgInvite, setOrgInvite] = useState<OrgInvite>();
-  const [showInviteDialog, setShowInviteDialog] = useState(false);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef(null);
+
+  const toast = useToast();
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -43,27 +50,31 @@ export default function DashboardPage() {
       try {
         if (!!invite) {
           setOrgInvite(await getOrgInviteToken(invite as string));
-          setShowInviteDialog(true);
+          onOpen();
         } else if (!!directinvite) {
           setOrgInvite(await getDirectInviteToken(directinvite as string));
-          setShowInviteDialog(true);
+          onOpen();
         }
       } catch (error) {
-        setAlertMessage(`Error while joining organisation: ${error}`);
-        setAlertSeverity("error");
-        setShowAlert(true);
+        toast({
+          title: "Error while joining organisation!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
       }
     }
     if (!!invite || !!directinvite) {
       showInvitation();
     }
-  }, [router.isReady, invite, directinvite]);
+  }, [router.isReady, invite, directinvite, toast, onOpen]);
 
   function navigateToAppsPage(id: number) {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
 
-  const { orgs, isLoading, isError, mutate } = useOrgs();
+  const { orgs, isLoading, isError } = useOrgs();
   if (isError) return <div>Failed to load</div>;
 
   function navigateToNewOrgPage() {
@@ -82,97 +93,113 @@ export default function DashboardPage() {
         await joinOrgViaDirectInvite(directinvite as string);
       }
       if (!!invite || !!directinvite) {
-        setAlertMessage(`Successfully joined organisation with id ${id}!`);
-        setAlertSeverity("success");
-        setShowAlert(true);
+        toast({
+          title: "Success!",
+          description: `Joined organisation with id ${id}`,
+          status: "success",
+          isClosable: true,
+          duration: 6000,
+        });
 
         navigateToOrgPage(id);
       }
     } catch (error) {
-      setAlertMessage(`Error while joining: ${error}`);
-      setAlertSeverity("error");
-      setShowAlert(true);
+      toast({
+        title: "Error while joining!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
     }
   }
 
   return (
     <>
       <main className={styles.main}>
-        <h1>Organisations</h1>
-        <div className="addButton">
+        <Heading className="text-center">Organisations</Heading>
+        <div>
           <Button
-            variant="contained"
-            onClick={() => {
-              navigateToNewOrgPage();
-            }}
+            className="mt-8"
+            colorScheme="blue"
+            onClick={navigateToNewOrgPage}
           >
             New Organisation
           </Button>
         </div>
-        <Table sx={{ minWidth: 650, maxWidth: 1000 }} aria-label="simple table">
-          <TableHead>
-            <TableCell width="5%">
-              <strong>ID</strong>
-            </TableCell>
-            <TableCell>
-              <strong>Org Name</strong>
-            </TableCell>
-          </TableHead>
-          <TableBody>
-            {orgs?.map((org, index) => {
-              return (
-                <TableRow
-                  className="clickable-row"
-                  key={index}
-                  onClick={() => navigateToAppsPage(org.id)}
-                >
-                  <TableCell width="5%">{org.id}</TableCell>
-                  <TableCell>{org.name}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        {orgs?.length == 0 && (
-          <p className="marginTopMedium">no data to show</p>
-        )}
-        {isLoading && (
-          <div>
-            <p className="marginTopMedium">Loading...</p>
-            <CircularProgress />
-          </div>
-        )}
-        <CustomSnackbar
-          message={alertMessage}
-          severity={alertSeverity}
-          isOpenState={[showAlert, setShowAlert]}
-        />
-        <Dialog
-          open={showInviteDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+        <div className="min-w-min">
+          <Table
+            className="mt-8"
+            sx={{ minWidth: 650, maxWidth: 1000 }}
+            aria-label="table"
+          >
+            <Thead>
+              <Tr>
+                <Th width="5%">
+                  <strong>ID</strong>
+                </Th>
+                <Th>
+                  <strong>Name</strong>
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {orgs?.map((org, index) => {
+                return (
+                  <Tr
+                    className="clickable-row h-16"
+                    key={index}
+                    onClick={() => navigateToAppsPage(org.id)}
+                  >
+                    <Td width="5%">{org.id}</Td>
+                    <Td>{org.name}</Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+          {isLoading && (
+            <div className="w-full">
+              <Stack>
+                <Skeleton height="60px" />
+                <Skeleton height="60px" />
+                <Skeleton height="60px" />
+              </Stack>
+            </div>
+          )}
+        </div>
+        {orgs?.length == 0 && <p className="mt-4">no data to show</p>}
+
+        <AlertDialog
+          isOpen={isOpen}
+          motionPreset="slideInBottom"
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+          isCentered
         >
-          <DialogTitle id="alert-dialog-title">
-            {`Join Organisation '${orgInvite?.name}?'`}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              You can leave any time.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowInviteDialog(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setShowInviteDialog(false);
-                joinOrg(Number(orgInvite?.id));
-              }}
-              autoFocus
-            >
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
+          <AlertDialogOverlay />
+
+          <AlertDialogContent>
+            <AlertDialogHeader>{`Join Organisation '${orgInvite?.name}?'`}</AlertDialogHeader>
+            <AlertDialogCloseButton />
+            <AlertDialogBody>You can leave any time.</AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="blue"
+                ml={3}
+                onClick={() => {
+                  joinOrg(Number(orgInvite?.id));
+                  onClose();
+                }}
+              >
+                Confirm
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </>
   );
