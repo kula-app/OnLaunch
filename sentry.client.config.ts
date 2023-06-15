@@ -5,23 +5,24 @@ const config = loadConfig();
 
 Sentry.init({
   dsn: config.sentryConfig.dsn,
+  debug: config.sentryConfig.debug,
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  release: config.sentryConfig.release,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-
-  replaysOnErrorSampleRate: 1.0,
-
-  // This sets the sample rate to be 10%. You may want this to be 100% while
-  // in development and sample at a lower rate in production
+  replaysOnErrorSampleRate: config.sentryConfig.replaysOnErrorSampleRate,
   replaysSessionSampleRate: config.sentryConfig.replaysSessionSampleRate,
 
-  // You can remove this option if you're not planning to use the Sentry Session Replay feature:
+  tracesSampler: (samplingContext) => {
+    // Ignore the health endpoint from trace sampling
+    if (samplingContext.transactionContext.name == "GET /api/health") {
+      return false;
+    }
+    return config.sentryConfig.tracesSampleRate ?? 0.2;
+  },
+  sampleRate: config.sentryConfig.sampleRate,
+
   integrations: [
     new Sentry.Replay({
-      // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
