@@ -29,8 +29,14 @@ interface HealthConfig {
 }
 
 interface SentryConfig {
-  dsn: string;
-  replaysSessionSampleRate: number;
+  debug?: boolean;
+  dsn?: string;
+  env?: string;
+  release?: string;
+  replaysOnErrorSampleRate?: number;
+  replaysSessionSampleRate?: number;
+  sampleRate?: number;
+  tracesSampleRate?: number;
 }
 
 interface Config {
@@ -41,6 +47,20 @@ interface Config {
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
   sentryConfig: SentryConfig;
+}
+
+/**
+ * Tries to parse the given value into a number.
+ * Returns `undefined` if the value is `undefined`.
+ *
+ * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
+ * @returns
+ */
+function parseNumberEnvValue(value?: string): number | undefined {
+  if (value == undefined) {
+    return undefined;
+  }
+  return Number(value);
 }
 
 export function loadConfig(): Config {
@@ -71,8 +91,20 @@ export function loadConfig(): Config {
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
     },
     sentryConfig: {
-      dsn: process.env.SENTRY_DSN || "",
-      replaysSessionSampleRate: Number(process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE) || 0.1,
+      debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",
+      dsn: process.env.SENTRY_DSN,
+      env: process.env.SENTRY_ENV,
+      release: process.env.SENTRY_RELEASE,
+      replaysOnErrorSampleRate: parseNumberEnvValue(
+        process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+      ),
+      replaysSessionSampleRate: parseNumberEnvValue(
+        process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+      ),
+      sampleRate: parseNumberEnvValue(process.env.SENTRY_SAMPLE_RATE),
+      tracesSampleRate: parseNumberEnvValue(
+        process.env.SENTRY_TRACES_SAMPLE_RATE
+      ),
     },
   };
 }
