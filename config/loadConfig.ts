@@ -96,7 +96,7 @@ export function loadConfig(): Config {
       env: process.env.SENTRY_ENV,
       release: process.env.SENTRY_RELEASE,
       replaysOnErrorSampleRate: parseNumberEnvValue(
-        process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+        process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE
       ),
       replaysSessionSampleRate: parseNumberEnvValue(
         process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
