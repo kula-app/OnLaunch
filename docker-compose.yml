@@ -16,19 +16,19 @@ services:
       - 1025:1025
       - 8025:8025
 
-  onlaunch:
-    build:
-      context: .
-    image: kula/onlaunch:latest
-    pull_policy: always
-    environment:
-      DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
-      NEXTAUTH_SECRET: "this is a secret example"
-      SMTP_HOST: mailhog
-      SMTP_PORT: 1025
-      SMTP_USER: ""
-      SMTP_PASS: ""
-      HEALTH_API_KEY: onlaunch-api-key
-      SIGNUPS_ENABLED: true
-    ports:
-      - 3000:3000
+  # onlaunch:
+  #   build:
+  #     context: .
+  #   image: kula/onlaunch:latest
+  #   pull_policy: always
+  #   environment:
+  #     DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
+  #     NEXTAUTH_SECRET: "this is a secret example"
+  #     SMTP_HOST: mailhog
+  #     SMTP_PORT: 1025
+  #     SMTP_USER: ""
+  #     SMTP_PASS: ""
+  #     HEALTH_API_KEY: onlaunch-api-key
+  #     SIGNUPS_ENABLED: true
+  #   ports:
+  #     - 3000:3000
