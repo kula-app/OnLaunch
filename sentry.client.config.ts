@@ -20,11 +20,4 @@ Sentry.init({
     return config.sentryConfig.tracesSampleRate ?? 0.2;
   },
   sampleRate: config.sentryConfig.sampleRate,
-
-  integrations: [
-    new Sentry.Replay({
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
-  ],
 });
