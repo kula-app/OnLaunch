@@ -29,5 +29,6 @@ services:
       SMTP_USER: ""
       SMTP_PASS: ""
       HEALTH_API_KEY: onlaunch-api-key
+      SIGNUPS_ENABLED: true
     ports:
       - 3000:3000
