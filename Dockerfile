@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:20 AS base
+FROM node:20.3.0 AS base
 # install additional dependencies
 # --> noop
 
@@ -31,23 +31,35 @@ RUN yarn install \
 
 # ---- Build Setup ----
 FROM project_setup AS build_setup
-# copy app sources
-COPY api ./api
-COPY components ./components
-COPY config ./config
-COPY fonts ./fonts
-COPY mailTemplate ./mailTemplate
-COPY models ./models
-COPY pages ./pages
-COPY prisma ./prisma
-COPY public ./public
-COPY routes ./routes
-COPY styles ./styles
-COPY types ./types
-COPY util ./util
+# Copy resources required for the build process.
+# Caching depends on previous layers, therefore a changed layer will invalidate all following layers.
+# Order the layers from least-to-change to frequent-to-change.
+
+# Rarely changed
 COPY sentry.client.config.ts .
 COPY sentry.edge.config.ts .
 COPY sentry.server.config.ts .
+
+COPY postcss.config.js .
+COPY tailwind.config.js .
+
+COPY config ./config
+COPY fonts ./fonts
+COPY mailTemplate ./mailTemplate
+COPY public ./public
+
+# Regularly changed
+COPY types ./types
+COPY styles ./styles
+COPY util ./util
+COPY components ./components
+
+# Frequently changed
+COPY models ./models
+COPY prisma ./prisma
+COPY routes ./routes
+COPY api ./api
+COPY pages ./pages
 
 # ---- Production ----
 # build development server
@@ -61,7 +73,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:20-slim AS release
+FROM node:20.3.0-slim AS release
 # install additional dependencies
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
