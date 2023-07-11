@@ -61,6 +61,8 @@ model App {
 
   organisation Organisation? @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId        Int?
+
+  loggedApiRequests LoggedApiRequests[]
 }
 
 model User {
@@ -182,4 +184,17 @@ model UserInvitationToken {
   // the user who invited the email above to the organisation
   user         User         @relation(fields: [userId], references: [id])
   userId       Int
+}
+
+model LoggedApiRequests {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ip String
+
+  // the app the request was made for
+  app       App    @relation(fields: [appId], references: [id])
+  appId     Int
+  publicKey String
 }
