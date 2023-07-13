@@ -39,6 +39,12 @@ interface SentryConfig {
   tracesSampleRate?: number;
 }
 
+interface StripeConfig {
+  webhookSecret: string;
+  secretKey: string;
+  publishableKey: string;
+}
+
 interface Config {
   nextAuth: NextAuthConfig;
   signup: SignupConfig;
@@ -47,6 +53,7 @@ interface Config {
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
   sentryConfig: SentryConfig;
+  stripeConfig: StripeConfig;
 }
 
 /**
@@ -105,6 +112,11 @@ export function loadConfig(): Config {
       tracesSampleRate: parseNumberEnvValue(
         process.env.SENTRY_TRACES_SAMPLE_RATE
       ),
+    },
+    stripeConfig: {
+      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
+      secretKey: process.env.STRIPE_SECRET_KEY || "",
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || "",
     },
   };
 }
