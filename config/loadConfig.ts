@@ -40,6 +40,7 @@ interface SentryConfig {
 }
 
 interface StripeConfig {
+  apiVersion: string;
   webhookSecret: string;
   secretKey: string;
   publishableKey: string;
@@ -114,9 +115,10 @@ export function loadConfig(): Config {
       ),
     },
     stripeConfig: {
+      apiVersion: process.env.STRIPE_API_VERSION || "",
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
       secretKey: process.env.STRIPE_SECRET_KEY || "",
-      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || "",
+      publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
     },
   };
 }
