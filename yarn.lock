@@ -7331,9 +7331,9 @@ next-swagger-doc@^0.4.0:
     isarray "2.0.5"
     swagger-jsdoc "6.2.8"
 
-next@13.4.9:
+next@^13.4.9:
   version "13.4.9"
-  resolved "https://registry.npmjs.org/next/-/next-13.4.9.tgz"
+  resolved "https://registry.yarnpkg.com/next/-/next-13.4.9.tgz#473de5997cb4c5d7a4fb195f566952a1cbffbeba"
   integrity sha512-vtefFm/BWIi/eWOqf1GsmKG3cjKw1k3LjuefKRcL3iiLl3zWzFdPG3as6xtxrGO6gwTzzaO1ktL4oiHt/uvTjA==
   dependencies:
     "@next/env" "13.4.9"
