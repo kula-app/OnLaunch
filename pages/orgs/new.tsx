@@ -1,25 +1,28 @@
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import styles from "../../styles/Home.module.css";
 import { getSession } from "next-auth/react";
 import createOrg from "../../api/orgs/createOrg";
 import Routes from "../../routes/routes";
 import {
   Input,
-  Button,
   useToast,
-  Text,
   Heading,
   FormControl,
   FormLabel,
   Center,
 } from "@chakra-ui/react";
+import { useProducts } from "../../api/stripe/useProducts";
+import ProductCard from "../../components/ProductCard";
 
 export default function NewOrgPage() {
   const router = useRouter();
   const toast = useToast();
 
   const [orgName, setOrgName] = useState("");
+  const { products, isError } = useProducts();
+
+  if (isError) return <div>Failed to load</div>;
 
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);
@@ -62,19 +65,29 @@ export default function NewOrgPage() {
         <main className={styles.main}>
           <Heading className="text-center">New Organisation</Heading>
           <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
-            <FormControl className="mt-4">
-              <FormLabel>Name</FormLabel>
-              <Input
-                required
-                id="name"
-                onChange={(event) => setOrgName(event.target.value)}
-              />
+            <FormControl className="mt-4 flex flex-col items-center">
+              <div>
+                <FormLabel>Name</FormLabel>
+                <Input
+                  required
+                  id="name"
+                  onChange={(event) => setOrgName(event.target.value)}
+                />
+              </div>
             </FormControl>
-            <Center>
-              <Button colorScheme="blue" className="mt-4" type="submit">
-                save
-              </Button>
-            </Center>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+              {products?.map((product, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="mt-10 border-gray-100 shadow-2xl border-4 text-center"
+                  >
+                    <ProductCard product={product} key={index} />
+                  </div>
+                );
+              })}
+            </div>
+            <Center></Center>
           </form>
         </main>
       </div>
