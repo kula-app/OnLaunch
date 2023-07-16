@@ -26,11 +26,13 @@ export default async function handler(
           (price) => price.product === product.id
         );
         let priceAmount = productPrice ? productPrice.unit_amount : null;
+        let priceId = productPrice ? productPrice.id : null;
 
         return {
           id: product.id,
           name: product.name,
           description: product.description as string,
+          priceId: priceId,
           price: priceAmount,
         };
       });

@@ -13,6 +13,7 @@ class ApiRoutes {
   static readonly VERIFICATION = `${ApiRoutes.API_BASE_URL}/tokens/verification`;
 
   static readonly PRODUCTS = `${ApiRoutes.STRIPE}/products`;
+  static readonly SUBSCRIPTIONS = `${ApiRoutes.STRIPE}/subscriptions`;
 
   static readonly EMAIL_CHANGE = `${ApiRoutes.API_BASE_URL}/users/emailChange`;
   static readonly PASSWORD_CHANGE = `${ApiRoutes.API_BASE_URL}/users/passwordChange`;

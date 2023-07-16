@@ -1,12 +1,18 @@
 import React from "react";
 import { Product } from "../models/product";
 import { Button, Heading } from "@chakra-ui/react";
+import createSubscription from "../api/stripe/createSubscription";
 
 interface Props {
   product: Product;
+  orgName: string;
 }
 
 const ProductCard = (props: Props) => {
+  const handleSubscription = async (productId: string) => {
+    await createSubscription(productId, props.orgName);
+  };
+
   return (
     <div className="p-5 max-w-[500px]" style={{ padding: 32 }}>
       <div>
@@ -16,7 +22,7 @@ const ProductCard = (props: Props) => {
         </div>
         <div>
           <div className="flex flex-col items-center justify-center pt-4">
-          <Heading className="text-5xl font-bold mt-4">
+            <Heading className="text-5xl font-bold mt-4">
               {((props.product.price as number) / 100).toLocaleString("en-US", {
                 style: "currency",
                 currency: "EUR",
@@ -25,7 +31,7 @@ const ProductCard = (props: Props) => {
           </div>
         </div>
 
-        <Button colorScheme="blue" type="submit" className="mt-8 flex w-full">
+        <Button colorScheme="blue" onClick={() => handleSubscription(props.product.priceId as string)} className="mt-8 flex w-full">
           choose this abo
         </Button>
       </div>

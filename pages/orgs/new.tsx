@@ -82,7 +82,7 @@ export default function NewOrgPage() {
                     key={index}
                     className="mt-10 border-gray-100 shadow-2xl border-4 text-center"
                   >
-                    <ProductCard product={product} key={index} />
+                    <ProductCard product={product} orgName={orgName} key={index} />
                   </div>
                 );
               })}
