@@ -32,6 +32,7 @@ export default function NewOrgPage() {
     event.preventDefault();
 
     try {
+      // TODO delete this
       await createOrg(orgName);
 
       toast({

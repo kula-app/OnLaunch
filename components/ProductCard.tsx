@@ -9,8 +9,9 @@ interface Props {
 }
 
 const ProductCard = (props: Props) => {
-  const handleSubscription = async (productId: string) => {
-    await createSubscription(productId, props.orgName);
+  const handleSubscription = async (priceId: string) => {
+    // TODO do something different for the free subscription ?
+    await createSubscription(priceId, props.orgName);
   };
 
   return (
@@ -28,10 +29,16 @@ const ProductCard = (props: Props) => {
                 currency: "EUR",
               })}
             </Heading>
+            <p>per month</p>
           </div>
         </div>
 
-        <Button colorScheme="blue" onClick={() => handleSubscription(props.product.priceId as string)} className="mt-8 flex w-full">
+        <Button
+          colorScheme="blue"
+          isDisabled={props.orgName.trim().length == 0}
+          onClick={() => handleSubscription(props.product.priceId as string)}
+          className="mt-8 flex w-full"
+        >
           choose this abo
         </Button>
       </div>

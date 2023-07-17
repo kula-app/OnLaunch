@@ -37,12 +37,12 @@ export default async function handler(
         };
       });
 
-      // sort by products by price
+      // sort products by price
       const sortedResult = result.sort((a, b) => {
           return (a.price as number) - (b.price as number);
       });
       
-      res.status(200).end(JSON.stringify(sortedResult));
+      res.status(StatusCodes.OK).end(JSON.stringify(sortedResult));
       break;
 
     default:

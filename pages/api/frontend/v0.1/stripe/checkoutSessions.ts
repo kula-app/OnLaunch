@@ -1,4 +1,5 @@
 import { StripeError } from '@stripe/stripe-js';
+import { StatusCodes } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Error from 'next/error';
 import Stripe from 'stripe';
@@ -26,6 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else {
     res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
+    res.status(StatusCodes.METHOD_NOT_ALLOWED).end('Method Not Allowed');
   }
 }

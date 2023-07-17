@@ -43,7 +43,9 @@ export default async function handler(
         event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
       } catch (error: any) {
         logger.error(`Stripe webhook error: ${error.message}`);
-        return res.status(400).end(`Stripe webhook error: ${error.message}`);
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .end(`Stripe webhook error: ${error.message}`);
       }
 
       logger.log(`Event: ${JSON.stringify(event)}`);
@@ -58,7 +60,9 @@ export default async function handler(
           break;
         case "customer.created":
           logger.log("Customer created!");
-          logger.log(`Customer data: id=${event.data.object.id}, name=${event.data.object.name}, email=${event.data.object.email}`);
+          logger.log(
+            `Customer data: id=${event.data.object.id}, name=${event.data.object.name}, email=${event.data.object.email}`
+          );
           break;
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
@@ -74,7 +78,7 @@ export default async function handler(
           break;
       }
 
-      res.status(200).end();
+      res.status(StatusCodes.OK).end();
       break;
 
     default:
