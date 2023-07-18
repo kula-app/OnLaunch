@@ -1,10 +1,13 @@
 import ApiRoutes from "../../routes/apiRoutes";
 import { returnDataOrThrowError } from "../../util/api";
 
-const createSubscription = async (priceId: string, orgName: string) => {
-  const response = await fetch(ApiRoutes.SUBSCRIPTIONS, {
+const saveSubscription = async (
+  sessionId: string,
+  orgName: string
+) => {
+  const response = await fetch(ApiRoutes.SAVE_SUBSCRIPTION, {
     method: "POST",
-    body: JSON.stringify({ priceId: priceId, orgName: orgName }),
+    body: JSON.stringify({ sessionId: sessionId, orgName: orgName }),
     headers: {
       "Content-Type": "application/json",
     },
@@ -13,4 +16,4 @@ const createSubscription = async (priceId: string, orgName: string) => {
   return await returnDataOrThrowError(response);
 };
 
-export default createSubscription;
+export default saveSubscription;

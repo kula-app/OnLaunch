@@ -200,7 +200,7 @@ export default function EditOrgPage() {
       toast({
         title: "Success!",
         description: "User has been invited.",
-        status: "error",
+        status: "success",
         isClosable: true,
         duration: 6000,
       });
@@ -249,7 +249,7 @@ export default function EditOrgPage() {
         title: "Success!",
         description: `User ${user.id === -1 ? "invite for" : "with"} email ${
           user.email
-        } is now ${event.target.value}.`,
+        } has been updated.`,
         status: "success",
         isClosable: true,
         duration: 6000,

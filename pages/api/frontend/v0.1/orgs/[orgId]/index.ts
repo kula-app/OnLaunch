@@ -60,6 +60,30 @@ export default async function handler(
           return;
         }
 
+        const orgToDelete = await prisma.organisation.findUnique({
+          include: {
+            subs: {
+              where: {
+                isDeleted: false,
+              },
+            },
+          },
+          where: {
+            id: Number(req.query.orgId),
+          },
+        });
+
+        if (orgToDelete && orgToDelete.subs.length > 0) {
+          logger.error(
+            "Cannot delete organisation with active subscription! Cancel subscription first"
+          );
+          res.status(StatusCodes.BAD_REQUEST).json({
+            message:
+              "Cannot delete organisation with active subscription! Cancel subscription first",
+          });
+          return;
+        }
+
         logger.log(
           `Deleting user relations from organisation with id '${req.query.orgId}'`
         );
@@ -116,9 +140,9 @@ export default async function handler(
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No organisation found with id '${req.query.orgId}'`);
-          res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ message: "No organisation found with id " + req.query.orgId });
+          res.status(StatusCodes.NOT_FOUND).json({
+            message: "No organisation found with id " + req.query.orgId,
+          });
         }
       }
       break;

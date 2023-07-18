@@ -1,10 +1,9 @@
 import ApiRoutes from "../../routes/apiRoutes";
 import { returnDataOrThrowError } from "../../util/api";
 
-const createSubscription = async (priceId: string, orgName: string) => {
+const getSubscriptions = async () => {
   const response = await fetch(ApiRoutes.SUBSCRIPTIONS, {
-    method: "POST",
-    body: JSON.stringify({ priceId: priceId, orgName: orgName }),
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
@@ -13,4 +12,4 @@ const createSubscription = async (priceId: string, orgName: string) => {
   return await returnDataOrThrowError(response);
 };
 
-export default createSubscription;
+export default getSubscriptions;

@@ -7,6 +7,7 @@ import deleteUser from "../api/users/deleteUser";
 import getUser from "../api/users/getUser";
 import updatePassword from "../api/tokens/updatePassword";
 import { User } from "../models/user";
+import { FiExternalLink } from "react-icons/fi";
 import {
   Button,
   Input,
@@ -24,8 +25,19 @@ import {
   FormControl,
   FormLabel,
   Center,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  Spinner,
+  Tag,
 } from "@chakra-ui/react";
 import React from "react";
+import { Subscription } from "../models/subscription";
+import getSubscriptions from "../api/stripe/getSubscriptions";
+import createCustomerPortalSession from "../api/stripe/createCustomerPortalSession";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -34,7 +46,10 @@ export default function ProfilePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
 
+  const [loading, setLoading] = useState(true);
+
   const [user, setUser] = useState<Partial<User>>();
+  const [subs, setSubs] = useState<Subscription[]>();
 
   const [passwordOld, setPasswordOld] = useState("");
   const [password, setPassword] = useState("");
@@ -61,6 +76,23 @@ export default function ProfilePage() {
     };
 
     fetchUserData();
+
+    const fetchUserSubscriptions = async () => {
+      try {
+        setSubs(await getSubscriptions());
+      } catch (error) {
+        toast({
+          title: "Error while fetching user data!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchUserSubscriptions();
   }, [router.isReady, toast]);
 
   async function sendNewPassword() {
@@ -128,6 +160,21 @@ export default function ProfilePage() {
 
   function openDeleteDialog() {
     onOpen();
+  }
+
+  async function sendCreateCustomerPortalSession() {
+    try {
+      const data = await createCustomerPortalSession();
+      window.location.assign(data);
+    } catch (error) {
+      toast({
+        title: "Error while sending createCustomerPortalSession request!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
+    }
   }
 
   async function sendDeleteProfile() {
@@ -223,6 +270,76 @@ export default function ProfilePage() {
               change password
             </Button>
           </Center>
+        </div>
+        <div>
+          <Heading size="lg" className="text-center mt-16 mb-8">
+            Your subscriptions
+          </Heading>
+          <Table
+            className="mt-8"
+            sx={{ minWidth: 650, maxWidth: 1000 }}
+            aria-label="simple table"
+          >
+            <Thead>
+              <Tr>
+                <Th>
+                  <strong>Org Id</strong>
+                </Th>
+                <Th>
+                  <strong>Organisation</strong>
+                </Th>
+                <Th>
+                  <strong>Subscription</strong>
+                </Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {subs?.map((sub, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>{sub.org.id}</Td>
+                    <Td>{sub.org.name}</Td>
+                    <Td>
+                      <Tag
+                        size={"md"}
+                        key={index}
+                        borderRadius="full"
+                        variant="solid"
+                        colorScheme={
+                          sub.subName === "Premium" ? "purple" : "teal"
+                        }
+                      >
+                        {sub.subName}
+                      </Tag>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+          {!loading && subs?.length != 0 && (
+            <Center>
+              <Button
+                rightIcon={<FiExternalLink />}
+                colorScheme="blue"
+                variant="solid"
+                className="mt-4"
+                onClick={sendCreateCustomerPortalSession}
+              >
+                manage subscriptions
+              </Button>
+            </Center>
+          )}
+          {loading && (
+            <div>
+              <Heading className="text-center">loading ...</Heading>
+              <Spinner />
+            </div>
+          )}
+          {!loading && subs?.length == 0 && (
+            <Center className="mt-4">no data to show</Center>
+          )}
         </div>
         <div>
           <Heading size="lg" className="text-center mt-16 mb-8">

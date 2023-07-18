@@ -67,6 +67,28 @@ export default async function handler(
       }
 
       logger.log(
+        `Looking up subscriptions that user with id '${userByEmail.id}' is part of`
+      );
+      const subs = await prisma.subscription.findMany({
+        where: {
+          userId: userByEmail.id,
+          isDeleted: false,
+        },
+      });
+
+      if (!subs || subs.length > 0) {
+        logger.error(
+          `Cannot delete user with id '${userByEmail.id}', because they have active subscriptions!`
+        );
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({
+            message: `Cannot delete user, because you have active subscriptions!`,
+          });
+          return;
+      }
+
+      logger.log(
         `Looking up organisations that user with id '${userByEmail.id}' is part of`
       );
       // check if user is qualified to be deleted
@@ -103,13 +125,18 @@ export default async function handler(
       );
 
       if (orgsToDeleteFirst.length) {
+        var sortedOrgsToDeleteFirst: number[] = orgsToDeleteFirst.sort((n1,n2) => n1 - n2);
         logger.error(
-          `Before deleting user profile of user with id '${userByEmail.id}', these organisations have to be deleted first: ${JSON.stringify(orgsToDeleteFirst)}`
+          `Before deleting user profile of user with id '${
+            userByEmail.id
+          }', these organisations have to be deleted first: ${JSON.stringify(
+            sortedOrgsToDeleteFirst
+          )}`
         );
         res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "You have to delete these organisations first: " +
-            JSON.stringify(orgsToDeleteFirst),
+            JSON.stringify(sortedOrgsToDeleteFirst),
         });
         return;
       }
@@ -130,7 +157,9 @@ export default async function handler(
         },
       });
 
-      logger.log(`Deleting relations for all organisations that user with id '${deletedUser.id}' is in`);
+      logger.log(
+        `Deleting relations for all organisations that user with id '${deletedUser.id}' is in`
+      );
       // delete user from organisations
       await prisma.usersInOrganisations.deleteMany({
         where: {

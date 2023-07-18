@@ -46,13 +46,13 @@ export async function verifyPassword(
   salt: string,
   hashedPassword: string
 ) {
-  logger.log("Verifying password")
+  logger.log("Verifying password");
   const isValid = await compare(password.concat(salt), hashedPassword);
   return isValid;
 }
 
 export function generateToken() {
-  logger.log("Generating token")
+  logger.log("Generating token");
   return base64url(crypto.randomBytes(32));
 }
 
@@ -62,10 +62,10 @@ export function sendTokenPerMail(
   token: string,
   mailType: MailType
 ) {
-  logger.log(`Sending mail of type '${mailType}'`)
+  logger.log(`Sending mail of type '${mailType}'`);
 
   const config = loadConfig();
-  
+
   let transporter = nodemailer.createTransport({
     host: config.smtp.host,
     port: config.smtp.port,
@@ -205,7 +205,9 @@ export async function getUserWithRoleFromRequest(
     return;
   }
 
-  logger.log(`Looking up user with id '${user.id}' in organisation '${req.query.orgId}'`);
+  logger.log(
+    `Looking up user with id '${user.id}' in organisation '${req.query.orgId}'`
+  );
   const userInOrg = await prisma.usersInOrganisations.findFirst({
     where: {
       user: {
@@ -221,11 +223,15 @@ export async function getUserWithRoleFromRequest(
   });
 
   if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
-    logger.error(`User n`)
+    logger.error(
+      `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`
+    );
     // if user has no business here, return a 404
     res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'` });
+      .json({
+        message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'`,
+      });
     return;
   }
 

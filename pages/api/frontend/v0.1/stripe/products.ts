@@ -39,9 +39,9 @@ export default async function handler(
 
       // sort products by price
       const sortedResult = result.sort((a, b) => {
-          return (a.price as number) - (b.price as number);
+        return (a.price as number) - (b.price as number);
       });
-      
+
       res.status(StatusCodes.OK).end(JSON.stringify(sortedResult));
       break;
 

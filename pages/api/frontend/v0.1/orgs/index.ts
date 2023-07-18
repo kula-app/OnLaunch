@@ -10,6 +10,7 @@ type OrganisationDto = {
   id: number;
   name: string;
   role: string;
+  subName: string;
 };
 
 export default async function handler(
@@ -36,7 +37,15 @@ export default async function handler(
           },
         },
         include: {
-          org: true,
+          org: {
+            include: {
+              subs: {
+                where: {
+                  isDeleted: false,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -46,6 +55,10 @@ export default async function handler(
             id: organisation.orgId,
             name: organisation.org.name,
             role: organisation.role,
+            subName:
+              organisation.org.subs && organisation.org.subs.length > 0
+                ? organisation.org.subs[0].subName
+                : "free",
           };
         })
       );

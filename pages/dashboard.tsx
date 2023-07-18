@@ -29,6 +29,7 @@ import {
   Skeleton,
   Stack,
   Heading,
+  Tag,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -138,6 +139,7 @@ export default function DashboardPage() {
                 <Th width="5%">
                   <strong>ID</strong>
                 </Th>
+                <Th></Th>
                 <Th>
                   <strong>Name</strong>
                 </Th>
@@ -152,6 +154,23 @@ export default function DashboardPage() {
                     onClick={() => navigateToAppsPage(org.id)}
                   >
                     <Td width="5%">{org.id}</Td>
+                    <Td width="5%">
+                      <Tag
+                        size={"md"}
+                        key={index}
+                        borderRadius="full"
+                        variant="solid"
+                        colorScheme={
+                          org?.subName === "Premium"
+                            ? "purple"
+                            : org?.subName === "Basic"
+                            ? "teal"
+                            : "green"
+                        }
+                      >
+                        {org?.subName?.toLocaleLowerCase()}
+                      </Tag>
+                    </Td>
                     <Td>{org.name}</Td>
                   </Tr>
                 );

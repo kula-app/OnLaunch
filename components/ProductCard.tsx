@@ -1,7 +1,10 @@
 import React from "react";
 import { Product } from "../models/product";
-import { Button, Heading } from "@chakra-ui/react";
+import { Button, Heading, useToast } from "@chakra-ui/react";
 import createSubscription from "../api/stripe/createSubscription";
+import createOrg from "../api/orgs/createOrg";
+import Routes from "../routes/routes";
+import { useRouter } from "next/router";
 
 interface Props {
   product: Product;
@@ -9,13 +12,52 @@ interface Props {
 }
 
 const ProductCard = (props: Props) => {
-  const handleSubscription = async (priceId: string) => {
-    // TODO do something different for the free subscription ?
-    await createSubscription(priceId, props.orgName);
+  const router = useRouter();
+  const toast = useToast();
+
+  const handleSubscription = async () => {
+    if (props.product.id === "FREE") {
+      // free subscription for new org
+      try {
+        await createOrg(props.orgName);
+
+        toast({
+          title: "Success!",
+          description: "New organisation created.",
+          status: "success",
+          isClosable: true,
+          duration: 6000,
+        });
+
+        navigateToDashboardPage();
+      } catch (error) {
+        toast({
+          title: "Error while creating new organisation!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
+      }
+    } else {
+      const data = await createSubscription(
+        props.product.priceId as string,
+        props.orgName
+      );
+      // forward to stripe url
+      window.location.assign(data);
+    }
   };
 
+  function navigateToDashboardPage() {
+    router.push(Routes.DASHBOARD);
+  }
+
   return (
-    <div className="p-5 max-w-[500px]" style={{ padding: 32 }}>
+    <div
+      className="p-5 max-w-[500px] mt-10 border-gray-100 shadow-2xl border-4 text-center"
+      style={{ padding: 32 }}
+    >
       <div>
         <div className="bg-gray-200 h-28 items-center font-bold">
           <Heading className="text-center">{props.product.name}</Heading>
@@ -36,8 +78,9 @@ const ProductCard = (props: Props) => {
         <Button
           colorScheme="blue"
           isDisabled={props.orgName.trim().length == 0}
-          onClick={() => handleSubscription(props.product.priceId as string)}
+          onClick={() => handleSubscription()}
           className="mt-8 flex w-full"
+          role="link"
         >
           choose this abo
         </Button>

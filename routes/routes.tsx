@@ -12,8 +12,7 @@ class Routes {
   static readonly RESET_PASSWORD = "/resetPassword";
   static readonly VERIFY = "/verify";
   static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
-  static readonly SUBSCRIPTION_SUCCESS = "/subscription?success=true";
-  static readonly SUBSCRIPTION_CANCELED = "/subscription?canceled=true";
+  static readonly SUBSCRIPTION = "/subscription";
 
   static getVerifyWithEmail(email: string): string {
     return `/verify?email=${email}`;

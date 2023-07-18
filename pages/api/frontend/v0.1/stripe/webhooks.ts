@@ -48,24 +48,36 @@ export default async function handler(
           .end(`Stripe webhook error: ${error.message}`);
       }
 
-      logger.log(`Event: ${JSON.stringify(event)}`);
       logger.log(`Event type: ${event.type}`);
 
       switch (event.type) {
-        case "payment_intent.succeeded":
-          logger.log("Payment succeeded!");
-          break;
-        case "payment_intent.payment_failed":
-          logger.error("Payment failed!");
-          break;
         case "customer.created":
           logger.log("Customer created!");
+          const eventData = event.data.object as Stripe.Customer;
           logger.log(
-            `Customer data: id=${event.data.object.id}, name=${event.data.object.name}, email=${event.data.object.email}`
+            `Customer data: id=${eventData.id}, name=${eventData.name}, email=${eventData.email}`
           );
           break;
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
+          break;
+        case "customer.subscription.deleted":
+          logger.log("Customer subscription deleted!");
+          const subData = event.data.object as Stripe.Subscription;
+          const deletedSub = await prisma.subscription.update({
+            where: {
+              subId: subData.id,
+            },
+            data: {
+              isDeleted: true,
+            },
+          });
+          break;
+        case "payment_intent.payment_failed":
+          logger.error("Payment failed!");
+          break;
+        case "payment_intent.succeeded":
+          logger.log("Payment succeeded!");
           break;
         case "product.created":
           logger.log("Product created!");
