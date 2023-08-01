@@ -126,6 +126,8 @@ export default async function handler(
       
       const ip = requestIp.getClientIp(req)
 
+      // logging the api requests now, so it is only logged when the request could successfully be served so far
+      // as we use the logged requests for our abo models, our customers should not pay for unsuccessful requests
       logger.log(`Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`)
       await prisma.loggedApiRequests.create({
         data: {
