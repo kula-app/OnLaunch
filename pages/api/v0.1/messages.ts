@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../../util/logger";
-import requestIp from 'request-ip';
+import requestIp from "request-ip";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -123,18 +123,20 @@ export default async function handler(
           ],
         },
       });
-      
-      const ip = requestIp.getClientIp(req)
 
-      // logging the api requests now, so it is only logged when the request could successfully be served so far
-      // as we use the logged requests for our abo models, our customers should not pay for unsuccessful requests
-      logger.log(`Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`)
+      const ip = requestIp.getClientIp(req);
+
+      // logging the api requests after checking if the app exists, so it is only logged when the request could successfully be served so far
+      // as logged requests are used for tracking, only for successful requests should be tracked
+      logger.log(
+        `Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`
+      );
       await prisma.loggedApiRequests.create({
         data: {
           ip: ip as string,
           appId: app.id,
-        }
-      })
+        },
+      });
 
       res.status(StatusCodes.OK).json(
         allMessages.map((message): ResponseDto => {
