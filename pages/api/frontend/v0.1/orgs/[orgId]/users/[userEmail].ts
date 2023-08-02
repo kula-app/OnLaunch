@@ -66,18 +66,6 @@ export default async function handler(
       if (userByEmail && userByEmail.id) {
         logger.log(`Looking up user in org with id '${req.query.orgId}'`);
         const userInOrg = await prisma.usersInOrganisations.findUnique({
-          include: {
-            org: {
-              include: {
-                subs: {
-                  where: {
-                    isDeleted: false,
-                    userId: userByEmail.id,
-                  },
-                },
-              },
-            },
-          },
           where: {
             orgId_userId: {
               userId: Number(userByEmail?.id),
@@ -85,17 +73,6 @@ export default async function handler(
             },
           },
         });
-
-        if (userInOrg && userInOrg.org.subs.length > 0) {
-          logger.error(
-            "Cannot remove user with active subscription for organisation"
-          );
-          res.status(StatusCodes.BAD_REQUEST).json({
-            message:
-              "Cannot remove user with active subscription for organisation",
-          });
-          return;
-        }
 
         if (userInOrg && userInOrg.userId) {
           logger.log(
@@ -112,7 +89,7 @@ export default async function handler(
 
           res.status(StatusCodes.OK).json(deletedUserInOrg);
         }
-      }
+      } 
 
       // if deletion is for a pending invitation
       try {

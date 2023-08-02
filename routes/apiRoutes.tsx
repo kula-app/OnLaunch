@@ -14,6 +14,7 @@ class ApiRoutes {
 
   static readonly PRODUCTS = `${ApiRoutes.STRIPE}/products`;
   static readonly SUBSCRIPTIONS = `${ApiRoutes.STRIPE}/subscriptions`;
+  static readonly CHECKOUT_SESSION = `${ApiRoutes.STRIPE}/checkoutSession`;
   static readonly SAVE_SUBSCRIPTION = `${ApiRoutes.STRIPE}/saveSubscription`;
   static readonly CUSTOMER_PORTAL = `${ApiRoutes.STRIPE}/customerPortal`;
 

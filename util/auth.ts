@@ -214,11 +214,12 @@ export async function getUserWithRoleFromRequest(
         id: Number(user.id),
       },
       org: {
-        id: Number(req.query.orgId),
+        id: Number(req.body.orgId ? req.body.orgId : req.query.orgId),
       },
     },
     select: {
       role: true,
+      orgId: true,
     },
   });
 
@@ -227,13 +228,16 @@ export async function getUserWithRoleFromRequest(
       `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`
     );
     // if user has no business here, return a 404
-    res
-      .status(StatusCodes.NOT_FOUND)
-      .json({
-        message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'`,
-      });
+    res.status(StatusCodes.NOT_FOUND).json({
+      message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'`,
+    });
     return;
   }
 
-  return { role: userInOrg?.role, id: user.id, email: user.email };
+  return {
+    role: userInOrg?.role,
+    id: user.id,
+    email: user.email,
+    orgId: userInOrg?.orgId,
+  };
 }

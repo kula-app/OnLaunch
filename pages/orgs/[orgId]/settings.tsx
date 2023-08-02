@@ -14,6 +14,7 @@ import inviteUser from "../../../api/orgs/inviteUser";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
 import { useOrg } from "../../../api/orgs/useOrg";
 import deleteOrg from "../../../api/orgs/deleteOrg";
+import { FiExternalLink } from "react-icons/fi";
 import updateUserInviteRoleInOrg from "../../../api/orgs/updateUserInviteRoleInOrg";
 import {
   Input,
@@ -42,8 +43,13 @@ import {
   FormLabel,
   Avatar,
   Center,
+  Tag,
+  Spinner,
 } from "@chakra-ui/react";
 import React from "react";
+import createCustomerPortalSession from "../../../api/stripe/createCustomerPortalSession";
+import { Subscription } from "../../../models/subscription";
+import getSubscriptions from "../../../api/stripe/getSubscriptions";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -51,6 +57,9 @@ export default function EditOrgPage() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
+
+  const [subs, setSubs] = useState<Subscription[]>();
+  const [loading, setLoading] = useState(true);
 
   const orgId = Number(router.query.orgId);
 
@@ -85,6 +94,23 @@ export default function EditOrgPage() {
     };
 
     fetchOrgData();
+
+    const fetchUserSubscriptions = async () => {
+      try {
+        setSubs(await getSubscriptions(orgId));
+      } catch (error) {
+        toast({
+          title: "Error while fetching user data!",
+          description: `${error}`,
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchUserSubscriptions();
   }, [router.isReady, orgId, toast]);
 
   const { data: session } = useSession();
@@ -293,6 +319,21 @@ export default function EditOrgPage() {
     }
   }
 
+  async function sendCreateCustomerPortalSession() {
+    try {
+      const data = await createCustomerPortalSession(orgId);
+      window.location.assign(data);
+    } catch (error) {
+      toast({
+        title: "Error while sending createCustomerPortalSession request!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
+    }
+  }
+
   return (
     <>
       <div>
@@ -333,35 +374,35 @@ export default function EditOrgPage() {
                     }
                   />
                 </FormControl>
-                  <Stack>
-                    <Button
-                      colorScheme="blue"
-                      className="ml-5 mt-5"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          baseUrl +
-                            "/dashboard?invite=" +
-                            (org?.invitationToken as string)
-                        );
-                        toast({
-                          title: "Success!",
-                          description: "Invitation link copied to clipboard.",
-                          status: "success",
-                          isClosable: true,
-                          duration: 6000,
-                        });
-                      }}
-                    >
-                      copy
-                    </Button>
-                    <Button
-                      colorScheme="blue"
-                      className="ml-5 mt-1"
-                      onClick={resetInvitation}
-                    >
-                      reset
-                    </Button>
-                  </Stack>
+                <Stack>
+                  <Button
+                    colorScheme="blue"
+                    className="ml-5 mt-5"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        baseUrl +
+                          "/dashboard?invite=" +
+                          (org?.invitationToken as string)
+                      );
+                      toast({
+                        title: "Success!",
+                        description: "Invitation link copied to clipboard.",
+                        status: "success",
+                        isClosable: true,
+                        duration: 6000,
+                      });
+                    }}
+                  >
+                    copy
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    className="ml-5 mt-1"
+                    onClick={resetInvitation}
+                  >
+                    reset
+                  </Button>
+                </Stack>
               </div>
             )}
             {userRole === "ADMIN" && (
@@ -480,7 +521,78 @@ export default function EditOrgPage() {
               </Tbody>
             </Table>
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
-
+            {!loading && subs?.length != 0 && (
+              <div>
+                <Heading className="text-center mt-16 mb-8">
+                  Your subscriptions
+                </Heading>
+                <Table
+                  className="mt-8"
+                  sx={{ minWidth: 650, maxWidth: 1000 }}
+                  aria-label="simple table"
+                >
+                  <Thead>
+                    <Tr>
+                      <Th>
+                        <strong>Org Id</strong>
+                      </Th>
+                      <Th>
+                        <strong>Organisation</strong>
+                      </Th>
+                      <Th>
+                        <strong>Subscription</strong>
+                      </Th>
+                      <Th></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {subs?.map((sub, index) => {
+                      return (
+                        <Tr key={index}>
+                          <Td>{sub.org.id}</Td>
+                          <Td>{sub.org.name}</Td>
+                          <Td>
+                            <Tag
+                              size={"md"}
+                              key={index}
+                              borderRadius="full"
+                              variant="solid"
+                              colorScheme={
+                                sub.subName === "Premium" ? "purple" : "teal"
+                              }
+                            >
+                              {sub.subName}
+                            </Tag>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+                {!loading && subs?.length != 0 && (
+                  <Center>
+                    <Button
+                      rightIcon={<FiExternalLink />}
+                      colorScheme="blue"
+                      variant="solid"
+                      className="mt-4"
+                      onClick={sendCreateCustomerPortalSession}
+                    >
+                      manage subscriptions
+                    </Button>
+                  </Center>
+                )}
+                {loading && (
+                  <div>
+                    <Heading className="text-center">loading ...</Heading>
+                    <Spinner />
+                  </div>
+                )}
+                {!loading && subs?.length == 0 && (
+                  <Center className="mt-4">no data to show</Center>
+                )}
+              </div>
+            )}
             {userRole === "ADMIN" && (
               <div>
                 <Heading className="text-center mt-16">
@@ -549,4 +661,7 @@ export async function getServerSideProps(context: any) {
   return {
     props: { session },
   };
+}
+function setSubs(arg0: any) {
+  throw new Error("Function not implemented.");
 }

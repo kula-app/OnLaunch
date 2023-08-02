@@ -49,6 +49,7 @@ export default async function handler(
       }
 
       logger.log(`Event type: ${event.type}`);
+      console.log(JSON.stringify(event));
 
       switch (event.type) {
         case "customer.created":
@@ -57,6 +58,37 @@ export default async function handler(
           logger.log(
             `Customer data: id=${eventData.id}, name=${eventData.name}, email=${eventData.email}`
           );
+          break;
+        case "checkout.session.completed":
+          logger.log("Checkout session completed!");
+          const createdSub = event.data.object;
+
+          console.log("object: " + event.data.object)
+          const session = await stripe.checkout.sessions.retrieve(
+            event.data.object.id,
+            {
+              expand: ["subscription"],
+            }
+          );
+          const savedSub = await prisma.subscription.create({
+            data: {
+              subId: (session.subscription as Stripe.Subscription).id as string,
+              subName: (session.subscription as Stripe.Subscription).items
+                .data[0].price.nickname as string,
+              orgId: Number(session.client_reference_id),
+            },
+          });
+
+          const updatedOrg = await prisma.organisation.updateMany({
+            where: {
+              id: Number(session.client_reference_id),
+              customer: null,
+            },
+            data: {
+              customer: createdSub.customer as string,
+            },
+          });
+
           break;
         case "customer.subscription.created":
           logger.log("Customer subscription created!");

@@ -4,13 +4,15 @@ import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Routes from "../../../../../routes/routes";
-import { getUserFromRequest } from "../../../../../util/auth";
+import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { PrismaClient } from "@prisma/client";
+import { captureRejectionSymbol } from "events";
 
 const prisma: PrismaClient = new PrismaClient();
 
 interface SessionOptions {
   billing_address_collection: string;
+  client_reference_id: string;
   line_items: {
     price: any;
     quantity: number;
@@ -28,10 +30,15 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
-  const user = await getUserFromRequest(req, res);
+  const userInOrg = await getUserWithRoleFromRequest(req, res, prisma);
 
-  if (!user) {
+  if (!userInOrg) {
     logger.error("User not logged in");
+    return;
+  }
+
+  if (userInOrg.role !== "ADMIN") {
+    logger.error("User has no admin rights");
     return;
   }
 
@@ -42,14 +49,14 @@ export default async function handler(
       });
 
       // check whether user has a stripe customer id with prisma
-      const userFromDb = await prisma.user.findUnique({
+      const org = await prisma.organisation.findUnique({
         where: {
-          id: user.id,
+          id: userInOrg.orgId,
         },
       });
 
-      if (!userFromDb) {
-        logger.error(`No user found with id ${user.id}`);
+      if (!org) {
+        logger.error(`No organisation found with id ${userInOrg.orgId}`);
         return;
       }
 
@@ -58,17 +65,18 @@ export default async function handler(
         res
           .status(StatusCodes.BAD_REQUEST)
           .end("No parameter priceId provided");
-      } else if (!req.body.orgName) {
-        logger.error("No parameter orgName provided");
+      } else if (!req.body.orgId) {
+        logger.error("No parameter orgId provided");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .end("No parameter orgName provided");
+          .end("No parameter orgId provided");
       }
 
       try {
         logger.log("Creating checkout session for subscription");
         let sessionOptions: SessionOptions = {
           billing_address_collection: "auto",
+          client_reference_id: req.body.orgId as string,
           line_items: [
             {
               price: req.body.priceId,
@@ -77,13 +85,15 @@ export default async function handler(
             },
           ],
           mode: "subscription",
-          success_url: `${config.nextAuth.url}${Routes.SUBSCRIPTION}?session_id={CHECKOUT_SESSION_ID}&org_name=${req.body.orgName}`,
-          cancel_url: `${config.nextAuth.url}${Routes.SUBSCRIPTION}?session_id={CHECKOUT_SESSION_ID}&canceled=true`,
+          success_url: `${config.nextAuth.url}${
+            Routes.SUBSCRIPTION
+          }?success=true&orgId=${req.body.orgId as string}`,
+          cancel_url: `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`,
         };
 
-        // if user already has a stripe id, add it to the options, else stripe will generate an id
-        if (userFromDb && userFromDb.customer) {
-          sessionOptions.customer = userFromDb.customer as string;
+        // if org already has a stripe id, add it to the options, else stripe will generate an id
+        if (org && org.customer) {
+          sessionOptions.customer = org.customer as string;
         }
 
         const session = await stripe.checkout.sessions.create(
@@ -96,21 +106,6 @@ export default async function handler(
         logger.error(`Error during Stripe communication: ${error}`);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
       }
-      break;
-
-    // get local subscription data for logged in user
-    case "GET":
-      const subs = await prisma.subscription.findMany({
-        where: {
-          userId: user.id,
-          isDeleted: false,
-        },
-        include: {
-          org: true,
-        },
-      });
-
-      res.status(StatusCodes.OK).json(subs);
       break;
 
     default:

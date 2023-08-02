@@ -1,57 +1,35 @@
 import React from "react";
 import { Product } from "../models/product";
-import { Button, Heading, useToast } from "@chakra-ui/react";
-import createSubscription from "../api/stripe/createSubscription";
-import createOrg from "../api/orgs/createOrg";
+import { Button, Heading } from "@chakra-ui/react";
 import Routes from "../routes/routes";
 import { useRouter } from "next/router";
+import createCheckoutSession from "../api/stripe/createCheckoutSession";
 
 interface Props {
   product: Product;
-  orgName: string;
+  orgId: number;
 }
 
 const ProductCard = (props: Props) => {
   const router = useRouter();
-  const toast = useToast();
+
+  function navigateToOrgDetailsPage(id: number) {
+    router.push(Routes.getOrgAppsByOrgId(id));
+  }
 
   const handleSubscription = async () => {
     if (props.product.id === "FREE") {
-      // free subscription for new org
-      try {
-        await createOrg(props.orgName);
-
-        toast({
-          title: "Success!",
-          description: "New organisation created.",
-          status: "success",
-          isClosable: true,
-          duration: 6000,
-        });
-
-        navigateToDashboardPage();
-      } catch (error) {
-        toast({
-          title: "Error while creating new organisation!",
-          description: `${error}`,
-          status: "error",
-          isClosable: true,
-          duration: 6000,
-        });
-      }
+      // free subscription for new org does not require an entry in our db
+      navigateToOrgDetailsPage(props.orgId);
     } else {
-      const data = await createSubscription(
+      const data = await createCheckoutSession(
         props.product.priceId as string,
-        props.orgName
+        props.orgId
       );
       // forward to stripe url
       window.location.assign(data);
     }
   };
-
-  function navigateToDashboardPage() {
-    router.push(Routes.DASHBOARD);
-  }
 
   return (
     <div
@@ -77,7 +55,6 @@ const ProductCard = (props: Props) => {
 
         <Button
           colorScheme="blue"
-          isDisabled={props.orgName.trim().length == 0}
           onClick={() => handleSubscription()}
           className="mt-8 flex w-full"
           role="link"

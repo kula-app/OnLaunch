@@ -3,7 +3,6 @@ import { getSession } from "next-auth/react";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import saveSubscription from "../api/stripe/saveSubscription";
 import Routes from "../routes/routes";
 
 export default function ProfilePage() {
@@ -12,10 +11,10 @@ export default function ProfilePage() {
 
   const [loading, setLoading] = useState(true);
 
-  let { session_id: sessionId, org_name: orgName, canceled } = router.query;
-
-  if (!orgName) {
-    orgName = "new organisation";
+  let { success, canceled, orgId } = router.query;
+  
+  function navigateToOrgDetailsPage(id: number) {
+    router.push(Routes.getOrgAppsByOrgId(id));
   }
 
   function navigateToDashboardPage() {
@@ -29,28 +28,19 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    if (!sessionId) {
-      navigateToDashboardPage();
+    if (success && orgId) {
+      toast({
+        title: "Success!",
+        description: "Enjoy your new abo!",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
+      navigateToOrgDetailsPage(orgId as unknown as number);
     }
 
-    if (!!sessionId && !canceled) {
-      const getCustomer = async () => {
-        try {
-          await saveSubscription(sessionId as string, orgName as string);
-        } catch (error) {
-          toast({
-            title: "Error while request!",
-            description: `${error}`,
-            status: "error",
-            isClosable: true,
-            duration: 6000,
-          });
-        }
-      };
-      getCustomer();
-    }
     setLoading(false);
-  }, [router.isReady, router, sessionId, toast, canceled]);
+  }, [router.isReady, router, toast, canceled]);
 
   return (
     <>
@@ -58,7 +48,7 @@ export default function ProfilePage() {
         {!loading && !canceled && (
           <div>
             <Heading className="text-center mt-4">Success!</Heading>
-            <p>
+            <p className="text-center">
               Your subscription was successful and your new organisation was
               created!
             </p>
@@ -89,8 +79,8 @@ export default function ProfilePage() {
         {!loading && canceled && (
           <div>
             <Heading className="text-center mt-4">Checkout canceled!</Heading>
-            <p className="mt-8">
-              Neither your subscription nor your organisation were created!
+            <p className="mt-8 text-center">
+              Your subscription was not created!
             </p>
             <Stack>
               <Button

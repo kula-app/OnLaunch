@@ -4,7 +4,7 @@ import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Routes from "../../../../../routes/routes";
-import { getUserFromRequest } from "../../../../../util/auth";
+import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { PrismaClient } from "@prisma/client";
 
 const prisma: PrismaClient = new PrismaClient();
@@ -16,11 +16,18 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
-  const user = await getUserFromRequest(req, res);
+  const user = await getUserWithRoleFromRequest(req, res, prisma);
 
   if (!user) {
     logger.error("User not logged in");
     return;
+  }
+
+  if (!req.body.orgId) {
+    logger.error("No parameter orgId provided");
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .end("No parameter orgId provided");
   }
 
   switch (req.method) {
@@ -30,27 +37,27 @@ export default async function handler(
       });
 
       // check whether user has a stripe customer id with prisma
-      const userFromDb = await prisma.user.findUnique({
+      const orgFromDb = await prisma.organisation.findUnique({
         where: {
-          id: user.id,
+          id: Number(req.body.orgId),
         },
       });
 
-      if (!userFromDb) {
-        logger.error(`No user found with id ${user.id}`);
+      if (!orgFromDb) {
+        logger.error(`No org found with id ${req.body.orgId}`);
         return;
       }
       
-      if (!userFromDb.customer) {
-        logger.error(`No stripe customer id found for user with id ${user.id}`);
+      if (!orgFromDb.customer) {
+        logger.error(`No stripe customer id found for organisation with id ${req.body.orgId}`);
         return;
       }
 
       try {
-        logger.log("Creating customer portal session for user");
+        logger.log("Creating customer portal session for organisation");
         const session = await stripe.billingPortal.sessions.create({
-          customer: userFromDb.customer,
-          return_url: `${config.nextAuth.url}${Routes.PROFILE}`,
+          customer: orgFromDb.customer,
+          return_url: `${config.nextAuth.url}${Routes.DASHBOARD}`,
         });
 
         logger.log("Redirecting to Stripe customer portal");

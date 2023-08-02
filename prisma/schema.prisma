@@ -77,10 +77,6 @@ model User {
   password String?
   salt     String?
 
-  // stripe data
-  customer String?
-  subs     Subscription[]
-
   // only a verified user can use the functionality of OnLaunch
   isVerified Boolean
   isDeleted  Boolean @default(false)
@@ -99,8 +95,10 @@ model Organisation {
 
   name            String
   invitationToken String @unique
-
-  // stripe subscriptions, old one have an isDeleted flag on true
+  
+  // stripe data
+  customer String?
+  // stripe subscriptions, old ones have an isDeleted flag on true
   subs Subscription[]
 
   apps                App[]
@@ -215,9 +213,6 @@ model Subscription {
   subName String
 
   isDeleted Boolean @default(false)
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
 
   org   Organisation @relation(fields: [orgId], references: [id])
   orgId Int
