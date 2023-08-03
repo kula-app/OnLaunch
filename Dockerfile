@@ -87,8 +87,8 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 WORKDIR /home/node/app/
 
 # copy build output required for yarn install for better build efficiency
-COPY --from=build_production /home/node/app/package.json    ./
-COPY --from=build_production /home/node/app/prisma          ./prisma
+COPY --from=build_production /home/node/app/package.json ./
+COPY --from=build_production /home/node/app/prisma       ./prisma
 
 # install production dependencies
 RUN yarn install \
@@ -98,11 +98,10 @@ RUN yarn install \
   --network-timeout 1000000
 
 # copy remaining build output
-COPY --from=build_production /home/node/app/public          ./public
-COPY --from=build_production /home/node/app/.next           ./.next
+COPY --from=build_production --chown=node:node /home/node/app/public ./public
+COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
 
 # select user
-RUN chown -R node:node /home/node/app
 USER node
 
 ENV NODE_ENV production
