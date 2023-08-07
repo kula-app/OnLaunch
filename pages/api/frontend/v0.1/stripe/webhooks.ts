@@ -49,7 +49,6 @@ export default async function handler(
       }
 
       logger.log(`Event type: ${event.type}`);
-      console.log(JSON.stringify(event));
 
       switch (event.type) {
         case "customer.created":
@@ -63,7 +62,6 @@ export default async function handler(
           logger.log("Checkout session completed!");
           const createdSession = event.data.object as Stripe.Checkout.Session;
 
-          console.log("object: " + event.data.object)
           const session = await stripe.checkout.sessions.retrieve(
             createdSession.id,
             {
