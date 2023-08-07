@@ -662,6 +662,3 @@ export async function getServerSideProps(context: any) {
     props: { session },
   };
 }
-function setSubs(arg0: any) {
-  throw new Error("Function not implemented.");
-}
