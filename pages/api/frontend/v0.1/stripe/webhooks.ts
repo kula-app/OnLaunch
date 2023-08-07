@@ -61,11 +61,11 @@ export default async function handler(
           break;
         case "checkout.session.completed":
           logger.log("Checkout session completed!");
-          const createdSub = event.data.object;
+          const createdSession = event.data.object as Stripe.Checkout.Session;
 
           console.log("object: " + event.data.object)
           const session = await stripe.checkout.sessions.retrieve(
-            event.data.object.id,
+            createdSession.id,
             {
               expand: ["subscription"],
             }
@@ -85,7 +85,7 @@ export default async function handler(
               customer: null,
             },
             data: {
-              customer: createdSub.customer as string,
+              customer: createdSession.customer as string,
             },
           });
 
