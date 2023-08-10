@@ -28,8 +28,8 @@ export default function NewOrgPage() {
     id: "FREE",
     description: "For checking it out",
     name: "Free",
-    priceId: null,
-    price: null,
+    priceId: "",
+    priceAmount: 0,
   };
 
   if (isError) {

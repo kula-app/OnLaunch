@@ -28,6 +28,12 @@ interface HealthConfig {
   apiKey: string;
 }
 
+interface RedisConfig {
+  host: string;
+  password: string;
+  port: number;
+}
+
 interface SentryConfig {
   debug?: boolean;
   dsn?: string;
@@ -53,6 +59,7 @@ interface Config {
   health: HealthConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
+  redisConfig: RedisConfig;
   sentryConfig: SentryConfig;
   stripeConfig: StripeConfig;
 }
@@ -97,6 +104,11 @@ export function loadConfig(): Config {
     emailContent: {
       senderName: process.env.SMTP_FROM_NAME || "OnLaunch",
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
+    },
+    redisConfig: {
+      host: process.env.REDIS_HOST || "",
+      password: process.env.REDIS_PASSWORD || "",
+      port: Number(process.env.REDIS_PORT) || 6379,
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",

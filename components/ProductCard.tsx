@@ -44,7 +44,7 @@ const ProductCard = (props: Props) => {
         <div>
           <div className="flex flex-col items-center justify-center pt-4">
             <Heading className="text-5xl font-bold mt-4">
-              {((props.product.price as number) / 100).toLocaleString("en-US", {
+              {((props.product.priceAmount as number) / 100).toLocaleString("en-US", {
                 style: "currency",
                 currency: "EUR",
               })}

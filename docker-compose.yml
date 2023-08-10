@@ -1,5 +1,9 @@
 version: "3.9"
 
+volumes:
+  data01:
+    driver: local
+    
 services:
   db:
     image: postgres:15
@@ -9,6 +13,16 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
+
+  redis:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - data01:/usr/share/redis/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
 
   mailhog:
     image: mailhog/mailhog:latest

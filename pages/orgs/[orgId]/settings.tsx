@@ -524,7 +524,7 @@ export default function EditOrgPage() {
             {!loading && subs?.length != 0 && (
               <div>
                 <Heading className="text-center mt-16 mb-8">
-                  Your subscriptions
+                  Your subscription
                 </Heading>
                 <Table
                   className="mt-8"
@@ -578,7 +578,7 @@ export default function EditOrgPage() {
                       className="mt-4"
                       onClick={sendCreateCustomerPortalSession}
                     >
-                      manage subscriptions
+                      manage subscription
                     </Button>
                   </Center>
                 )}
