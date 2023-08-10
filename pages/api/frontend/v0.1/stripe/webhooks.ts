@@ -78,23 +78,24 @@ export default async function handler(
           const createdSubData = event.data.object as Stripe.Subscription;
 
           // look up organisation by customer (stripe id)
-          const orgsWithCustomer = await prisma.organisation.findFirst({
+          const orgWithCustomer = await prisma.organisation.findFirst({
             where: {
               customer: createdSubData.customer as string,
-            }
+            },
           });
 
-          if (!orgsWithCustomer) {
-            logger.error(`No org found with customer id '${createdSubData.customer}'`);
+          if (!orgWithCustomer) {
+            logger.error(
+              `No org found with customer id '${createdSubData.customer}'`
+            );
             break;
           }
-          
+
           const savedSub = await prisma.subscription.create({
             data: {
-              subId: (createdSubData as Stripe.Subscription).id as string,
-              subName: (createdSubData as Stripe.Subscription).items
-                .data[0].price.nickname as string,
-              orgId: Number(orgsWithCustomer?.id),
+              subId: createdSubData.id as string,
+              subName: createdSubData.items.data[0].price.nickname as string,
+              orgId: Number(orgWithCustomer?.id),
             },
           });
 
