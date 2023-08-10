@@ -60,36 +60,44 @@ export default async function handler(
           break;
         case "checkout.session.completed":
           logger.log("Checkout session completed!");
-          const createdSession = event.data.object as Stripe.Checkout.Session;
-
-          const session = await stripe.checkout.sessions.retrieve(
-            createdSession.id,
-            {
-              expand: ["subscription"],
-            }
-          );
-          const savedSub = await prisma.subscription.create({
-            data: {
-              subId: (session.subscription as Stripe.Subscription).id as string,
-              subName: (session.subscription as Stripe.Subscription).items
-                .data[0].price.nickname as string,
-              orgId: Number(session.client_reference_id),
-            },
-          });
+          const completedSession = event.data.object as Stripe.Checkout.Session;
 
           const updatedOrg = await prisma.organisation.updateMany({
             where: {
-              id: Number(session.client_reference_id),
+              id: Number(completedSession.client_reference_id),
               customer: null,
             },
             data: {
-              customer: createdSession.customer as string,
+              customer: completedSession.customer as string,
             },
           });
 
           break;
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
+          const createdSubData = event.data.object as Stripe.Subscription;
+
+          // look up organisation by customer (stripe id)
+          const orgsWithCustomer = await prisma.organisation.findFirst({
+            where: {
+              customer: createdSubData.customer as string,
+            }
+          });
+
+          if (!orgsWithCustomer) {
+            logger.error(`No org found with customer id '${createdSubData.customer}'`);
+            break;
+          }
+          
+          const savedSub = await prisma.subscription.create({
+            data: {
+              subId: (createdSubData as Stripe.Subscription).id as string,
+              subName: (createdSubData as Stripe.Subscription).items
+                .data[0].price.nickname as string,
+              orgId: Number(orgsWithCustomer?.id),
+            },
+          });
+
           break;
         case "customer.subscription.deleted":
           logger.log("Customer subscription deleted!");
