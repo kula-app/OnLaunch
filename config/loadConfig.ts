@@ -32,6 +32,7 @@ interface RedisConfig {
   host: string;
   password: string;
   port: number;
+  cacheMaxAge: number;
 }
 
 interface SentryConfig {
@@ -109,6 +110,7 @@ export function loadConfig(): Config {
       host: process.env.REDIS_HOST || "",
       password: process.env.REDIS_PASSWORD || "",
       port: Number(process.env.REDIS_PORT) || 6379,
+      cacheMaxAge: Number(process.env.REDIS_CACHE_MAX_AGE) || 60,
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",

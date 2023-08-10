@@ -16,8 +16,6 @@ export function createRedisInstance(config = getRedisConfiguration()) {
   try {
     const options: RedisOptions = {
       host: config.host,
-      maxRetriesPerRequest: null,
-      enableReadyCheck: false,
     };
 
     if (config.port) {

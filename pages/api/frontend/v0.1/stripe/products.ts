@@ -4,6 +4,7 @@ import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
 import { Product } from "../../../../../models/product";
 import { createRedisInstance } from "../../../../../redis/redis";
+import { loadConfig } from "../../../../../config/loadConfig";
 
 const PRODUCTS_REDIS_KEY = "products";
 
@@ -13,6 +14,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
+      const config = loadConfig();
       const logger = new Logger(__filename);
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
         apiVersion: "2022-11-15",
@@ -56,9 +58,10 @@ export default async function handler(
 
       // cache data set to expire after 1 hour
       // after expiration, the data will be retrieved again from stripe
-      const MAX_AGE = 60_000 * 60; // 60 minutes
+      const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
       const EXPIRY_MS = `PX`; // milliseconds
 
+      logger.log("Saving stripe products to redis cache")
       // save products to redis cache
       await redis.set(
         PRODUCTS_REDIS_KEY,
