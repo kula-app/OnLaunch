@@ -54,10 +54,8 @@ export default async function handler(
         case "customer.created":
           logger.log("Customer created!");
           const eventData = event.data.object as Stripe.Customer;
-          logger.log(
-            `Customer data: id=${eventData.id}, name=${eventData.name}, email=${eventData.email}`
-          );
           break;
+          
         case "checkout.session.completed":
           logger.log("Checkout session completed!");
           const sessionData = event.data.object as Stripe.Checkout.Session;
@@ -156,7 +154,7 @@ export default async function handler(
         case "product.deleted":
           logger.log("Product deleted!");
           break;
-          
+
         case "product.updated":
           logger.log("Product updated!");
           break;
