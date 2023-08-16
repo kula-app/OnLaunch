@@ -60,46 +60,74 @@ export default async function handler(
           break;
         case "checkout.session.completed":
           logger.log("Checkout session completed!");
-          const completedSession = event.data.object as Stripe.Checkout.Session;
+          const sessionData = event.data.object as Stripe.Checkout.Session;
 
-          const updatedOrg = await prisma.organisation.updateMany({
-            where: {
-              id: Number(completedSession.client_reference_id),
-              customer: null,
-            },
-            data: {
-              customer: completedSession.customer as string,
-            },
-          });
+          try {
+            const session = await stripe.checkout.sessions.retrieve(
+              sessionData.id,
+              {
+                expand: ["subscription"],
+              }
+            );
 
+            if (!session.client_reference_id) {
+              logger.error(
+                `Error during checkout.session.completed (checkout id: ${session.id}) event: no client_reference_id in session`
+              );
+              break;
+            }
+
+            if (!session.subscription) {
+              logger.error(
+                `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription could have been retrieved yet`
+              );
+              break;
+            }
+
+            // looking up whether subscription is already saved in database (for idempotency)
+            const subFromDb = await prisma.subscription.findUnique({
+              where: {
+                subId: (session.subscription as Stripe.Subscription)
+                  .id as string,
+              },
+            });
+
+            // handle case when sub is already in the database
+            if (subFromDb) {
+              logger.log("Subscription is already in the database");
+              break;
+            }
+
+            const savedSub = await prisma.subscription.create({
+              data: {
+                subId: (session.subscription as Stripe.Subscription)
+                  .id as string,
+                subName: (session.subscription as Stripe.Subscription).items
+                  .data[0].price.nickname as string,
+                orgId: Number(session.client_reference_id),
+              },
+            });
+
+            const updatedOrg = await prisma.organisation.updateMany({
+              where: {
+                id: Number(session.client_reference_id),
+                customer: null,
+              },
+              data: {
+                customer: session.customer as string,
+              },
+            });
+          } catch (error) {
+            logger.error(
+              `Error during checkout.session.completed event: ${error}`
+            );
+          }
           break;
+
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
-          const createdSubData = event.data.object as Stripe.Subscription;
-
-          // look up organisation by customer (stripe id)
-          const orgWithCustomer = await prisma.organisation.findFirst({
-            where: {
-              customer: createdSubData.customer as string,
-            },
-          });
-
-          if (!orgWithCustomer) {
-            logger.error(
-              `No org found with customer id '${createdSubData.customer}'`
-            );
-            break;
-          }
-
-          const savedSub = await prisma.subscription.create({
-            data: {
-              subId: createdSubData.id as string,
-              subName: createdSubData.items.data[0].price.nickname as string,
-              orgId: Number(orgWithCustomer?.id),
-            },
-          });
-
           break;
+
         case "customer.subscription.deleted":
           logger.log("Customer subscription deleted!");
           const subData = event.data.object as Stripe.Subscription;
@@ -112,18 +140,23 @@ export default async function handler(
             },
           });
           break;
+
         case "payment_intent.payment_failed":
           logger.error("Payment failed!");
           break;
+
         case "payment_intent.succeeded":
           logger.log("Payment succeeded!");
           break;
+
         case "product.created":
           logger.log("Product created!");
           break;
+
         case "product.deleted":
           logger.log("Product deleted!");
           break;
+          
         case "product.updated":
           logger.log("Product updated!");
           break;
