@@ -30,6 +30,7 @@ export default function NewOrgPage() {
     name: "Free",
     priceId: "",
     priceAmount: 0,
+    requests: 1000,
   };
 
   if (isError) {

@@ -6,7 +6,7 @@ import { loadConfig } from "../../../../../config/loadConfig";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { PrismaClient } from "@prisma/client";
-import { captureRejectionSymbol } from "events";
+import { ProductType } from "../../../../../models/productType";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -60,30 +60,42 @@ export default async function handler(
         return;
       }
 
-      if (!req.body.priceId) {
-        logger.error("No parameter priceId provided");
+      if (!req.body.products || !Array.isArray(req.body.products)) {
+        logger.error("No parameter products provided");
         res
           .status(StatusCodes.BAD_REQUEST)
-          .end("No parameter priceId provided");
+          .end("No parameter products provided");
       } else if (!req.body.orgId) {
         logger.error("No parameter orgId provided");
-        res
-          .status(StatusCodes.BAD_REQUEST)
-          .end("No parameter orgId provided");
+        res.status(StatusCodes.BAD_REQUEST).end("No parameter orgId provided");
       }
 
       try {
         logger.log("Creating checkout session for subscription");
+
+        const lineItems = req.body.products.map((product: ProductType) => {
+          // ensure that each product has a valid priceId
+          if (!product.priceId) {
+            throw new Error("Product is missing a priceId");
+          }
+          
+          const lineItem: any = {
+            price: product.priceId,
+          };
+
+          // if quantity is provided, include it in the line item
+          // note: metered prices do not get a quantity parameter 
+          if (product.hasOwnProperty("quantity")) {
+            lineItem["quantity"] = product.quantity;
+          }
+
+          return lineItem;
+        });
+
         let sessionOptions: SessionOptions = {
           billing_address_collection: "auto",
           client_reference_id: req.body.orgId as string,
-          line_items: [
-            {
-              price: req.body.priceId,
-              // for metered billing, do not pass quantity
-              quantity: 1,
-            },
-          ],
+          line_items: lineItems,
           mode: "subscription",
           success_url: `${config.nextAuth.url}${
             Routes.SUBSCRIPTION
