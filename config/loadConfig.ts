@@ -27,11 +27,13 @@ interface EmailContentConfig {
 interface HealthConfig {
   apiKey: string;
 }
-
-interface RedisConfig {
-  host: string;
-  password: string;
-  port: number;
+export interface RedisConfig {
+  isSentinelEnabled?: boolean;
+  sentinels?: { host: string; port: number }[];
+  name?: string; // name of the Redis service
+  host?: string;
+  password?: string;
+  port?: number;
   cacheMaxAge: number;
 }
 
@@ -79,6 +81,15 @@ function parseNumberEnvValue(value?: string): number | undefined {
   return Number(value);
 }
 
+// Parse the sentinels from an environment variable
+const parseSentinels = (sentinelString?: string) => {
+  if (!sentinelString) return undefined;
+  return sentinelString.split(",").map((item) => {
+    const [host, port] = item.split(":");
+    return { host, port: Number(port) };
+  });
+};
+
 export function loadConfig(): Config {
   return {
     nextAuth: {
@@ -107,6 +118,9 @@ export function loadConfig(): Config {
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
     },
     redisConfig: {
+      isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" || false,
+      sentinels: parseSentinels(process.env.REDIS_SENTINELS),
+      name: process.env.REDIS_SENTINEL_NAME,
       host: process.env.REDIS_HOST || "",
       password: process.env.REDIS_PASSWORD || "",
       port: Number(process.env.REDIS_PORT) || 6379,

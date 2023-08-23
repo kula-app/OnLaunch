@@ -1,12 +1,8 @@
 import Redis, { RedisOptions } from "ioredis";
-import { loadConfig } from "../config/loadConfig";
+import { RedisConfig, loadConfig } from "../config/loadConfig";
 import { Logger } from "../util/logger";
 
-function getRedisConfiguration(): {
-  port: number;
-  host: string;
-  password: string;
-} {
+function getRedisConfiguration(): RedisConfig {
   return loadConfig().redisConfig;
 }
 
@@ -14,16 +10,37 @@ export function createRedisInstance(config = getRedisConfiguration()) {
   const logger = new Logger(__filename);
 
   try {
-    const options: RedisOptions = {
-      host: config.host,
+    let options: RedisOptions = {
+      maxRetriesPerRequest: 3,
+      lazyConnect: true,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000); // Here we exponentially increase the retry delay, but not more than 2 seconds
+
+        if (times > 5) {
+          // If we've retried more than 10 times, give up.
+          return null;
+        }
+
+        return delay;
+      },
     };
-
-    if (config.port) {
-      options.port = config.port;
-    }
-
-    if (config.password) {
-      options.password = config.password;
+    if (config.isSentinelEnabled) {
+      // If sentinel is enabled, use the sentinel configuration
+      logger.log(`Setting Redis option for sentinel configuration`);
+      options = {
+        ...options,
+        sentinels: config.sentinels,
+        name: config.name
+      };
+    } else {
+      // If sentinel is not enabled, use the standalone Redis configuration
+      logger.log(`Setting Redis option for single instance`);
+      options = {
+        ...options,
+        host: config.host,
+        port: config.port,
+        password: config.password
+      };
     }
 
     const redis = new Redis(options);
