@@ -154,21 +154,21 @@ export default function DashboardPage() {
                     onClick={() => navigateToAppsPage(org.id)}
                   >
                     <Td width="5%">{org.id}</Td>
-                    <Td width="5%">
+                    <Td width="20%">
                       <Tag
                         size={"md"}
                         key={index}
                         borderRadius="full"
                         variant="solid"
                         colorScheme={
-                          org?.subName === "Premium"
+                          org?.subName?.startsWith("Premium")
                             ? "purple"
-                            : org?.subName === "Basic"
+                            : org?.subName?.startsWith("Basic")
                             ? "teal"
                             : "green"
                         }
                       >
-                        {org?.subName?.toLocaleLowerCase()}
+                        {org?.subName?.toLocaleLowerCase().replace("unlimited", "∞")}
                       </Tag>
                     </Td>
                     <Td>{org.name}</Td>

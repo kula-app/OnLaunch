@@ -55,7 +55,7 @@ export default async function handler(
           logger.log("Customer created!");
           const eventData = event.data.object as Stripe.Customer;
           break;
-          
+
         case "checkout.session.completed":
           logger.log("Checkout session completed!");
           const sessionData = event.data.object as Stripe.Checkout.Session;
@@ -96,12 +96,16 @@ export default async function handler(
               break;
             }
 
+            const items = (session.subscription as Stripe.Subscription).items
+              .data;
+            const lastItem = items[items.length - 1];
+            const subName = lastItem.price.nickname as string;
+
             const savedSub = await prisma.subscription.create({
               data: {
                 subId: (session.subscription as Stripe.Subscription)
                   .id as string,
-                subName: (session.subscription as Stripe.Subscription).items
-                  .data[0].price.nickname as string,
+                subName: subName,
                 orgId: Number(session.client_reference_id),
               },
             });

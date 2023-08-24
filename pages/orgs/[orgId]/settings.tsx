@@ -561,7 +561,7 @@ export default function EditOrgPage() {
                                 sub.subName === "Premium" ? "purple" : "teal"
                               }
                             >
-                              {sub.subName}
+                              {sub.subName.toLocaleLowerCase().replace("unlimited", "∞")}
                             </Tag>
                           </Td>
                         </Tr>

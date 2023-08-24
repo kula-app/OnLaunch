@@ -12,10 +12,6 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
 
   let { success, canceled, orgId } = router.query;
-  
-  function navigateToOrgDetailsPage(id: number) {
-    router.push(Routes.getOrgAppsByOrgId(id));
-  }
 
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);
@@ -26,6 +22,10 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
+    function navigateToOrgDetailsPage(id: number) {
+      router.push(Routes.getOrgAppsByOrgId(id));
+    }
+
     if (!router.isReady) return;
 
     if (success && orgId) {
@@ -40,7 +40,14 @@ export default function ProfilePage() {
     }
 
     setLoading(false);
-  }, [router.isReady, router, toast, canceled]);
+  }, [
+    router.isReady,
+    router,
+    toast,
+    canceled,
+    orgId,
+    success,
+  ]);
 
   return (
     <>
