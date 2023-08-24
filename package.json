@@ -39,6 +39,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "request-ip": "^3.3.0",
     "styled-components": "^6.0.0",
     "swagger-ui-react": "^5.0.0",
     "swr": "^2.1.2"
@@ -50,6 +51,7 @@
     "@types/node": "18.17.6",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
+    "@types/request-ip": "^0.0.38",
     "@types/testing-library__jest-dom": "5.14.9",
     "cypress": "12.17.4",
     "eslint": "8.47.0",

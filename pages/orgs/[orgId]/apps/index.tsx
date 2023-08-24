@@ -74,15 +74,17 @@ export default function AppsPage() {
             className="mt-8"
           >
             <Thead>
-              <Th width="5%">
-                <strong>ID</strong>
-              </Th>
-              <Th>
-                <strong>App Name</strong>
-              </Th>
-              <Th width="5%">
-                <strong># Active Messages</strong>
-              </Th>
+              <Tr>
+                <Th width="5%">
+                  <strong>ID</strong>
+                </Th>
+                <Th>
+                  <strong>App Name</strong>
+                </Th>
+                <Th width="5%">
+                  <strong># Active Messages</strong>
+                </Th>
+              </Tr>
             </Thead>
             <Tbody>
               {apps?.map((app, index) => {

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../../util/logger";
+import requestIp from "request-ip";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -75,7 +76,7 @@ export default async function handler(
   res: NextApiResponse<ResponseDto[]>
 ) {
   const logger = new Logger(__filename);
-  
+
   switch (req.method) {
     case "GET":
       const publicKey = req.headers["x-api-key"];
@@ -120,6 +121,20 @@ export default async function handler(
               },
             },
           ],
+        },
+      });
+
+      const ip = requestIp.getClientIp(req);
+
+      // logging the api requests after checking if the app exists, so it is only logged when the request could successfully be served so far
+      // as logged requests are used for tracking, only for successful requests should be tracked
+      logger.log(
+        `Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`
+      );
+      await prisma.loggedApiRequests.create({
+        data: {
+          ip: ip as string,
+          appId: app.id,
         },
       });
 
