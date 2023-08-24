@@ -14,6 +14,9 @@ interface Props {
 const ProductCard = (props: Props) => {
   const router = useRouter();
 
+  const borderColor = "grey";
+  const borderWidth = "1px";
+
   function navigateToOrgDetailsPage(id: number) {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
@@ -41,64 +44,62 @@ const ProductCard = (props: Props) => {
   };
 
   return (
-    <div
-      className="p-5 max-w-[500px] mt-10 border-gray-100 shadow-2xl border-4 text-center"
-      style={{ padding: 32 }}
-    >
+    <div className="flex flex-col p-8 max-w-[350px] h-full mt-10 border-gray-100 shadow-2xl border-4 text-center">
+      <div className="h-28 items-center font-bold">
+        <Heading className="text-center">{props.product.name}</Heading>
+        <Text className="mt-4">{props.product.description}</Text>
+      </div>
+      <Text className="mt-2">
+        includes up to <br />
+        <b>{props.product.requests} requests</b>
+      </Text>
       <div>
-        <div className="bg-gray-200 h-28 items-center font-bold">
-          <Heading className="text-center">{props.product.name}</Heading>
-          <Text className="mt-2">{props.product.description}</Text>
-          <Text className="mt-2">
-            includes up to {props.product.requests} requests
-          </Text>
-        </div>
-        <div>
-          <div className="flex flex-col items-center justify-center pt-4">
-            <Heading className="text-5xl font-bold mt-4">
-              {((props.product.priceAmount as number) / 100).toLocaleString(
-                "en-US",
-                {
-                  style: "currency",
-                  currency: "EUR",
-                }
-              )}
-            </Heading>
-            <p>per month</p>
-          </div>
-        </div>
-
-        {props.product.unlimitedOption && (
-          <div>
-            <Divider className="my-2" />
-            <Checkbox
-              isChecked={includeUnlimitedOption}
-              onChange={(e) => {
-                setIncludeUnlimitedOption(e.target.checked);
-              }}
-            >
-              unlimited exceeding requests at{" "}
-              {(
-                (props.product.unlimitedOption.priceAmount as number) / 100
-              ).toLocaleString("en-US", {
+        <div className="flex flex-col items-center justify-center pt-4">
+          <Heading className="text-5xl font-bold mt-4">
+            {((props.product.priceAmount as number) / 100).toLocaleString(
+              "en-US",
+              {
                 style: "currency",
                 currency: "EUR",
-              })}{" "}
-              per extra {props.product.unlimitedOption.divideBy} requests
-            </Checkbox>
-            <Divider className="my-2" />
-          </div>
-        )}
-
-        <Button
-          colorScheme="blue"
-          onClick={() => handleSubscription()}
-          className="mt-8 flex w-full"
-          role="link"
-        >
-          choose this abo
-        </Button>
+              }
+            )}
+          </Heading>
+          <p>per month</p>
+        </div>
       </div>
+      {props.product.unlimitedOption && (
+        <div>
+          <Divider
+            className="mt-6 mb-4"
+            borderColor={borderColor}
+            borderWidth={borderWidth}
+          />
+          <Checkbox
+            isChecked={includeUnlimitedOption}
+            onChange={(e) => {
+              setIncludeUnlimitedOption(e.target.checked);
+            }}
+          >
+            unlimited exceeding requests at{" "}
+            {(
+              (props.product.unlimitedOption.priceAmount as number) / 100
+            ).toLocaleString("en-US", {
+              style: "currency",
+              currency: "EUR",
+            })}{" "}
+            per extra {props.product.unlimitedOption.divideBy} requests
+          </Checkbox>
+        </div>
+      )}
+      <div className="flex-grow"></div>
+      <Button
+        colorScheme="blue"
+        onClick={() => handleSubscription()}
+        className="mt-4 flex w-full"
+        role="link"
+      >
+        choose this abo
+      </Button>
     </div>
   );
 };
