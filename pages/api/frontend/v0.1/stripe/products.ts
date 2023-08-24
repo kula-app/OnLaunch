@@ -21,7 +21,7 @@ export default async function handler(
       });
 
       const redis = createRedisInstance();
-
+      
       try {
         // check whether products are cached via redis
         const cachedProducts = await redis.get(PRODUCTS_REDIS_KEY);
@@ -43,42 +43,51 @@ export default async function handler(
           expand: ["data.default_price"],
         });
 
-        // split stripe products into flatrate and metered (usage based) products
-        // this is special for our use case, as we offer a combination of flatrate
-        // subscriptions with optional unlimited exceeding
-        const meteredProducts = products.data.filter(
-          (product) =>
-            (product.default_price as Stripe.Price).recurring
-              ?.aggregate_usage === "sum"
+        // check if the right metadata is set (to not mix with other
+        // products from other services)
+        const filteredProductsByMetadata = products.data.filter((product) => {
+          product = product as Stripe.Product;
+          if (product.metadata["service"] && product.metadata["isActive"]) {
+            return (
+              product.metadata["service"].toLowerCase() === "onlaunch" &&
+              product.metadata["isActive"] === "true"
+            );
+          }
+          return false;
+        });
+
+        // split stripe products into main products and add-on products
+        // add-on products can be ordered with the main products
+        // e.g. to have x requests included in the main product but
+        // gain unlimited requests by paying for exceeding requests
+        // via the add-on product
+        const mainProducts = filteredProductsByMetadata.filter(
+          (product) => !product.metadata["mainProductId"]
         );
-        const flatrateProducts = products.data.filter(
-          (product) =>
-            (product.default_price as Stripe.Price).recurring
-              ?.aggregate_usage !== "sum"
+        const addonProducts = filteredProductsByMetadata.filter(
+          (product) => product.metadata["mainProductId"]
         );
 
         // map the data to Product data type
-        const result = flatrateProducts.map((product): Product => {
-          const matchingMeteredProduct = meteredProducts.find(
-            (meteredProduct) =>
-              meteredProduct.name === `${product.name} unlimited`
+        const result = mainProducts.map((product): Product => {
+          const matchingAddonProduct = addonProducts.find(
+            (addonProduct) =>
+              addonProduct.metadata["mainProductId"] === product.id
           );
 
           let matchingProduct: Product | undefined;
 
-          if (matchingMeteredProduct) {
+          if (matchingAddonProduct) {
             matchingProduct = {
-              id: matchingMeteredProduct.id,
-              name: matchingMeteredProduct.name,
-              description: matchingMeteredProduct.description as string,
-              priceId: (matchingMeteredProduct.default_price as Stripe.Price)
-                .id,
+              id: matchingAddonProduct.id,
+              name: matchingAddonProduct.name,
+              description: matchingAddonProduct.description as string,
+              priceId: (matchingAddonProduct.default_price as Stripe.Price).id,
               priceAmount: Number(
-                (matchingMeteredProduct.default_price as Stripe.Price)
-                  .unit_amount
+                (matchingAddonProduct.default_price as Stripe.Price).unit_amount
               ),
               divideBy: Number(
-                (matchingMeteredProduct.default_price as Stripe.Price)
+                (matchingAddonProduct.default_price as Stripe.Price)
                   .transform_quantity?.divide_by
               ),
             };

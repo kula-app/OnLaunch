@@ -11,5 +11,7 @@ export interface Product {
     // necessary for package pricing (e.g. "pay 10 cents per 1.000 requests"
     // in this example the 1.000 would be the dividedBy value)
     divideBy?: number;
+    // the unlimited option price / product has a reference to the main
+    // product in the metadata via the key "mainProductId"
     unlimitedOption?: Product;
 }
