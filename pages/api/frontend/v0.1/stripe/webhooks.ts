@@ -77,8 +77,11 @@ export default async function handler(
 
             if (!session.subscription) {
               logger.error(
-                `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription could have been retrieved yet`
+                `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription was retrieved`
               );
+              res
+                .status(StatusCodes.BAD_REQUEST)
+                .end("no subscription was retrieved");
               break;
             }
 
