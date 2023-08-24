@@ -30,6 +30,7 @@ import {
   Stack,
   Heading,
   Tag,
+  Center,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -139,7 +140,6 @@ export default function DashboardPage() {
                 <Th width="5%">
                   <strong>ID</strong>
                 </Th>
-                <Th></Th>
                 <Th>
                   <strong>Name</strong>
                 </Th>
@@ -154,24 +154,26 @@ export default function DashboardPage() {
                     onClick={() => navigateToAppsPage(org.id)}
                   >
                     <Td width="5%">{org.id}</Td>
-                    <Td width="20%">
-                      <Tag
-                        size={"md"}
-                        key={index}
-                        borderRadius="full"
-                        variant="solid"
-                        colorScheme={
-                          org?.subName?.startsWith("Premium")
-                            ? "purple"
-                            : org?.subName?.startsWith("Basic")
-                            ? "teal"
-                            : "green"
-                        }
-                      >
-                        {org?.subName?.toLocaleLowerCase().replace("unlimited", "∞")}
-                      </Tag>
-                    </Td>
-                    <Td>{org.name}</Td>
+                    <Td>{org.name}
+                        <Tag
+                          className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
+                          size={"md"}
+                          key={index}
+                          borderRadius="full"
+                          variant="solid"
+                          colorScheme={
+                            org?.subName?.startsWith("Premium")
+                              ? "purple"
+                              : org?.subName?.startsWith("Basic")
+                              ? "teal"
+                              : "green"
+                          }
+                        >
+                          {org?.subName
+                            ?.toLocaleLowerCase()
+                            .replace("unlimited", "∞")}
+                        </Tag>
+                        </Td>
                   </Tr>
                 );
               })}
