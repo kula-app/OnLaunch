@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Logger } from "../../../../../util/logger";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Stripe from "stripe";
+import { reportOrgToStripe } from "../../../usageReport";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -99,17 +100,30 @@ export default async function handler(
               break;
             }
 
-            const items = (session.subscription as Stripe.Subscription).items
-              .data;
+            const sub = session.subscription as Stripe.Subscription;
+
+            const items = sub.items.data;
             const lastItem = items[items.length - 1];
             const subName = lastItem.price.nickname as string;
 
+            // transform subscription items to database model
+            const transformedItems = items.map((item) => {
+              return {
+                subItemId: item.id,
+                metered: item.plan.aggregate_usage === "sum",
+              };
+            });
+
             const savedSub = await prisma.subscription.create({
               data: {
-                subId: (session.subscription as Stripe.Subscription)
-                  .id as string,
+                subId: sub.id as string,
                 subName: subName,
                 orgId: Number(session.client_reference_id),
+                subItems: {
+                  create: [...transformedItems],
+                },
+                currentPeriodStart: new Date(sub.current_period_start * 1000),
+                currentPeriodEnd: new Date(sub.current_period_end * 1000),
               },
             });
 
@@ -131,19 +145,139 @@ export default async function handler(
 
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
+          // TO DO delete this code part
+          //-----------------------------------
+          const sub = event.data.object as Stripe.Subscription;
+          // looking up whether subscription is already saved in database (for idempotency)
+          const subFromDb = await prisma.subscription.findUnique({
+            where: {
+              subId: sub.id as string,
+            },
+          });
+
+          // handle case when sub is already in the database
+          if (subFromDb) {
+            logger.log("Subscription is already in the database");
+            break;
+          }
+
+          const items = sub.items.data;
+          const lastItem = items[items.length - 1];
+          const subName = lastItem.price.nickname as string;
+
+          // transform subscription items to database model
+          const transformedItems = items.map((item) => {
+            return {
+              subItemId: item.id,
+              metered: item.plan.aggregate_usage === "sum",
+            };
+          });
+
+          const savedSub = await prisma.subscription.create({
+            data: {
+              subId: sub.id as string,
+              subName: subName,
+              orgId: 6,
+              subItems: {
+                create: [...transformedItems],
+              },
+              currentPeriodStart: new Date(sub.current_period_start * 1000),
+              currentPeriodEnd: new Date(sub.current_period_end * 1000),
+            },
+          });
+
+          const updatedOrg = await prisma.organisation.updateMany({
+            where: {
+              id: 6,
+              customer: null,
+            },
+            data: {
+              customer: sub.customer as string,
+            },
+          });
+          console.log("done");
+          //-----------------------------------
           break;
 
         case "customer.subscription.deleted":
           logger.log("Customer subscription deleted!");
           const subData = event.data.object as Stripe.Subscription;
-          const deletedSub = await prisma.subscription.update({
-            where: {
-              subId: subData.id,
-            },
-            data: {
-              isDeleted: true,
-            },
-          });
+          try {
+            const deletedSub = await prisma.subscription.update({
+              where: {
+                subId: subData.id,
+              },
+              data: {
+                isDeleted: true,
+              },
+            });
+          } catch (error) {
+            logger.error(`Error: ${error}`);
+          }
+          break;
+
+        case "customer.subscription.updated":
+          logger.log("Customer subscription updated!");
+
+          const updatedSub = event.data.object as Stripe.Subscription;
+          try {
+            const updatedSubFromDb = await prisma.subscription.findUnique({
+              where: {
+                subId: updatedSub.id,
+              },
+            });
+
+            if (!updatedSubFromDb) {
+              logger.error(
+                `No subscription found for sub id '${updatedSub.id}'`
+              );
+              break;
+            }
+
+            const stripeCurrentPeriodStart = new Date(
+              updatedSub.current_period_start * 1000
+            );
+            const stripeCurrentPeriodEnd = new Date(
+              updatedSub.current_period_end * 1000
+            );
+
+            console.log(`stripe start: ${stripeCurrentPeriodStart}`);
+            console.log(`prisma start: ${updatedSubFromDb.currentPeriodStart}`);
+            console.log(`stripe end: ${stripeCurrentPeriodEnd}`);
+            console.log(`prisma end: ${updatedSubFromDb.currentPeriodEnd}`);
+            // Check if new billing period started
+            if (
+              stripeCurrentPeriodStart.getTime() !==
+                updatedSubFromDb.currentPeriodStart.getTime() ||
+              stripeCurrentPeriodEnd.getTime() !==
+                updatedSubFromDb.currentPeriodEnd.getTime()
+            ) {
+              // Report latest logged api requests to stripe
+              logger.log(
+                `New billing period started for org with id '${updatedSubFromDb.orgId}'`
+              );
+              await reportOrgToStripe(updatedSubFromDb.orgId);
+
+              // Update new billing period information
+              logger.log(
+                `Updating new billing period information for sub with id '${updatedSub.id}`
+              );
+              await prisma.subscription.update({
+                data: {
+                  currentPeriodStart: stripeCurrentPeriodStart,
+                  currentPeriodEnd: stripeCurrentPeriodEnd,
+                },
+                where: {
+                  subId: updatedSub.id,
+                },
+              });
+            }
+          } catch (error) {
+            logger.error(`Error: ${error}`);
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .end(`Error: ${error}`);
+          }
           break;
 
         case "payment_intent.payment_failed":

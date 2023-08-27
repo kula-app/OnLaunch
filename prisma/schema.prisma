@@ -59,6 +59,10 @@ model App {
   publicKey String    @unique
   messages  Message[]
 
+  // used for reporting metered usage, periodically logged api
+  // requests are reported to stripe, starting from this id
+  idOfLastReportedApiRequest Int?
+
   organisation Organisation? @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId        Int?
 
@@ -95,11 +99,11 @@ model Organisation {
 
   name            String
   invitationToken String @unique
-  
+
   // stripe data
   customer String?
   // stripe subscriptions, old ones have an isDeleted flag on true
-  subs Subscription[]
+  subs     Subscription[]
 
   apps                App[]
   users               UsersInOrganisations[]
@@ -199,7 +203,7 @@ model LoggedApiRequests {
   ip String
 
   // the app the request was made for
-  app       App    @relation(fields: [appId], references: [id])
+  app       App    @relation(fields: [appId], references: [id], onDelete: Cascade)
   appId     Int
   publicKey String
 }
@@ -214,6 +218,23 @@ model Subscription {
 
   isDeleted Boolean @default(false)
 
-  org   Organisation @relation(fields: [orgId], references: [id])
+  // current billing period, used for reporting metered usage
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+
+  subItems SubscriptionItem[]
+
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId Int
+}
+
+model SubscriptionItem {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subItemId String  @id
+  metered   Boolean @default(false)
+
+  sub   Subscription @relation(fields: [subId], references: [subId], onDelete: Cascade)
+  subId String
 }

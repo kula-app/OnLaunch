@@ -14,10 +14,10 @@ export function createRedisInstance(config = getRedisConfiguration()) {
       maxRetriesPerRequest: 3,
       lazyConnect: true,
       retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000); // Here we exponentially increase the retry delay, but not more than 2 seconds
+        const delay = Math.min(times * 50, 2000); // exponentially increase the retry delay, but not more than 2 seconds
 
         if (times > 5) {
-          // If we've retried more than 10 times, give up.
+          // If we've retried at least 5 times, give up.
           return null;
         }
 

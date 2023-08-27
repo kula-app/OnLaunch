@@ -206,7 +206,9 @@ export async function getUserWithRoleFromRequest(
   }
 
   logger.log(
-    `Looking up user with id '${user.id}' in organisation '${req.query.orgId}'`
+    `Looking up user with id '${user.id}' in organisation '${
+      req.body.orgId ? req.body.orgId : req.query.orgId
+    }'`
   );
   const userInOrg = await prisma.usersInOrganisations.findFirst({
     where: {

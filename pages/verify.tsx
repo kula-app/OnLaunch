@@ -99,7 +99,7 @@ export default function VerifyPage() {
               in
             </div>
             <Button
-              color="info"
+              color="blue"
               sx={{ marginTop: 5 }}
               onClick={navigateToAuthPage}
             >
@@ -125,12 +125,12 @@ export default function VerifyPage() {
           !verified &&
           (!!email || !!expired || !!obsolete) &&
           !disabled && (
-            <Button type="button" onClick={resendLink}>
+            <Button color="blue" type="button" onClick={resendLink}>
               resend link
             </Button>
           )}
         {!signup && !verified && !!email && disabled && (
-          <Button type="button" disabled onClick={resendLink}>
+          <Button color="blue" type="button" disabled onClick={resendLink}>
             resend link
           </Button>
         )}

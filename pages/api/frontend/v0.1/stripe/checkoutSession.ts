@@ -48,7 +48,7 @@ export default async function handler(
         apiVersion: "2022-11-15",
       });
 
-      // check whether user has a stripe customer id with prisma
+      // check whether organisation has a stripe customer id with prisma
       const org = await prisma.organisation.findUnique({
         where: {
           id: userInOrg.orgId,

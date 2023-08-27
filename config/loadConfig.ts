@@ -27,6 +27,10 @@ interface EmailContentConfig {
 interface HealthConfig {
   apiKey: string;
 }
+
+interface UsageReportConfig {
+  apiKey: string;
+}
 export interface RedisConfig {
   isSentinelEnabled?: boolean;
   sentinels?: { host: string; port: number }[];
@@ -60,6 +64,7 @@ interface Config {
   signup: SignupConfig;
   database: DatabaseConfig;
   health: HealthConfig;
+  usageReport: UsageReportConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
   redisConfig: RedisConfig;
@@ -106,6 +111,11 @@ export function loadConfig(): Config {
     health: {
       apiKey:
         process.env.HEALTH_API_KEY || crypto.randomBytes(32).toString("hex"),
+    },
+    usageReport: {
+      apiKey:
+        process.env.USAGE_REPORT_API_KEY ||
+        crypto.randomBytes(32).toString("hex"),
     },
     smtp: {
       host: process.env.SMTP_HOST || "localhost",

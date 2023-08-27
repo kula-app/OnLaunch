@@ -101,12 +101,13 @@ export default async function handler(
           },
         });
 
+        logger.log(`Successfully deleted org with id '${req.query.orgId}'`)
         res.status(StatusCodes.OK).json(deletedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(`No organisation found with id '${req.query.orgId}'`);
+          logger.error(`Error while deleting org with id '${req.query.orgId}': ${e}`);
           res.status(StatusCodes.NOT_FOUND).json({
-            message: "No organisation found with id " + req.query.orgId,
+            message: "Error while deleting org!",
           });
           return;
         }
