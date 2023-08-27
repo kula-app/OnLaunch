@@ -234,6 +234,7 @@ model SubscriptionItem {
 
   subItemId String  @id
   metered   Boolean @default(false)
+  productId String
 
   sub   Subscription @relation(fields: [subId], references: [subId], onDelete: Cascade)
   subId String

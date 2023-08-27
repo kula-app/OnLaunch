@@ -1,6 +1,5 @@
 import useSWR, { KeyedMutator } from "swr";
 import ApiRoutes from "../../routes/apiRoutes";
-import { User } from "../../models/user";
 import getFetcher from "../../util/fetcher";
 import { Product } from "../../models/product";
 

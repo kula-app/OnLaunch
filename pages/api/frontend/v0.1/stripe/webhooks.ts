@@ -111,6 +111,7 @@ export default async function handler(
               return {
                 subItemId: item.id,
                 metered: item.plan.aggregate_usage === "sum",
+                productId: item.price.product as string,
               };
             });
 
@@ -145,9 +146,9 @@ export default async function handler(
 
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
-          // TO DO delete this code part
+          // TODO delete this code part
           //-----------------------------------
-          const sub = event.data.object as Stripe.Subscription;
+          /*const sub = event.data.object as Stripe.Subscription;
           // looking up whether subscription is already saved in database (for idempotency)
           const subFromDb = await prisma.subscription.findUnique({
             where: {
@@ -167,9 +168,11 @@ export default async function handler(
 
           // transform subscription items to database model
           const transformedItems = items.map((item) => {
+            console.log("productId: " + (item.price.product as string))
             return {
               subItemId: item.id,
               metered: item.plan.aggregate_usage === "sum",
+              productId: item.price.product as string,
             };
           });
 
@@ -195,7 +198,7 @@ export default async function handler(
               customer: sub.customer as string,
             },
           });
-          console.log("done");
+          console.log("done");*/
           //-----------------------------------
           break;
 
@@ -241,10 +244,6 @@ export default async function handler(
               updatedSub.current_period_end * 1000
             );
 
-            console.log(`stripe start: ${stripeCurrentPeriodStart}`);
-            console.log(`prisma start: ${updatedSubFromDb.currentPeriodStart}`);
-            console.log(`stripe end: ${stripeCurrentPeriodEnd}`);
-            console.log(`prisma end: ${updatedSubFromDb.currentPeriodEnd}`);
             // Check if new billing period started
             if (
               stripeCurrentPeriodStart.getTime() !==

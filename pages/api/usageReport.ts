@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient, PrismaPromise } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { loadConfig } from "../../config/loadConfig";
 import { Logger } from "../../util/logger";
 
@@ -82,14 +82,14 @@ export async function reportOrgToStripe(orgId: number) {
             // The main identifier for api requests to report is the idOfLastReportedApiRequest
             // However, by using the period start and end as constraints, it is made sure
             // that unreported api requests (e.g. requests during the free abo), will not be
-            // be reported for later subscriptions 
+            // be reported for later subscriptions
             createdAt: {
               gte: orgFromDb.subs[0].currentPeriodStart,
               lte: orgFromDb.subs[0].currentPeriodEnd,
             },
           },
         });
-        
+
         sumOfRequests += requestCount;
 
         // Prepare the update operation without executing it
@@ -158,8 +158,10 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
-  // to do delete bearer ?
-  if (req.headers.authorization !== `Bearer ${config.usageReport.apiKey}`) {
+  if (
+    req.headers.authorization !== `Bearer ${config.usageReport.apiKey}` &&
+    req.headers.authorization !== config.usageReport.apiKey
+  ) {
     logger.error("Authorization of request failed - access denied!");
     return res.status(StatusCodes.FORBIDDEN).json({
       error: {
@@ -185,15 +187,36 @@ export default async function handler(
             .status(StatusCodes.OK)
             .end(`Reported usage for org with id '${req.body.orgId}'`);
         } catch (error) {
+          logger.error(`Error: ${error}`);
           res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
             .end("Error during reporting usage, please try again later!");
         }
       }
-      // in case no specific orgId is provided, do the periodic reporting
+
+      // In case no specific orgId is provided, do the (periodic) reporting
       // for all orgs
       if (!req.body.orgId) {
-        // to do
+        try {
+          const orgsFromDb = await prisma.organisation.findMany();
+
+          // sequentially report the usage of all orgs
+          logger.log("Running usage reports for all organisations");
+          for (const org of orgsFromDb) {
+            await reportOrgToStripe(org.id);
+          }
+
+          res
+            .status(StatusCodes.OK)
+            .end("Reported usage for all organisations");
+        } catch (error) {
+          // If either prisma or stripe throws an error, it is assumed that all
+          // the other reports will fail as well, thus returning an error
+          logger.error(`Error: ${error}`);
+          res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .end("Error during reporting usage, please try again later!");
+        }
       }
 
       break;
