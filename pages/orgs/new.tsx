@@ -30,7 +30,7 @@ export default function NewOrgPage() {
     name: "Free",
     priceId: "",
     priceAmount: 0,
-    requests: 1000,
+    requests: Number(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT),
   };
 
   if (isError) {

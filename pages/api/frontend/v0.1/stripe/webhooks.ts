@@ -148,7 +148,7 @@ export default async function handler(
           logger.log("Customer subscription created!");
           // TODO delete this code part
           //-----------------------------------
-          /*const sub = event.data.object as Stripe.Subscription;
+          const sub = event.data.object as Stripe.Subscription;
           // looking up whether subscription is already saved in database (for idempotency)
           const subFromDb = await prisma.subscription.findUnique({
             where: {
@@ -180,7 +180,7 @@ export default async function handler(
             data: {
               subId: sub.id as string,
               subName: subName,
-              orgId: 6,
+              orgId: 7,
               subItems: {
                 create: [...transformedItems],
               },
@@ -198,7 +198,7 @@ export default async function handler(
               customer: sub.customer as string,
             },
           });
-          console.log("done");*/
+          console.log("done");
           //-----------------------------------
           break;
 

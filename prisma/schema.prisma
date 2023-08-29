@@ -101,9 +101,11 @@ model Organisation {
   invitationToken String @unique
 
   // stripe data
-  customer String?
+  customer     String?
   // stripe subscriptions, old ones have an isDeleted flag on true
-  subs     Subscription[]
+  subs         Subscription[]
+  // create log when reporting usage to stripe
+  usageReports LoggedUsageReport[]
 
   apps                App[]
   users               UsersInOrganisations[]
@@ -206,6 +208,18 @@ model LoggedApiRequests {
   app       App    @relation(fields: [appId], references: [id], onDelete: Cascade)
   appId     Int
   publicKey String
+}
+
+model LoggedUsageReport {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requests Int
+
+  // the app the request was made for
+  org       Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId     Int
 }
 
 // This is a table to locally save Stripe subscriptions for organisations

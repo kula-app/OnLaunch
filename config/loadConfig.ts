@@ -8,6 +8,10 @@ interface SignupConfig {
   isEnabled: boolean;
 }
 
+interface FreeSubConfig {
+  requestLimit: number;
+}
+
 interface DatabaseConfig {
   url: string;
 }
@@ -62,6 +66,7 @@ interface StripeConfig {
 interface Config {
   nextAuth: NextAuthConfig;
   signup: SignupConfig;
+  freeSub: FreeSubConfig;
   database: DatabaseConfig;
   health: HealthConfig;
   usageReport: UsageReportConfig;
@@ -102,6 +107,9 @@ export function loadConfig(): Config {
     },
     signup: {
       isEnabled: process.env.SIGNUPS_ENABLED == "true" || false,
+    },
+    freeSub: {
+      requestLimit: Number(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) || 42,
     },
     database: {
       url:

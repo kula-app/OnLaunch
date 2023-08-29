@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../../util/logger";
 import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
+import { loadConfig } from "../../../config/loadConfig";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -77,7 +78,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const logger = new Logger(__filename);
-  const FREE_SUB_REQUEST_LIMIT = 10;
+  const config = loadConfig();
+  const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
 
   switch (req.method) {
     case "GET":
@@ -144,11 +146,9 @@ export default async function handler(
           // Free version counts back plainly one month
           if (!subFromDb) {
             countingStartDate.setMonth(countingStartDate.getMonth() - 1);
-            console.log("free version - date: " + countingStartDate);
           } else {
             // use current period start of active subscription
             countingStartDate = subFromDb.currentPeriodStart;
-            console.log("unmetered sub - date: " + countingStartDate);
           }
 
           // Prepare array of app ids of organisation
