@@ -558,10 +558,16 @@ export default function EditOrgPage() {
                               borderRadius="full"
                               variant="solid"
                               colorScheme={
-                                sub.subName === "Premium" ? "purple" : "teal"
+                                sub.subName.startsWith("Premium")
+                                  ? "purple"
+                                  : org?.subName?.startsWith("Basic")
+                                  ? "teal"
+                                  : "green"
                               }
                             >
-                              {sub.subName.toLocaleLowerCase().replace("unlimited", "∞")}
+                              {sub.subName
+                                .toLocaleLowerCase()
+                                .replace("unlimited", "∞")}
                             </Tag>
                           </Td>
                         </Tr>
