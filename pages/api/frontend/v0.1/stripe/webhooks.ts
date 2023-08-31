@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Logger } from "../../../../../util/logger";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Stripe from "stripe";
-import { reportOrgToStripe } from "../../../usageReport";
+import { reportOrgToStripe } from "../../../../../util/stripe/reportUsage";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -26,7 +26,7 @@ export default async function handler(
 
   const nextConfig = loadConfig();
   const stripe = new Stripe(nextConfig.stripeConfig.secretKey, {
-    apiVersion: "2022-11-15",
+    apiVersion: "2023-08-16",
   });
 
   switch (req.method) {
@@ -118,8 +118,10 @@ export default async function handler(
             const savedSub = await prisma.subscription.create({
               data: {
                 subId: sub.id as string,
-                subName: subName,
-                orgId: Number(session.client_reference_id),
+                subName: subName ? subName : "loading",
+                org: {
+                  connect: { id: Number(session.client_reference_id)}
+                },
                 subItems: {
                   create: [...transformedItems],
                 },
@@ -168,7 +170,7 @@ export default async function handler(
 
           // transform subscription items to database model
           const transformedItems = items.map((item) => {
-            console.log("productId: " + (item.price.product as string))
+            console.log("productId: " + (item.price.product as string));
             return {
               subItemId: item.id,
               metered: item.plan.aggregate_usage === "sum",
@@ -176,11 +178,12 @@ export default async function handler(
             };
           });
 
+          const orgId = 31;
           const savedSub = await prisma.subscription.create({
             data: {
               subId: sub.id as string,
-              subName: subName,
-              orgId: 7,
+              subName: subName ? subName : "loading",
+              orgId: orgId,
               subItems: {
                 create: [...transformedItems],
               },
@@ -191,7 +194,7 @@ export default async function handler(
 
           const updatedOrg = await prisma.organisation.updateMany({
             where: {
-              id: 6,
+              id: orgId,
               customer: null,
             },
             data: {
@@ -277,6 +280,33 @@ export default async function handler(
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
               .end(`Error: ${error}`);
           }
+          break;
+
+        case "invoice.created":
+          logger.log("Invoice created!");
+          console.log("HUSSAAAAH");
+          const invoiceData = event.data.object as Stripe.Invoice;
+          console.log(JSON.stringify(invoiceData));
+          const meteredSubItem = invoiceData.lines.data.find(
+            (item) => item.plan?.aggregate_usage === "sum"
+          );
+          if (meteredSubItem) {
+            const currentQuantity = meteredSubItem.quantity;
+            console.log("quantity: " + currentQuantity);
+            // count requests for current period
+            // oder einfach die noch nicht reporteten von der periode?
+            /*const subscriptionId = "sub_1Nkb5mCtouR6SlOzNQ0IPeCk"; // Replace with your Subscription ID
+
+            try {
+              const subscription = await stripe.subscriptions.retrieve(
+                subscriptionId
+              );
+              console.log(subscription);
+            } catch (error) {
+              console.error("Error retrieving subscription:", error);
+            }*/
+          }
+
           break;
 
         case "payment_intent.payment_failed":

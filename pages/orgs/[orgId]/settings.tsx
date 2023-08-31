@@ -558,11 +558,11 @@ export default function EditOrgPage() {
                               borderRadius="full"
                               variant="solid"
                               colorScheme={
-                                sub.subName.startsWith("Premium")
+                                sub?.subName?.startsWith("Premium")
                                   ? "purple"
-                                  : org?.subName?.startsWith("Basic")
+                                  : sub?.subName?.startsWith("Basic")
                                   ? "teal"
-                                  : "green"
+                                  : "facebook"
                               }
                             >
                               {sub.subName

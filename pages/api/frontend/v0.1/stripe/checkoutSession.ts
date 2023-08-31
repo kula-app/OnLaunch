@@ -45,7 +45,7 @@ export default async function handler(
   switch (req.method) {
     case "POST":
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-        apiVersion: "2022-11-15",
+        apiVersion: "2023-08-16",
       });
 
       // check whether organisation has a stripe customer id with prisma
