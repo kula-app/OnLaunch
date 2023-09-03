@@ -149,60 +149,6 @@ export default async function handler(
 
         case "customer.subscription.created":
           logger.log("Customer subscription created!");
-          // TODO delete this code part
-          //-----------------------------------
-          /*const sub = event.data.object as Stripe.Subscription;
-          // looking up whether subscription is already saved in database (for idempotency)
-          const subFromDb = await prisma.subscription.findUnique({
-            where: {
-              subId: sub.id as string,
-            },
-          });
-
-          // handle case when sub is already in the database
-          if (subFromDb) {
-            logger.log("Subscription is already in the database");
-            break;
-          }
-
-          const items = sub.items.data;
-          const lastItem = items[items.length - 1];
-          const subName = lastItem.price.nickname as string;
-
-          // transform subscription items to database model
-          const transformedItems = items.map((item) => {
-            console.log("productId: " + (item.price.product as string));
-            return {
-              subItemId: item.id,
-              metered: item.plan.aggregate_usage === "sum",
-              productId: item.price.product as string,
-            };
-          });
-
-          const orgId = 22;
-          const savedSub = await prisma.subscription.create({
-            data: {
-              subId: sub.id as string,
-              subName: subName ? subName : "loading",
-              orgId: orgId,
-              subItems: {
-                create: [...transformedItems],
-              },
-              currentPeriodStart: new Date(sub.current_period_start * 1000),
-              currentPeriodEnd: new Date(sub.current_period_end * 1000),
-            },
-          });
-
-          const updatedOrg = await prisma.organisation.updateMany({
-            where: {
-              id: orgId,
-            },
-            data: {
-              customer: sub.customer as string,
-            },
-          });
-          console.log("done");*/
-          //-----------------------------------
           break;
 
         case "customer.subscription.deleted":
@@ -276,7 +222,7 @@ export default async function handler(
               logger.log(
                 `New billing period started for org with id '${updatedSubFromDb.orgId}'`
               );
-              // TODO check if metered sub item, then report to stripe, else do nothing
+              
               await reportOrgToStripe(updatedSubFromDb.orgId);
 
               // Update new billing period information

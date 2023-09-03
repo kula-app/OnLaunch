@@ -37,7 +37,7 @@ export async function reportOrgToStripe(orgId: number) {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for org with id '${orgId}'`);
 
-  // retrieve org data including the active subscription and subItems
+  // Retrieve org data including the active subscription and subItems
   const org = await prisma.organisation.findFirst({
     where: {
       id: orgId,

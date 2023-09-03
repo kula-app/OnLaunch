@@ -14,12 +14,13 @@ export async function reportAllOrgsToStripe() {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for all orgs`);
 
-  // retrieve orgs data including the active subscriptions and subItems
+  // Retrieve orgs data including the active subscriptions and subItems
   const orgs = await prisma.organisation.findMany({
     where: {
       subs: {
         // This is a nested "some" condition.
         // It filters organisations that have at least one subItem with metered = true
+        // and at least one with metered = false
         some: {
           AND: [
             { isDeleted: false },
@@ -212,13 +213,7 @@ export async function reportAllOrgsToStripe() {
           quantity: sumOfRequests,
         };
 
-        // If this reporting is at the end of the billing period,
-        // set the timestamp 10 minutes back or else stripe
-        // will reject the usage record (if the current timestamp
-        // is bigger than stripe's current timestamp) or stripe
-        // will count the usage report to the new billing period
         const currentDate = new Date();
-
         const endDate = new Date(org.subs[0].currentPeriodEnd);
         endDate.setSeconds(endDate.getSeconds() - 10);
         const startDate = new Date(org.subs[0].currentPeriodStart);
