@@ -11,6 +11,22 @@ interface Props {
   orgId: number;
 }
 
+function formatCurrency(value: number, currency: string = "EUR") {
+  let fractionDigits = 2; // default fraction digits
+
+  // Check if value is less than 0.01 (i.e., 1 cent)
+  if (value && value < 0.01) {
+    const valueStr = value.toString().split(".")[1] || "";
+    fractionDigits = valueStr.length;
+  }
+
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: currency,
+    minimumFractionDigits: fractionDigits,
+  });
+}
+
 const ProductCard = (props: Props) => {
   const router = useRouter();
 
@@ -81,13 +97,8 @@ const ProductCard = (props: Props) => {
             }}
           >
             unlimited exceeding requests at{" "}
-            {(
-              (props.product.unlimitedOption.priceAmount as number) / 100
-            ).toLocaleString("en-US", {
-              style: "currency",
-              currency: "EUR",
-            })}{" "}
-            per extra {props.product.unlimitedOption.divideBy} requests
+            {formatCurrency((props.product.unlimitedOption.priceAmount as number))}{" "}
+            per extra request
           </Checkbox>
         </div>
       )}

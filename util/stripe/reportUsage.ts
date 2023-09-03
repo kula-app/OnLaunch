@@ -2,15 +2,36 @@ import { PrismaClient } from "@prisma/client";
 import { Logger } from "../logger";
 import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import Stripe from "stripe";
-import { loadConfig } from "../../config/loadConfig";
+import { Product } from "../../models/product";
 
-const { v4: uuid } = require("uuid");
 const prisma: PrismaClient = new PrismaClient();
 
-const config = loadConfig();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-08-16",
 });
+
+async function findProductDetailsById(id: string, products: any) {
+  const product = products.find(
+    (p: Product) =>
+      p.id === id || (p.unlimitedOption && p.unlimitedOption.id === id)
+  );
+
+  if (!product) {
+    return null;
+  }
+
+  if (product.id === id) {
+    return { priceAmount: product.priceAmount };
+  }
+
+  if (product.unlimitedOption && product.unlimitedOption.id === id) {
+    return {
+      priceAmount: product.unlimitedOption.priceAmount,
+    };
+  }
+
+  return null;
+}
 
 export async function reportOrgToStripe(orgId: number) {
   const logger = new Logger(__filename);
@@ -23,6 +44,7 @@ export async function reportOrgToStripe(orgId: number) {
       subs: {
         // This is a nested "some" condition.
         // It filters organisation to have at least one subItem with metered = true
+        // and at least one with metered = false
         some: {
           AND: [
             { isDeleted: false },
@@ -63,7 +85,9 @@ export async function reportOrgToStripe(orgId: number) {
   });
 
   if (!org) {
-    logger.log(`No organisation found with id '${orgId}'`);
+    logger.log(
+      `No organisation found with id '${orgId}' (with metered, active subscription)`
+    );
     return;
   }
 
@@ -154,24 +178,26 @@ export async function reportOrgToStripe(orgId: number) {
   }
 
   // Only proceed if there are new requests
-  if (sumOfRequests > 0 || true) { // TODO
+  if (sumOfRequests > 0) {
     // Search for the last usage report of org
     const report = await prisma.loggedUsageReport.findFirst({
       where: {
         orgId: org.id,
+        createdAt: {
+          gte: org.subs[0].currentPeriodStart,
+          lte: org.subs[0].currentPeriodEnd,
+        },
+        isReportedAsInvoice: false,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    // If there is no usage report so far for the org or when there has not
-    // been a report during the current billing period, check if the sum
-    // of requests exceeds the requests covered by the flatrate subscription
-    if (
-      !report ||
-      (report && org.subs[0].currentPeriodStart > report.createdAt)
-    ) {
+    // If there is no usage report for the org during the current
+    // billing period, check if the sum of requests exceeds the
+    // requests covered by the flatrate subscription
+    if (!report) {
       const flatrateProduct = products.find(
         (product: { id: string | undefined }) =>
           product.id === flatrateSubItem.productId
@@ -187,7 +213,7 @@ export async function reportOrgToStripe(orgId: number) {
       }
 
       // Check if the requests during this billing period exceed the limit
-      /* TODO if (flatrateProduct.requests >= sumOfRequests) {
+      if (flatrateProduct.requests >= sumOfRequests) {
         logger.log(
           `The request count for org with id '${org.id}' is covered by the flatrate limit`
         );
@@ -199,115 +225,64 @@ export async function reportOrgToStripe(orgId: number) {
         );
         // Substract the flatrate limit for the (first) usage report for this billing period
         sumOfRequests = sumOfRequests - flatrateProduct.requests;
-      }*/   
+      }
     }
 
-    // The idempotency key makes sure the same request is not
-    // applied twice
-    const idempotencyKey = uuid();
-
     try {
-      const usageData: any = {
-        //quantity: sumOfRequests,
-        quantity: 69,
-        action: "increment",
-      };
-
-      // If this reporting is at the end of the billing period,
-      // consider setting the timestamp 10 minutes back or else stripe
-      // will reject the usage record (if the current timestamp
-      // is bigger than stripe's current timestamp) or stripe
-      // will count the usage report to the new billing period
-      const currentDate = new Date();
-
-      const endDate = new Date(org.subs[0].currentPeriodEnd);
-      // Substract some seconds from the enddate to ensure a value
-      // in the billing period
-      // TODO
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      //endDate.setSeconds(endDate.getSeconds() - 10);
-      const startDate = new Date(org.subs[0].currentPeriodStart);
-
-      // Make sure the timestamp is within the billing period
-      //if (currentDate > endDate) {
-      console.log(
-        `Setting usageData timestamp (current: ${currentDate.getTime()} -- ${currentDate.toISOString()} 
-        to endDate ((${endDate.getTime()} -- ${endDate.toISOString()}))`
-      );
-      usageData.timestamp = Math.floor(endDate.getTime() / 1000);
-      /*} else if (currentDate < startDate) {
-        usageData.timestamp = Math.ceil(startDate.getTime() / 1000);
-      } else {
-        usageData.timestamp = Math.floor(currentDate.getTime() / 1000);
-      }*/
-
-      logger.log(
-        `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' and idempotency key '${idempotencyKey}' to stripe`
-      );
-      // The default 'action' is 'increment'
-      // If no timestamp is provided, stripe adds the timestamp to the record
-      /*await stripe.subscriptionItems.createUsageRecord(
-        meteredSubItem.subItemId,
-        usageData,
-        {
-          idempotencyKey,
-        }
-      );*/
-
-      //org.customer
-      const subscription = await stripe.subscriptions.retrieve(
-        org.subs[0].subId,
-        {
-          expand: ["latest_invoice"],
-        }
+      // Search product for pricing data
+      const product = await findProductDetailsById(
+        meteredSubItem.productId,
+        products
       );
 
-      console.log("subscription: " + JSON.stringify(subscription));
-      console.log(
-        "latest_invoice: " + JSON.stringify(subscription.latest_invoice)
-      );
-      const li = (
-        subscription.latest_invoice as Stripe.Invoice
-      ).lines.data.find((item) => {
-        return item.plan && item.plan.aggregate_usage === "sum";
-      });
-      console.log("ITEM: " + JSON.stringify(li));
-
-      if (li) {
-        
-
-        if (
-          (subscription.latest_invoice as Stripe.Invoice).status === "draft"
-        ) {
-            console.log("DRAFT!!!")
-            console.log("updating quantitittyyy");
-        await stripe.invoiceItems.update(li?.id, {
-          quantity: Number(li.quantity) + 10000,
-        });/*
-          await stripe.invoiceItems.del(li.id);
-          const stripeRes = await stripe.invoiceItems.create({
-            customer: subscription.customer as string,
-            invoice: subscription.latest_invoice as string,
-            quantity: Number(li.quantity) + sumOfRequests,
-          });
-
-          console.log("STRIPE RES: " + JSON.stringify(stripeRes));
-          console.log("QUANTITY: " + (Number(li.quantity) + sumOfRequests));*/
-        }
+      if (!product) {
+        logger.error(
+          `Could not find procuct with id '${meteredSubItem.productId}`
+        );
+        return;
       }
-      return;
-      /*
+
+      // Calculating the amount to pay in cents (for graduated pricing)
+      // Since the priceAmount should be in EUR, multiply it by 100 to
+      // get the amount in cents
+      const amount = Math.round(
+        sumOfRequests * (Number(product.priceAmount) * 100)
+      );
+      
+      if (amount <= 0) {
+        logger.log(
+          `${sumOfRequests} requests for org '${org.id}' result in not even 1 cent (${sumOfRequests * (Number(product.priceAmount) * 100)}) - no invoice item to create`
+        );
+        return;
+      }
+      logger.log(
+        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.customer}) to stripe`
+      );
+      
+      // Create new invoice item to account for the requests made in the
+      // end of the billing
+      await stripe.invoiceItems.create({
+        customer: org.customer as string,
+        amount: amount,
+        description: `Last usage for ${org.subs[0].subName}`,
+        currency: "eur",
+        period: {
+          start: org.subs[0].currentPeriodStart.getTime() / 1000,
+          end: org.subs[0].currentPeriodEnd.getTime() / 1000,
+        },
+      });
+
       await prisma.loggedUsageReport.create({
         data: {
           orgId: org.id,
           requests: sumOfRequests,
+          isReportedAsInvoice: true,
         },
       });
 
       // If stripe call is successful, run all the prepared database update operations
       logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
       await Promise.all(operations.map((op) => op()));
-      */
     } catch (error) {
       logger.error(
         `Cancelling reporting for org with id '${org.id}' due to error: ${error}`
@@ -315,6 +290,6 @@ export async function reportOrgToStripe(orgId: number) {
       throw error;
     }
   } else {
-    //TODO uncomment this: logger.log(`No requests to report for org with id '${org.id}'`);
+    logger.log(`No requests to report for org with id '${org.id}'`);
   }
 }

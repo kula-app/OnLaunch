@@ -123,7 +123,7 @@ export default function AppsPage() {
         {org?.role === "ADMIN" && data.length > 0 && (
           <>
             <Heading className="text-center my-12">
-              App Requests in the past days
+              App requests in the past days
             </Heading>
             {currentPeriodStart && (
               <Button

@@ -7,50 +7,23 @@ import {
   Heading,
   FormControl,
   FormLabel,
-  Skeleton,
   Button,
 } from "@chakra-ui/react";
-import { useProducts } from "../../api/stripe/useProducts";
-import ProductCard from "../../components/ProductCard";
-import { Product } from "../../models/product";
 import createOrg from "../../api/orgs/createOrg";
+import Routes from "../../routes/routes";
+import { useRouter } from "next/router";
 
 export default function NewOrgPage() {
+  const router = useRouter();
   const toast = useToast();
 
   const [orgName, setOrgName] = useState("");
-  const [orgId, setOrgId] = useState<number>(-1)
-  const { products, isError, isLoading } = useProducts();
-
-  const [nextStep, setNextStep] = useState(false);
-
-  const freeProduct: Product = {
-    id: "FREE",
-    description: "For checking it out",
-    name: "Free",
-    priceId: "",
-    priceAmount: 0,
-    requests: Number(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT),
-  };
-
-  if (isError) {
-    toast({
-      title: "Error!",
-      description:
-        "An error occurred while loading the paid subscriptions, please come back later or choose the free subscription.",
-      status: "error",
-      isClosable: true,
-      duration: null,
-    });
-  }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
       const org = await createOrg(orgName);
-
-      setOrgId(org.orgId);
       
       toast({
         title: "Success!",
@@ -62,7 +35,7 @@ export default function NewOrgPage() {
 
       resetForm();
 
-      setNextStep(true);
+      navigateToUpgradePage(org.orgId);
     } catch (error) {
       toast({
         title: "Error while creating new organisation!",
@@ -73,6 +46,10 @@ export default function NewOrgPage() {
       });
     }
   }
+  
+  function navigateToUpgradePage(orgId: number) {
+    router.push(Routes.getOrgUpgradeByOrgId(orgId));
+  }
 
   function resetForm() {
     (document.getElementById("orgForm") as HTMLFormElement)?.reset();
@@ -82,7 +59,6 @@ export default function NewOrgPage() {
     <>
       <div>
         <main className={styles.main}>
-          {!nextStep && (
             <div>
               <Heading className="text-center">New Organisation</Heading>
               <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
@@ -101,31 +77,6 @@ export default function NewOrgPage() {
                 </FormControl>
               </form>
             </div>
-          )}
-          {nextStep && (
-            <div>
-              <Heading className="text-center">Choose an Abo</Heading>
-              <form className="mt-8" id="aboForm">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                  <ProductCard product={freeProduct} orgId={orgId} />
-                  {products?.map((product, index) => {
-                    return (
-                      <ProductCard
-                        product={product}
-                        orgId={orgId}
-                        key={index}
-                      />
-                    );
-                  })}
-                  {isLoading && (
-                    <div className="w-full mt-10">
-                      <Skeleton height="full" />
-                    </div>
-                  )}
-                </div>
-              </form>
-            </div>
-          )}
         </main>
       </div>
     </>

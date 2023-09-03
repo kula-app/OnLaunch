@@ -215,11 +215,12 @@ model LoggedUsageReport {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  requests Int
+  requests            Int
+  isReportedAsInvoice Boolean @default(false)
 
   // the app the request was made for
-  org       Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  orgId     Int
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId Int
 }
 
 // This is a table to locally save Stripe subscriptions for organisations

@@ -33,10 +33,10 @@ export default async function handler(
 
         logger.log(`Retrieving dashboard data for org with id '${orgId}'`);
         // Since prisma does not support direct date aggregation, the
-        // grouping by the day is done via executeRaw, which uses
+        // grouping by the day is done via queryRaw, which uses
         // prisma's "tagged template" that should be reducing the risk
         // of SQL injections
-        // Get the count of loggedApiRequests groubed by day for the last 31 days
+        // Get the count of loggedApiRequests grouped by day for the last 31 days
         const result = (await prisma.$queryRaw` 
           WITH date_series AS (
             SELECT generate_series(CURRENT_DATE - INTERVAL '31 days', CURRENT_DATE, INTERVAL '1 day')::DATE AS date

@@ -74,23 +74,24 @@ export async function getProducts() {
       if (matchingAddonProduct) {
         const matchingPrice =
           matchingAddonProduct.default_price as Stripe.Price;
-
+          
         matchingProduct = {
           id: matchingAddonProduct.id,
           name: matchingAddonProduct.name,
+          nameTag: matchingPrice.nickname as string,
           description: matchingAddonProduct.description as string,
           priceId: matchingPrice.id,
-          priceAmount: Number(matchingPrice.unit_amount),
-          divideBy: Number(matchingPrice.transform_quantity?.divide_by),
+          priceAmount: Number(matchingAddonProduct.metadata["pricePerRequest"]),
         };
       }
 
       const prod = product as Stripe.Product;
       const price = product.default_price as Stripe.Price;
-
+      
       return {
         id: prod.id,
         name: prod.name,
+        nameTag: price.nickname as string,
         description: prod.description as string,
         priceId: price.id,
         priceAmount: Number(price.unit_amount),

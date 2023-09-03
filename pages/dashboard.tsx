@@ -30,9 +30,12 @@ import {
   Stack,
   Heading,
   Tag,
-  Center,
 } from "@chakra-ui/react";
 import React from "react";
+import {
+  getColorLabel,
+  translateSubName,
+} from "../util/nameTag";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -154,26 +157,19 @@ export default function DashboardPage() {
                     onClick={() => navigateToAppsPage(org.id)}
                   >
                     <Td width="5%">{org.id}</Td>
-                    <Td>{org.name}
-                        <Tag
-                          className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
-                          size={"md"}
-                          key={index}
-                          borderRadius="full"
-                          variant="solid"
-                          colorScheme={
-                            org?.subName?.startsWith("Premium")
-                              ? "purple"
-                              : org?.subName?.startsWith("Basic")
-                              ? "teal"
-                              : "green"
-                          }
-                        >
-                          {org?.subName
-                            ?.toLocaleLowerCase()
-                            .replace("unlimited", "∞")}
-                        </Tag>
-                        </Td>
+                    <Td>
+                      {org.name}
+                      <Tag
+                        className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
+                        size={"md"}
+                        key={index}
+                        borderRadius="full"
+                        variant="solid"
+                        colorScheme={getColorLabel(org?.subName)}
+                      >
+                        {translateSubName(org?.subName)}
+                      </Tag>
+                    </Td>
                   </Tr>
                 );
               })}

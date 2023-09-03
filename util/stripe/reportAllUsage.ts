@@ -218,30 +218,18 @@ export async function reportAllOrgsToStripe() {
         // is bigger than stripe's current timestamp) or stripe
         // will count the usage report to the new billing period
         const currentDate = new Date();
-        // TODO currentDate.setMonth(currentDate.getMonth() + 1);
-        //currentDate.setMonth(currentDate.getMonth() + 1);
-        //currentDate.setMinutes(currentDate.getMinutes() + 10);
 
         const endDate = new Date(org.subs[0].currentPeriodEnd);
         endDate.setSeconds(endDate.getSeconds() - 10);
         const startDate = new Date(org.subs[0].currentPeriodStart);
 
         if (currentDate > endDate) {
-          console.log("TIMESTAMP IS endDate");
-          //TODO usageData.timestamp = Math.floor(Date.now() / 1000) - 600 + 60 * 60 * 24 * 31;
-          //usageData.timestamp = Math.floor(currentDate.getTime() / 1000) - 600;
           usageData.timestamp = Math.floor(endDate.getTime() / 1000);
         } else if (currentDate < startDate) {
-          console.log("TIMESTAMP IS startDate");
-          //TODO usageData.timestamp = Math.floor(Date.now() / 1000) - 600 + 60 * 60 * 24 * 31;
-          //usageData.timestamp = Math.floor(currentDate.getTime() / 1000) - 600;
           usageData.timestamp = Math.ceil(startDate.getTime() / 1000);
         } else {
-          console.log("TIMESTAMP IS OK");
           usageData.timestamp = Math.floor(currentDate.getTime() / 1000);
         }
-        console.log("TIMESTAMP ===== " + usageData.timestamp);
-        console.log("DATE ===== " + new Date(usageData.timestamp * 1000));
 
         logger.log(
           `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' and idempotency key '${idempotencyKey}' to stripe`

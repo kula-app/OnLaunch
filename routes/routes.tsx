@@ -34,6 +34,10 @@ class Routes {
     return `/orgs/${orgId}/apps`;
   }
 
+  static getOrgUpgradeByOrgId(orgId: number): string {
+    return `/orgs/${orgId}/upgrade`;
+  }
+
   static createNewAppForOrgId(orgId: number): string {
     return `/orgs/${orgId}/apps/new`;
   }

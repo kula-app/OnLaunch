@@ -5,6 +5,7 @@ import { Logger } from "../../../../../util/logger";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Stripe from "stripe";
 import { reportOrgToStripe } from "../../../../../util/stripe/reportUsage";
+import { getProducts } from "./products";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -120,7 +121,7 @@ export default async function handler(
                 subId: sub.id as string,
                 subName: subName ? subName : "loading",
                 org: {
-                  connect: { id: Number(session.client_reference_id)}
+                  connect: { id: Number(session.client_reference_id) },
                 },
                 subItems: {
                   create: [...transformedItems],
@@ -150,7 +151,7 @@ export default async function handler(
           logger.log("Customer subscription created!");
           // TODO delete this code part
           //-----------------------------------
-          const sub = event.data.object as Stripe.Subscription;
+          /*const sub = event.data.object as Stripe.Subscription;
           // looking up whether subscription is already saved in database (for idempotency)
           const subFromDb = await prisma.subscription.findUnique({
             where: {
@@ -178,7 +179,7 @@ export default async function handler(
             };
           });
 
-          const orgId = 31;
+          const orgId = 22;
           const savedSub = await prisma.subscription.create({
             data: {
               subId: sub.id as string,
@@ -195,13 +196,12 @@ export default async function handler(
           const updatedOrg = await prisma.organisation.updateMany({
             where: {
               id: orgId,
-              customer: null,
             },
             data: {
               customer: sub.customer as string,
             },
           });
-          console.log("done");
+          console.log("done");*/
           //-----------------------------------
           break;
 
@@ -209,7 +209,20 @@ export default async function handler(
           logger.log("Customer subscription deleted!");
           const subData = event.data.object as Stripe.Subscription;
           try {
-            const deletedSub = await prisma.subscription.update({
+            const toDeleteSubFromDb = await prisma.subscription.findUnique({
+              where: {
+                subId: subData.id,
+              },
+            });
+
+            if (!toDeleteSubFromDb) {
+              logger.error(`${event.type} - No subscription found for sub id '${subData.id}'`);
+              break;
+            }
+
+            await reportOrgToStripe(toDeleteSubFromDb.orgId);
+
+            await prisma.subscription.update({
               where: {
                 subId: subData.id,
               },
@@ -235,11 +248,12 @@ export default async function handler(
 
             if (!updatedSubFromDb) {
               logger.error(
-                `No subscription found for sub id '${updatedSub.id}'`
+                `${event.type} - No subscription found for sub id '${updatedSub.id}'`
               );
               break;
             }
 
+            // stripe timestamps are in seconds, while node handles them in miliseconds
             const stripeCurrentPeriodStart = new Date(
               updatedSub.current_period_start * 1000
             );
@@ -248,16 +262,21 @@ export default async function handler(
             );
 
             // Check if new billing period started
+            // Will not be the case when the subscription gets canceled at
+            // the end of period, thus report the usage as well when we
+            // get the customer.subscription.deleted event
             if (
-              stripeCurrentPeriodStart.getTime() !==
+              (stripeCurrentPeriodStart.getTime() !==
                 updatedSubFromDb.currentPeriodStart.getTime() ||
-              stripeCurrentPeriodEnd.getTime() !==
-                updatedSubFromDb.currentPeriodEnd.getTime()
+                stripeCurrentPeriodEnd.getTime() !==
+                  updatedSubFromDb.currentPeriodEnd.getTime()) &&
+              !updatedSub.cancel_at_period_end
             ) {
               // Report latest logged api requests to stripe
               logger.log(
                 `New billing period started for org with id '${updatedSubFromDb.orgId}'`
               );
+              // TODO check if metered sub item, then report to stripe, else do nothing
               await reportOrgToStripe(updatedSubFromDb.orgId);
 
               // Update new billing period information
@@ -284,29 +303,6 @@ export default async function handler(
 
         case "invoice.created":
           logger.log("Invoice created!");
-          console.log("HUSSAAAAH");
-          const invoiceData = event.data.object as Stripe.Invoice;
-          console.log(JSON.stringify(invoiceData));
-          const meteredSubItem = invoiceData.lines.data.find(
-            (item) => item.plan?.aggregate_usage === "sum"
-          );
-          if (meteredSubItem) {
-            const currentQuantity = meteredSubItem.quantity;
-            console.log("quantity: " + currentQuantity);
-            // count requests for current period
-            // oder einfach die noch nicht reporteten von der periode?
-            /*const subscriptionId = "sub_1Nkb5mCtouR6SlOzNQ0IPeCk"; // Replace with your Subscription ID
-
-            try {
-              const subscription = await stripe.subscriptions.retrieve(
-                subscriptionId
-              );
-              console.log(subscription);
-            } catch (error) {
-              console.error("Error retrieving subscription:", error);
-            }*/
-          }
-
           break;
 
         case "payment_intent.payment_failed":

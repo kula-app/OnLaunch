@@ -50,6 +50,7 @@ import React from "react";
 import createCustomerPortalSession from "../../../api/stripe/createCustomerPortalSession";
 import { Subscription } from "../../../models/subscription";
 import getSubscriptions from "../../../api/stripe/getSubscriptions";
+import { getColorLabel, translateSubName } from "../../../util/nameTag";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -64,6 +65,7 @@ export default function EditOrgPage() {
   const orgId = Number(router.query.orgId);
 
   const [orgName, setOrgName] = useState("");
+  const [isCustomer, setIsCustomer] = useState(false);
 
   const roles = ["ADMIN", "USER"];
   const [baseUrl, setBaseUrl] = useState("");
@@ -82,6 +84,7 @@ export default function EditOrgPage() {
       try {
         const org = await getOrg(orgId);
         fillForm(org);
+        setIsCustomer(!!org.customer);
       } catch (error) {
         toast({
           title: "Error while fetching organisation!",
@@ -156,6 +159,10 @@ export default function EditOrgPage() {
         duration: 6000,
       });
     }
+  }
+
+  function navigateToUpgradePage() {
+    router.push(Routes.getOrgUpgradeByOrgId(orgId));
   }
 
   function navigateToDashboardPage() {
@@ -521,61 +528,92 @@ export default function EditOrgPage() {
               </Tbody>
             </Table>
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
-            {!loading && subs?.length != 0 && (
-              <div>
+            {userRole === "ADMIN" && (
+              <>
                 <Heading className="text-center mt-16 mb-8">
                   Your subscription
                 </Heading>
-                <Table
-                  className="mt-8"
-                  sx={{ minWidth: 650, maxWidth: 1000 }}
-                  aria-label="simple table"
-                >
-                  <Thead>
-                    <Tr>
-                      <Th>
-                        <strong>Org Id</strong>
-                      </Th>
-                      <Th>
-                        <strong>Organisation</strong>
-                      </Th>
-                      <Th>
-                        <strong>Subscription</strong>
-                      </Th>
-                      <Th></Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {subs?.map((sub, index) => {
-                      return (
-                        <Tr key={index}>
-                          <Td>{sub.org.id}</Td>
-                          <Td>{sub.org.name}</Td>
-                          <Td>
-                            <Tag
-                              size={"md"}
-                              key={index}
-                              borderRadius="full"
-                              variant="solid"
-                              colorScheme={
-                                sub?.subName?.startsWith("Premium")
-                                  ? "purple"
-                                  : sub?.subName?.startsWith("Basic")
-                                  ? "teal"
-                                  : "facebook"
-                              }
-                            >
-                              {sub.subName
-                                .toLocaleLowerCase()
-                                .replace("unlimited", "∞")}
-                            </Tag>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
                 {!loading && subs?.length != 0 && (
+                  <div>
+                    <Table
+                      className="mt-8"
+                      sx={{ minWidth: 650, maxWidth: 1000 }}
+                      aria-label="simple table"
+                    >
+                      <Thead>
+                        <Tr>
+                          <Th>
+                            <strong>Org Id</strong>
+                          </Th>
+                          <Th>
+                            <strong>Organisation</strong>
+                          </Th>
+                          <Th>
+                            <strong>Subscription</strong>
+                          </Th>
+                          <Th></Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {subs?.map((sub, index) => {
+                          return (
+                            <Tr key={index}>
+                              <Td>{sub.org.id}</Td>
+                              <Td>{sub.org.name}</Td>
+                              <Td>
+                                <Tag
+                                  size={"md"}
+                                  key={index}
+                                  borderRadius="full"
+                                  variant="solid"
+                                  colorScheme={getColorLabel(sub?.subName)}
+                                >
+                                  {translateSubName(sub.subName)}
+                                </Tag>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+
+                    <Center>
+                      <Button
+                        rightIcon={<FiExternalLink />}
+                        colorScheme="blue"
+                        variant="solid"
+                        className="mt-4"
+                        onClick={sendCreateCustomerPortalSession}
+                      >
+                        manage subscription
+                      </Button>
+                    </Center>
+                    {loading && (
+                      <div>
+                        <Heading className="text-center">loading ...</Heading>
+                        <Spinner />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {!loading && subs?.length == 0 && (
+                  <Center className="my-4">
+                    currently no active subscription
+                  </Center>
+                )}
+                {!loading && subs?.length == 0 && (
+                  <Center>
+                    <Button
+                      colorScheme="blue"
+                      variant="solid"
+                      className="mt-4"
+                      onClick={navigateToUpgradePage}
+                    >
+                      get a subscription
+                    </Button>
+                  </Center>
+                )}
+                {!loading && subs?.length == 0 && isCustomer && (
                   <Center>
                     <Button
                       rightIcon={<FiExternalLink />}
@@ -584,36 +622,26 @@ export default function EditOrgPage() {
                       className="mt-4"
                       onClick={sendCreateCustomerPortalSession}
                     >
-                      manage subscription
+                      see previous invoices
                     </Button>
                   </Center>
                 )}
-                {loading && (
-                  <div>
-                    <Heading className="text-center">loading ...</Heading>
-                    <Spinner />
+
+                <div>
+                  <Heading className="text-center mt-16">
+                    Delete Organisation
+                  </Heading>
+                  <div className="flex justify-center">
+                    <Button
+                      className="mt-8"
+                      colorScheme="red"
+                      onClick={handleDelete}
+                    >
+                      delete
+                    </Button>
                   </div>
-                )}
-                {!loading && subs?.length == 0 && (
-                  <Center className="mt-4">no data to show</Center>
-                )}
-              </div>
-            )}
-            {userRole === "ADMIN" && (
-              <div>
-                <Heading className="text-center mt-16">
-                  Delete Organisation
-                </Heading>
-                <div className="flex justify-center">
-                  <Button
-                    className="mt-8"
-                    colorScheme="red"
-                    onClick={handleDelete}
-                  >
-                    delete
-                  </Button>
                 </div>
-              </div>
+              </>
             )}
           </div>
           <AlertDialog

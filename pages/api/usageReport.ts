@@ -26,36 +26,11 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      // If a specific orgId is provided, report the usage data for the
-      // organisation with the orgId
-      // This might occur when the billing period ends
-      // TODO
-      if (req.body.orgId) {
-        try {
-          await reportOrgToStripe(Number(req.body.orgId));
-
-          res
-            .status(StatusCodes.OK)
-            .end(`Reported usage for org with id '${req.body.orgId}'`);
-          return;
-        } catch (error) {
-          logger.error(`Error: ${error}`);
-          res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .end("Error during reporting usage, please try again later!");
-          return;
-        }
-      }
-
       try {
-        // sequentially report the usage of all orgs
+        // Sequentially report the usage of all orgs
         logger.log("Running usage reports for all organisations");
 
-        try {
-          await reportAllOrgsToStripe();
-        } catch (error) {
-          logger.error(`${error}`);
-        }
+        await reportAllOrgsToStripe();
 
         res.status(StatusCodes.OK).end("Reported usage for all organisations");
       } catch (error) {
