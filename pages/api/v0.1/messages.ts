@@ -193,7 +193,7 @@ export default async function handler(
             res
               .status(StatusCodes.TOO_MANY_REQUESTS)
               .end("The limit has been reached.");
-              return;
+            return;
           }
         }
       } catch (error) {

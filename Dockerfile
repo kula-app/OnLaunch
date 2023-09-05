@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:20.3.1 AS base
+FROM node:20.5.1 AS base
 # install additional dependencies
 # --> noop
 
@@ -74,7 +74,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:20.3.1-slim AS release
+FROM node:20.5.1-slim AS release
 # install additional dependencies
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
@@ -88,8 +88,8 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 WORKDIR /home/node/app/
 
 # copy build output required for yarn install for better build efficiency
-COPY --from=build_production /home/node/app/package.json    ./
-COPY --from=build_production /home/node/app/prisma          ./prisma
+COPY --from=build_production /home/node/app/package.json ./
+COPY --from=build_production /home/node/app/prisma       ./prisma
 
 # install production dependencies
 RUN yarn install \
@@ -99,11 +99,10 @@ RUN yarn install \
   --network-timeout 1000000
 
 # copy remaining build output
-COPY --from=build_production /home/node/app/public          ./public
-COPY --from=build_production /home/node/app/.next           ./.next
+COPY --from=build_production --chown=node:node /home/node/app/public ./public
+COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
 
 # select user
-RUN chown -R node:node /home/node/app
 USER node
 
 ENV NODE_ENV production
