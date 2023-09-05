@@ -9,7 +9,7 @@ import { loadConfig } from "../../../../../config/loadConfig";
 const PRODUCTS_REDIS_KEY = "products";
 const logger = new Logger(__filename);
 
-export async function getProducts() {
+export async function getProducts(): Promise<Product[]> {
   const config = loadConfig();
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
     apiVersion: "2023-08-16",
@@ -24,7 +24,11 @@ export async function getProducts() {
     // if products are cached, then return them, else retrieve them from stripe
     if (cachedProducts) {
       logger.log("Returning cached products");
-      return cachedProducts;
+      try {
+        return JSON.parse(cachedProducts);
+      } catch (error) {
+        logger.error(`Failed to parse Redis cached products, reason: ${error}`)
+      }
     }
   } catch (error) {
     logger.error(`Redis error: ${error}`);
@@ -123,7 +127,7 @@ export async function getProducts() {
       logger.error(`Failed to cache products in Redis: ${redisError}`);
     }
 
-    return JSON.stringify(sortedResult);
+    return sortedResult;
   } catch (stripeError) {
     logger.error(`Error fetching products from Stripe: ${stripeError}`);
     throw new Error("Failed to fetch products from Stripe.");
