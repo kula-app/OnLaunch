@@ -35,14 +35,21 @@ interface HealthConfig {
 interface UsageReportConfig {
   apiKey: string;
 }
+
 export interface RedisConfig {
-  isSentinelEnabled?: boolean;
-  sentinels?: { host: string; port: number }[];
+  isEnabled: boolean;
+
   name?: string; // name of the Redis service
   host?: string;
   password?: string;
   port?: number;
+  db: number | undefined;
+
   cacheMaxAge: number;
+
+  isSentinelEnabled: boolean;
+  sentinels?: { host: string; port: number }[];
+  sentinelPassword?: string;
 }
 
 interface SentryConfig {
@@ -103,22 +110,22 @@ const parseSentinels = (sentinelString?: string) => {
 export function loadConfig(): Config {
   return {
     nextAuth: {
-      url: process.env.NEXTAUTH_URL || "http://localhost:3000",
+      url: process.env.NEXTAUTH_URL ?? "http://localhost:3000",
     },
     signup: {
-      isEnabled: process.env.SIGNUPS_ENABLED == "true" || false,
+      isEnabled: process.env.SIGNUPS_ENABLED == "true" ?? false,
     },
     freeSub: {
-      requestLimit: Number(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) || 42,
+      requestLimit: parseNumberEnvValue(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) ?? 42,
     },
     database: {
       url:
-        process.env.DATABASE_URL ||
+        process.env.DATABASE_URL ??
         "postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public",
     },
     health: {
       apiKey:
-        process.env.HEALTH_API_KEY || crypto.randomBytes(32).toString("hex"),
+        process.env.HEALTH_API_KEY ?? crypto.randomBytes(32).toString("hex"),
     },
     usageReport: {
       apiKey:
@@ -126,23 +133,29 @@ export function loadConfig(): Config {
         crypto.randomBytes(32).toString("hex"),
     },
     smtp: {
-      host: process.env.SMTP_HOST || "localhost",
-      port: Number(process.env.SMTP_PORT) || 1025,
-      user: process.env.SMTP_USER || "",
-      pass: process.env.SMTP_PASS || "",
+      host: process.env.SMTP_HOST ?? "localhost",
+      port: parseNumberEnvValue(process.env.SMTP_PORT) ?? 1025,
+      user: process.env.SMTP_USER ?? "",
+      pass: process.env.SMTP_PASS ?? "",
     },
     emailContent: {
-      senderName: process.env.SMTP_FROM_NAME || "OnLaunch",
-      senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
+      senderName: process.env.SMTP_FROM_NAME ?? "OnLaunch",
+      senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
     },
     redisConfig: {
-      isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" || false,
-      sentinels: parseSentinels(process.env.REDIS_SENTINELS),
+      isEnabled: process.env.REDIS_ENABLED == 'true' ?? false,
+
       name: process.env.REDIS_SENTINEL_NAME,
-      host: process.env.REDIS_HOST || "",
-      password: process.env.REDIS_PASSWORD || "",
-      port: Number(process.env.REDIS_PORT) || 6379,
-      cacheMaxAge: Number(process.env.REDIS_CACHE_MAX_AGE) || 60,
+      host: process.env.REDIS_HOST ?? "localhost",
+      password: process.env.REDIS_PASSWORD ?? "password",
+      port: parseNumberEnvValue(process.env.REDIS_PORT) ?? 6379,
+      db: parseNumberEnvValue(process.env.REDIS_DB),
+
+      cacheMaxAge: parseNumberEnvValue(process.env.REDIS_CACHE_MAX_AGE) ?? 60,
+
+      isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" ?? false,
+      sentinels: parseSentinels(process.env.REDIS_SENTINELS),
+      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",

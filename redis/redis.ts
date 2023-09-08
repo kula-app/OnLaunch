@@ -9,8 +9,14 @@ function getRedisConfiguration(): RedisConfig {
 export function createRedisInstance(config = getRedisConfiguration()) {
   const logger = new Logger(__filename);
 
+  if (!config.isEnabled) {
+    logger.verbose(`Redis is not enabled`);
+    return undefined;
+  }
+
   try {
     let options: RedisOptions = {
+      db: config.db,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
       retryStrategy: (times) => {
@@ -30,6 +36,8 @@ export function createRedisInstance(config = getRedisConfiguration()) {
       options = {
         ...options,
         sentinels: config.sentinels,
+        sentinelPassword: config.sentinelPassword,
+        password: config.password,
         name: config.name
       };
     } else {
