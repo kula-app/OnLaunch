@@ -89,7 +89,7 @@ export default async function handler(
 
           res.status(StatusCodes.OK).json(deletedUserInOrg);
         }
-      }
+      } 
 
       // if deletion is for a pending invitation
       try {

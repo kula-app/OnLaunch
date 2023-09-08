@@ -18,11 +18,18 @@ class ApiRoutes {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}`;
   }
 
+  static getDashboardDataByOrgId(orgId: number): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/dashboard`;
+  }
+
   static getOrgUsersByOrgId(orgId: number): string {
     return `${ApiRoutes.getOrgById(orgId)}/users`;
   }
 
-  static getOrgUserByOrgIdAndUserEmail(orgId: number, userEmail: string): string {
+  static getOrgUserByOrgIdAndUserEmail(
+    orgId: number,
+    userEmail: string
+  ): string {
     return `${ApiRoutes.getOrgUsersByOrgId(orgId)}/${userEmail}`;
   }
 

@@ -7,7 +7,6 @@ import Routes from "../../../../routes/routes";
 import {
   Input,
   Button,
-  Text,
   useToast,
   Heading,
   FormControl,
