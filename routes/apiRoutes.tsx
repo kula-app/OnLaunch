@@ -18,8 +18,10 @@ class ApiRoutes {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}`;
   }
 
-  static getDashboardDataByOrgId(orgId: number): string {
-    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/dashboard`;
+  static getDashboardData(orgId: number, appId?: number): string {
+    return `${ApiRoutes.API_BASE_URL}/dashboard?orgId=${orgId}${
+      appId ? `&appId=${appId}` : ""
+    }`;
   }
 
   static getOrgUsersByOrgId(orgId: number): string {

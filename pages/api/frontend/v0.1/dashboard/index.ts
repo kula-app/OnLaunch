@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../../util/logger";
+import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient } from "@prisma/client";
-import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
+import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -29,15 +29,32 @@ export default async function handler(
   switch (req.method) {
     case "GET":
       try {
-        const orgId = Number(req.query.orgId);
+        const orgId: number = Number(req.query.orgId);
+        const appId = !!req.query.appId ? Number(req.query.appId) : undefined;
 
         logger.log(`Retrieving dashboard data for org with id '${orgId}'`);
+
         // Since prisma does not support direct date aggregation, the
         // grouping by the day is done via queryRaw, which uses
         // prisma's "tagged template" that should be reducing the risk
         // of SQL injections
         // Get the count of loggedApiRequests grouped by day for the last 31 days
-        const result = (await prisma.$queryRaw`
+        let result: QueryResult;
+        if (appId != undefined) {
+          result = await prisma.$queryRaw`
+          WITH date_series AS (
+            SELECT generate_series(CURRENT_DATE - INTERVAL '31 days', CURRENT_DATE, INTERVAL '1 day')::DATE AS date
+          )
+          SELECT ds.date, COALESCE(count(lar."createdAt"), 0) AS count
+          FROM date_series ds
+          LEFT JOIN "LoggedApiRequests" lar ON DATE(lar."createdAt") = ds.date AND lar."appId" IN (
+            SELECT "id" FROM "App" WHERE "orgId" = ${orgId}::integer AND "appId" = ${appId}::integer
+          )
+          GROUP BY ds.date
+          ORDER BY ds.date DESC;
+        `;
+        } else {
+          result = await prisma.$queryRaw`
           WITH date_series AS (
             SELECT generate_series(CURRENT_DATE - INTERVAL '31 days', CURRENT_DATE, INTERVAL '1 day')::DATE AS date
           )
@@ -48,7 +65,8 @@ export default async function handler(
           )
           GROUP BY ds.date
           ORDER BY ds.date DESC;
-        `) as QueryResult;
+        `;
+        }
 
         const serializedResult = result.map((entry) => ({
           ...entry,

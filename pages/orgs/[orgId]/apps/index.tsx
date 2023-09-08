@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import RequestsChart from "../../../../components/RequestsChart";
-import getDashboardData from "../../../../api/orgs/getDashboardData";
+import getDashboardData from "../../../../api/dashboard/getDashboardData";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -80,14 +80,14 @@ export default function AppsPage() {
     0
   );
 
-  function navigateToMessagesPage(appId: number) {
-    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
-  }
-
   const { apps, isError: error, isLoading } = useApps(orgId);
   const { org, isError: orgError } = useOrg(orgId);
 
   if (error || orgError) return <div>Failed to load</div>;
+
+  function navigateToMessagesPage(appId: number) {
+    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
+  }
 
   function navigateToOrgSettingsPage(id: number) {
     router.push(Routes.orgSettingsById(id));
