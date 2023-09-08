@@ -125,7 +125,7 @@ export function loadConfig(): Config {
       port: parseNumberEnvValue(process.env.REDIS_PORT) ?? 6379,
       db: parseNumberEnvValue(process.env.REDIS_DB),
 
-      cacheMaxAge: Number(process.env.REDIS_CACHE_MAX_AGE) ?? 60,
+      cacheMaxAge: parseNumberEnvValue(process.env.REDIS_CACHE_MAX_AGE) ?? 60,
 
       isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" ?? false,
       sentinels: parseSentinels(process.env.REDIS_SENTINELS),

@@ -200,7 +200,7 @@ export default function EditOrgPage() {
       toast({
         title: "Success!",
         description: "User has been invited.",
-        status: "error",
+        status: "success",
         isClosable: true,
         duration: 6000,
       });
@@ -249,7 +249,7 @@ export default function EditOrgPage() {
         title: "Success!",
         description: `User ${user.id === -1 ? "invite for" : "with"} email ${
           user.email
-        } is now ${event.target.value}.`,
+        } has been updated.`,
         status: "success",
         isClosable: true,
         duration: 6000,
@@ -333,35 +333,35 @@ export default function EditOrgPage() {
                     }
                   />
                 </FormControl>
-                  <Stack>
-                    <Button
-                      colorScheme="blue"
-                      className="ml-5 mt-5"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          baseUrl +
-                            "/dashboard?invite=" +
-                            (org?.invitationToken as string)
-                        );
-                        toast({
-                          title: "Success!",
-                          description: "Invitation link copied to clipboard.",
-                          status: "success",
-                          isClosable: true,
-                          duration: 6000,
-                        });
-                      }}
-                    >
-                      copy
-                    </Button>
-                    <Button
-                      colorScheme="blue"
-                      className="ml-5 mt-1"
-                      onClick={resetInvitation}
-                    >
-                      reset
-                    </Button>
-                  </Stack>
+                <Stack>
+                  <Button
+                    colorScheme="blue"
+                    className="ml-5 mt-5"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        baseUrl +
+                          "/dashboard?invite=" +
+                          (org?.invitationToken as string)
+                      );
+                      toast({
+                        title: "Success!",
+                        description: "Invitation link copied to clipboard.",
+                        status: "success",
+                        isClosable: true,
+                        duration: 6000,
+                      });
+                    }}
+                  >
+                    copy
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    className="ml-5 mt-1"
+                    onClick={resetInvitation}
+                  >
+                    reset
+                  </Button>
+                </Stack>
               </div>
             )}
             {userRole === "ADMIN" && (
@@ -480,7 +480,6 @@ export default function EditOrgPage() {
               </Tbody>
             </Table>
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
-
             {userRole === "ADMIN" && (
               <div>
                 <Heading className="text-center mt-16">

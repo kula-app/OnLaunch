@@ -194,6 +194,7 @@ model LoggedApiRequests {
   ip String
 
   // the app the request was made for
-  app   App @relation(fields: [appId], references: [id])
-  appId Int
+  app       App    @relation(fields: [appId], references: [id])
+  appId     Int
+  publicKey String @default("")
 }

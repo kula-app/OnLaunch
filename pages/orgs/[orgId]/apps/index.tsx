@@ -7,6 +7,7 @@ import Routes from "../../../../routes/routes";
 import {
   Button,
   Table,
+  Text,
   Tooltip,
   Th,
   Thead,
@@ -16,21 +17,77 @@ import {
   Stack,
   Skeleton,
   Heading,
+  useToast,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import RequestsChart from "../../../../components/RequestsChart";
+import getDashboardData from "../../../../api/dashboard/getDashboardData";
 
 export default function AppsPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const orgId = Number(router.query.orgId);
 
-  function navigateToMessagesPage(appId: number) {
-    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
-  }
+  const [data, setData] = useState<DashboardRequestData[]>([]);
+  const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
+  const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
+
+  useEffect(() => {
+    // Use the abstracted function
+    const fetchData = async () => {
+      try {
+        const data = await getDashboardData(orgId);
+        setData(data.dailyCounts);
+        if (data.billingDay?.date) {
+          setCurrentPeriodStart(data.billingDay.date);
+          setPeriodStartDayCount(data.billingDay.countAfterBillingStart);
+        }
+      } catch (error) {
+        toast({
+          title: "Failed to fetch dashboard data!",
+          description: "Please try again later",
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
+      }
+    };
+
+    fetchData();
+  }, [orgId, toast]);
+
+  // Either show whole last 31 days or filter to only show request data
+  // during the current billing period
+  const getFilteredData = (): DashboardRequestData[] => {
+    if (!currentPeriodStart || periodStartDayCount === undefined) return data; // Return original data if not showing current billing period
+
+    // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
+    return [
+      ...data.filter(
+        (entry) => new Date(entry.date) > new Date(currentPeriodStart)
+      ),
+      {
+        date: new Date(currentPeriodStart).toISOString().split("T")[0], // Convert date to string in YYYY-MM-DD format
+        count: periodStartDayCount,
+      },
+    ];
+  };
+
+  const derivedData = getFilteredData();
+  const totalSum = derivedData.reduce(
+    (sum, entry) => sum + Number(entry.count),
+    0
+  );
 
   const { apps, isError: error, isLoading } = useApps(orgId);
   const { org, isError: orgError } = useOrg(orgId);
 
   if (error || orgError) return <div>Failed to load</div>;
+
+  function navigateToMessagesPage(appId: number) {
+    router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
+  }
 
   function navigateToOrgSettingsPage(id: number) {
     router.push(Routes.orgSettingsById(id));
@@ -55,6 +112,16 @@ export default function AppsPage() {
         >
           Organisation Settings
         </Button>
+        {org?.role === "ADMIN" && data.length > 0 && (
+          <>
+            <Heading className="text-center my-12">
+              App requests in the past days
+            </Heading>
+            <RequestsChart requestData={derivedData} />
+            <Heading size="lg">Total requests: {totalSum}</Heading>
+            <Text>in the last 31 days</Text>
+          </>
+        )}
         <Heading className="text-center mt-12">Apps</Heading>
         {org?.role === "ADMIN" && (
           <div>
