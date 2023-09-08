@@ -75,6 +75,15 @@ RUN yarn build
 # # ---- Release ----
 # build production ready image
 FROM node:20.5.1-slim AS release
+LABEL maintainer="opensource@kula.app"
+
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="OnLaunch"
+LABEL org.label-schema.description="OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance."
+LABEL org.label-schema.url="http://kula.app/onlaunch"
+LABEL org.label-schema.vcs-url="https://github.com/kula/OnLaunch"
+LABEL org.label-schema.vendor="kula app GmbH"
+
 # install additional dependencies
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
