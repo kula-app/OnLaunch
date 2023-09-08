@@ -16,6 +16,7 @@ export function createRedisInstance(config = getRedisConfiguration()) {
 
   try {
     let options: RedisOptions = {
+      db: config.db,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
       retryStrategy: (times) => {
