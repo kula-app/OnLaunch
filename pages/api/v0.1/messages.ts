@@ -83,7 +83,7 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
-      const publicKey = req.headers["x-api-key"];
+      const publicKey = req.headers["x-api-key"] as string;
 
       if (!publicKey) {
         logger.error("No api key provided");
@@ -95,7 +95,7 @@ export default async function handler(
       logger.log(`Looking up api key '${publicKey as string}'`);
       const app = await prisma.app.findFirst({
         where: {
-          publicKey: publicKey as string,
+          publicKey: publicKey,
         },
         include: {
           organisation: {
@@ -234,7 +234,7 @@ export default async function handler(
         data: {
           ip: ip as string,
           appId: app.id,
-          publicKey: publicKey as string,
+          publicKey: publicKey
         },
       });
 

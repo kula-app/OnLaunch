@@ -19,7 +19,7 @@ export async function getProducts() {
 
   try {
     // check whether products are cached via redis
-    const cachedProducts = await redis.get(PRODUCTS_REDIS_KEY);
+    const cachedProducts = await redis?.get(PRODUCTS_REDIS_KEY);
 
     // if products are cached, then return them, else retrieve them from stripe
     if (cachedProducts) {
@@ -74,7 +74,7 @@ export async function getProducts() {
       if (matchingAddonProduct) {
         const matchingPrice =
           matchingAddonProduct.default_price as Stripe.Price;
-          
+
         matchingProduct = {
           id: matchingAddonProduct.id,
           name: matchingAddonProduct.name,
@@ -87,7 +87,7 @@ export async function getProducts() {
 
       const prod = product as Stripe.Product;
       const price = product.default_price as Stripe.Price;
-      
+
       return {
         id: prod.id,
         name: prod.name,
@@ -113,7 +113,7 @@ export async function getProducts() {
 
       logger.log("Saving stripe products to redis cache");
       // save products to redis cache
-      await redis.set(
+      await redis?.set(
         PRODUCTS_REDIS_KEY,
         JSON.stringify(sortedResult),
         EXPIRY_MS,

@@ -1,6 +1,6 @@
 import Moment from "moment";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../../../../../../styles/Home.module.css";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { getSession } from "next-auth/react";
@@ -34,6 +34,9 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import React from "react";
+import { useOrg } from "../../../../../../api/orgs/useOrg";
+import RequestsChart from "../../../../../../components/RequestsChart";
+import getDashboardData from "../../../../../../api/dashboard/getDashboardData";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
@@ -51,8 +54,43 @@ export default function MessagesOfAppPage() {
 
   const now = Moment.now();
 
-  const { app: data, isLoading, isError, mutate } = useApp(orgId, appId);
-  if (isError) return <div>Failed to load</div>;
+  const { org, isError: isOrgError } = useOrg(orgId);
+  const {
+    app: data,
+    isLoading,
+    isError: isAppError,
+    mutate,
+  } = useApp(orgId, appId);
+
+  const [dashboardData, setData] = useState<DashboardRequestData[]>([]);
+  const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
+  const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
+
+  useEffect(() => {
+    // Use the abstracted function
+    const fetchData = async () => {
+      try {
+        const data = await getDashboardData(orgId, appId);
+        setData(data.dailyCounts);
+        if (data.billingDay?.date) {
+          setCurrentPeriodStart(data.billingDay.date);
+          setPeriodStartDayCount(data.billingDay.countAfterBillingStart);
+        }
+      } catch (error) {
+        toast({
+          title: "Failed to fetch dashboard data!",
+          description: "Please try again later",
+          status: "error",
+          isClosable: true,
+          duration: 6000,
+        });
+      }
+    };
+
+    fetchData();
+  }, [orgId, appId, toast]);
+
+  if (isOrgError || isAppError) return <div>Failed to load</div>;
 
   const messages = data?.messages?.filter((message) => {
     if (showHistory) {
@@ -62,15 +100,30 @@ export default function MessagesOfAppPage() {
     }
   });
 
-  function navigateToEditMessagePage(messageId: number) {
-    router.push(
-      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId)
-    );
-  }
+  // Either show whole last 31 days or filter to only show request data
+  // during the current billing period
+  const getFilteredData = (): DashboardRequestData[] => {
+    if (!currentPeriodStart || periodStartDayCount === undefined) {
+      return dashboardData; // Return original data if not showing current billing period
+    }
 
-  function navigateToNewMessagePage() {
-    router.push(Routes.createNewMessageForOrgIdAndAppId(orgId, appId));
-  }
+    // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
+    return [
+      ...dashboardData.filter(
+        (entry) => new Date(entry.date) > new Date(currentPeriodStart)
+      ),
+      {
+        date: new Date(currentPeriodStart).toISOString().split("T")[0], // Convert date to string in YYYY-MM-DD format
+        count: periodStartDayCount,
+      },
+    ];
+  };
+
+  const derivedData = getFilteredData();
+  const totalSum = derivedData.reduce(
+    (sum, entry) => sum + Number(entry.count),
+    0
+  );
 
   function handleDelete(messageId: number) {
     setMessageId(messageId);
@@ -112,6 +165,16 @@ export default function MessagesOfAppPage() {
     }
   }
 
+  function navigateToEditMessagePage(messageId: number) {
+    router.push(
+      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId)
+    );
+  }
+
+  function navigateToNewMessagePage() {
+    router.push(Routes.createNewMessageForOrgIdAndAppId(orgId, appId));
+  }
+
   function navigateToAppSettingsPage() {
     router.push(Routes.appSettingsByOrgIdAndAppId(orgId, appId));
   }
@@ -129,6 +192,16 @@ export default function MessagesOfAppPage() {
             >
               App Settings
             </Button>
+          )}
+          {org?.role === "ADMIN" && dashboardData.length > 0 && (
+            <>
+              <Heading className="text-center my-12">
+                App requests in the past days
+              </Heading>
+              <RequestsChart requestData={derivedData} />
+              <Heading size="lg">Total requests: {totalSum}</Heading>
+              <Text>in the last 31 days</Text>
+            </>
           )}
           <div>
             <Button
