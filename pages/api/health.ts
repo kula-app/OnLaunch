@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import * as os from "os";
 import { loadConfig } from "../../config/loadConfig";
 import { Logger } from "../../util/logger";
+import { createRedisInstance } from "../../redis/redis";
 
 const logger = new Logger(__filename);
 const prisma = new PrismaClient();
@@ -97,6 +98,29 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
   } catch (error) {
     logger.error(`Failed to connect to database: ${error}`);
     checks["postgres:connected"] = [
+      {
+        status: "error",
+        componentType: "datastore",
+        time: timestamp,
+      },
+    ];
+  }
+  try {
+    // Check the redis connection
+    const redis = createRedisInstance();
+    if (redis) {
+      await redis.ping();
+      checks["redis:connected"] = [
+        {
+          status: "ok",
+          componentType: "datastore",
+          time: timestamp,
+        },
+      ];
+    }
+  } catch (error) {
+    logger.error(`Failed to connect to redis: ${error}`);
+    checks["redis:connected"] = [
       {
         status: "error",
         componentType: "datastore",

@@ -10,10 +10,26 @@ services:
     ports:
       - 5432:5432
 
+  redis-sentinel:
+    image: docker.io/bitnami/redis-sentinel:7.2
+    volumes:
+      - redis-sentinel_data:/bitnami
+
+  redis:
+    image: redis:7
+    container_name: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-"password"}
+    ports:
+      - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
+    volumes:
+      - redis_data:/usr/share/redis/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
+
   mailhog:
     image: mailhog/mailhog:latest
     ports:
-      - 1025:1025
+      - ${SMTP_PORT:-1025}:${SMTP_PORT:-1025}
       - 8025:8025
 
   # onlaunch:
@@ -32,3 +48,9 @@ services:
   #     SIGNUPS_ENABLED: true
   #   ports:
   #     - 3000:3000
+
+volumes:
+  redis-sentinel_data:
+    driver: local
+  redis_data:
+    driver: local
