@@ -5,7 +5,6 @@ CREATE TABLE "LoggedApiRequests" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "ip" TEXT NOT NULL,
     "appId" INTEGER NOT NULL,
-    "publicKey" TEXT NOT NULL,
 
     CONSTRAINT "LoggedApiRequests_pkey" PRIMARY KEY ("id")
 );

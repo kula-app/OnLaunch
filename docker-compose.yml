@@ -1,9 +1,5 @@
 version: "3.9"
 
-volumes:
-  data01:
-    driver: local
-
 services:
   db:
     image: postgres:15

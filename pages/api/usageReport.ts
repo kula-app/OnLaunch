@@ -1,9 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { loadConfig } from "../../config/loadConfig";
 import { Logger } from "../../util/logger";
 import { reportAllOrgsToStripe } from "../../util/stripe/reportAllUsage";
-import { reportOrgToStripe } from "../../util/stripe/reportUsage";
 
 export default async function handler(
   req: NextApiRequest,
