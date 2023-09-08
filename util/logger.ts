@@ -18,4 +18,8 @@ export class Logger {
     public error(message: string): void {
         console.error(`[${this.getTimeStamp()}] [ERROR] [${this.filename}] ${message}`);
     }
+
+    public verbose(message: string): void {
+        console.log(`[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`);
+    }
 }

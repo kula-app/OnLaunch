@@ -47,6 +47,7 @@ COPY config ./config
 COPY fonts ./fonts
 COPY mailTemplate ./mailTemplate
 COPY public ./public
+COPY redis ./redis
 
 # Regularly changed
 COPY types ./types

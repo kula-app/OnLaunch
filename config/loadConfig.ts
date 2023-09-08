@@ -28,6 +28,20 @@ interface HealthConfig {
   apiKey: string;
 }
 
+export interface RedisConfig {
+  isEnabled: boolean;
+
+  name?: string; // name of the Redis service
+  host?: string;
+  password?: string;
+  port?: number;
+  cacheMaxAge: number;
+
+  isSentinelEnabled: boolean;
+  sentinels?: { host: string; port: number }[];
+  sentinelPassword?: string;
+}
+
 interface SentryConfig {
   debug?: boolean;
   dsn?: string;
@@ -46,6 +60,7 @@ interface Config {
   health: HealthConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
+  redisConfig: RedisConfig;
   sentryConfig: SentryConfig;
 }
 
@@ -62,6 +77,15 @@ function parseNumberEnvValue(value?: string): number | undefined {
   }
   return Number(value);
 }
+
+// Parse the sentinels from an environment variable
+const parseSentinels = (sentinelString?: string) => {
+  if (!sentinelString) return undefined;
+  return sentinelString.split(",").map((item) => {
+    const [host, port] = item.split(":");
+    return { host, port: Number(port) };
+  });
+};
 
 export function loadConfig(): Config {
   return {
@@ -89,6 +113,19 @@ export function loadConfig(): Config {
     emailContent: {
       senderName: process.env.SMTP_FROM_NAME || "OnLaunch",
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS || "onlaunch@kula.app",
+    },
+    redisConfig: {
+      isEnabled: process.env.REDIS_ENABLED == 'true' || false,
+
+      name: process.env.REDIS_SENTINEL_NAME,
+      host: process.env.REDIS_HOST || "localhost",
+      password: process.env.REDIS_PASSWORD || "password",
+      port: Number(process.env.REDIS_PORT) || 6379,
+      cacheMaxAge: Number(process.env.REDIS_CACHE_MAX_AGE) || 60,
+
+      isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" || false,
+      sentinels: parseSentinels(process.env.REDIS_SENTINELS),
+      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",
