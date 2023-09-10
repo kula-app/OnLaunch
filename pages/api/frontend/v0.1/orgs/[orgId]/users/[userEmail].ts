@@ -1,10 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../../../../../lib/services/db";
 import { getUserWithRoleFromRequest } from "../../../../../../../util/auth";
 import { Logger } from "../../../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +11,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
     return;
@@ -89,7 +88,7 @@ export default async function handler(
 
           res.status(StatusCodes.OK).json(deletedUserInOrg);
         }
-      } 
+      }
 
       // if deletion is for a pending invitation
       try {

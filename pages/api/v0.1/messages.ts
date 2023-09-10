@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
-import { Logger } from "../../../util/logger";
+import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
-
-const prisma: PrismaClient = new PrismaClient();
+import prisma from "../../../lib/services/db";
+import { Logger } from "../../../util/logger";
 
 enum ActionType {
   Dismiss = "DISMISS",
@@ -135,7 +133,7 @@ export default async function handler(
         data: {
           ip: ip as string,
           appId: app.id,
-          publicKey: publicKey
+          publicKey: publicKey,
         },
       });
 

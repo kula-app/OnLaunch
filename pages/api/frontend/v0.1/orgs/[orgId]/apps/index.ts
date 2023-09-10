@@ -1,13 +1,11 @@
+import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../../../../../lib/services/db";
 import {
   generateToken,
   getUserWithRoleFromRequest,
 } from "../../../../../../../util/auth";
-import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 type AppDto = {
   id: number;
@@ -22,7 +20,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
     return;

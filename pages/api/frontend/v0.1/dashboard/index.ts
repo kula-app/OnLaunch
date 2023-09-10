@@ -1,10 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient } from "@prisma/client";
+import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../../../lib/services/db";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
-
-const prisma: PrismaClient = new PrismaClient();
+import { Logger } from "../../../../../util/logger";
 
 type QueryResult = {
   date: string;
@@ -17,12 +15,14 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
     return;
   } else if (user.role !== "ADMIN") {
-    logger.log(`User with id '${user.id}' tried to access dashboard data without sufficient rights`);
+    logger.log(
+      `User with id '${user.id}' tried to access dashboard data without sufficient rights`
+    );
     return;
   }
 

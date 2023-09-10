@@ -1,13 +1,12 @@
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as os from "os";
 import { loadConfig } from "../../config/loadConfig";
+import prisma from "../../lib/services/db";
+import redis from "../../lib/services/redis";
 import { Logger } from "../../util/logger";
-import { createRedisInstance } from "../../redis/redis";
 
 const logger = new Logger(__filename);
-const prisma = new PrismaClient();
 
 type Data = {
   status: string;
@@ -28,17 +27,10 @@ export default async function handler(
     });
   }
   const result = await fetchHealthcheck();
-  if (result.status == "error") {
-    res
-      .status(StatusCodes.SERVICE_UNAVAILABLE)
-      .setHeader("Content-Type", "application/health+json")
-      .json(result);
-  } else {
-    res
-      .status(StatusCodes.OK)
-      .setHeader("Content-Type", "application/health+json")
-      .json(result);
-  }
+  res
+    .status(result.status == "error" ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.OK)
+    .setHeader("Content-Type", "application/health+json")
+    .json(result);
 }
 
 interface HealthCheckResult {
@@ -107,9 +99,8 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
   }
   try {
     // Check the redis connection
-    const redis = createRedisInstance();
-    if (redis) {
-      await redis.ping();
+    if (redis.isEnabled) {
+      await redis.client.ping();
       checks["redis:connected"] = [
         {
           status: "ok",

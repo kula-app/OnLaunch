@@ -1,10 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../../../../lib/services/db";
 import { getUserFromRequest } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
