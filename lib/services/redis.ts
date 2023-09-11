@@ -1,17 +1,26 @@
 import Redis, { RedisOptions } from "ioredis";
-import { RedisConfig, loadConfig } from "../config/loadConfig";
-import { Logger } from "../util/logger";
+import { RedisConfig, loadConfig } from "../../config/loadConfig";
+import { Logger } from "../../util/logger";
 
 function getRedisConfiguration(): RedisConfig {
   return loadConfig().redisConfig;
 }
 
-export function createRedisInstance(config = getRedisConfiguration()) {
+function redisClientSingleton(config = getRedisConfiguration()):
+  | {
+      isEnabled: true;
+      client: Redis;
+    }
+  | {
+      isEnabled: false;
+    } {
   const logger = new Logger(__filename);
 
   if (!config.isEnabled) {
     logger.verbose(`Redis is not enabled`);
-    return undefined;
+    return {
+      isEnabled: false,
+    };
   }
 
   try {
@@ -32,22 +41,22 @@ export function createRedisInstance(config = getRedisConfiguration()) {
     };
     if (config.isSentinelEnabled) {
       // If sentinel is enabled, use the sentinel configuration
-      logger.log(`Setting Redis option for sentinel configuration`);
+      logger.log(`Setting Redis options for sentinel configuration`);
       options = {
         ...options,
         sentinels: config.sentinels,
         sentinelPassword: config.sentinelPassword,
         password: config.password,
-        name: config.name
+        name: config.name,
       };
     } else {
       // If sentinel is not enabled, use the standalone Redis configuration
-      logger.log(`Setting Redis option for single instance`);
+      logger.log(`Setting Redis options for single instance`);
       options = {
         ...options,
         host: config.host,
         port: config.port,
-        password: config.password
+        password: config.password,
       };
     }
 
@@ -57,9 +66,22 @@ export function createRedisInstance(config = getRedisConfiguration()) {
       logger.error(`[Redis] Error connecting: ${error}`);
     });
 
-    return redis;
+    return {
+      isEnabled: true,
+      client: redis,
+    };
   } catch (e) {
     logger.error(`[Redis] Could not create a Redis instance`);
     throw new Error(`[Redis] Could not create a Redis instance`);
   }
 }
+
+// Typed access to the global context
+const globalForRedis = globalThis as unknown as {
+  redis: ReturnType<typeof redisClientSingleton> | undefined;
+};
+
+const redis = globalForRedis.redis ?? redisClientSingleton();
+globalForRedis.redis = redis;
+
+export default redis;

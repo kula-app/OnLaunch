@@ -1,16 +1,14 @@
+import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../../../lib/services/db";
+import { MailType } from "../../../../../models/mailType";
 import {
   generateToken,
-  sendTokenPerMail,
   hashAndSaltPassword,
+  sendTokenPerMail,
   validatePassword,
 } from "../../../../../util/auth";
-import { StatusCodes } from "http-status-codes";
-import { MailType } from "../../../../../models/mailType";
 import { Logger } from "../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
