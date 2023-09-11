@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:20.5.1 AS base
+FROM node:20.6.0 AS base
 # install additional dependencies
 # --> noop
 
@@ -74,7 +74,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:20.5.1-slim AS release
+FROM node:20.6.0-slim AS release
 LABEL maintainer="opensource@kula.app"
 
 LABEL org.label-schema.schema-version="1.0"
