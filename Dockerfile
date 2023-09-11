@@ -56,6 +56,7 @@ COPY util ./util
 COPY components ./components
 
 # Frequently changed
+COPY lib ./lib
 COPY models ./models
 COPY prisma ./prisma
 COPY routes ./routes
