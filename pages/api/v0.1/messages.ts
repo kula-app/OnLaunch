@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { StatusCodes } from "http-status-codes";
-import { Logger } from "../../../util/logger";
+import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
-import { getProducts } from "../frontend/v0.1/stripe/products";
 import { loadConfig } from "../../../config/loadConfig";
-
-const prisma: PrismaClient = new PrismaClient();
+import prisma from "../../../lib/services/db";
+import { Logger } from "../../../util/logger";
+import { getProducts } from "../frontend/v0.1/stripe/products";
 
 enum ActionType {
   Dismiss = "DISMISS",
@@ -165,7 +163,9 @@ export default async function handler(
               },
             },
           });
-          logger.log(`Request count for org with id '${app.orgId}' is ${requestCount}`);
+          logger.log(
+            `Request count for org with id '${app.orgId}' is ${requestCount}`
+          );
 
           let isLimitReached = false;
 
@@ -176,7 +176,9 @@ export default async function handler(
                 product.id === subFromDb?.subItems[0].productId
             );
 
-            logger.log(`Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`);
+            logger.log(
+              `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`
+            );
             if (requestCount >= Number(targetProduct.requests)) {
               isLimitReached = true;
             }
@@ -236,7 +238,7 @@ export default async function handler(
         data: {
           ip: ip as string,
           appId: app.id,
-          publicKey: publicKey
+          publicKey: publicKey,
         },
       });
 

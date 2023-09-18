@@ -1,16 +1,15 @@
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient, Prisma } from "@prisma/client";
+import prisma from "../../../../../../lib/services/db";
+import { MailType } from "../../../../../../models/mailType";
+import { UserDto } from "../../../../../../models/userDto";
 import {
   generateToken,
   getUserWithRoleFromRequest,
   sendTokenPerMail,
 } from "../../../../../../util/auth";
-import { StatusCodes } from "http-status-codes";
-import { UserDto } from "../../../../../../models/userDto";
-import { MailType } from "../../../../../../models/mailType";
 import { Logger } from "../../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +17,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
     return;

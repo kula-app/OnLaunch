@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:20.5.1 AS base
+FROM node:20.6.1 AS base
 # install additional dependencies
 # --> noop
 
@@ -47,7 +47,6 @@ COPY config ./config
 COPY fonts ./fonts
 COPY mailTemplate ./mailTemplate
 COPY public ./public
-COPY redis ./redis
 
 # Regularly changed
 COPY types ./types
@@ -56,6 +55,7 @@ COPY util ./util
 COPY components ./components
 
 # Frequently changed
+COPY lib ./lib
 COPY models ./models
 COPY prisma ./prisma
 COPY routes ./routes
@@ -74,7 +74,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:20.5.1-slim AS release
+FROM node:20.6.1-slim AS release
 LABEL maintainer="opensource@kula.app"
 
 LABEL org.label-schema.schema-version="1.0"

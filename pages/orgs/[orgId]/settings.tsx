@@ -1,55 +1,54 @@
-import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import styles from "../../../styles/Home.module.css";
-import { getSession, useSession } from "next-auth/react";
-import getOrg from "../../../api/orgs/getOrg";
-import updateOrg from "../../../api/orgs/updateOrg";
-import Routes from "../../../routes/routes";
-import { Org } from "../../../models/org";
-import { MdDeleteForever } from "react-icons/md";
-import updateUserRoleInOrg from "../../../api/orgs/updateUserRoleInOrg";
-import { useUsers } from "../../../api/orgs/useUsers";
-import deleteUserFromOrg from "../../../api/orgs/deleteUserFromOrg";
-import inviteUser from "../../../api/orgs/inviteUser";
-import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
-import { useOrg } from "../../../api/orgs/useOrg";
-import deleteOrg from "../../../api/orgs/deleteOrg";
-import { FiExternalLink } from "react-icons/fi";
-import updateUserInviteRoleInOrg from "../../../api/orgs/updateUserInviteRoleInOrg";
 import {
-  Input,
-  useToast,
-  Button,
-  Table,
-  Tooltip,
-  IconButton,
-  Select,
-  Th,
-  Thead,
-  Tbody,
-  Tr,
-  Td,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
-  useDisclosure,
-  Stack,
-  Heading,
+  Avatar,
+  Button,
+  Center,
   FormControl,
   FormLabel,
-  Avatar,
-  Center,
-  Tag,
+  Heading,
+  IconButton,
+  Input,
+  Select,
   Spinner,
+  Stack,
+  Table,
+  Tag,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import { getSession, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FiExternalLink } from "react-icons/fi";
+import { MdDeleteForever } from "react-icons/md";
+import deleteOrg from "../../../api/orgs/deleteOrg";
+import deleteUserFromOrg from "../../../api/orgs/deleteUserFromOrg";
+import getOrg from "../../../api/orgs/getOrg";
+import inviteUser from "../../../api/orgs/inviteUser";
+import updateOrg from "../../../api/orgs/updateOrg";
+import updateUserInviteRoleInOrg from "../../../api/orgs/updateUserInviteRoleInOrg";
+import updateUserRoleInOrg from "../../../api/orgs/updateUserRoleInOrg";
+import { useOrg } from "../../../api/orgs/useOrg";
+import { useUsers } from "../../../api/orgs/useUsers";
 import createCustomerPortalSession from "../../../api/stripe/createCustomerPortalSession";
-import { Subscription } from "../../../models/subscription";
 import getSubscriptions from "../../../api/stripe/getSubscriptions";
+import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
+import { Org } from "../../../models/org";
+import { Subscription } from "../../../models/subscription";
+import Routes from "../../../routes/routes";
+import styles from "../../../styles/Home.module.css";
 import { getColorLabel, translateSubName } from "../../../util/nameTag";
 
 export default function EditOrgPage() {

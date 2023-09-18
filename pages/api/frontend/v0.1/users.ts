@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../../lib/services/db";
 import { getUserFromRequest } from "../../../../util/auth";
 import { Logger } from "../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -103,7 +101,9 @@ export default async function handler(
       );
 
       if (orgsToDeleteFirst.length) {
-        var sortedOrgsToDeleteFirst: number[] = orgsToDeleteFirst.sort((n1,n2) => n1 - n2);
+        var sortedOrgsToDeleteFirst: number[] = orgsToDeleteFirst.sort(
+          (n1, n2) => n1 - n2
+        );
         logger.error(
           `Before deleting user profile of user with id '${
             userByEmail.id

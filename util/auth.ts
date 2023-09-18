@@ -1,19 +1,19 @@
 import { compare, genSalt, hash } from "bcrypt";
+import { StatusCodes } from "http-status-codes";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
 import { loadConfig } from "../config/loadConfig";
+import prisma from "../lib/services/db";
 import { createChangeEmailTemplate } from "../mailTemplate/changeEmail";
 import { createDirectInviteTemplate } from "../mailTemplate/directInvite";
+import { createDirectInviteNewUserTemplate } from "../mailTemplate/directInviteNewUser";
 import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
 import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
 import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
+import { authOptions } from "../pages/api/auth/[...nextauth]";
 import Routes from "../routes/routes";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
-import { StatusCodes } from "http-status-codes";
-import { PrismaClient } from "@prisma/client";
-import { createDirectInviteNewUserTemplate } from "../mailTemplate/directInviteNewUser";
 import { Logger } from "./logger";
 var crypto = require("crypto");
 var base64url = require("base64url");
@@ -195,8 +195,7 @@ export async function getUserFromRequest(
 }
 export async function getUserWithRoleFromRequest(
   req: NextApiRequest,
-  res: NextApiResponse,
-  prisma: PrismaClient
+  res: NextApiResponse
 ) {
   const user = await getUserFromRequest(req, res);
 
