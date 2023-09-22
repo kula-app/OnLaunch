@@ -1,11 +1,11 @@
-import Stripe from "stripe";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../util/logger";
+import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
-import { PrismaClient } from "@prisma/client";
+import { Logger } from "../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -16,7 +16,7 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res, prisma);
+  const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
     logger.error("User not logged in");
@@ -25,9 +25,7 @@ export default async function handler(
 
   if (!req.body.orgId) {
     logger.error("No parameter orgId provided");
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .end("No parameter orgId provided");
+    res.status(StatusCodes.BAD_REQUEST).end("No parameter orgId provided");
   }
 
   switch (req.method) {
@@ -47,9 +45,11 @@ export default async function handler(
         logger.error(`No org found with id ${req.body.orgId}`);
         return;
       }
-      
+
       if (!orgFromDb.customer) {
-        logger.error(`No stripe customer id found for organisation with id ${req.body.orgId}`);
+        logger.error(
+          `No stripe customer id found for organisation with id ${req.body.orgId}`
+        );
         return;
       }
 

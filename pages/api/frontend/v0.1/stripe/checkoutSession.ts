@@ -1,12 +1,12 @@
-import Stripe from "stripe";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../util/logger";
+import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
+import { ProductType } from "../../../../../models/productType";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
-import { PrismaClient } from "@prisma/client";
-import { ProductType } from "../../../../../models/productType";
+import { Logger } from "../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -30,7 +30,7 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
-  const userInOrg = await getUserWithRoleFromRequest(req, res, prisma);
+  const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
     logger.error("User not logged in");
@@ -78,13 +78,13 @@ export default async function handler(
           if (!product.priceId) {
             throw new Error("Product is missing a priceId");
           }
-          
+
           const lineItem: any = {
             price: product.priceId,
           };
 
           // if quantity is provided, include it in the line item
-          // note: metered prices do not get a quantity parameter 
+          // note: metered prices do not get a quantity parameter
           if (product.hasOwnProperty("quantity")) {
             lineItem["quantity"] = product.quantity;
           }

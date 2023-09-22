@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../../util/logger";
-import { REQUEST_TIMEOUT, StatusCodes } from "http-status-codes";
-import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
 import { PrismaClient } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
+import { Logger } from "../../../../../../util/logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -12,7 +12,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const userInOrg = await getUserWithRoleFromRequest(req, res, prisma);
+  const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
     logger.error("User not logged in");
