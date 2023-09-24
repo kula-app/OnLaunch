@@ -1,14 +1,12 @@
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
+import prisma from "../../../../../lib/services/db";
 import { ProductType } from "../../../../../models/productType";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { Logger } from "../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 interface SessionOptions {
   billing_address_collection: string;

@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../lib/services/db";
 import { Logger } from "../logger";
 import { reportOrgToStripe } from "./reportUsage";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export async function reportAllOrgsToStripe() {
   const logger = new Logger(__filename);

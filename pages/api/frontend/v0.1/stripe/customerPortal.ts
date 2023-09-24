@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
+import prisma from "../../../../../lib/services/db";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { Logger } from "../../../../../util/logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,

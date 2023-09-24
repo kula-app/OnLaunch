@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
+import prisma from "../../lib/services/db";
 import { Product } from "../../models/product";
 import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import { Logger } from "../logger";
-
-const prisma: PrismaClient = new PrismaClient();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-08-16",

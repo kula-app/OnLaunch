@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
+import prisma from "../../../../../lib/services/db";
 import { Logger } from "../../../../../util/logger";
 import { reportOrgToStripe } from "../../../../../util/stripe/reportUsage";
-
-const prisma: PrismaClient = new PrismaClient();
 
 export const config = { api: { bodyParser: false } };
 
