@@ -64,7 +64,7 @@
     "jest-environment-jsdom": "29.7.0",
     "local-cypress": "1.2.6",
     "next-router-mock": "^0.9.3",
-    "start-server-and-test": "2.0.0",
+    "start-server-and-test": "2.0.1",
     "tailwindcss": "^3.3.2",
     "ts-node": "10.9.1",
     "typescript": "5.2.2"
