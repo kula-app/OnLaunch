@@ -132,10 +132,10 @@ export async function reportOrgToStripe(
       const latestRequest = await prisma.loggedApiRequests.findFirst({
         where: {
           appId: app.id,
-          createdAt: {
+          /*createdAt: {
             gt: org.subs[0].currentPeriodStart,
             lte: org.subs[0].currentPeriodEnd,
-          },
+          },*/ //TODO
         },
         orderBy: {
           id: "desc",
@@ -155,10 +155,10 @@ export async function reportOrgToStripe(
           // However, by using the period start and end as constraints, it is made sure
           // that unreported api requests (e.g. requests during the free abo), will not be
           // be reported for later subscriptions
-          createdAt: {
+          /*createdAt: {
             gt: org.subs[0].currentPeriodStart,
             lte: org.subs[0].currentPeriodEnd,
-          },
+          },*/ //TODO
         },
       });
 
@@ -265,11 +265,11 @@ export async function reportOrgToStripe(
       );
       return;
     }
-
+    //TODO
     // Calculating the amount to pay in cents (for graduated pricing)
     // Since the priceAmount should be in EUR, multiply it by 100 to
     // get the amount in cents
-    const amount = Math.round(
+    /*const amount = Math.round(
       sumOfRequests * (Number(product.priceAmount) * 100)
     );
 
@@ -298,13 +298,13 @@ export async function reportOrgToStripe(
         start: org.subs[0].currentPeriodStart.getTime() / 1000,
         end: org.subs[0].currentPeriodEnd.getTime() / 1000,
       },
-    });
+    });*/
 
     await prisma.loggedUsageReport.create({
       data: {
         orgId: org.id,
         requests: sumOfRequests,
-        isReportedAsInvoice: true,
+        isReportedAsInvoice: false, //TODO
       },
     });
 
