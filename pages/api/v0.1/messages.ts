@@ -120,7 +120,7 @@ export default async function handler(
 
       // Start of quota limitation
       try {
-        const products = JSON.parse(await getProducts());
+        const products = await getProducts();
 
         // Check if there is a subItem with isMetered set to true
         // Metered subItems do not have a limit
@@ -175,6 +175,16 @@ export default async function handler(
               (product: { id: string | undefined }) =>
                 product.id === subFromDb?.subItems[0].productId
             );
+
+            if (!targetProduct) {
+              logger.error(
+                `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`
+              );
+              res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .end("Please try again later");
+              return;
+            }
 
             logger.log(
               `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`

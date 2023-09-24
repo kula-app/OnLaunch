@@ -1,10 +1,10 @@
-import Stripe from "stripe";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../util/logger";
 import { StatusCodes } from "http-status-codes";
-import { Product } from "../../../../../models/product";
-import { createRedisInstance } from "../../../../../redis/redis";
+import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
+import redis from "../../../../../lib/services/redis";
+import { Product } from "../../../../../models/product";
+import { Logger } from "../../../../../util/logger";
 
 const PRODUCTS_REDIS_KEY = "products";
 const logger = new Logger(__filename);
@@ -15,19 +15,23 @@ export async function getProducts(): Promise<Product[]> {
     apiVersion: "2023-08-16",
   });
 
-  const redis = createRedisInstance();
-
   try {
-    // check whether products are cached via redis
-    const cachedProducts = await redis?.get(PRODUCTS_REDIS_KEY);
+    if (redis.isEnabled) {
+      const redisClient = redis.client;
 
-    // if products are cached, then return them, else retrieve them from stripe
-    if (cachedProducts) {
-      logger.log("Returning cached products");
-      try {
-        return JSON.parse(cachedProducts);
-      } catch (error) {
-        logger.error(`Failed to parse Redis cached products, reason: ${error}`)
+      // check whether products are cached via redis
+      const cachedProducts = await redisClient.get(PRODUCTS_REDIS_KEY);
+
+      // if products are cached, then return them, else retrieve them from stripe
+      if (cachedProducts) {
+        try {
+          logger.log("Returning cached products");
+          return JSON.parse(cachedProducts);
+        } catch (error) {
+          logger.error(
+            `Failed to parse Redis cached products, reason: ${error}`
+          );
+        }
       }
     }
   } catch (error) {
@@ -110,19 +114,21 @@ export async function getProducts(): Promise<Product[]> {
     });
 
     try {
-      // cache data set to expire after 1 hour
-      // after expiration, the data will be retrieved again from stripe
-      const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
-      const EXPIRY_MS = `PX`; // milliseconds
-
-      logger.log("Saving stripe products to redis cache");
-      // save products to redis cache
-      await redis?.set(
-        PRODUCTS_REDIS_KEY,
-        JSON.stringify(sortedResult),
-        EXPIRY_MS,
-        MAX_AGE
-      );
+      if (redis.isEnabled) {
+        // cache data set to expire after 1 hour
+        // after expiration, the data will be retrieved again from stripe
+        const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
+        const EXPIRY_MS = `PX`; // milliseconds
+        const redisClient = redis.client;
+        logger.log("Saving stripe products to redis cache");
+        // save products to redis cache
+        await redisClient.set(
+          PRODUCTS_REDIS_KEY,
+          JSON.stringify(sortedResult),
+          EXPIRY_MS,
+          MAX_AGE
+        );
+      }
     } catch (redisError) {
       logger.error(`Failed to cache products in Redis: ${redisError}`);
     }
@@ -142,7 +148,7 @@ export default async function handler(
     case "GET":
       try {
         const result = await getProducts();
-        res.status(StatusCodes.OK).end(result);
+        res.status(StatusCodes.OK).end(JSON.stringify(result));
       } catch (error) {
         logger.error(`Error: ${error}`);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).end(error);

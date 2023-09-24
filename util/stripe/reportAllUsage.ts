@@ -15,14 +15,12 @@ export async function reportAllOrgsToStripe() {
   );
   for (const org of orgs) {
     try {
-      await reportOrgToStripe(org.id);
+      await reportOrgToStripe(org.id, false);
     } catch (error: any) {
       logger.error(
         `Failed reporting for organisation(id = ${org.id}), reason: ${error}`
       );
     }
   }
-  logger.log(
-    `Finished reporting ${orgs.length} organisations`
-  );
+  logger.log(`Finished reporting ${orgs.length} organisations`);
 }

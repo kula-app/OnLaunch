@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { Logger } from "../logger";
-import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import Stripe from "stripe";
 import { Product } from "../../models/product";
+import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
+import { Logger } from "../logger";
 
 const prisma: PrismaClient = new PrismaClient();
+
+const { v4: uuid } = require("uuid");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-08-16",
@@ -33,7 +35,10 @@ async function findProductDetailsById(id: string, products: any) {
   return null;
 }
 
-export async function reportOrgToStripe(orgId: number) {
+export async function reportOrgToStripe(
+  orgId: number,
+  isSubscriptionDeleted: boolean
+) {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for org with id '${orgId}'`);
 
@@ -88,7 +93,7 @@ export async function reportOrgToStripe(orgId: number) {
     logger.log(
       `No organisation found with id '${orgId}' (with metered, active subscription)`
     );
-    throw new Error(`Organization(id = ${orgId}) not found`)
+    throw new Error(`Organization(id = ${orgId}) not found`);
   }
 
   // Retrieve products to check request limit
@@ -165,7 +170,7 @@ export async function reportOrgToStripe(orgId: number) {
       latestRequestIdPerApp.push({
         appId: app.id,
         latestRequestId: latestRequest?.id,
-      })
+      });
     } catch (error) {
       logger.error(
         `Error while preparing data for org with id '${org.id}': ${error}`
@@ -177,7 +182,7 @@ export async function reportOrgToStripe(orgId: number) {
   // Only proceed if there are new requests
   if (sumOfRequests == 0) {
     logger.log(`No requests to report for org with id '${org.id}'`);
-    return
+    return;
   }
 
   // Search for the last usage report of org
@@ -230,6 +235,23 @@ export async function reportOrgToStripe(orgId: number) {
     }
   }
 
+  // If subscription is not deleted, report usage to stripe
+  if (!isSubscriptionDeleted) {
+    // The idempotency key makes sure the same request is not
+    // applied twice
+    const idempotencyKey = uuid();
+
+    const timestamp = org.subs[0].currentPeriodStart.getTime() / 1000;
+
+    logger.log(
+      `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' and idempotency key '${idempotencyKey}' and timestamp ${timestamp} to stripe`
+    );
+    await stripe.subscriptionItems.createUsageRecord(meteredSubItem.subItemId, {
+      quantity: sumOfRequests,
+      timestamp: timestamp,
+    });
+  }
+
   try {
     // Search product for pricing data
     const product = await findProductDetailsById(
@@ -253,7 +275,11 @@ export async function reportOrgToStripe(orgId: number) {
 
     if (amount <= 0) {
       logger.log(
-        `${sumOfRequests} requests for org '${org.id}' result in not even 1 cent (${sumOfRequests * (Number(product.priceAmount) * 100)}) - no invoice item to create`
+        `${sumOfRequests} requests for org '${
+          org.id
+        }' result in not even 1 cent (${
+          sumOfRequests * (Number(product.priceAmount) * 100)
+        }) - no invoice item to create`
       );
       return;
     }
@@ -299,9 +325,6 @@ export async function reportOrgToStripe(orgId: number) {
       where: {
         id: op.appId,
       },
-    })
+    });
   }
 }
-
-
-

@@ -1,11 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Logger } from "../../../../../util/logger";
-import { loadConfig } from "../../../../../config/loadConfig";
 import Stripe from "stripe";
+import { loadConfig } from "../../../../../config/loadConfig";
+import { Logger } from "../../../../../util/logger";
 import { reportOrgToStripe } from "../../../../../util/stripe/reportUsage";
-import { getProducts } from "./products";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -162,11 +161,13 @@ export default async function handler(
             });
 
             if (!toDeleteSubFromDb) {
-              logger.error(`${event.type} - No subscription found for sub id '${subData.id}'`);
+              logger.error(
+                `${event.type} - No subscription found for sub id '${subData.id}'`
+              );
               break;
             }
 
-            await reportOrgToStripe(toDeleteSubFromDb.orgId);
+            await reportOrgToStripe(toDeleteSubFromDb.orgId, true);
 
             await prisma.subscription.update({
               where: {
@@ -218,13 +219,6 @@ export default async function handler(
                   updatedSubFromDb.currentPeriodEnd.getTime()) &&
               !updatedSub.cancel_at_period_end
             ) {
-              // Report latest logged api requests to stripe
-              logger.log(
-                `New billing period started for org with id '${updatedSubFromDb.orgId}'`
-              );
-              
-              await reportOrgToStripe(updatedSubFromDb.orgId);
-
               // Update new billing period information
               logger.log(
                 `Updating new billing period information for sub with id '${updatedSub.id}`
@@ -238,6 +232,13 @@ export default async function handler(
                   subId: updatedSub.id,
                 },
               });
+
+              // Report latest logged api requests to stripe
+              logger.log(
+                `New billing period started for org with id '${updatedSubFromDb.orgId}'`
+              );
+
+              await reportOrgToStripe(updatedSubFromDb.orgId, false);
             }
           } catch (error) {
             logger.error(`Error: ${error}`);
