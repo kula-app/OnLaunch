@@ -6,8 +6,6 @@ import { Logger } from "../logger";
 
 const prisma: PrismaClient = new PrismaClient();
 
-const { v4: uuid } = require("uuid");
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-08-16",
 });
@@ -237,67 +235,11 @@ export async function reportOrgToStripe(
 
   // If subscription is not deleted, report usage to stripe
   if (!isSubscriptionDeleted) {
-    // The idempotency key makes sure the same request is not
-    // applied twice
-    const idempotencyKey = uuid();
-
-    const timestamp = org.subs[0].currentPeriodStart.getTime() / 1000;
-
     logger.log(
-      `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' and idempotency key '${idempotencyKey}' and timestamp ${timestamp} to stripe`
+      `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' to stripe`
     );
     await stripe.subscriptionItems.createUsageRecord(meteredSubItem.subItemId, {
       quantity: sumOfRequests,
-      timestamp: timestamp,
-    });
-  }
-
-  try {
-    // Search product for pricing data
-    const product = await findProductDetailsById(
-      meteredSubItem.productId,
-      products
-    );
-
-    if (!product) {
-      logger.error(
-        `Could not find procuct with id '${meteredSubItem.productId}`
-      );
-      return;
-    }
-
-    // Calculating the amount to pay in cents (for graduated pricing)
-    // Since the priceAmount should be in EUR, multiply it by 100 to
-    // get the amount in cents
-    const amount = Math.round(
-      sumOfRequests * (Number(product.priceAmount) * 100)
-    );
-
-    if (amount <= 0) {
-      logger.log(
-        `${sumOfRequests} requests for org '${
-          org.id
-        }' result in not even 1 cent (${
-          sumOfRequests * (Number(product.priceAmount) * 100)
-        }) - no invoice item to create`
-      );
-      return;
-    }
-    logger.log(
-      `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.customer}) to stripe`
-    );
-
-    // Create new invoice item to account for the requests made in the
-    // end of the billing
-    await stripe.invoiceItems.create({
-      customer: org.customer as string,
-      amount: amount,
-      description: `Last usage for ${org.subs[0].subName}`,
-      currency: "eur",
-      period: {
-        start: org.subs[0].currentPeriodStart.getTime() / 1000,
-        end: org.subs[0].currentPeriodEnd.getTime() / 1000,
-      },
     });
 
     await prisma.loggedUsageReport.create({
@@ -307,24 +249,82 @@ export async function reportOrgToStripe(
         isReportedAsInvoice: true,
       },
     });
+    return;
+  } else {
+    try {
+      // Search product for pricing data
+      const product = await findProductDetailsById(
+        meteredSubItem.productId,
+        products
+      );
 
-    // If stripe call is successful, run all the prepared database update operations
-    logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
-  } catch (error) {
-    logger.error(
-      `Cancelling reporting for org with id '${org.id}' due to error: ${error}`
-    );
-    throw error;
-  }
+      if (!product) {
+        logger.error(
+          `Could not find procuct with id '${meteredSubItem.productId}`
+        );
+        return;
+      }
 
-  for (const op of latestRequestIdPerApp) {
-    await prisma.app.update({
-      data: {
-        idOfLastReportedApiRequest: op.latestRequestId,
-      },
-      where: {
-        id: op.appId,
-      },
-    });
+      // Calculating the amount to pay in cents (for graduated pricing)
+      // Since the priceAmount should be in EUR, multiply it by 100 to
+      // get the amount in cents
+      const amount = Math.round(
+        sumOfRequests * (Number(product.priceAmount) * 100)
+      );
+
+      if (amount <= 0) {
+        logger.log(
+          `${sumOfRequests} requests for org '${
+            org.id
+          }' result in not even 1 cent (${
+            sumOfRequests * (Number(product.priceAmount) * 100)
+          }) - no invoice item to create`
+        );
+        return;
+      }
+      logger.log(
+        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.customer}) to stripe`
+      );
+
+      // Create new invoice item to account for the requests made in the
+      // end of the billing
+      await stripe.invoiceItems.create({
+        customer: org.customer as string,
+        amount: amount,
+        description: `Last usage for ${org.subs[0].subName}`,
+        currency: "eur",
+        period: {
+          start: org.subs[0].currentPeriodStart.getTime() / 1000,
+          end: org.subs[0].currentPeriodEnd.getTime() / 1000,
+        },
+      });
+
+      await prisma.loggedUsageReport.create({
+        data: {
+          orgId: org.id,
+          requests: sumOfRequests,
+          isReportedAsInvoice: true,
+        },
+      });
+
+      // If stripe call is successful, run all the prepared database update operations
+      logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
+    } catch (error) {
+      logger.error(
+        `Cancelling reporting for org with id '${org.id}' due to error: ${error}`
+      );
+      throw error;
+    }
+
+    for (const op of latestRequestIdPerApp) {
+      await prisma.app.update({
+        data: {
+          idOfLastReportedApiRequest: op.latestRequestId,
+        },
+        where: {
+          id: op.appId,
+        },
+      });
+    }
   }
 }

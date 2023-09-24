@@ -184,7 +184,6 @@ export default async function handler(
 
         case "customer.subscription.updated":
           logger.log("Customer subscription updated!");
-
           const updatedSub = event.data.object as Stripe.Subscription;
           try {
             const updatedSubFromDb = await prisma.subscription.findUnique({
@@ -209,9 +208,6 @@ export default async function handler(
             );
 
             // Check if new billing period started
-            // Will not be the case when the subscription gets canceled at
-            // the end of period, thus report the usage as well when we
-            // get the customer.subscription.deleted event
             if (
               (stripeCurrentPeriodStart.getTime() !==
                 updatedSubFromDb.currentPeriodStart.getTime() ||
@@ -232,13 +228,6 @@ export default async function handler(
                   subId: updatedSub.id,
                 },
               });
-
-              // Report latest logged api requests to stripe
-              logger.log(
-                `New billing period started for org with id '${updatedSubFromDb.orgId}'`
-              );
-
-              await reportOrgToStripe(updatedSubFromDb.orgId, false);
             }
           } catch (error) {
             logger.error(`Error: ${error}`);
