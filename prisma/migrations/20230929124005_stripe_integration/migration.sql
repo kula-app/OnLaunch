@@ -1,11 +1,5 @@
--- DropForeignKey
-ALTER TABLE "LoggedApiRequests" DROP CONSTRAINT "LoggedApiRequests_appId_fkey";
-
 -- AlterTable
 ALTER TABLE "App" ADD COLUMN     "idOfLastReportedApiRequest" INTEGER;
-
--- AlterTable
-ALTER TABLE "LoggedApiRequests" ADD COLUMN     "publicKey" TEXT NOT NULL DEFAULT '';
 
 -- AlterTable
 ALTER TABLE "Organisation" ADD COLUMN     "stripeCustomerId" TEXT;
@@ -47,9 +41,6 @@ CREATE TABLE "SubscriptionItem" (
 
     CONSTRAINT "SubscriptionItem_pkey" PRIMARY KEY ("subItemId")
 );
-
--- AddForeignKey
-ALTER TABLE "LoggedApiRequests" ADD CONSTRAINT "LoggedApiRequests_appId_fkey" FOREIGN KEY ("appId") REFERENCES "App"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LoggedUsageReport" ADD CONSTRAINT "LoggedUsageReport_orgId_fkey" FOREIGN KEY ("orgId") REFERENCES "Organisation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
