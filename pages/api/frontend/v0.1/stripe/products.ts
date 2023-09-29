@@ -14,6 +14,15 @@ export async function getProducts(): Promise<Product[]> {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
     apiVersion: "2023-08-16",
   });
+  const freeProduct: Product = {
+    id: "FREE",
+    description: "For checking it out",
+    name: "Free",
+    nameTag: "free",
+    priceId: "",
+    priceAmount: 0,
+    requests: config.freeSub.requestLimit,
+  };
 
   try {
     if (redis.isEnabled) {
@@ -26,7 +35,7 @@ export async function getProducts(): Promise<Product[]> {
       if (cachedProducts) {
         try {
           logger.log("Returning cached products");
-          return JSON.parse(cachedProducts);
+          return [freeProduct].concat(JSON.parse(cachedProducts));
         } catch (error) {
           logger.error(
             `Failed to parse Redis cached products, reason: ${error}`
@@ -133,7 +142,7 @@ export async function getProducts(): Promise<Product[]> {
       logger.error(`Failed to cache products in Redis: ${redisError}`);
     }
 
-    return sortedResult;
+    return [freeProduct].concat(sortedResult);
   } catch (stripeError) {
     logger.error(`Error fetching products from Stripe: ${stripeError}`);
     throw new Error("Failed to fetch products from Stripe.");
@@ -148,15 +157,15 @@ export default async function handler(
     case "GET":
       try {
         const result = await getProducts();
-        res.status(StatusCodes.OK).end(JSON.stringify(result));
+        return res.status(StatusCodes.OK).json(result);
       } catch (error) {
         logger.error(`Error: ${error}`);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).end(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end(error);
       }
-      break;
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .end("method not allowed");
   }
 }
