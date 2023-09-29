@@ -1,17 +1,21 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-import { loadConfig } from "../../../../../config/loadConfig";
-import prisma from "../../../../../lib/services/db";
-import { Logger } from "../../../../../util/logger";
-import { reportOrgToStripe } from "../../../../../util/stripe/reportUsage";
+import { loadConfig } from "../../../config/loadConfig";
+import prisma from "../../../lib/services/db";
+import { Logger } from "../../../util/logger";
+import { reportOrgToStripe } from "../../../util/stripe/reportUsage";
 
 export const config = { api: { bodyParser: false } };
 
 async function buffer(req: NextApiRequest) {
-  const chunks = [];
+  const chunks: Buffer[] = [];
   for await (const chunk of req) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+    chunks.push(
+      typeof chunk === "string"
+        ? Buffer.from(chunk as string)
+        : (chunk as Buffer)
+    );
   }
   return Buffer.concat(chunks);
 }
