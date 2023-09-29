@@ -89,7 +89,9 @@ export async function reportOrgToStripe(
     logger.log(
       `No organisation found with id '${orgId}' (with metered, active subscription)`
     );
-    throw new Error(`Organization(id = ${orgId}) not found`);
+    throw new Error(
+      `No organisation found with id '${orgId}' (with metered, active subscription)`
+    );
   }
 
   // Retrieve products to check request limit

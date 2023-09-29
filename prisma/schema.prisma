@@ -138,7 +138,7 @@ model VerificationToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 }
 
@@ -154,7 +154,7 @@ model PasswordResetToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 }
 
@@ -172,7 +172,7 @@ model EmailChangeToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete   Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 }
 
@@ -190,10 +190,10 @@ model UserInvitationToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete   Boolean  @default(false)
 
-  organisation Organisation @relation(fields: [orgId], references: [id])
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId        Int
   // the user who invited the email above to the organisation
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
 }
 
