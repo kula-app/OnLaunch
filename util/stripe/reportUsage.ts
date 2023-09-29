@@ -244,7 +244,7 @@ export async function reportOrgToStripe(
       data: {
         orgId: org.id,
         requests: sumOfRequests,
-        isReportedAsInvoice: true,
+        isReportedAsInvoice: false,
       },
     });
     return;
