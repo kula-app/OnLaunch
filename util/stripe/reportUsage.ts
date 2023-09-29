@@ -310,18 +310,18 @@ export async function reportOrgToStripe(
       );
       throw error;
     }
+  }
 
-    // If stripe call is successful, run all the prepared database update operations
-    logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
-    for (const op of latestRequestIdPerApp) {
-      await prisma.app.update({
-        data: {
-          idOfLastReportedApiRequest: op.latestRequestId,
-        },
-        where: {
-          id: op.appId,
-        },
-      });
-    }
+  // If stripe call is successful, run all the prepared database update operations
+  logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
+  for (const op of latestRequestIdPerApp) {
+    await prisma.app.update({
+      data: {
+        idOfLastReportedApiRequest: op.latestRequestId,
+      },
+      where: {
+        id: op.appId,
+      },
+    });
   }
 }
