@@ -5,11 +5,18 @@ class ApiRoutes {
   static readonly USERS = `${ApiRoutes.API_BASE_URL}/users`;
   static readonly SIGNUP = `${ApiRoutes.API_BASE_URL}/users/register`;
   static readonly ORGS = `${ApiRoutes.API_BASE_URL}/orgs`;
+  static readonly STRIPE = `${ApiRoutes.API_BASE_URL}/stripe`;
 
   static readonly ORGS_INVITATION = `${ApiRoutes.API_BASE_URL}/tokens/organisationInvitation`;
   static readonly DIRECT_INVITATION = `${ApiRoutes.API_BASE_URL}/tokens/directInvitation`;
   static readonly PASSWORD_RESET = `${ApiRoutes.API_BASE_URL}/tokens/resetPassword`;
   static readonly VERIFICATION = `${ApiRoutes.API_BASE_URL}/tokens/verification`;
+
+  static readonly PRODUCTS = `${ApiRoutes.STRIPE}/products`;
+  static readonly SUBSCRIPTIONS = `${ApiRoutes.STRIPE}/subscriptions`;
+  static readonly CHECKOUT_SESSION = `${ApiRoutes.STRIPE}/checkoutSession`;
+  static readonly SAVE_SUBSCRIPTION = `${ApiRoutes.STRIPE}/saveSubscription`;
+  static readonly CUSTOMER_PORTAL = `${ApiRoutes.STRIPE}/customerPortal`;
 
   static readonly EMAIL_CHANGE = `${ApiRoutes.API_BASE_URL}/users/emailChange`;
   static readonly PASSWORD_CHANGE = `${ApiRoutes.API_BASE_URL}/users/passwordChange`;

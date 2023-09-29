@@ -8,6 +8,10 @@ interface SignupConfig {
   isEnabled: boolean;
 }
 
+interface FreeSubConfig {
+  requestLimit: number;
+}
+
 interface DatabaseConfig {
   url: string;
 }
@@ -28,6 +32,10 @@ interface HealthConfig {
   apiKey: string;
 }
 
+interface UsageReportConfig {
+  apiKey: string;
+}
+
 export interface RedisConfig {
   isEnabled: boolean;
 
@@ -35,8 +43,8 @@ export interface RedisConfig {
   host?: string;
   password?: string;
   port?: number;
-
   db: number | undefined;
+
   cacheMaxAge: number;
 
   isSentinelEnabled: boolean;
@@ -55,15 +63,24 @@ interface SentryConfig {
   tracesSampleRate?: number;
 }
 
+interface StripeConfig {
+  apiVersion: string;
+  webhookSecret: string;
+  secretKey: string;
+}
+
 interface Config {
   nextAuth: NextAuthConfig;
   signup: SignupConfig;
+  freeSub: FreeSubConfig;
   database: DatabaseConfig;
   health: HealthConfig;
+  usageReport: UsageReportConfig;
   smtp: SmtpConfig;
   emailContent: EmailContentConfig;
   redisConfig: RedisConfig;
   sentryConfig: SentryConfig;
+  stripeConfig: StripeConfig;
 }
 
 /**
@@ -97,6 +114,10 @@ export function loadConfig(): Config {
     signup: {
       isEnabled: process.env.SIGNUPS_ENABLED == "true" ?? false,
     },
+    freeSub: {
+      requestLimit:
+        parseNumberEnvValue(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) ?? 42,
+    },
     database: {
       url:
         process.env.DATABASE_URL ??
@@ -105,6 +126,11 @@ export function loadConfig(): Config {
     health: {
       apiKey:
         process.env.HEALTH_API_KEY ?? crypto.randomBytes(32).toString("hex"),
+    },
+    usageReport: {
+      apiKey:
+        process.env.CRON_JOB_USAGE_REPORT_API_KEY ||
+        crypto.randomBytes(32).toString("hex"),
     },
     smtp: {
       host: process.env.SMTP_HOST ?? "localhost",
@@ -117,7 +143,7 @@ export function loadConfig(): Config {
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
     },
     redisConfig: {
-      isEnabled: process.env.REDIS_ENABLED == 'true' ?? false,
+      isEnabled: process.env.REDIS_ENABLED == "true" ?? false,
 
       name: process.env.REDIS_SENTINEL_NAME,
       host: process.env.REDIS_HOST ?? "localhost",
@@ -129,7 +155,7 @@ export function loadConfig(): Config {
 
       isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" ?? false,
       sentinels: parseSentinels(process.env.REDIS_SENTINELS),
-      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD
+      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD,
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",
@@ -146,6 +172,11 @@ export function loadConfig(): Config {
       tracesSampleRate: parseNumberEnvValue(
         process.env.SENTRY_TRACES_SAMPLE_RATE
       ),
+    },
+    stripeConfig: {
+      apiVersion: process.env.STRIPE_API_VERSION || "",
+      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
+      secretKey: process.env.STRIPE_SECRET_KEY || "",
     },
   };
 }

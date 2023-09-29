@@ -12,6 +12,7 @@ class Routes {
   static readonly RESET_PASSWORD = "/resetPassword";
   static readonly VERIFY = "/verify";
   static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
+  static readonly SUBSCRIPTION = "/subscription";
 
   static getVerifyWithEmail(email: string): string {
     return `/verify?email=${email}`;
@@ -31,6 +32,10 @@ class Routes {
 
   static getOrgAppsByOrgId(orgId: number): string {
     return `/orgs/${orgId}/apps`;
+  }
+
+  static getOrgUpgradeByOrgId(orgId: number): string {
+    return `/orgs/${orgId}/upgrade`;
   }
 
   static createNewAppForOrgId(orgId: number): string {

@@ -32,6 +32,8 @@ export default function AppsPage() {
   const [data, setData] = useState<DashboardRequestData[]>([]);
   const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
   const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
+  const [showCurrentBillingPeriod, setShowCurrentBillingPeriod] =
+    useState(false);
 
   useEffect(() => {
     // Use the abstracted function
@@ -42,6 +44,7 @@ export default function AppsPage() {
         if (data.billingDay?.date) {
           setCurrentPeriodStart(data.billingDay.date);
           setPeriodStartDayCount(data.billingDay.countAfterBillingStart);
+          setShowCurrentBillingPeriod(true);
         }
       } catch (error) {
         toast({
@@ -60,7 +63,12 @@ export default function AppsPage() {
   // Either show whole last 31 days or filter to only show request data
   // during the current billing period
   const getFilteredData = (): DashboardRequestData[] => {
-    if (!currentPeriodStart || periodStartDayCount === undefined) return data; // Return original data if not showing current billing period
+    if (
+      !showCurrentBillingPeriod ||
+      !currentPeriodStart ||
+      periodStartDayCount === undefined
+    )
+      return data; // Return original data if not showing current billing period
 
     // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
     return [
@@ -117,9 +125,27 @@ export default function AppsPage() {
             <Heading className="text-center my-12">
               App requests in the past days
             </Heading>
+            {currentPeriodStart && (
+              <Button
+                variant="ghost"
+                colorScheme="blue"
+                className="mt-8"
+                onClick={() => {
+                  setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
+                }}
+              >
+                {showCurrentBillingPeriod
+                  ? `show last 31 days`
+                  : `show billing period`}
+              </Button>
+            )}
             <RequestsChart requestData={derivedData} />
             <Heading size="lg">Total requests: {totalSum}</Heading>
-            <Text>in the last 31 days</Text>
+            <Text>
+              {showCurrentBillingPeriod
+                ? "in the current billing period"
+                : "in the last 31 days"}
+            </Text>
           </>
         )}
         <Heading className="text-center mt-12">Apps</Heading>

@@ -32,7 +32,7 @@ export default async function handler(
       if (org == null) {
         logger.error(`No organisation found with id '${req.query.orgId}'`);
         res.status(StatusCodes.NOT_FOUND).json({
-          message: "no organisation found with id " + req.query.orgId,
+          message: `No organisation found with id '${req.query.orgId}'`,
         });
         return;
       }
@@ -41,6 +41,7 @@ export default async function handler(
         name: org.name,
         apps: org.apps,
         role: user.role,
+        customer: org.stripeCustomerId,
         invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
       });
       break;
@@ -55,6 +56,30 @@ export default async function handler(
             message:
               "You are not allowed to delete organisation with id " +
               req.query.orgId,
+          });
+          return;
+        }
+
+        const orgToDelete = await prisma.organisation.findUnique({
+          include: {
+            subs: {
+              where: {
+                isDeleted: false,
+              },
+            },
+          },
+          where: {
+            id: Number(req.query.orgId),
+          },
+        });
+
+        if (orgToDelete && orgToDelete.subs.length > 0) {
+          logger.error(
+            "Cannot delete organisation with active subscription! Cancel subscription first"
+          );
+          res.status(StatusCodes.BAD_REQUEST).json({
+            message:
+              "Cannot delete organisation with active subscription! Cancel subscription first",
           });
           return;
         }
@@ -76,12 +101,15 @@ export default async function handler(
           },
         });
 
+        logger.log(`Successfully deleted org with id '${req.query.orgId}'`);
         res.status(StatusCodes.OK).json(deletedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(`No organisation found with id '${req.query.orgId}'`);
+          logger.error(
+            `Error while deleting org with id '${req.query.orgId}': ${e}`
+          );
           res.status(StatusCodes.NOT_FOUND).json({
-            message: "No organisation found with id " + req.query.orgId,
+            message: "Error while deleting org!",
           });
           return;
         }

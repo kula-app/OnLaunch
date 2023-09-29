@@ -101,17 +101,20 @@ export default async function handler(
       );
 
       if (orgsToDeleteFirst.length) {
+        var sortedOrgsToDeleteFirst: number[] = orgsToDeleteFirst.sort(
+          (n1, n2) => n1 - n2
+        );
         logger.error(
           `Before deleting user profile of user with id '${
             userByEmail.id
           }', these organisations have to be deleted first: ${JSON.stringify(
-            orgsToDeleteFirst
+            sortedOrgsToDeleteFirst
           )}`
         );
         res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "You have to delete these organisations first: " +
-            JSON.stringify(orgsToDeleteFirst),
+            JSON.stringify(sortedOrgsToDeleteFirst),
         });
         return;
       }

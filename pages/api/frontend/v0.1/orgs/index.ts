@@ -8,6 +8,7 @@ type OrganisationDto = {
   id: number;
   name: string;
   role: string;
+  subName: string;
 };
 
 export default async function handler(
@@ -34,7 +35,15 @@ export default async function handler(
           },
         },
         include: {
-          org: true,
+          org: {
+            include: {
+              subs: {
+                where: {
+                  isDeleted: false,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -44,6 +53,10 @@ export default async function handler(
             id: organisation.orgId,
             name: organisation.org.name,
             role: organisation.role,
+            subName:
+              organisation.org.subs && organisation.org.subs.length > 0
+                ? organisation.org.subs[0].subName
+                : "free",
           };
         })
       );
@@ -53,7 +66,7 @@ export default async function handler(
       const generatedToken = generateToken();
 
       logger.log(`Creating new organisation for user with id '${user.id}'`);
-      const org = await prisma.usersInOrganisations.create({
+      const userInOrg = await prisma.usersInOrganisations.create({
         data: {
           user: {
             connect: {
@@ -69,7 +82,7 @@ export default async function handler(
           },
         },
       });
-      res.status(StatusCodes.CREATED).json(org);
+      res.status(StatusCodes.CREATED).json(userInOrg);
       break;
 
     default:

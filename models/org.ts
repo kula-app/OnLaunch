@@ -3,4 +3,5 @@ export interface Org {
     name: string;
     invitationToken?: string;
     role?: string;
+    subName?: string;
 }
