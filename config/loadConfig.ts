@@ -67,7 +67,6 @@ interface StripeConfig {
   apiVersion: string;
   webhookSecret: string;
   secretKey: string;
-  publishableKey: string;
 }
 
 interface Config {
@@ -116,7 +115,8 @@ export function loadConfig(): Config {
       isEnabled: process.env.SIGNUPS_ENABLED == "true" ?? false,
     },
     freeSub: {
-      requestLimit: parseNumberEnvValue(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) ?? 42,
+      requestLimit:
+        parseNumberEnvValue(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) ?? 42,
     },
     database: {
       url:
@@ -129,7 +129,7 @@ export function loadConfig(): Config {
     },
     usageReport: {
       apiKey:
-        process.env.USAGE_REPORT_API_KEY ||
+        process.env.CRON_JOB_USAGE_REPORT_API_KEY ||
         crypto.randomBytes(32).toString("hex"),
     },
     smtp: {
@@ -143,7 +143,7 @@ export function loadConfig(): Config {
       senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
     },
     redisConfig: {
-      isEnabled: process.env.REDIS_ENABLED == 'true' ?? false,
+      isEnabled: process.env.REDIS_ENABLED == "true" ?? false,
 
       name: process.env.REDIS_SENTINEL_NAME,
       host: process.env.REDIS_HOST ?? "localhost",
@@ -155,7 +155,7 @@ export function loadConfig(): Config {
 
       isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" ?? false,
       sentinels: parseSentinels(process.env.REDIS_SENTINELS),
-      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD
+      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD,
     },
     sentryConfig: {
       debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",
@@ -177,7 +177,6 @@ export function loadConfig(): Config {
       apiVersion: process.env.STRIPE_API_VERSION || "",
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
       secretKey: process.env.STRIPE_SECRET_KEY || "",
-      publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
     },
   };
 }
