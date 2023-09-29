@@ -304,9 +304,6 @@ export async function reportOrgToStripe(
           isReportedAsInvoice: true,
         },
       });
-
-      // If stripe call is successful, run all the prepared database update operations
-      logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
     } catch (error) {
       logger.error(
         `Cancelling reporting for org with id '${org.id}' due to error: ${error}`
@@ -314,6 +311,8 @@ export async function reportOrgToStripe(
       throw error;
     }
 
+    // If stripe call is successful, run all the prepared database update operations
+    logger.log(`Updating apps for org with id '${org.id}' in a transaction`);
     for (const op of latestRequestIdPerApp) {
       await prisma.app.update({
         data: {
