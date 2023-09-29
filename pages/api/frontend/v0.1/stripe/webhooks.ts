@@ -131,10 +131,10 @@ export default async function handler(
             const updatedOrg = await prisma.organisation.updateMany({
               where: {
                 id: Number(session.client_reference_id),
-                customer: null,
+                stripeCustomerId: null,
               },
               data: {
-                customer: session.customer as string,
+                stripeCustomerId: session.customer as string,
               },
             });
           } catch (error) {

@@ -101,11 +101,11 @@ model Organisation {
   invitationToken String @unique
 
   // stripe data
-  customer     String?
+  stripeCustomerId String?
   // stripe subscriptions, old ones have an isDeleted flag on true
-  subs         Subscription[]
+  subs             Subscription[]
   // create log when reporting usage to stripe
-  usageReports LoggedUsageReport[]
+  usageReports     LoggedUsageReport[]
 
   apps                App[]
   users               UsersInOrganisations[]

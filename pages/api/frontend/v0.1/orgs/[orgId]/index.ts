@@ -41,7 +41,7 @@ export default async function handler(
         name: org.name,
         apps: org.apps,
         role: user.role,
-        customer: org.customer,
+        customer: org.stripeCustomerId,
         invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
       });
       break;

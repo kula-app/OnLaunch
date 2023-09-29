@@ -8,7 +8,7 @@ ALTER TABLE "App" ADD COLUMN     "idOfLastReportedApiRequest" INTEGER;
 ALTER TABLE "LoggedApiRequests" ADD COLUMN     "publicKey" TEXT NOT NULL DEFAULT '';
 
 -- AlterTable
-ALTER TABLE "Organisation" ADD COLUMN     "customer" TEXT;
+ALTER TABLE "Organisation" ADD COLUMN     "stripeCustomerId" TEXT;
 
 -- CreateTable
 CREATE TABLE "LoggedUsageReport" (

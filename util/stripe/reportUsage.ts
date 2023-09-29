@@ -280,13 +280,13 @@ export async function reportOrgToStripe(
         return;
       }
       logger.log(
-        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.customer}) to stripe`
+        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.stripeCustomerId}) to stripe`
       );
 
       // Create new invoice item to account for the requests made in the
       // end of the billing
       await stripe.invoiceItems.create({
-        customer: org.customer as string,
+        customer: org.stripeCustomerId as string,
         amount: amount,
         description: `Last usage for ${org.subs[0].subName}`,
         currency: "eur",

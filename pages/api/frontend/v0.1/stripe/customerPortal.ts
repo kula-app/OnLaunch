@@ -44,7 +44,7 @@ export default async function handler(
         return;
       }
 
-      if (!orgFromDb.customer) {
+      if (!orgFromDb.stripeCustomerId) {
         logger.error(
           `No stripe customer id found for organisation with id ${req.body.orgId}`
         );
@@ -54,7 +54,7 @@ export default async function handler(
       try {
         logger.log("Creating customer portal session for organisation");
         const session = await stripe.billingPortal.sessions.create({
-          customer: orgFromDb.customer,
+          customer: orgFromDb.stripeCustomerId,
           return_url: `${config.nextAuth.url}${Routes.DASHBOARD}`,
         });
 
