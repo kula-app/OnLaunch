@@ -203,8 +203,10 @@ export default async function handler(
               `The limit has been currently reached for org with id '${app?.orgId}'`
             );
             res
-              .status(StatusCodes.TOO_MANY_REQUESTS)
-              .end("The limit has been reached.");
+              .status(StatusCodes.PAYMENT_REQUIRED)
+              .end({
+                message: "The limit for the current abo has been reached.",
+              });
             return;
           }
         }
