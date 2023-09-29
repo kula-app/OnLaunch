@@ -116,7 +116,7 @@ export function loadConfig(): Config {
     },
     freeSub: {
       requestLimit:
-        parseNumberEnvValue(process.env.NEXT_PUBLIC_FREE_VERSION_LIMIT) ?? 42,
+        parseNumberEnvValue(process.env.SUBSCRIPTION_FREE_VERSION_LIMIT) ?? 42,
     },
     database: {
       url:
