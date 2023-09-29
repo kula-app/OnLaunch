@@ -247,7 +247,6 @@ export async function reportOrgToStripe(
         isReportedAsInvoice: false,
       },
     });
-    return;
   } else {
     try {
       // Search product for pricing data
