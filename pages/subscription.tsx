@@ -1,9 +1,9 @@
 import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
-import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Routes from "../routes/routes";
+import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -40,14 +40,7 @@ export default function ProfilePage() {
     }
 
     setLoading(false);
-  }, [
-    router.isReady,
-    router,
-    toast,
-    canceled,
-    orgId,
-    success,
-  ]);
+  }, [router.isReady, router, toast, canceled, orgId, success]);
 
   return (
     <>
@@ -96,13 +89,6 @@ export default function ProfilePage() {
                 className="mt-8"
               >
                 go to dashboard
-              </Button>
-              <Button
-                onClick={navigateToNewOrgPage}
-                colorScheme="blue"
-                className="mt-2"
-              >
-                try again
               </Button>
             </Stack>
           </div>
