@@ -32,6 +32,10 @@ export default async function handler(
         where: {
           user: {
             id: user.id,
+            isDeleted: false,
+          },
+          org: {
+            isDeleted: false,
           },
         },
         include: {

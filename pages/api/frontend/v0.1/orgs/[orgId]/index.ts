@@ -17,12 +17,15 @@ export default async function handler(
     return;
   }
 
+  const orgId = Number(req.query.orgId);
+
   switch (req.method) {
     case "GET":
-      logger.log(`Looking up organisation with id '${req.query.orgId}'`);
+      logger.log(`Looking up organisation with id '${orgId}'`);
       const org = await prisma.organisation.findUnique({
         where: {
-          id: Number(req.query.orgId),
+          id: orgId,
+          isDeleted: false,
         },
         include: {
           apps: true,
@@ -30,9 +33,9 @@ export default async function handler(
       });
 
       if (org == null) {
-        logger.error(`No organisation found with id '${req.query.orgId}'`);
+        logger.error(`No organisation found with id '${orgId}'`);
         res.status(StatusCodes.NOT_FOUND).json({
-          message: `No organisation found with id '${req.query.orgId}'`,
+          message: `No organisation found with id '${orgId}'`,
         });
         return;
       }
@@ -50,12 +53,11 @@ export default async function handler(
       try {
         if (user.role === "USER") {
           logger.error(
-            `You are not allowed to delete organisation with id '${req.query.orgId}'`
+            `You are not allowed to delete organisation with id '${orgId}'`
           );
           res.status(StatusCodes.FORBIDDEN).json({
             message:
-              "You are not allowed to delete organisation with id " +
-              req.query.orgId,
+              "You are not allowed to delete organisation with id " + orgId,
           });
           return;
         }
@@ -69,49 +71,45 @@ export default async function handler(
             },
           },
           where: {
-            id: Number(req.query.orgId),
+            id: orgId,
           },
         });
+
+        if (orgToDelete && orgToDelete.isDeleted) {
+          logger.error("Organisation has already been deleted");
+          return res.status(StatusCodes.NOT_FOUND).json({
+            message: `Organisation with id '' not found`,
+          });
+        }
 
         if (orgToDelete && orgToDelete.subs.length > 0) {
           logger.error(
             "Cannot delete organisation with active subscription! Cancel subscription first"
           );
-          res.status(StatusCodes.BAD_REQUEST).json({
+          return res.status(StatusCodes.BAD_REQUEST).json({
             message:
               "Cannot delete organisation with active subscription! Cancel subscription first",
           });
-          return;
         }
 
-        logger.log(
-          `Deleting user relations from organisation with id '${req.query.orgId}'`
-        );
-        // remove relationships between the to-be-deleted organisation and its users
-        await prisma.usersInOrganisations.deleteMany({
+        logger.log(`Deleting organisation with id '${orgId}'`);
+        const deletedOrg = await prisma.organisation.update({
           where: {
-            orgId: Number(req.query.orgId),
+            id: orgId,
+          },
+          data: {
+            isDeleted: true,
           },
         });
 
-        logger.log(`Deleting organisation with id '${req.query.orgId}'`);
-        const deletedOrg = await prisma.organisation.delete({
-          where: {
-            id: Number(req.query.orgId),
-          },
-        });
-
-        logger.log(`Successfully deleted org with id '${req.query.orgId}'`);
+        logger.log(`Successfully deleted org with id '${orgId}'`);
         res.status(StatusCodes.OK).json(deletedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(
-            `Error while deleting org with id '${req.query.orgId}': ${e}`
-          );
-          res.status(StatusCodes.NOT_FOUND).json({
+          logger.error(`Error while deleting org with id '${orgId}': ${e}`);
+          return res.status(StatusCodes.NOT_FOUND).json({
             message: "Error while deleting org!",
           });
-          return;
         }
       }
       break;
@@ -120,31 +118,42 @@ export default async function handler(
       try {
         if (user.role === "USER") {
           logger.error(
-            `You are not allowed to update organisation with id '${req.query.orgId}'`
+            `You are not allowed to update organisation with id '${orgId}'`
           );
           res.status(StatusCodes.FORBIDDEN).json({
             message:
-              "You are not allowed to update organisation with id " +
-              req.query.orgId,
+              "You are not allowed to update organisation with id " + orgId,
           });
         }
 
-        logger.log(`Updating org with id '${req.query.orgId}'`);
+        const newName = req.body.name;
+
+        if (!newName) {
+          res.status(StatusCodes.NO_CONTENT).json({
+            message:
+              "No content provided to update organisation with id '" +
+              orgId +
+              "'",
+          });
+        }
+
+        logger.log(`Updating org with id '${orgId}'`);
         const updatedOrg = await prisma.organisation.update({
           where: {
-            id: Number(req.query.orgId),
+            id: orgId,
+            isDeleted: false,
           },
           data: {
-            name: req.body.name,
+            name: newName,
           },
         });
 
-        res.status(StatusCodes.CREATED).json(updatedOrg);
+        res.status(StatusCodes.OK).json(updatedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(`No organisation found with id '${req.query.orgId}'`);
+          logger.error(`No organisation found with id '${orgId}'`);
           res.status(StatusCodes.NOT_FOUND).json({
-            message: "No organisation found with id " + req.query.orgId,
+            message: "No organisation found with id " + orgId,
           });
         }
       }

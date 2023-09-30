@@ -98,7 +98,8 @@ model Organisation {
   updatedAt DateTime @updatedAt
 
   name            String
-  invitationToken String @unique
+  invitationToken String  @unique
+  isDeleted       Boolean @default(false)
 
   // stripe data
   stripeCustomerId String?
@@ -138,7 +139,7 @@ model VerificationToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
   userId Int
 }
 
@@ -154,7 +155,7 @@ model PasswordResetToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
   userId Int
 }
 
@@ -172,7 +173,7 @@ model EmailChangeToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete   Boolean  @default(false)
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
   userId Int
 }
 
@@ -190,10 +191,10 @@ model UserInvitationToken {
   // indicates that this token has been replaced with a newer one and therefore is invalid
   isObsolete   Boolean  @default(false)
 
-  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organisation Organisation @relation(fields: [orgId], references: [id])
   orgId        Int
   // the user who invited the email above to the organisation
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
   userId       Int
 }
 

@@ -6,7 +6,11 @@ export async function reportAllOrgsToStripe() {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for all orgs`);
 
-  const orgs = await prisma.organisation.findMany({});
+  const orgs = await prisma.organisation.findMany({
+    where: {
+      isDeleted: false,
+    },
+  });
 
   logger.log(
     `Found this many organisations to report usage for: ${orgs.length}`

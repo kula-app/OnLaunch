@@ -136,6 +136,7 @@ export default async function handler(
               where: {
                 id: Number(session.client_reference_id),
                 stripeCustomerId: null,
+                isDeleted: false,
               },
               data: {
                 stripeCustomerId: session.customer as string,

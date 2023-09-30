@@ -94,6 +94,9 @@ export default async function handler(
       const app = await prisma.app.findFirst({
         where: {
           publicKey: publicKey,
+          organisation: {
+            isDeleted: false,
+          },
         },
         include: {
           organisation: {
@@ -202,11 +205,9 @@ export default async function handler(
             logger.log(
               `The limit has been currently reached for org with id '${app?.orgId}'`
             );
-            res
-              .status(StatusCodes.PAYMENT_REQUIRED)
-              .end({
-                message: "The limit for the current abo has been reached.",
-              });
+            res.status(StatusCodes.PAYMENT_REQUIRED).end({
+              message: "The limit for the current abo has been reached.",
+            });
             return;
           }
         }

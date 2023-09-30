@@ -17,6 +17,22 @@ export default async function handler(
     return;
   }
 
+  const org = await prisma.organisation.findFirst({
+    where: {
+      id: Number(req.query.orgId),
+      isDeleted: false,
+    },
+  });
+
+  if (!org) {
+    logger.error(
+      `Organisation with id '${req.query.orgId}' has been deleted or not found`
+    );
+    return res.status(StatusCodes.NOT_FOUND).json({
+      message: `Organisation with id '${req.query.orgId}' not found`,
+    });
+  }
+
   switch (req.method) {
     case "GET":
       logger.log(`Looking up app with id '${req.query.appId}'`);

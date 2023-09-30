@@ -50,6 +50,7 @@ export default async function handler(
       const org = await prisma.organisation.findUnique({
         where: {
           id: userInOrg.orgId,
+          isDeleted: false,
         },
       });
 

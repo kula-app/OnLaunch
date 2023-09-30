@@ -42,6 +42,7 @@ export async function reportOrgToStripe(
   const org = await prisma.organisation.findFirst({
     where: {
       id: orgId,
+      isDeleted: false,
       subs: {
         // This is a nested "some" condition.
         // It filters organisation to have at least one subItem with metered = true

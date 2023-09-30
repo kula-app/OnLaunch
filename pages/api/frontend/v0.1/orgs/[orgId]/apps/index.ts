@@ -28,6 +28,22 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
+      const org = await prisma.organisation.findFirst({
+        where: {
+          id: Number(req.query.orgId),
+          isDeleted: false,
+        },
+      });
+
+      if (!org) {
+        logger.error(
+          `Organisation with id '${req.query.orgId}' has been deleted or not found`
+        );
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `Organisation with id '${req.query.orgId}' not found`,
+        });
+      }
+
       logger.log(`Looking up apps with org id '${req.query.orgId}'`);
       const allApps = await prisma.app.findMany({
         where: {

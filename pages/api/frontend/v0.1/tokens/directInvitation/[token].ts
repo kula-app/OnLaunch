@@ -51,6 +51,7 @@ export default async function handler(
   const organisation = await prisma.organisation.findFirst({
     where: {
       id: userInvitationToken.orgId,
+      isDeleted: false,
     },
   });
 

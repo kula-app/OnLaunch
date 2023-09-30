@@ -23,17 +23,23 @@ export default async function handler(
     return;
   }
 
+  const orgId = Number(req.query.orgId);
+
   switch (req.method) {
     case "GET":
-      logger.log(
-        `Looking up users in organisation with id '${req.query.orgId}'`
-      );
+      logger.log(`Looking up users in organisation with id '${orgId}'`);
       const usersInOrg = await prisma.usersInOrganisations.findMany({
         include: {
           user: true,
         },
         where: {
-          orgId: Number(req.query.orgId),
+          orgId: orgId,
+          org: {
+            isDeleted: false,
+          },
+          user: {
+            isDeleted: false,
+          },
         },
         orderBy: {
           createdAt: "asc",
@@ -41,21 +47,19 @@ export default async function handler(
       });
 
       if (usersInOrg == null) {
-        logger.error(
-          `No users found in organisation with id '${req.query.orgId}'`
-        );
+        logger.error(`No users found in organisation with id '${orgId}'`);
         res.status(StatusCodes.NOT_FOUND).json({
-          message: "No users found in organisation with id " + req.query.orgId,
+          message: "No users found in organisation with id " + orgId,
         });
         return;
       }
 
       logger.log(
-        `Looking up user direct invites for organisation with id '${req.query.orgId}'`
+        `Looking up user direct invites for organisation with id '${orgId}'`
       );
       const userInvitationsInOrg = await prisma.userInvitationToken.findMany({
         where: {
-          orgId: Number(req.query.orgId),
+          orgId: orgId,
           isObsolete: false,
           isArchived: false,
         },
@@ -91,14 +95,14 @@ export default async function handler(
     case "PUT":
       if (user.role === "USER") {
         logger.error(
-          `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${req.query.orgId}'`
+          `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${orgId}'`
         );
         res.status(StatusCodes.FORBIDDEN).json({
           message:
             "You are not allowed to update user with id " +
             req.body.userId +
             " in organisation with id " +
-            req.query.orgId,
+            orgId,
         });
         return;
       }
@@ -113,13 +117,16 @@ export default async function handler(
 
       try {
         logger.log(
-          `Updating role of user with id '${req.body.userId}' in organisation with id '${req.query.orgId}'`
+          `Updating role of user with id '${req.body.userId}' in organisation with id '${orgId}'`
         );
         const updatedApp = await prisma.usersInOrganisations.update({
           where: {
             orgId_userId: {
               userId: Number(req.body.userId),
-              orgId: Number(req.query.orgId),
+              orgId: orgId,
+            },
+            org: {
+              isDeleted: false,
             },
           },
           data: {
@@ -127,19 +134,19 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.CREATED).json(updatedApp);
+        res.status(StatusCodes.OK).json(updatedApp);
         return;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(
-            `No user with id '${req.body.userId}' found in organisation with id '${req.query.orgId}'`
+            `No user with id '${req.body.userId}' found in organisation with id '${orgId}'`
           );
           res.status(StatusCodes.NOT_FOUND).json({
             message:
               "No user with id " +
               req.body.userId +
               " found in organisation with id " +
-              req.query.orgId,
+              orgId,
           });
         }
       }
@@ -148,14 +155,14 @@ export default async function handler(
     case "POST":
       if (user.role === "USER") {
         logger.error(
-          `You are not allowed to add user with email '${req.body.email}' to organisation with id '${req.query.orgId}'`
+          `You are not allowed to add user with email '${req.body.email}' to organisation with id '${orgId}'`
         );
         res.status(StatusCodes.FORBIDDEN).json({
           message:
             "You are not allowed to add user with email " +
             req.body.email +
             " to organisation with id " +
-            req.query.orgId,
+            orgId,
         });
         return;
       }
@@ -174,22 +181,32 @@ export default async function handler(
 
       if (userByEmail && userByEmail.id) {
         logger.log(
-          `Looking up user with id '${userByEmail.id}' in organisation with id '${req.query.orgId}'`
+          `Looking up user with id '${userByEmail.id}' in organisation with id '${orgId}'`
         );
         const searchUserAlreadyInOrganisation =
           await prisma.usersInOrganisations.findFirst({
             where: {
               userId: userByEmail.id,
-              orgId: Number(req.query.orgId),
+              orgId: orgId,
+            },
+            include: {
+              org: true,
             },
           });
 
         if (searchUserAlreadyInOrganisation) {
+          // Check if organisation has already been deleted
+          if (searchUserAlreadyInOrganisation.org.isDeleted) {
+            logger.error(`Organisation with id '${orgId}' has been deleted`);
+            return res
+              .status(StatusCodes.NOT_FOUND)
+              .json({ message: `No organisation found with id '${orgId}'` });
+          }
+
           logger.error("User already in organisation");
-          res
+          return res
             .status(StatusCodes.BAD_REQUEST)
             .json({ message: "User already in organisation!" });
-          return;
         }
       }
 
@@ -209,13 +226,13 @@ export default async function handler(
       expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
 
       logger.log(
-        `Creating user invitation token for email '${req.body.email}' for organisation with id '${req.query.orgId}'`
+        `Creating user invitation token for email '${req.body.email}' for organisation with id '${orgId}'`
       );
       const uit = await prisma.userInvitationToken.create({
         data: {
           invitedEmail: req.body.email,
           token: generatedToken,
-          orgId: Number(req.query.orgId),
+          orgId: orgId,
           userId: user.id,
           expiryDate: expiryDate,
         },

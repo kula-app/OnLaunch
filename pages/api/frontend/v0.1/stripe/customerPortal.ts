@@ -21,7 +21,9 @@ export default async function handler(
     return;
   }
 
-  if (!req.body.orgId) {
+  const orgId = req.body.orgId;
+
+  if (!orgId) {
     logger.error("No parameter orgId provided");
     res.status(StatusCodes.BAD_REQUEST).end("No parameter orgId provided");
   }
@@ -35,18 +37,19 @@ export default async function handler(
       // check whether organisation has a stripe customer id with prisma
       const orgFromDb = await prisma.organisation.findUnique({
         where: {
-          id: Number(req.body.orgId),
+          id: orgId,
+          isDeleted: false,
         },
       });
 
       if (!orgFromDb) {
-        logger.error(`No org found with id ${req.body.orgId}`);
+        logger.error(`No org found with id ${orgId}`);
         return;
       }
 
       if (!orgFromDb.stripeCustomerId) {
         logger.error(
-          `No stripe customer id found for organisation with id ${req.body.orgId}`
+          `No stripe customer id found for organisation with id ${orgId}`
         );
         return;
       }

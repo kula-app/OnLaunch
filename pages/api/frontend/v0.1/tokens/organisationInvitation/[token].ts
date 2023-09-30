@@ -24,6 +24,7 @@ export default async function handler(
   const organisation = await prisma.organisation.findFirst({
     where: {
       invitationToken: token as string,
+      isDeleted: false,
     },
   });
 
@@ -77,6 +78,7 @@ export default async function handler(
       await prisma.organisation.update({
         where: {
           id: organisation.id,
+          isDeleted: false,
         },
         data: {
           invitationToken: generatedToken,

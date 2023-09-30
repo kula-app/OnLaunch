@@ -35,20 +35,34 @@ export default async function handler(
 
       if (user.role === "ADMIN" && user.email === req.query.userEmail) {
         logger.log(`Looking up all admins in org with id '${req.query.orgId}'`);
+
         const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
           where: {
             orgId: Number(req.query.orgId),
             role: "ADMIN",
           },
+          include: {
+            org: true,
+          },
         });
 
-        if (otherAdminsInOrg.length === 1) {
-          logger.error("Organisation cannot be left by the only admin");
-          res.status(StatusCodes.BAD_REQUEST).json({
-            message:
-              "You cannot leave organisation when you are the only admin",
-          });
-          return;
+        if (otherAdminsInOrg.length >= 1) {
+          if (otherAdminsInOrg[0].org.isDeleted) {
+            logger.error(
+              `Organisation with id '${req.query.orgId}' has been already deleted`
+            );
+            return res.status(StatusCodes.NOT_FOUND).json({
+              message: `Organisation with id '${req.query.orgId}' not found`,
+            });
+          }
+
+          if (otherAdminsInOrg.length === 1) {
+            logger.error("Organisation cannot be left by the only admin");
+            return res.status(StatusCodes.BAD_REQUEST).json({
+              message:
+                "You cannot leave organisation when you are the only admin",
+            });
+          }
         }
       }
 
