@@ -75,9 +75,12 @@ export default async function handler(
           },
           role: "ADMIN",
         },
+        include: {
+          org: true,
+        },
       });
 
-      let orgsToDeleteFirst: Array<number> = [];
+      let orgsToDeleteFirst: Array<string> = [];
 
       logger.log(
         `Looking up other admins in organisations that user with id '${userByEmail.id}' is part of`
@@ -95,26 +98,23 @@ export default async function handler(
           });
 
           if (Array.isArray(otherAdminsInOrg) && !otherAdminsInOrg.length) {
-            orgsToDeleteFirst.push(userInOrg.orgId);
+            orgsToDeleteFirst.push(userInOrg.org.name);
           }
         })
       );
 
       if (orgsToDeleteFirst.length) {
-        var sortedOrgsToDeleteFirst: number[] = orgsToDeleteFirst.sort(
-          (n1, n2) => n1 - n2
-        );
         logger.error(
           `Before deleting user profile of user with id '${
             userByEmail.id
           }', these organisations have to be deleted first: ${JSON.stringify(
-            sortedOrgsToDeleteFirst
+            orgsToDeleteFirst
           )}`
         );
         res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "You have to delete these organisations first: " +
-            JSON.stringify(sortedOrgsToDeleteFirst),
+            JSON.stringify(orgsToDeleteFirst),
         });
         return;
       }
