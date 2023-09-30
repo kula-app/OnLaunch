@@ -3550,10 +3550,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/request-ip@^0.0.38":
-  version "0.0.38"
-  resolved "https://registry.npmjs.org/@types/request-ip/-/request-ip-0.0.38.tgz"
-  integrity sha512-1yeq8UuK/tUBqLXRY24gjeFvrSNaGNcOcZLQjHlnuw8iu+qE/vTQ64TUcLWorr607NKLfFakdoYEXXHXrLLKCw==
+"@types/request-ip@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/request-ip/-/request-ip-0.0.39.tgz#78851acdfbf373d8a1e47dde5f2225e8d500033d"
+  integrity sha512-2vZI+q4ToHvm6Qspi6G+S1f8+dWL23ZnCaauSS4i6LPxR4V//+O44l472aCG5rZtuAQfODihIWWN8z1UK2bOIA==
   dependencies:
     "@types/node" "*"
 
