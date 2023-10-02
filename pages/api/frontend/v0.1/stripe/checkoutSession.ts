@@ -93,6 +93,9 @@ export default async function handler(
         // if org already has a stripe id, add it to the options, else stripe will generate an id
         if (org && org.stripeCustomerId) {
           sessionOptions.customer = org.stripeCustomerId;
+          sessionOptions.customer_update = {
+            name: "auto",
+          };
         }
 
         const session = await stripe.checkout.sessions.create(sessionOptions);
