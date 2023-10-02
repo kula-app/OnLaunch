@@ -23,6 +23,10 @@ type ResponseDto = {
   actions: ActionDto[];
 };
 
+interface ErrorObjectDto {
+  message: string;
+}
+
 /**
  * @swagger
  * /api/v0.1/messages:
@@ -73,7 +77,7 @@ type ResponseDto = {
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseDto[]>
+  res: NextApiResponse<ResponseDto[] | ErrorObjectDto>
 ) {
   const logger = new Logger(__filename);
   const config = loadConfig();
@@ -85,8 +89,9 @@ export default async function handler(
 
       if (!publicKey) {
         logger.error("No api key provided");
-        res.status(StatusCodes.BAD_REQUEST).end("no api key provided");
-        return;
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "no api key provided" });
       }
 
       // Get app, org, (appIds) and sub information to retrieve product limit
@@ -117,8 +122,9 @@ export default async function handler(
 
       if (!app) {
         logger.log(`No app found for api key '${publicKey as string}'`);
-        res.status(StatusCodes.NOT_FOUND).end("no app found for api key");
-        return;
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "no app found for api key" });
       }
 
       // Start of quota limitation
@@ -183,10 +189,9 @@ export default async function handler(
               logger.error(
                 `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`
               );
-              res
+              return res
                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .end("Please try again later");
-              return;
+                .json({ message: "Please try again later" });
             }
 
             logger.log(
@@ -205,15 +210,15 @@ export default async function handler(
             logger.log(
               `The limit has been currently reached for org with id '${app?.orgId}'`
             );
-            res.status(StatusCodes.PAYMENT_REQUIRED).end({
+            return res.status(StatusCodes.PAYMENT_REQUIRED).json({
               message: "The limit for the current abo has been reached.",
             });
-            return;
           }
         }
-      } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).end({ error });
-        return;
+      } catch (error: any) {
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: error.message });
       }
 
       logger.log(`Looking up all messages for app with id '${app.id}'`);
@@ -255,7 +260,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(
+      return res.status(StatusCodes.OK).json(
         allMessages.map((message): ResponseDto => {
           return {
             id: message.id,
@@ -271,10 +276,10 @@ export default async function handler(
           };
         })
       );
-      break;
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }
