@@ -67,6 +67,7 @@ interface StripeConfig {
   apiVersion: string;
   webhookSecret: string;
   secretKey: string;
+  useAutomaticTax: boolean;
 }
 
 interface Config {
@@ -95,6 +96,20 @@ function parseNumberEnvValue(value?: string): number | undefined {
     return undefined;
   }
   return Number(value);
+}
+
+/**
+ * Tries to parse the given value into a boolean.
+ * Returns `undefined` if the value is `undefined`.
+ *
+ * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
+ * @returns
+ */
+function parseBooleanEnvValue(value?: string): boolean | undefined {
+  if (value == undefined) {
+    return undefined;
+  }
+  return value.toLowerCase() === "true";
 }
 
 // Parse the sentinels from an environment variable
@@ -177,6 +192,8 @@ export function loadConfig(): Config {
       apiVersion: process.env.STRIPE_API_VERSION || "",
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
       secretKey: process.env.STRIPE_SECRET_KEY || "",
+      useAutomaticTax:
+        parseBooleanEnvValue(process.env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
     },
   };
 }

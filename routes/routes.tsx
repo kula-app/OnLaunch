@@ -78,6 +78,14 @@ class Routes {
   static verifyWithToken(token: string): string {
     return `${config.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
   }
+
+  static subscriptionPageSuccess(orgId: string): string {
+    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
+  }
+
+  static subscriptionPageCancelled(): string {
+    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`;
+  }
 }
 
 export default Routes;

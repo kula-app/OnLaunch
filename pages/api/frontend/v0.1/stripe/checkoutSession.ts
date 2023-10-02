@@ -8,19 +8,6 @@ import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { Logger } from "../../../../../util/logger";
 
-interface SessionOptions {
-  billing_address_collection: string;
-  client_reference_id: string;
-  line_items: {
-    price: any;
-    quantity: number;
-  }[];
-  mode: string;
-  success_url: string;
-  cancel_url: string;
-  customer?: string;
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -42,7 +29,7 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+      const stripe = new Stripe(config.stripeConfig.secretKey, {
         apiVersion: "2023-08-16",
       });
 
@@ -91,25 +78,24 @@ export default async function handler(
           return lineItem;
         });
 
-        let sessionOptions: SessionOptions = {
-          billing_address_collection: "auto",
-          client_reference_id: req.body.orgId as string,
+        let sessionOptions: Stripe.Checkout.SessionCreateParams = {
+          allow_promotion_codes: true,
+          automatic_tax: { enabled: config.stripeConfig.useAutomaticTax },
+          billing_address_collection: "required",
+          client_reference_id: req.body.orgId,
           line_items: lineItems,
           mode: "subscription",
-          success_url: `${config.nextAuth.url}${
-            Routes.SUBSCRIPTION
-          }?success=true&orgId=${req.body.orgId as string}`,
-          cancel_url: `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`,
+          success_url: Routes.subscriptionPageSuccess(req.body.orgId),
+          cancel_url: Routes.subscriptionPageCancelled(),
+          tax_id_collection: { enabled: true },
         };
 
         // if org already has a stripe id, add it to the options, else stripe will generate an id
         if (org && org.stripeCustomerId) {
-          sessionOptions.customer = org.stripeCustomerId as string;
+          sessionOptions.customer = org.stripeCustomerId;
         }
 
-        const session = await stripe.checkout.sessions.create(
-          sessionOptions as any
-        );
+        const session = await stripe.checkout.sessions.create(sessionOptions);
 
         logger.log("Redirecting to Stripe checkout");
         return res.json(session.url);
