@@ -65,9 +65,17 @@ export default async function handler(
             throw new Error("Product is missing a priceId");
           }
 
-          const lineItem: any = {
+          const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = {
             price: product.priceId,
           };
+
+          if (!config.stripeConfig.useAutomaticTax) {
+            if (config.stripeConfig.dynamicTaxRates) {
+              lineItem.dynamic_tax_rates = config.stripeConfig.dynamicTaxRates;
+            } else if (config.stripeConfig.taxRates) {
+              lineItem.tax_rates = config.stripeConfig.taxRates;
+            }
+          }
 
           // if quantity is provided, include it in the line item
           // note: metered prices do not get a quantity parameter

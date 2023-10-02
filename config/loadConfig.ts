@@ -68,6 +68,8 @@ interface StripeConfig {
   webhookSecret: string;
   secretKey: string;
   useAutomaticTax: boolean;
+  dynamicTaxRates?: Array<string>;
+  taxRates?: Array<string>;
 }
 
 interface Config {
@@ -110,6 +112,20 @@ function parseBooleanEnvValue(value?: string): boolean | undefined {
     return undefined;
   }
   return value.toLowerCase() === "true";
+}
+
+/**
+ * Tries to parse the given value into a string array.
+ * Returns `undefined` if the value is `undefined`.
+ *
+ * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
+ * @returns
+ */
+function parseStringArrayEnvValue(value?: string): Array<string> | undefined {
+  if (value == undefined || value === "") {
+    return undefined;
+  }
+  return value.split(",");
 }
 
 // Parse the sentinels from an environment variable
@@ -194,6 +210,10 @@ export function loadConfig(): Config {
       secretKey: process.env.STRIPE_SECRET_KEY || "",
       useAutomaticTax:
         parseBooleanEnvValue(process.env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
+      taxRates: parseStringArrayEnvValue(process.env.STRIPE_TAX_RATES),
+      dynamicTaxRates: parseStringArrayEnvValue(
+        process.env.STRIPE_DYNAMIC_TAX_RATES
+      ),
     },
   };
 }
