@@ -4,12 +4,11 @@ const nextConfig = {
   // time in seconds of no pages generating during static
   // generation before timing out
   staticPageGenerationTimeout: 600,
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
 
-
-// Inected Content via Sentry Wizard Below
+// Injected content via Sentry wizard below
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
@@ -21,9 +20,8 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-
-    org: "onlaunch",
-    project: "javascript-nextjs",
+    org: "kula-app",
+    project: "onlaunch",
   },
   {
     // For all available options, see:
