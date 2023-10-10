@@ -160,12 +160,14 @@ export default async function handler(
         return res.status(StatusCodes.OK).json(result);
       } catch (error) {
         logger.error(`Error: ${error}`);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: "An internal server error occurred, please try again later",
+        });
       }
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .end("method not allowed");
+        .json({ message: "method not allowed" });
   }
 }

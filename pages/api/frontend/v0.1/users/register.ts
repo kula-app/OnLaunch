@@ -43,10 +43,9 @@ export default async function handler(
 
       if (!(await validatePassword(password))) {
         logger.error("Provided password is too short");
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
           message: "Invalid data - password consists of less than 8 characters",
         });
-        return;
       }
 
       logger.log(`Looking up user with email '${email}'`);
@@ -108,11 +107,11 @@ export default async function handler(
         MailType.Verification
       );
 
-      res.status(StatusCodes.CREATED).json(email);
-      break;
+      return res.status(StatusCodes.CREATED).json(email);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

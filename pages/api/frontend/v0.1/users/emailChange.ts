@@ -108,8 +108,7 @@ export default async function handler(
         MailType.ChangeEmail
       );
 
-      res.status(StatusCodes.CREATED).json(user.email);
-      break;
+      return res.status(StatusCodes.CREATED).json(user.email);
 
     case "PUT":
       logger.log(`Looking up email change token`);
@@ -167,11 +166,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(lookupToken.newEmail);
-      break;
+      return res.status(StatusCodes.OK).json(lookupToken.newEmail);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

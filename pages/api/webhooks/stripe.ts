@@ -48,7 +48,7 @@ export default async function handler(
         logger.error(`Stripe webhook error: ${error.message}`);
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .end(`Stripe webhook error: ${error.message}`);
+          .json({ message: `Stripe webhook error: ${error.message}` });
       }
 
       logger.log(`Event type: ${event.type}`);
@@ -84,7 +84,7 @@ export default async function handler(
               );
               res
                 .status(StatusCodes.BAD_REQUEST)
-                .end("no subscription was retrieved");
+                .json({ message: "no subscription was retrieved" });
               break;
             }
 
@@ -236,7 +236,7 @@ export default async function handler(
             logger.error(`Error: ${error}`);
             return res
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .end(`Error: ${error}`);
+              .json({ message: `Error: ${error}` });
           }
           break;
 
@@ -265,11 +265,11 @@ export default async function handler(
           break;
       }
 
-      res.status(StatusCodes.OK).end();
-      break;
+      return res.status(StatusCodes.OK).end();
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

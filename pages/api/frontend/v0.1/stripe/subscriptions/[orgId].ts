@@ -40,11 +40,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(subs);
-      break;
+      return res.status(StatusCodes.OK).json(subs);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

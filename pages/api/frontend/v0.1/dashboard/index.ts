@@ -80,15 +80,17 @@ export default async function handler(
           dailyCounts: serializedResult,
         };
 
-        res.status(StatusCodes.OK).end(JSON.stringify(jsonResponse));
+        return res.status(StatusCodes.OK).json(jsonResponse);
       } catch (error) {
         logger.error(`Error: ${error}`);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).end(error);
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: "an internal server error occurred" });
       }
-      break;
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

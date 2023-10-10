@@ -51,7 +51,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(
+      return res.status(StatusCodes.OK).json(
         orgsForUser.map((organisation): OrganisationDto => {
           return {
             id: organisation.orgId,
@@ -64,7 +64,6 @@ export default async function handler(
           };
         })
       );
-      break;
 
     case "POST":
       const generatedToken = generateToken();
@@ -86,13 +85,11 @@ export default async function handler(
           },
         },
       });
-      res.status(StatusCodes.CREATED).json(userInOrg);
-      break;
+      return res.status(StatusCodes.CREATED).json(userInOrg);
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

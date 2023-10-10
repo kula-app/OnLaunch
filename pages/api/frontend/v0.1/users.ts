@@ -36,12 +36,11 @@ export default async function handler(
         return;
       }
 
-      res.status(StatusCodes.CREATED).json({
+      return res.status(StatusCodes.CREATED).json({
         email: userFromDb.email,
         firstName: userFromDb.firstName,
         lastName: userFromDb.lastName,
       });
-      break;
 
     case "DELETE":
       const userEmail = user.email as string;
@@ -111,12 +110,11 @@ export default async function handler(
             orgsToDeleteFirst
           )}`
         );
-        res.status(StatusCodes.BAD_REQUEST).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "You have to delete these organisations first: " +
             JSON.stringify(orgsToDeleteFirst),
         });
-        return;
       }
 
       logger.log(`Updating user with id '${userByEmail.id}' as deleted`);
@@ -145,11 +143,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.CREATED).json({ deletedUser });
-      break;
+      return res.status(StatusCodes.CREATED).json({ deletedUser });
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

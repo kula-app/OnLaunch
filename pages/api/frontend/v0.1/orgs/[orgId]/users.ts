@@ -48,10 +48,9 @@ export default async function handler(
 
       if (usersInOrg == null) {
         logger.error(`No users found in organisation with id '${orgId}'`);
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           message: "No users found in organisation with id " + orgId,
         });
-        return;
       }
 
       logger.log(
@@ -89,22 +88,20 @@ export default async function handler(
       });
 
       // combine user list with pending invites list
-      res.status(StatusCodes.OK).json([...users, ...usersInvited]);
-      break;
+      return res.status(StatusCodes.OK).json([...users, ...usersInvited]);
 
     case "PUT":
       if (user.role === "USER") {
         logger.error(
           `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${orgId}'`
         );
-        res.status(StatusCodes.FORBIDDEN).json({
+        return res.status(StatusCodes.FORBIDDEN).json({
           message:
             "You are not allowed to update user with id " +
             req.body.userId +
             " in organisation with id " +
             orgId,
         });
-        return;
       }
 
       if (user.id === req.body.userId) {
@@ -134,14 +131,13 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.OK).json(updatedApp);
-        return;
+        return res.status(StatusCodes.OK).json(updatedApp);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(
             `No user with id '${req.body.userId}' found in organisation with id '${orgId}'`
           );
-          res.status(StatusCodes.NOT_FOUND).json({
+          return res.status(StatusCodes.NOT_FOUND).json({
             message:
               "No user with id " +
               req.body.userId +
@@ -157,14 +153,13 @@ export default async function handler(
         logger.error(
           `You are not allowed to add user with email '${req.body.email}' to organisation with id '${orgId}'`
         );
-        res.status(StatusCodes.FORBIDDEN).json({
+        return res.status(StatusCodes.FORBIDDEN).json({
           message:
             "You are not allowed to add user with email " +
             req.body.email +
             " to organisation with id " +
             orgId,
         });
-        return;
       }
 
       const generatedToken = generateToken();
@@ -245,8 +240,7 @@ export default async function handler(
         userByEmail ? MailType.DirectInvite : MailType.DirectInviteNewUser
       );
 
-      res.status(StatusCodes.CREATED).json(uit);
-      return;
+      return res.status(StatusCodes.CREATED).json(uit);
 
     default:
       res

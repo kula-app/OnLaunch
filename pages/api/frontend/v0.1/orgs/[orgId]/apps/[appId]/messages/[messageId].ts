@@ -48,8 +48,7 @@ export default async function handler(
         return;
       }
 
-      res.status(StatusCodes.OK).json(message);
-      break;
+      return res.status(StatusCodes.OK).json(message);
 
     case "DELETE":
       try {
@@ -67,14 +66,13 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.OK).json(deletedMessage);
+        return res.status(StatusCodes.OK).json(deletedMessage);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No message found with id '${req.query.messageId}'`);
-          res.status(StatusCodes.NOT_FOUND).json({
+          return res.status(StatusCodes.NOT_FOUND).json({
             message: "No message found with id " + req.query.messageId,
           });
-          return;
         }
       }
       break;
@@ -126,14 +124,13 @@ export default async function handler(
           });
         }
 
-        res.status(StatusCodes.CREATED).json(updatedMessage);
+        return res.status(StatusCodes.CREATED).json(updatedMessage);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.log(`No message found with id '${req.query.messageId}'`);
-          res.status(StatusCodes.NOT_FOUND).json({
+          return res.status(StatusCodes.NOT_FOUND).json({
             message: "No message found with id " + req.query.messageId,
           });
-          return;
         }
       }
       break;

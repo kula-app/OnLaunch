@@ -59,21 +59,18 @@ export default async function handler(
     logger.error(
       `No organisation found with id '${userInvitationToken.orgId}'`
     );
-    res.status(StatusCodes.BAD_REQUEST).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       message: `No organisation found with id ${userInvitationToken.orgId}`,
     });
-    return;
   }
 
   switch (req.method) {
     case "GET":
-      res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.OK).json({
         id: organisation.id,
         name: organisation.name,
         invitationToken: userInvitationToken.token,
       });
-
-      break;
 
     case "POST":
       try {
@@ -105,11 +102,13 @@ export default async function handler(
         return;
       }
 
-      res.status(StatusCodes.OK).json({ message: `User joined organisation` });
-      break;
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: `User joined organisation` });
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }
