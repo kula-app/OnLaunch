@@ -45,8 +45,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(allMessages);
-      break;
+      return res.status(StatusCodes.OK).json(allMessages);
 
     case "POST":
       if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
@@ -80,8 +79,7 @@ export default async function handler(
         });
       }
 
-      res.status(StatusCodes.CREATED).json(message);
-      break;
+      return res.status(StatusCodes.CREATED).json(message);
 
     default:
       res

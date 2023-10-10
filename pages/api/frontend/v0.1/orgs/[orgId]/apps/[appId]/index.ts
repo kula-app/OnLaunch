@@ -66,13 +66,12 @@ export default async function handler(
         return;
       }
 
-      res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.OK).json({
         role: user.role,
         publicKey: user.role === "ADMIN" ? app.publicKey : "",
         name: app.name,
         messages: app.messages,
       });
-      break;
 
     case "DELETE":
       try {
@@ -80,11 +79,10 @@ export default async function handler(
           logger.error(
             `You are not allowed to delete app with id '${req.query.appId}'`
           );
-          res.status(StatusCodes.FORBIDDEN).json({
+          return res.status(StatusCodes.FORBIDDEN).json({
             message:
               "You are not allowed to delete app with id " + req.query.orgId,
           });
-          return;
         }
 
         logger.log(`Deleting app with id '${req.query.appId}'`);
@@ -94,11 +92,11 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.OK).json(deletedApp);
+        return res.status(StatusCodes.OK).json(deletedApp);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No app found with id '${req.query.appId}'`);
-          res
+          return res
             .status(StatusCodes.NOT_FOUND)
             .json({ message: "No app found with id " + req.query.appId });
         }
@@ -111,11 +109,10 @@ export default async function handler(
           logger.error(
             `You are not allowed to update app with id '${req.query.appId}'`
           );
-          res.status(StatusCodes.FORBIDDEN).json({
+          return res.status(StatusCodes.FORBIDDEN).json({
             message:
               "You are not allowed to update app with id " + req.query.orgId,
           });
-          return;
         }
 
         logger.log(`Updating app with id '${req.query.appId}'`);
@@ -128,7 +125,7 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.CREATED).json(updatedApp);
+        return res.status(StatusCodes.CREATED).json(updatedApp);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No app found with id '${req.query.appId}'`);

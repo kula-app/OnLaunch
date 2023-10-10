@@ -20,10 +20,9 @@ export default async function handler(
 
       if (resetToken == null) {
         logger.error("Provided password reset token not found");
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           message: "no token found that looks like this: " + req.query.token,
         });
-        return;
       }
 
       if (
@@ -33,14 +32,12 @@ export default async function handler(
           resetToken.expiryDate < new Date())
       ) {
         logger.error("Provided password reset token is obsolete");
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           message: "token is obsolete",
         });
-        return;
       }
 
-      res.status(StatusCodes.OK).json(resetToken);
-      break;
+      return res.status(StatusCodes.OK).json(resetToken);
 
     default:
       res
