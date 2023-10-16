@@ -19,7 +19,7 @@ export default async function handler(
   res: NextApiResponse<Data | {}>
 ) {
   const config = loadConfig();
-  if (req.headers.authorization !== `token ${config.health.apiKey}`) {
+  if (req.headers.authorization !== `token ${config.server.health.apiKey}`) {
     return res.status(StatusCodes.FORBIDDEN).json({
       error: {
         message: "Invalid API Key",
@@ -28,7 +28,11 @@ export default async function handler(
   }
   const result = await fetchHealthcheck();
   res
-    .status(result.status == "error" ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.OK)
+    .status(
+      result.status == "error"
+        ? StatusCodes.SERVICE_UNAVAILABLE
+        : StatusCodes.OK
+    )
     .setHeader("Content-Type", "application/health+json")
     .json(result);
 }

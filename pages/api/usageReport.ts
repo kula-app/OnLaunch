@@ -8,12 +8,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const config = loadConfig();
+  const usageReportingConfig = loadConfig().server.usageReport;
   const logger = new Logger(__filename);
 
   if (
-    req.headers.authorization !== `Bearer ${config.usageReport.apiKey}` &&
-    req.headers.authorization !== config.usageReport.apiKey
+    req.headers.authorization !== `Bearer ${usageReportingConfig.apiKey}` &&
+    req.headers.authorization !== usageReportingConfig.apiKey
   ) {
     logger.error("Authorization of request failed - access denied!");
     return res.status(StatusCodes.FORBIDDEN).json({

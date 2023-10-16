@@ -1,219 +1,150 @@
 import * as crypto from "crypto";
+import { Config } from "./interfaces/Config";
+import { parseBooleanEnvValue } from "./parser/parseBooleanEnvValue";
+import { parseNumberEnvValue } from "./parser/parseNumberEnvValue";
+import { parseSentinels } from "./parser/parseSentinels";
+import { parseStringArrayEnvValue } from "./parser/parseStringArrayEnvValue";
 
-interface NextAuthConfig {
-  url: string;
-}
-
-interface SignupConfig {
-  isEnabled: boolean;
-}
-
-interface FreeSubConfig {
-  requestLimit: number;
-}
-
-interface DatabaseConfig {
-  url: string;
-}
-
-interface SmtpConfig {
-  host: string;
-  port: number;
-  user: string;
-  pass: string;
-}
-
-interface EmailContentConfig {
-  senderName: string;
-  senderAddress: string;
-}
-
-interface HealthConfig {
-  apiKey: string;
-}
-
-interface UsageReportConfig {
-  apiKey: string;
-}
-
-export interface RedisConfig {
-  isEnabled: boolean;
-
-  name?: string; // name of the Redis service
-  host?: string;
-  password?: string;
-  port?: number;
-  db: number | undefined;
-
-  cacheMaxAge: number;
-
-  isSentinelEnabled: boolean;
-  sentinels?: { host: string; port: number }[];
-  sentinelPassword?: string;
-}
-
-interface SentryConfig {
-  debug?: boolean;
-  dsn?: string;
-  env?: string;
-  release?: string;
-  replaysOnErrorSampleRate?: number;
-  replaysSessionSampleRate?: number;
-  sampleRate?: number;
-  tracesSampleRate?: number;
-}
-
-interface StripeConfig {
-  apiVersion: string;
-  webhookSecret: string;
-  secretKey: string;
-  useAutomaticTax: boolean;
-  dynamicTaxRates?: Array<string>;
-  taxRates?: Array<string>;
-}
-
-interface Config {
-  nextAuth: NextAuthConfig;
-  signup: SignupConfig;
-  freeSub: FreeSubConfig;
-  database: DatabaseConfig;
-  health: HealthConfig;
-  usageReport: UsageReportConfig;
-  smtp: SmtpConfig;
-  emailContent: EmailContentConfig;
-  redisConfig: RedisConfig;
-  sentryConfig: SentryConfig;
-  stripeConfig: StripeConfig;
-}
-
-/**
- * Tries to parse the given value into a number.
- * Returns `undefined` if the value is `undefined`.
- *
- * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
- * @returns
- */
-function parseNumberEnvValue(value?: string): number | undefined {
-  if (value == undefined) {
-    return undefined;
+function getEnvironment(): {
+  [keyof: string]: string | undefined;
+} {
+  let env: {
+    [keyof: string]: string | undefined;
+  };
+  if (typeof window === "undefined") {
+    // Called by the backend, therefore access the process environment
+    env = process.env;
+  } else {
+    // Called by the frontend, therefore access the global environment constant defined in  /__env.js
+    const this_window = window as unknown as Window & {
+      __env: {
+        [keyof: string]: string;
+      };
+    };
+    env = this_window.__env;
   }
-  return Number(value);
+  return env;
 }
 
-/**
- * Tries to parse the given value into a boolean.
- * Returns `undefined` if the value is `undefined`.
- *
- * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
- * @returns
- */
-function parseBooleanEnvValue(value?: string): boolean | undefined {
-  if (value == undefined) {
-    return undefined;
-  }
-  return value.toLowerCase() === "true";
+function sortKeys<T extends { [keyof: string]: unknown }>(obj: T): T {
+  return Object.keys(obj as any)
+    .sort()
+    .reduce((acc: { [keyof: string]: unknown }, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {}) as T;
 }
-
-/**
- * Tries to parse the given value into a string array.
- * Returns `undefined` if the value is `undefined`.
- *
- * @param value String value from the environment, e.g. `process.env.MY_ENV_VAR`
- * @returns
- */
-function parseStringArrayEnvValue(value?: string): Array<string> | undefined {
-  if (value == undefined || value === "") {
-    return undefined;
-  }
-  return value.split(",");
-}
-
-// Parse the sentinels from an environment variable
-const parseSentinels = (sentinelString?: string) => {
-  if (!sentinelString) return undefined;
-  return sentinelString.split(",").map((item) => {
-    const [host, port] = item.split(":");
-    return { host, port: Number(port) };
-  });
-};
 
 export function loadConfig(): Config {
-  return {
-    nextAuth: {
-      url: process.env.NEXTAUTH_URL ?? "http://localhost:3000",
-    },
-    signup: {
-      isEnabled: process.env.SIGNUPS_ENABLED == "true" ?? false,
-    },
-    freeSub: {
-      requestLimit:
-        parseNumberEnvValue(process.env.SUBSCRIPTION_FREE_VERSION_LIMIT) ?? 42,
-    },
-    database: {
-      url:
-        process.env.DATABASE_URL ??
-        "postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public",
-    },
-    health: {
-      apiKey:
-        process.env.HEALTH_API_KEY ?? crypto.randomBytes(32).toString("hex"),
-    },
-    usageReport: {
-      apiKey:
-        process.env.CRON_JOB_USAGE_REPORT_API_KEY ||
-        crypto.randomBytes(32).toString("hex"),
-    },
-    smtp: {
-      host: process.env.SMTP_HOST ?? "localhost",
-      port: parseNumberEnvValue(process.env.SMTP_PORT) ?? 1025,
-      user: process.env.SMTP_USER ?? "",
-      pass: process.env.SMTP_PASS ?? "",
-    },
-    emailContent: {
-      senderName: process.env.SMTP_FROM_NAME ?? "OnLaunch",
-      senderAddress: process.env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
-    },
-    redisConfig: {
-      isEnabled: process.env.REDIS_ENABLED == "true" ?? false,
+  let env = getEnvironment();
 
-      name: process.env.REDIS_SENTINEL_NAME,
-      host: process.env.REDIS_HOST ?? "localhost",
-      password: process.env.REDIS_PASSWORD ?? "password",
-      port: parseNumberEnvValue(process.env.REDIS_PORT) ?? 6379,
-      db: parseNumberEnvValue(process.env.REDIS_DB),
-
-      cacheMaxAge: parseNumberEnvValue(process.env.REDIS_CACHE_MAX_AGE) ?? 60,
-
-      isSentinelEnabled: process.env.REDIS_SENTINEL_ENABLED == "true" ?? false,
-      sentinels: parseSentinels(process.env.REDIS_SENTINELS),
-      sentinelPassword: process.env.REDIS_SENTINEL_PASSWORD,
+  const adaptedConfig: Config = {
+    client: {
+      sentryConfig: {
+        debug: parseBooleanEnvValue(
+          env.SENTRY_DEBUG ?? env.NEXT_PUBLIC_SENTRY_DEBUG
+        ),
+        dsn: env.SENTRY_DSN ?? env.NEXT_PUBLIC_SENTRY_DSN,
+        env: env.SENTRY_ENV ?? env.NEXT_PUBLIC_SENTRY_ENV,
+        release: env.SENTRY_RELEASE ?? env.NEXT_PUBLIC_SENTRY_RELEASE,
+        replaysOnErrorSampleRate: parseNumberEnvValue(
+          env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE ??
+            env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE
+        ),
+        replaysSessionSampleRate: parseNumberEnvValue(
+          env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE ??
+            env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+        ),
+        sampleRate: parseNumberEnvValue(
+          env.SENTRY_SAMPLE_RATE ?? env.NEXT_PUBLIC_SENTRY_SAMPLE_RATE
+        ),
+        tracesSampleRate:
+          parseNumberEnvValue(
+            env.SENTRY_TRACES_SAMPLE_RATE ??
+              env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
+          ) ?? 0.2,
+      },
     },
-    sentryConfig: {
-      debug: process.env.SENTRY_DEBUG?.toLowerCase() == "true",
-      dsn: process.env.SENTRY_DSN,
-      env: process.env.SENTRY_ENV,
-      release: process.env.SENTRY_RELEASE,
-      replaysOnErrorSampleRate: parseNumberEnvValue(
-        process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE
-      ),
-      replaysSessionSampleRate: parseNumberEnvValue(
-        process.env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
-      ),
-      sampleRate: parseNumberEnvValue(process.env.SENTRY_SAMPLE_RATE),
-      tracesSampleRate: parseNumberEnvValue(
-        process.env.SENTRY_TRACES_SAMPLE_RATE
-      ),
-    },
-    stripeConfig: {
-      apiVersion: process.env.STRIPE_API_VERSION || "",
-      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
-      secretKey: process.env.STRIPE_SECRET_KEY || "",
-      useAutomaticTax:
-        parseBooleanEnvValue(process.env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
-      taxRates: parseStringArrayEnvValue(process.env.STRIPE_TAX_RATES),
-      dynamicTaxRates: parseStringArrayEnvValue(
-        process.env.STRIPE_DYNAMIC_TAX_RATES
-      ),
+    server: {
+      nextAuth: {
+        url: env.NEXTAUTH_URL ?? "http://localhost:3000",
+      },
+      freeSub: {
+        requestLimit:
+          parseNumberEnvValue(env.SUBSCRIPTION_FREE_VERSION_LIMIT) ?? 42,
+      },
+      database: {
+        url:
+          env.DATABASE_URL ??
+          "postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public",
+      },
+      health: {
+        apiKey: env.HEALTH_API_KEY ?? crypto.randomBytes(32).toString("hex"),
+      },
+      usageReport: {
+        apiKey:
+          env.CRON_JOB_USAGE_REPORT_API_KEY ||
+          crypto.randomBytes(32).toString("hex"),
+      },
+      emailContent: {
+        senderName: env.SMTP_FROM_NAME ?? "OnLaunch",
+        senderAddress: env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
+      },
+      redisConfig: {
+        isEnabled: parseBooleanEnvValue(env.REDIS_ENABLED) ?? false,
+
+        name: env.REDIS_SENTINEL_NAME,
+        host: env.REDIS_HOST ?? "localhost",
+        password: env.REDIS_PASSWORD ?? "password",
+        port: parseNumberEnvValue(env.REDIS_PORT) ?? 6379,
+        db: parseNumberEnvValue(env.REDIS_DB),
+
+        cacheMaxAge: parseNumberEnvValue(env.REDIS_CACHE_MAX_AGE) ?? 60,
+
+        isSentinelEnabled:
+          parseBooleanEnvValue(env.REDIS_SENTINEL_ENABLED) ?? false,
+        sentinels: parseSentinels(env.REDIS_SENTINELS),
+        sentinelPassword: env.REDIS_SENTINEL_PASSWORD,
+      },
+      stripeConfig: {
+        apiVersion: env.STRIPE_API_VERSION || "",
+        webhookSecret: env.STRIPE_WEBHOOK_SECRET || "",
+        secretKey: env.STRIPE_SECRET_KEY || "",
+        useAutomaticTax:
+          parseBooleanEnvValue(env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
+        taxRates: parseStringArrayEnvValue(env.STRIPE_TAX_RATES),
+        dynamicTaxRates: parseStringArrayEnvValue(env.STRIPE_DYNAMIC_TAX_RATES),
+      },
+      signup: {
+        isEnabled: parseBooleanEnvValue(env.SIGNUPS_ENABLED) ?? false,
+      },
+      smtp: {
+        host: env.SMTP_HOST ?? "localhost",
+        port: parseNumberEnvValue(env.SMTP_PORT) ?? 1025,
+        user: env.SMTP_USER ?? "",
+        pass: env.SMTP_PASS ?? "",
+      },
+      sentryConfig: {
+        debug: parseBooleanEnvValue(env.SENTRY_DEBUG?.toLowerCase()),
+        dsn: env.SENTRY_DSN,
+        env: env.SENTRY_ENV,
+        release: env.SENTRY_RELEASE,
+        replaysOnErrorSampleRate: parseNumberEnvValue(
+          env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE
+        ),
+        replaysSessionSampleRate: parseNumberEnvValue(
+          env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+        ),
+        sampleRate: parseNumberEnvValue(env.SENTRY_SAMPLE_RATE),
+        tracesSampleRate:
+          parseNumberEnvValue(env.SENTRY_TRACES_SAMPLE_RATE) ?? 0.2,
+      },
     },
   };
+
+  // we need to make sure keys are always in the same order to prevent "Text content did not match" issue
+  // when displaying config on a page
+  adaptedConfig.client = sortKeys(adaptedConfig.client);
+
+  return adaptedConfig;
 }

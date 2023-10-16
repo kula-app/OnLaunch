@@ -21,7 +21,7 @@ export async function getProducts(): Promise<Product[]> {
     nameTag: "free",
     priceId: "",
     priceAmount: 0,
-    requests: config.freeSub.requestLimit,
+    requests: config.server.freeSub.requestLimit,
   };
 
   try {

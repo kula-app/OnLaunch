@@ -90,8 +90,10 @@ RUN apt-get update -qq > /dev/null  \
   curl \
   tini \
   && rm -rf /var/cache/apk/*
-# Set tini as entrypoint
-ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# Setup custom entrypoint
+COPY docker/entrypoint.sh docker/env.sh ./
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Change runtime working directory
 WORKDIR /home/node/app/

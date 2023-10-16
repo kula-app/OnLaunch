@@ -12,7 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const config = loadConfig();
+  const stripeConfig = loadConfig().server.stripeConfig;
   const logger = new Logger(__filename);
 
   const userInOrg = await getUserWithRoleFromRequest(req, res);
@@ -29,7 +29,7 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripe = new Stripe(config.stripeConfig.secretKey, {
+      const stripe = new Stripe(stripeConfig.secretKey, {
         apiVersion: "2023-08-16",
       });
 
@@ -69,11 +69,11 @@ export default async function handler(
             price: product.priceId,
           };
 
-          if (!config.stripeConfig.useAutomaticTax) {
-            if (config.stripeConfig.dynamicTaxRates) {
-              lineItem.dynamic_tax_rates = config.stripeConfig.dynamicTaxRates;
-            } else if (config.stripeConfig.taxRates) {
-              lineItem.tax_rates = config.stripeConfig.taxRates;
+          if (!stripeConfig.useAutomaticTax) {
+            if (stripeConfig.dynamicTaxRates) {
+              lineItem.dynamic_tax_rates = stripeConfig.dynamicTaxRates;
+            } else if (stripeConfig.taxRates) {
+              lineItem.tax_rates = stripeConfig.taxRates;
             }
           }
 
@@ -88,7 +88,9 @@ export default async function handler(
 
         let sessionOptions: Stripe.Checkout.SessionCreateParams = {
           allow_promotion_codes: true,
-          automatic_tax: { enabled: config.stripeConfig.useAutomaticTax },
+          automatic_tax: {
+            enabled: stripeConfig.useAutomaticTax,
+          },
           billing_address_collection: "required",
           client_reference_id: req.body.orgId,
           line_items: lineItems,

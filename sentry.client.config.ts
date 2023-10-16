@@ -1,23 +1,23 @@
 import * as Sentry from "@sentry/nextjs";
 import { loadConfig } from "./config/loadConfig";
 
-const config = loadConfig();
+const sentryConfig = loadConfig().client.sentryConfig;
 
 Sentry.init({
-  dsn: config.sentryConfig.dsn,
-  debug: config.sentryConfig.debug,
+  dsn: sentryConfig.dsn,
+  debug: sentryConfig.debug,
 
-  release: config.sentryConfig.release,
+  release: sentryConfig.release,
 
-  replaysOnErrorSampleRate: config.sentryConfig.replaysOnErrorSampleRate,
-  replaysSessionSampleRate: config.sentryConfig.replaysSessionSampleRate,
+  replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate,
+  replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate,
 
   tracesSampler: (samplingContext) => {
     // Ignore the health endpoint from trace sampling
     if (samplingContext.transactionContext.name == "GET /api/health") {
       return false;
     }
-    return config.sentryConfig.tracesSampleRate ?? 0.2;
+    return sentryConfig.tracesSampleRate;
   },
-  sampleRate: config.sentryConfig.sampleRate,
+  sampleRate: sentryConfig.sampleRate,
 });
