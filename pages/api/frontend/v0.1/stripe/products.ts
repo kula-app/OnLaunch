@@ -126,7 +126,7 @@ export async function getProducts(): Promise<Product[]> {
       if (redis.isEnabled) {
         // cache data set to expire after 1 hour
         // after expiration, the data will be retrieved again from stripe
-        const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
+        const MAX_AGE = 60_000 * config.server.redisConfig.cacheMaxAge;
         const EXPIRY_MS = `PX`; // milliseconds
         const redisClient = redis.client;
         logger.log("Saving stripe products to redis cache");

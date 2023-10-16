@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Open Mailhog",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:8025"
+    },
+    {
       "name": "Start Server",
       "request": "launch",
       "command": "yarn dev",
@@ -30,7 +36,8 @@
       "configurations": [
         "Start Resources",
         "Start Prisma Studio",
-        "Start Server"
+        "Start Server",
+        "Open Mailhog"
       ]
     }
   ]
