@@ -23,7 +23,7 @@ function getEnvironment(): {
     };
     env = this_window.__env;
   }
-  return env;
+  return env ?? {};
 }
 
 function sortKeys<T extends { [keyof: string]: unknown }>(obj: T): T {
