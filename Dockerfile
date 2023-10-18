@@ -90,8 +90,7 @@ RUN apt-get update -qq > /dev/null  \
   curl \
   tini \
   && rm -rf /var/cache/apk/*
-
-# Setup custom entrypoint
+# Set tini as entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Change runtime working directory
@@ -105,14 +104,14 @@ RUN chmod +x env.sh
 COPY --from=build_production --chown=node:node /home/node/app/package.json ./
 COPY --from=build_production --chown=node:node /home/node/app/prisma       ./prisma
 
-# # install production dependencies
+# install production dependencies
 RUN yarn install \
   --frozen-lockfile \
   --no-progress \
   --production \
   --network-timeout 1000000
 
-# # copy remaining build output
+# copy remaining build output
 COPY --from=build_production --chown=node:node /home/node/app/public ./public
 COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
 
@@ -130,4 +129,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Run application
-CMD ["/bin/bash", "-c", "./env.sh && ls -lA ./ && ./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]
+CMD ["/bin/bash", "-c", "./env.sh && ./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]
