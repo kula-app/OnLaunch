@@ -236,7 +236,9 @@ export default async function handler(
             logger.error(`Error: ${error}`);
             return res
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .json({ message: `Error: ${error}` });
+              .json({
+                message: `An internal server error occurred, please try again later`,
+              });
           }
           break;
 
