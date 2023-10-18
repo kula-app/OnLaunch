@@ -81,7 +81,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
   const config = loadConfig();
-  const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
+  const FREE_SUB_REQUEST_LIMIT = config.server.freeSub.requestLimit;
 
   switch (req.method) {
     case "GET":

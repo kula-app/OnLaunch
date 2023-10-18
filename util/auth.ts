@@ -65,17 +65,18 @@ export function sendTokenPerMail(
   logger.log(`Sending mail of type '${mailType}'`);
 
   const config = loadConfig();
+  const smtpConfig = config.server.smtp;
 
   let transporter = nodemailer.createTransport({
-    host: config.smtp.host,
-    port: config.smtp.port,
-    auth: ifEmptyThenUndefined(config.smtp.user) !== undefined && {
-      user: ifEmptyThenUndefined(config.smtp.user),
-      pass: ifEmptyThenUndefined(config.smtp.pass),
+    host: smtpConfig.host,
+    port: smtpConfig.port,
+    auth: ifEmptyThenUndefined(smtpConfig.user) !== undefined && {
+      user: ifEmptyThenUndefined(smtpConfig.user),
+      pass: ifEmptyThenUndefined(smtpConfig.pass),
     },
   });
 
-  const senderName = config.emailContent.senderName as string;
+  const senderName = config.server.emailContent.senderName;
 
   switch (mailType) {
     case MailType.Verification:
@@ -174,7 +175,7 @@ export function sendTokenPerMail(
   }
 
   function getSenderData(senderName: string) {
-    return `"${senderName}" <${config.emailContent.senderAddress}>`;
+    return `"${senderName}" <${config.server.emailContent.senderAddress}>`;
   }
 }
 

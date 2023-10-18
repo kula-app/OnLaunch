@@ -9,6 +9,8 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
 
   redis-sentinel:
     image: docker.io/bitnami/redis-sentinel:7.2
@@ -39,17 +41,23 @@ services:
   #   pull_policy: always
   #   environment:
   #     DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
-  #     NEXTAUTH_SECRET: "this is a secret example"
-  #     SMTP_HOST: mailhog
-  #     SMTP_PORT: 1025
-  #     SMTP_USER: ""
-  #     SMTP_PASS: ""
   #     HEALTH_API_KEY: onlaunch-api-key
+  #     NEXTAUTH_SECRET: "this is a secret example"
+  #     REDIS_ENABLED: true
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
+  #     # SENTRY_DSN:
+  #     SENTRY_DEBUG: true
   #     SIGNUPS_ENABLED: true
+  #     SMTP_HOST: mailhog
+  #     SMTP_PASS: ""
+  #     SMTP_PORT: ${SMTP_PORT:-1025}
+  #     SMTP_USER: ""
   #   ports:
   #     - 3000:3000
 
 volumes:
+  postgres_data:
+    driver: local
   redis-sentinel_data:
     driver: local
   redis_data:

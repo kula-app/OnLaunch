@@ -25,7 +25,7 @@ export default async function handler(
 
       const { email, password, firstName, lastName } = data;
 
-      if (!config.signup.isEnabled) {
+      if (!config.server.signup.isEnabled) {
         logger.error("Signups are currently disabled");
         res
           .status(StatusCodes.METHOD_NOT_ALLOWED)

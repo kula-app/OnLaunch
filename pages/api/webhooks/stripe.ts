@@ -26,8 +26,8 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const nextConfig = loadConfig();
-  const stripe = new Stripe(nextConfig.stripeConfig.secretKey, {
+  const stripeConfig = loadConfig().server.stripeConfig;
+  const stripe = new Stripe(stripeConfig.secretKey, {
     apiVersion: "2023-08-16",
   });
 
@@ -35,7 +35,7 @@ export default async function handler(
     case "POST":
       const buf = await buffer(req);
       const sig = req.headers["stripe-signature"];
-      const webhookSecret = nextConfig.stripeConfig.webhookSecret;
+      const webhookSecret = stripeConfig.webhookSecret;
 
       let event;
 
