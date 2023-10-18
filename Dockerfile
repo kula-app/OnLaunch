@@ -92,24 +92,27 @@ RUN apt-get update -qq > /dev/null  \
   && rm -rf /var/cache/apk/*
 
 # Setup custom entrypoint
-COPY docker/entrypoint.sh docker/env.sh ./
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Change runtime working directory
 WORKDIR /home/node/app/
 
-# copy build output required for yarn install for better build efficiency
-COPY --from=build_production /home/node/app/package.json ./
-COPY --from=build_production /home/node/app/prisma       ./prisma
+# Setup custom runtime
+COPY --chown=node:node docker/env.sh ./
+RUN chmod +x env.sh
 
-# install production dependencies
+# copy build output required for yarn install for better build efficiency
+COPY --from=build_production --chown=node:node /home/node/app/package.json ./
+COPY --from=build_production --chown=node:node /home/node/app/prisma       ./prisma
+
+# # install production dependencies
 RUN yarn install \
   --frozen-lockfile \
   --no-progress \
   --production \
   --network-timeout 1000000
 
-# copy remaining build output
+# # copy remaining build output
 COPY --from=build_production --chown=node:node /home/node/app/public ./public
 COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
 
@@ -127,4 +130,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Run application
-CMD ["/bin/bash", "-c", "./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]
+CMD ["/bin/bash", "-c", "./env.sh && ls -lA ./ && ./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]

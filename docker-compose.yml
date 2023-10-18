@@ -34,25 +34,26 @@ services:
       - ${SMTP_PORT:-1025}:${SMTP_PORT:-1025}
       - 8025:8025
 
-  onlaunch:
-    build:
-      context: .
-    image: kula/onlaunch:latest
-    pull_policy: always
-    environment:
-      DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
-      HEALTH_API_KEY: onlaunch-api-key
-      NEXTAUTH_SECRET: "this is a secret example"
-      REDIS_ENABLED: true
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
-      SENTRY_DSN: https://f986d33b5f1f485f8e27a82031b11c98@o997061.ingest.sentry.io/4505046260580352
-      SIGNUPS_ENABLED: true
-      SMTP_HOST: mailhog
-      SMTP_PASS: ""
-      SMTP_PORT: ${SMTP_PORT:-1025}
-      SMTP_USER: ""
-    ports:
-      - 3000:3000
+  # onlaunch:
+  #   build:
+  #     context: .
+  #   image: kula/onlaunch:latest
+  #   pull_policy: always
+  #   environment:
+  #     DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
+  #     HEALTH_API_KEY: onlaunch-api-key
+  #     NEXTAUTH_SECRET: "this is a secret example"
+  #     REDIS_ENABLED: true
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
+  #     # SENTRY_DSN:
+  #     SENTRY_DEBUG: true
+  #     SIGNUPS_ENABLED: true
+  #     SMTP_HOST: mailhog
+  #     SMTP_PASS: ""
+  #     SMTP_PORT: ${SMTP_PORT:-1025}
+  #     SMTP_USER: ""
+  #   ports:
+  #     - 3000:3000
 
 volumes:
   postgres_data:
