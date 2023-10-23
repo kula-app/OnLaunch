@@ -137,21 +137,15 @@ export default async function handler(
           `You are not allowed to update user invite with email '${req.query.userEmail}' in organisation with id '${req.query.orgId}'`
         );
         return res.status(StatusCodes.FORBIDDEN).json({
-          message:
-            "You are not allowed to update user invite with email " +
-            req.body.userEmail +
-            " in organisation with id " +
-            req.query.orgId,
+          message: `You are not allowed to update user invite with email ${req.body.userEmail} in organisation with id ${req.query.orgId}`,
         });
-        return;
       }
 
       if (user.email === req.body.userEmail) {
         logger.error("You cannot change your own role");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "You cannot change your own role" });
-        return;
       }
 
       try {
@@ -188,9 +182,8 @@ export default async function handler(
       break;
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

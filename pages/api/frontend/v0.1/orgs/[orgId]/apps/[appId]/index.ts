@@ -60,10 +60,9 @@ export default async function handler(
 
       if (app == null) {
         logger.error(`No app found with id '${req.query.appId}'`);
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "No app found with id " + req.query.appId });
-        return;
       }
 
       return res.status(StatusCodes.OK).json({
@@ -137,9 +136,8 @@ export default async function handler(
       break;
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

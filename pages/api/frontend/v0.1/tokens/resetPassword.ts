@@ -24,10 +24,9 @@ export default async function handler(
     case "PUT":
       if (!token || !password) {
         logger.error("No token or password provided");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "No token or password provided" });
-        return;
       }
 
       if (!(await validatePassword(password))) {
@@ -59,10 +58,9 @@ export default async function handler(
           lookupToken.expiryDate < new Date())
       ) {
         logger.log("Provided password reset token is obsolete");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Please restart the password reset process!" });
-        return;
       }
 
       const { hashedSaltedPassword, salt } = await hashAndSaltPassword(

@@ -123,7 +123,8 @@ export default function EditOrgPage() {
   if (userError || orgError) return <div>Failed to load</div>;
 
   let userRole = "";
-  if (!!users) {
+  if (!!users && !userError) {
+    console.log("users: " + JSON.stringify(users));
     userRole = users.find((i) => i.email === session?.user?.email)
       ?.role as string;
   }

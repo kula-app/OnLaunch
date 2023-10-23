@@ -18,7 +18,7 @@ export default async function handler(
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
-    logger.error("User not logged in");
+    return logger.error("User not logged in");
     return;
   }
 

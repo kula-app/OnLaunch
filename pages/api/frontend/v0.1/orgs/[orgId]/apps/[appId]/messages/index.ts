@@ -50,10 +50,9 @@ export default async function handler(
     case "POST":
       if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
         logger.log("Start date has to be before end date");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Start date has to be before end date" });
-        return;
       }
 
       logger.log(`Creating message for app id '${req.query.appId}'`);
@@ -82,9 +81,8 @@ export default async function handler(
       return res.status(StatusCodes.CREATED).json(message);
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

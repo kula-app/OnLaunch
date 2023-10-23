@@ -42,10 +42,9 @@ export default async function handler(
 
       if (message == null) {
         logger.log(`No message found with id '${req.query.messageId}'`);
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: "No message found with id " + req.query.messageId });
-        return;
+          .json({ message: `No message found with id ${req.query.messageId}` });
       }
 
       return res.status(StatusCodes.OK).json(message);
@@ -81,10 +80,9 @@ export default async function handler(
       try {
         if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
           logger.error("Start date is not before end date");
-          res
+          return res
             .status(StatusCodes.BAD_REQUEST)
             .json({ message: "Start date has to be before end date" });
-          return;
         }
 
         logger.log(`Updating message with id '${req.query.messageId}'`);
@@ -136,9 +134,8 @@ export default async function handler(
       break;
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }
