@@ -19,7 +19,6 @@ export default async function handler(
 
   if (!userInOrg) {
     return logger.error("User not logged in");
-    return;
   }
 
   if (userInOrg.role !== "ADMIN") {
