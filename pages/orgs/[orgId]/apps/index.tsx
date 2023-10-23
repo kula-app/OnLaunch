@@ -1,27 +1,27 @@
-import { getSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import styles from "../../../../styles/Home.module.css";
-import { useApps } from "../../../../api/apps/useApps";
-import { useOrg } from "../../../../api/orgs/useOrg";
-import Routes from "../../../../routes/routes";
 import {
   Button,
+  Heading,
+  Skeleton,
+  Stack,
   Table,
+  Tbody,
+  Td,
   Text,
-  Tooltip,
   Th,
   Thead,
-  Tbody,
+  Tooltip,
   Tr,
-  Td,
-  Stack,
-  Skeleton,
-  Heading,
   useToast,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import RequestsChart from "../../../../components/RequestsChart";
+import { useApps } from "../../../../api/apps/useApps";
 import getDashboardData from "../../../../api/dashboard/getDashboardData";
+import { useOrg } from "../../../../api/orgs/useOrg";
+import RequestsChart from "../../../../components/RequestsChart";
+import Routes from "../../../../routes/routes";
+import styles from "../../../../styles/Home.module.css";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -180,32 +180,34 @@ export default function AppsPage() {
               </Tr>
             </Thead>
             <Tbody>
-              {apps?.map((app, index) => {
-                return (
-                  <Tr
-                    key={index}
-                    className="clickable-row h-16"
-                    onClick={() => navigateToMessagesPage(app.id)}
-                  >
-                    <Td width="5%">{app.id}</Td>
-                    <Td>{app.name}</Td>
-                    <Td width="5%">
-                      <Tooltip
-                        label={
-                          app.activeMessages +
-                          " message" +
-                          (app.activeMessages !== 1 ? "s are" : " is") +
-                          " currently shown in mobile apps"
-                        }
-                      >
-                        <div className="flex justify-center">
-                          {app.activeMessages}
-                        </div>
-                      </Tooltip>
-                    </Td>
-                  </Tr>
-                );
-              })}
+              {apps &&
+                Array.isArray(apps) &&
+                apps?.map((app, index) => {
+                  return (
+                    <Tr
+                      key={index}
+                      className="clickable-row h-16"
+                      onClick={() => navigateToMessagesPage(app.id)}
+                    >
+                      <Td width="5%">{app.id}</Td>
+                      <Td>{app.name}</Td>
+                      <Td width="5%">
+                        <Tooltip
+                          label={
+                            app.activeMessages +
+                            " message" +
+                            (app.activeMessages !== 1 ? "s are" : " is") +
+                            " currently shown in mobile apps"
+                          }
+                        >
+                          <div className="flex justify-center">
+                            {app.activeMessages}
+                          </div>
+                        </Tooltip>
+                      </Td>
+                    </Tr>
+                  );
+                })}
             </Tbody>
           </Table>
           {isLoading && (
