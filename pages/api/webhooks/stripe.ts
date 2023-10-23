@@ -234,11 +234,9 @@ export default async function handler(
             }
           } catch (error) {
             logger.error(`Error: ${error}`);
-            return res
-              .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .json({
-                message: `An internal server error occurred, please try again later`,
-              });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+              message: `An internal server error occurred, please try again later`,
+            });
           }
           break;
 

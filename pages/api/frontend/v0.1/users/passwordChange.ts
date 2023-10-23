@@ -49,10 +49,9 @@ export default async function handler(
 
       if (!userById || (userById && !userById.id)) {
         logger.error(`No user found with id '${id}'`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
-        return;
       }
 
       if (
@@ -63,10 +62,9 @@ export default async function handler(
         ))
       ) {
         logger.error("Current password is wrong");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Current password is wrong" });
-        return;
       }
 
       const { hashedSaltedPassword: newHashedSaltedPassword, salt: newSalt } =

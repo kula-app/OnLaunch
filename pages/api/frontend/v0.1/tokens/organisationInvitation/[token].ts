@@ -30,10 +30,9 @@ export default async function handler(
 
   if (!organisation) {
     logger.error(`Provided organisation invite token not found`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `No organisation found with invite ${token}!` });
-    return;
   }
 
   switch (req.method) {

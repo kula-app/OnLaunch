@@ -1,14 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../lib/services/db";
-import { MailType } from "../../../../../../models/mailType";
-import { UserDto } from "../../../../../../models/userDto";
-import {
-  generateToken,
-  getUserWithRoleFromRequest,
-  sendTokenPerMail,
-} from "../../../../../../util/auth";
+import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
@@ -22,9 +14,11 @@ export default async function handler(
   if (!user) {
     return;
   }
-
+  return res
+    .status(StatusCodes.SERVICE_UNAVAILABLE)
+    .json({ message: "Hussaaaahhh!" });
   const orgId = Number(req.query.orgId);
-
+  /*
   switch (req.method) {
     case "GET":
       logger.log(`Looking up users in organisation with id '${orgId}'`);
@@ -106,10 +100,9 @@ export default async function handler(
 
       if (user.id === req.body.userId) {
         logger.error("You cannot change your own role");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "You cannot change your own role" });
-        return;
       }
 
       try {
@@ -243,9 +236,8 @@ export default async function handler(
       return res.status(StatusCodes.CREATED).json(uit);
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
-  }
+  }*/
 }

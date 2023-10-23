@@ -30,10 +30,9 @@ export default async function handler(
 
       if (!userFromDb || (userFromDb && !userFromDb.id)) {
         logger.error(`No user found with id '${user.id}'`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
-        return;
       }
 
       return res.status(StatusCodes.CREATED).json({
@@ -57,10 +56,9 @@ export default async function handler(
 
       if (!userByEmail || (userByEmail && !userByEmail.id)) {
         logger.error(`No user found with email '${userEmail}'`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
-        return;
       }
 
       logger.log(

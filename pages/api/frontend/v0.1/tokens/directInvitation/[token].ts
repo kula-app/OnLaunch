@@ -29,10 +29,9 @@ export default async function handler(
 
   if (!userInvitationToken) {
     logger.error(`Provided user invitation token not found`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `No user invitation token found with ${token}` });
-    return;
   }
 
   if (
@@ -41,10 +40,9 @@ export default async function handler(
     userInvitationToken.expiryDate < new Date()
   ) {
     logger.error(`Provided user invitation token is obsolete`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `User invitation token is obsolete` });
-    return;
   }
 
   logger.log(`Looking up organisation with id '${userInvitationToken.orgId}'`);
@@ -96,10 +94,9 @@ export default async function handler(
         });
       } catch (error) {
         logger.error("User already in organisation");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: `User already in organisation` });
-        return;
       }
 
       return res
