@@ -2756,10 +2756,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/request-ip@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@types/request-ip/-/request-ip-0.0.40.tgz#b7eb7785bcf2f1c1fdd7ebdb4fbc7a5b6f258ef4"
-  integrity sha512-3pBKLRLlE5YwVWp2hQRqv6dOXWkoE3bEt+EXHTVd8Q3XNnIWFJx+VC2Dy8+DAnBI9MmSqHSljUZPeuTBMvsNYg==
+"@types/request-ip@^0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@types/request-ip/-/request-ip-0.0.41.tgz#c22a3244df2573402989346062851b06b7a5ac4e"
+  integrity sha512-Qzz0PM2nSZej4lsLzzNfADIORZhhxO7PED0fXpg4FjXiHuJ/lMyUg+YFF5q8x9HPZH3Gl6N+NOM8QZjItNgGKg==
   dependencies:
     "@types/node" "*"
 
