@@ -58,7 +58,7 @@
     "@types/node": "20.8.10",
     "@types/react": "18.2.36",
     "@types/react-dom": "18.2.14",
-    "@types/request-ip": "^0.0.40",
+    "@types/request-ip": "^0.0.41",
     "@types/testing-library__jest-dom": "5.14.9",
     "cypress": "13.4.0",
     "eslint": "8.53.0",
