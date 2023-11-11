@@ -14,6 +14,13 @@ export default async function handler(
   const config = loadConfig();
   const logger = new Logger(__filename);
 
+  if (!config.server.stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "Endpoint not found" });
+  }
+
   const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {

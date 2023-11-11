@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { loadConfig } from "../../../../../../config/loadConfig";
 import prisma from "../../../../../../lib/services/db";
 import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
@@ -9,6 +10,14 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const logger = new Logger(__filename);
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "Endpoint not found" });
+  }
 
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 

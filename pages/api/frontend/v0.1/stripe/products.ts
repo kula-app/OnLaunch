@@ -153,6 +153,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "Endpoint not found" });
+  }
+
   switch (req.method) {
     case "GET":
       try {

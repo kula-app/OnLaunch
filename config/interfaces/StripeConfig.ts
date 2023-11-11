@@ -1,4 +1,5 @@
 export interface StripeConfig {
+  isEnabled: boolean;
   apiVersion: string;
   webhookSecret: string;
   secretKey: string;

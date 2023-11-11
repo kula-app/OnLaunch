@@ -12,8 +12,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const stripeConfig = loadConfig().server.stripeConfig;
   const logger = new Logger(__filename);
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "Endpoint not found" });
+  }
 
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
@@ -44,11 +51,9 @@ export default async function handler(
 
       if (!org) {
         logger.error(`No organisation found with id ${userInOrg.orgId}`);
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({
-            message: `No organisation found with id ${userInOrg.orgId}`,
-          });
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `No organisation found with id ${userInOrg.orgId}`,
+        });
       }
 
       if (!req.body.products || !Array.isArray(req.body.products)) {

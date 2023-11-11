@@ -45,6 +45,7 @@ import { useUsers } from "../../../api/orgs/useUsers";
 import createCustomerPortalSession from "../../../api/stripe/createCustomerPortalSession";
 import getSubscriptions from "../../../api/stripe/getSubscriptions";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
+import { loadConfig } from "../../../config/loadConfig";
 import { Org } from "../../../models/org";
 import { Subscription } from "../../../models/subscription";
 import Routes from "../../../routes/routes";
@@ -54,6 +55,7 @@ import { getColorLabel, translateSubName } from "../../../util/nameTag";
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
+  const config = loadConfig();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
@@ -111,8 +113,12 @@ export default function EditOrgPage() {
       }
       setLoading(false);
     };
-
-    fetchUserSubscriptions();
+    console.log("stripe enabled: " + config.server.stripeConfig.isEnabled);
+    if (config.server.stripeConfig.isEnabled) {
+      // TODO
+      console.log("if condition was true");
+      fetchUserSubscriptions();
+    }
   }, [router.isReady, orgId, toast]);
 
   const { data: session } = useSession();
@@ -545,7 +551,7 @@ export default function EditOrgPage() {
               </Tbody>
             </Table>
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
-            {userRole === "ADMIN" && (
+            {config.server.stripeConfig.isEnabled && userRole === "ADMIN" && (
               <>
                 <Heading className="text-center mt-16 mb-8">
                   Your subscription
