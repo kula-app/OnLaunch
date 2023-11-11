@@ -45,10 +45,9 @@ export default async function handler(
 
       if (!lookupToken) {
         logger.error("Password reset token not found");
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "Password reset token not found" });
-        return;
       }
 
       if (

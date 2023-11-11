@@ -187,9 +187,8 @@ export async function getUserFromRequest(
 
   if (!session) {
     logger.error("User not authorized");
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: "Not authorized!" });
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
+    return;
   }
 
   logger.log("Returning user after checking authorization");
@@ -203,6 +202,9 @@ export async function getUserWithRoleFromRequest(
 
   if (!user) {
     logger.error("No user provided from session");
+    res.status(StatusCodes.UNAUTHORIZED).json({
+      message: "You are not logged in",
+    });
     return;
   }
 
@@ -232,7 +234,7 @@ export async function getUserWithRoleFromRequest(
     );
     // if user has no business here, return a 404
     return res.status(StatusCodes.NOT_FOUND).json({
-      message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'`,
+      message: `no user with id '${user.id}' found in organisation with id '${req.query.orgId}'`,
     });
   }
 

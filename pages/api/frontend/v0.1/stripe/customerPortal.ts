@@ -17,7 +17,6 @@ export default async function handler(
   const user = await getUserWithRoleFromRequest(req, res);
 
   if (!user) {
-    logger.error("User not logged in");
     return;
   }
 
@@ -46,14 +45,18 @@ export default async function handler(
 
       if (!orgFromDb) {
         logger.error(`No org found with id ${orgId}`);
-        return;
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `No organisation found with id ${orgId}`,
+        });
       }
 
       if (!orgFromDb.stripeCustomerId) {
         logger.error(
           `No stripe customer id found for organisation with id ${orgId}`
         );
-        return;
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `No stripe customer id found for organisation with id ${orgId}`,
+        });
       }
 
       try {

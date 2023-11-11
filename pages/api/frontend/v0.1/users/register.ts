@@ -58,10 +58,9 @@ export default async function handler(
 
       if (lookupUser) {
         logger.error(`Email '${email}' is already in use`);
-        res
+        return res
           .status(StatusCodes.CONFLICT)
           .json({ message: "Conflict - email already in use" });
-        return;
       }
 
       const { hashedSaltedPassword, salt } = await hashAndSaltPassword(

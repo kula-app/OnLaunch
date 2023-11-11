@@ -95,10 +95,9 @@ export default async function handler(
         MailType.Verification
       );
 
-      res
+      return res
         .status(StatusCodes.OK)
         .json({ message: "Link was successfully resend!" });
-      break;
 
     case "PUT":
       if (!token) {
