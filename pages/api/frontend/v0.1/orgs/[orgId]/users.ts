@@ -1,6 +1,14 @@
+import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getUserWithRoleFromRequest } from "../../../../../../util/auth";
+import prisma from "../../../../../../lib/services/db";
+import { MailType } from "../../../../../../models/mailType";
+import { UserDto } from "../../../../../../models/userDto";
+import {
+  generateToken,
+  getUserWithRoleFromRequest,
+  sendTokenPerMail,
+} from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
@@ -14,11 +22,9 @@ export default async function handler(
   if (!user) {
     return;
   }
-  return res
-    .status(StatusCodes.SERVICE_UNAVAILABLE)
-    .json({ message: "Hussaaaahhh!" });
+
   const orgId = Number(req.query.orgId);
-  /*
+
   switch (req.method) {
     case "GET":
       logger.log(`Looking up users in organisation with id '${orgId}'`);
@@ -131,11 +137,7 @@ export default async function handler(
             `No user with id '${req.body.userId}' found in organisation with id '${orgId}'`
           );
           return res.status(StatusCodes.NOT_FOUND).json({
-            message:
-              "No user with id " +
-              req.body.userId +
-              " found in organisation with id " +
-              orgId,
+            message: `No user with id ${req.body.userId} found in organisation with id ${orgId}`,
           });
         }
       }
@@ -239,5 +241,5 @@ export default async function handler(
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-  }*/
+  }
 }
