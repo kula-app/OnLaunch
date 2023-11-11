@@ -2,6 +2,7 @@ import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { parseBooleanEnvValue } from "../config/parser/parseBooleanEnvValue";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
 
@@ -105,6 +106,15 @@ export async function getServerSideProps(context: any) {
     return {
       redirect: {
         destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+
+  if (!parseBooleanEnvValue(process.env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+    return {
+      redirect: {
+        destination: "/dashboard",
         permanent: false,
       },
     };

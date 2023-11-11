@@ -5,6 +5,7 @@ import styles from "../../../styles/Home.module.css";
 import { Heading, Skeleton, useToast } from "@chakra-ui/react";
 import { useProducts } from "../../../api/stripe/useProducts";
 import ProductCard from "../../../components/ProductCard";
+import { parseBooleanEnvValue } from "../../../config/parser/parseBooleanEnvValue";
 
 export default function EditOrgPage() {
   const router = useRouter();
@@ -58,6 +59,15 @@ export async function getServerSideProps(context: any) {
     return {
       redirect: {
         destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+
+  if (!parseBooleanEnvValue(process.env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+    return {
+      redirect: {
+        destination: "/dashboard",
         permanent: false,
       },
     };
