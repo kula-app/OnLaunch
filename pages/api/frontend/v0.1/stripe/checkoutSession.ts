@@ -18,12 +18,14 @@ export default async function handler(
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
-    return logger.error("User not logged in");
+    return;
   }
 
   if (userInOrg.role !== "ADMIN") {
     logger.error("User has no admin rights");
-    return;
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ message: "You are not an admin" });
   }
 
   switch (req.method) {
@@ -42,7 +44,11 @@ export default async function handler(
 
       if (!org) {
         logger.error(`No organisation found with id ${userInOrg.orgId}`);
-        return;
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({
+            message: `No organisation found with id ${userInOrg.orgId}`,
+          });
       }
 
       if (!req.body.products || !Array.isArray(req.body.products)) {

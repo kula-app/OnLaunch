@@ -23,7 +23,11 @@ export default async function handler(
     logger.log(
       `User with id '${user.id}' tried to access dashboard data without sufficient rights`
     );
-    return;
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({
+        message: "You do not have the rights to access this information",
+      });
   }
 
   switch (req.method) {
