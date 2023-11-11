@@ -40,10 +40,9 @@ export default async function handler(
         id = Number(userByEmail?.id);
       } else {
         logger.error("No token or email provided");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "No token or email provided" });
-        return;
       }
 
       logger.log(`Looking up user with id '${id}'`);
@@ -55,10 +54,9 @@ export default async function handler(
 
       if (unverifiedUser?.isVerified) {
         logger.error("User already verified");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User already verified!" });
-        return;
       }
 
       const generatedToken = generateToken();
@@ -97,18 +95,16 @@ export default async function handler(
         MailType.Verification
       );
 
-      res
+      return res
         .status(StatusCodes.OK)
         .json({ message: "Link was successfully resend!" });
-      break;
 
     case "PUT":
       if (!token) {
         logger.error("No token provided");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "No token provided" });
-        return;
       }
 
       logger.log(`Looking up verification token`);
@@ -120,26 +116,23 @@ export default async function handler(
 
       if (!lookupToken) {
         logger.error("Provided verification token not found");
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "Verification token not found" });
-        return;
       }
 
       if (lookupToken && lookupToken.isArchived) {
         logger.error("User already verified");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User already verified" });
-        return;
       }
 
       if (lookupToken && lookupToken.isObsolete) {
         logger.error("Verification token is obsolete");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Verification token is obsolete" });
-        return;
       }
 
       logger.log(`Looking up user with id '${lookupToken.userId}'`);
@@ -151,19 +144,17 @@ export default async function handler(
 
       if (user?.isVerified) {
         logger.error("User already verified");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User already verified" });
-        return;
       }
 
       // if token expired and user not verified, throw error
       if (lookupToken && lookupToken.expiryDate < new Date()) {
         logger.error("Provided verification token has expired");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Verification token has expired" });
-        return;
       }
 
       logger.log(`Updating user with id '${lookupToken.userId}' as verified`);
@@ -186,11 +177,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(user?.email);
-      break;
+      return res.status(StatusCodes.OK).json(user?.email);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

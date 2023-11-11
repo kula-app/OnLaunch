@@ -31,11 +31,10 @@ export default async function handler(
 
       if (!(await validatePassword(password))) {
         logger.error("New password is too short");
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
           message:
             "Invalid data - new password consists of less than 8 characters",
         });
-        return;
       }
 
       logger.log(`Looking up user with id '${id}'`);
@@ -50,10 +49,9 @@ export default async function handler(
 
       if (!userById || (userById && !userById.id)) {
         logger.error(`No user found with id '${id}'`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
-        return;
       }
 
       if (
@@ -64,10 +62,9 @@ export default async function handler(
         ))
       ) {
         logger.error("Current password is wrong");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Current password is wrong" });
-        return;
       }
 
       const { hashedSaltedPassword: newHashedSaltedPassword, salt: newSalt } =
@@ -84,11 +81,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.CREATED).json(updatedUser.email);
-      break;
+      return res.status(StatusCodes.CREATED).json(updatedUser.email);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

@@ -29,10 +29,9 @@ export default async function handler(
 
   if (!userInvitationToken) {
     logger.error(`Provided user invitation token not found`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `No user invitation token found with ${token}` });
-    return;
   }
 
   if (
@@ -41,10 +40,9 @@ export default async function handler(
     userInvitationToken.expiryDate < new Date()
   ) {
     logger.error(`Provided user invitation token is obsolete`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `User invitation token is obsolete` });
-    return;
   }
 
   logger.log(`Looking up organisation with id '${userInvitationToken.orgId}'`);
@@ -59,21 +57,18 @@ export default async function handler(
     logger.error(
       `No organisation found with id '${userInvitationToken.orgId}'`
     );
-    res.status(StatusCodes.BAD_REQUEST).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       message: `No organisation found with id ${userInvitationToken.orgId}`,
     });
-    return;
   }
 
   switch (req.method) {
     case "GET":
-      res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.OK).json({
         id: organisation.id,
         name: organisation.name,
         invitationToken: userInvitationToken.token,
       });
-
-      break;
 
     case "POST":
       try {
@@ -99,17 +94,18 @@ export default async function handler(
         });
       } catch (error) {
         logger.error("User already in organisation");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: `User already in organisation` });
-        return;
       }
 
-      res.status(StatusCodes.OK).json({ message: `User joined organisation` });
-      break;
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: `User joined organisation` });
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

@@ -24,18 +24,16 @@ export default async function handler(
     case "PUT":
       if (!token || !password) {
         logger.error("No token or password provided");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "No token or password provided" });
-        return;
       }
 
       if (!(await validatePassword(password))) {
         logger.error("Password consists of less than 8 characters");
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
           message: "Invalid data - password consists of less than 8 characters",
         });
-        return;
       }
 
       logger.log("Looking up password reset token");
@@ -47,10 +45,9 @@ export default async function handler(
 
       if (!lookupToken) {
         logger.error("Password reset token not found");
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "Password reset token not found" });
-        return;
       }
 
       if (
@@ -60,10 +57,9 @@ export default async function handler(
           lookupToken.expiryDate < new Date())
       ) {
         logger.log("Provided password reset token is obsolete");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Please restart the password reset process!" });
-        return;
       }
 
       const { hashedSaltedPassword, salt } = await hashAndSaltPassword(
@@ -91,8 +87,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(updatedUser);
-      break;
+      return res.status(StatusCodes.OK).json(updatedUser);
 
     case "POST":
       logger.log(`Looking up user with email '${email}'`);
@@ -107,8 +102,9 @@ export default async function handler(
 
       if (!user || (user && !user.id)) {
         logger.error(`No user found with email '${email}'`);
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found" });
-        return;
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User not found" });
       }
 
       const generatedToken = generateToken();
@@ -148,11 +144,11 @@ export default async function handler(
         MailType.ResetPassword
       );
 
-      res.status(StatusCodes.OK).json(user);
-      break;
+      return res.status(StatusCodes.OK).json(user);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

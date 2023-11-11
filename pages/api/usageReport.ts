@@ -31,20 +31,21 @@ export default async function handler(
 
         await reportAllOrgsToStripe();
 
-        res.status(StatusCodes.OK).end("Reported usage for all organisations");
+        return res
+          .status(StatusCodes.OK)
+          .json({ message: "Reported usage for all organisations" });
       } catch (error) {
         // If either prisma throws an error, it is assumed that all the other
         // reports will fail as well, thus returning an error instead of proceeding
         logger.error(`Error: ${error}`);
-        res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .end("Error during reporting usage, please try again later!");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: "Error during reporting usage, please try again later!",
+        });
       }
 
-      break;
-
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

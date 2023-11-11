@@ -23,14 +23,13 @@ export default async function handler(
         logger.error(
           `You are not allowed to delete user with email '${req.query.userEmail}' from organisation with id '${req.query.orgId}'`
         );
-        res.status(StatusCodes.FORBIDDEN).json({
+        return res.status(StatusCodes.FORBIDDEN).json({
           message:
             "You are not allowed to delete user with email " +
             req.query.userEmail +
             " from organisation with id " +
             req.query.orgId,
         });
-        return;
       }
 
       if (user.role === "ADMIN" && user.email === req.query.userEmail) {
@@ -100,7 +99,7 @@ export default async function handler(
             },
           });
 
-          res.status(StatusCodes.OK).json(deletedUserInOrg);
+          return res.status(StatusCodes.OK).json(deletedUserInOrg);
         }
       }
 
@@ -117,12 +116,12 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.OK).json(deletedUserInvite);
+        return res.status(StatusCodes.OK).json(deletedUserInvite);
       } catch (e) {
         logger.log(
           `No user invite for email '${req.query.userEmail}' found in organisation with id '${req.query.orgId}'`
         );
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           message:
             "No user invite for email " +
             req.query.userEmail +
@@ -137,22 +136,16 @@ export default async function handler(
         logger.error(
           `You are not allowed to update user invite with email '${req.query.userEmail}' in organisation with id '${req.query.orgId}'`
         );
-        res.status(StatusCodes.FORBIDDEN).json({
-          message:
-            "You are not allowed to update user invite with email " +
-            req.body.userEmail +
-            " in organisation with id " +
-            req.query.orgId,
+        return res.status(StatusCodes.FORBIDDEN).json({
+          message: `You are not allowed to update user invite with email ${req.body.userEmail} in organisation with id ${req.query.orgId}`,
         });
-        return;
       }
 
       if (user.email === req.body.userEmail) {
         logger.error("You cannot change your own role");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "You cannot change your own role" });
-        return;
       }
 
       try {
@@ -171,14 +164,13 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.CREATED).json(updatedInvite);
-        return;
+        return res.status(StatusCodes.CREATED).json(updatedInvite);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(
             `No user invite with email '${req.body.userEmail}' found in organisation with id '${req.query.orgId}'`
           );
-          res.status(StatusCodes.NOT_FOUND).json({
+          return res.status(StatusCodes.NOT_FOUND).json({
             message:
               "No user with email " +
               req.body.userEmail +
@@ -190,9 +182,8 @@ export default async function handler(
       break;
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

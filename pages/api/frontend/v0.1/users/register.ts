@@ -27,26 +27,23 @@ export default async function handler(
 
       if (!config.server.signup.isEnabled) {
         logger.error("Signups are currently disabled");
-        res
+        return res
           .status(StatusCodes.METHOD_NOT_ALLOWED)
           .json({ message: "Not allowed - signups are currently disabled!" });
-        return;
       }
 
       if (!email || !email.includes("@")) {
         logger.error("Provided email is not valid");
-        res
+        return res
           .status(StatusCodes.UNPROCESSABLE_ENTITY)
           .json({ message: "Invalid data - email is not valid" });
-        return;
       }
 
       if (!(await validatePassword(password))) {
         logger.error("Provided password is too short");
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
           message: "Invalid data - password consists of less than 8 characters",
         });
-        return;
       }
 
       logger.log(`Looking up user with email '${email}'`);
@@ -61,10 +58,9 @@ export default async function handler(
 
       if (lookupUser) {
         logger.error(`Email '${email}' is already in use`);
-        res
+        return res
           .status(StatusCodes.CONFLICT)
           .json({ message: "Conflict - email already in use" });
-        return;
       }
 
       const { hashedSaltedPassword, salt } = await hashAndSaltPassword(
@@ -108,11 +104,11 @@ export default async function handler(
         MailType.Verification
       );
 
-      res.status(StatusCodes.CREATED).json(email);
-      break;
+      return res.status(StatusCodes.CREATED).json(email);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

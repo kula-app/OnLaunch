@@ -13,18 +13,21 @@ export default async function handler(
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
-    logger.error("User not logged in");
     return;
   }
 
   if (userInOrg.role !== "ADMIN") {
     logger.error("User has no admin rights");
-    return;
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ message: "You are not an admin" });
   }
 
   if (!req.query.orgId) {
     logger.error("No orgId provided");
-    return;
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "No orgId provided" });
   }
 
   switch (req.method) {
@@ -40,11 +43,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(subs);
-      break;
+      return res.status(StatusCodes.OK).json(subs);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

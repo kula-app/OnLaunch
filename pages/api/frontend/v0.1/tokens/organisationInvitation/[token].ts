@@ -30,21 +30,18 @@ export default async function handler(
 
   if (!organisation) {
     logger.error(`Provided organisation invite token not found`);
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `No organisation found with invite ${token}!` });
-    return;
   }
 
   switch (req.method) {
     case "GET":
-      res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.OK).json({
         id: organisation.id,
         name: organisation.name,
         invitationToken: organisation.invitationToken,
       });
-
-      break;
 
     case "POST":
       try {
@@ -60,14 +57,14 @@ export default async function handler(
         });
       } catch (error) {
         logger.error("User already in organisation");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: `User already in organisation` });
-        return;
       }
 
-      res.status(StatusCodes.OK).json({ message: `User joined organisation` });
-      break;
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: `User joined organisation` });
 
     case "PUT":
       const generatedToken = generateToken();
@@ -85,11 +82,13 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json({ message: `Updated organisation` });
-      break;
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: `Updated organisation` });
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

@@ -18,13 +18,14 @@ export default async function handler(
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
   if (!userInOrg) {
-    logger.error("User not logged in");
     return;
   }
 
   if (userInOrg.role !== "ADMIN") {
     logger.error("User has no admin rights");
-    return;
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ message: "You are not an admin" });
   }
 
   switch (req.method) {
@@ -43,17 +44,23 @@ export default async function handler(
 
       if (!org) {
         logger.error(`No organisation found with id ${userInOrg.orgId}`);
-        return;
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({
+            message: `No organisation found with id ${userInOrg.orgId}`,
+          });
       }
 
       if (!req.body.products || !Array.isArray(req.body.products)) {
         logger.error("No parameter products provided");
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
-          .end("No parameter products provided");
+          .json({ message: "No parameter products provided" });
       } else if (!req.body.orgId) {
         logger.error("No parameter orgId provided");
-        res.status(StatusCodes.BAD_REQUEST).end("No parameter orgId provided");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "No parameter orgId provided" });
       }
 
       try {
@@ -114,12 +121,12 @@ export default async function handler(
         return res.json(session.url);
       } catch (error) {
         logger.error(`Error during Stripe communication: ${error}`);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
       }
-      break;
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

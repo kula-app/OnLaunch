@@ -34,20 +34,18 @@ export default async function handler(
 
       if (org == null) {
         logger.error(`No organisation found with id '${orgId}'`);
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           message: `No organisation found with id '${orgId}'`,
         });
-        return;
       }
 
-      res.status(StatusCodes.OK).json({
+      return res.status(StatusCodes.OK).json({
         name: org.name,
         apps: org.apps,
         role: user.role,
         customer: org.stripeCustomerId,
         invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
       });
-      break;
 
     case "DELETE":
       try {
@@ -55,11 +53,10 @@ export default async function handler(
           logger.error(
             `You are not allowed to delete organisation with id '${orgId}'`
           );
-          res.status(StatusCodes.FORBIDDEN).json({
+          return res.status(StatusCodes.FORBIDDEN).json({
             message:
               "You are not allowed to delete organisation with id " + orgId,
           });
-          return;
         }
 
         const orgToDelete = await prisma.organisation.findUnique({
@@ -103,7 +100,7 @@ export default async function handler(
         });
 
         logger.log(`Successfully deleted org with id '${orgId}'`);
-        res.status(StatusCodes.OK).json(deletedOrg);
+        return res.status(StatusCodes.OK).json(deletedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`Error while deleting org with id '${orgId}': ${e}`);
@@ -120,7 +117,7 @@ export default async function handler(
           logger.error(
             `You are not allowed to update organisation with id '${orgId}'`
           );
-          res.status(StatusCodes.FORBIDDEN).json({
+          return res.status(StatusCodes.FORBIDDEN).json({
             message:
               "You are not allowed to update organisation with id " + orgId,
           });
@@ -129,7 +126,7 @@ export default async function handler(
         const newName = req.body.name;
 
         if (!newName) {
-          res.status(StatusCodes.NO_CONTENT).json({
+          return res.status(StatusCodes.NO_CONTENT).json({
             message:
               "No content provided to update organisation with id '" +
               orgId +
@@ -148,11 +145,11 @@ export default async function handler(
           },
         });
 
-        res.status(StatusCodes.OK).json(updatedOrg);
+        return res.status(StatusCodes.OK).json(updatedOrg);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No organisation found with id '${orgId}'`);
-          res.status(StatusCodes.NOT_FOUND).json({
+          return res.status(StatusCodes.NOT_FOUND).json({
             message: "No organisation found with id " + orgId,
           });
         }
@@ -160,9 +157,8 @@ export default async function handler(
       break;
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

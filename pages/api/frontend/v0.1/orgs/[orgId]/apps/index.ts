@@ -72,7 +72,7 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(
+      return res.status(StatusCodes.OK).json(
         allApps.map((app): AppDto => {
           return {
             id: app.id,
@@ -82,7 +82,6 @@ export default async function handler(
           };
         })
       );
-      break;
 
     case "POST":
       const generatedToken = generateToken();
@@ -97,13 +96,11 @@ export default async function handler(
           publicKey: generatedToken,
         },
       });
-      res.status(StatusCodes.CREATED).json(app);
-      break;
+      return res.status(StatusCodes.CREATED).json(app);
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }

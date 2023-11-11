@@ -202,6 +202,9 @@ export async function getUserWithRoleFromRequest(
 
   if (!user) {
     logger.error("No user provided from session");
+    res.status(StatusCodes.UNAUTHORIZED).json({
+      message: "You are not logged in",
+    });
     return;
   }
 
@@ -230,10 +233,9 @@ export async function getUserWithRoleFromRequest(
       `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`
     );
     // if user has no business here, return a 404
-    res.status(StatusCodes.NOT_FOUND).json({
-      message: `no user with id '${user.id} found in organisation with id '${req.query.orgId}'`,
+    return res.status(StatusCodes.NOT_FOUND).json({
+      message: `no user with id '${user.id}' found in organisation with id '${req.query.orgId}'`,
     });
-    return;
   }
 
   return {

@@ -40,7 +40,12 @@ export default async function handler(
       let event;
 
       try {
-        if (!sig || !webhookSecret) return;
+        if (!sig || !webhookSecret) {
+          logger.error("Webhook secret not provided");
+          return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ message: "No signature or webhook secret provided" });
+        }
 
         logger.log("Constructing stripe webhook event");
         event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
@@ -48,7 +53,7 @@ export default async function handler(
         logger.error(`Stripe webhook error: ${error.message}`);
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .end(`Stripe webhook error: ${error.message}`);
+          .json({ message: `Stripe webhook error: ${error.message}` });
       }
 
       logger.log(`Event type: ${event.type}`);
@@ -75,17 +80,18 @@ export default async function handler(
               logger.error(
                 `Error during checkout.session.completed (checkout id: ${session.id}) event: no client_reference_id in session`
               );
-              break;
+              return res.status(StatusCodes.BAD_REQUEST).json({
+                message: `No client_reference_id in session`,
+              });
             }
 
             if (!session.subscription) {
               logger.error(
                 `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription was retrieved`
               );
-              res
+              return res
                 .status(StatusCodes.BAD_REQUEST)
-                .end("no subscription was retrieved");
-              break;
+                .json({ message: "no subscription was retrieved" });
             }
 
             // looking up whether subscription is already saved in database (for idempotency)
@@ -99,6 +105,7 @@ export default async function handler(
             // handle case when sub is already in the database
             if (subFromDb) {
               logger.log("Subscription is already in the database");
+              // for idempotency we just use a break-statement here and later return ok
               break;
             }
 
@@ -117,7 +124,7 @@ export default async function handler(
               };
             });
 
-            const savedSub = await prisma.subscription.create({
+            await prisma.subscription.create({
               data: {
                 subId: sub.id as string,
                 subName: subName ? subName : "loading",
@@ -132,7 +139,7 @@ export default async function handler(
               },
             });
 
-            const updatedOrg = await prisma.organisation.updateMany({
+            await prisma.organisation.updateMany({
               where: {
                 id: Number(session.client_reference_id),
                 stripeCustomerId: null,
@@ -167,7 +174,9 @@ export default async function handler(
               logger.error(
                 `${event.type} - No subscription found for sub id '${subData.id}'`
               );
-              break;
+              return res.status(StatusCodes.BAD_REQUEST).json({
+                message: `${event.type} - No subscription found for sub id '${subData.id}'`,
+              });
             }
 
             await reportOrgToStripe(toDeleteSubFromDb.orgId, true);
@@ -182,6 +191,9 @@ export default async function handler(
             });
           } catch (error) {
             logger.error(`Error: ${error}`);
+            return res.status(StatusCodes.BAD_REQUEST).json({
+              message: `${event.type} - error during deletion: ${error}`,
+            });
           }
           break;
 
@@ -199,7 +211,9 @@ export default async function handler(
               logger.error(
                 `${event.type} - No subscription found for sub id '${updatedSub.id}'`
               );
-              break;
+              return res.status(StatusCodes.BAD_REQUEST).json({
+                message: `${event.type} - No subscription found for sub id '${updatedSub.id}'`,
+              });
             }
 
             // stripe timestamps are in seconds, while node handles them in miliseconds
@@ -234,9 +248,9 @@ export default async function handler(
             }
           } catch (error) {
             logger.error(`Error: ${error}`);
-            return res
-              .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .end(`Error: ${error}`);
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+              message: `An internal server error occurred, please try again later`,
+            });
           }
           break;
 
@@ -265,11 +279,11 @@ export default async function handler(
           break;
       }
 
-      res.status(StatusCodes.OK).end();
-      break;
+      return res.status(StatusCodes.OK).end();
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }

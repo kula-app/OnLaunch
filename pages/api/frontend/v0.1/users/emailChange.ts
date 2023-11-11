@@ -29,10 +29,9 @@ export default async function handler(
 
       if (!emailNew || !emailNew.includes("@")) {
         logger.error("Email is not valid");
-        res
+        return res
           .status(StatusCodes.UNPROCESSABLE_ENTITY)
           .json({ message: "Invalid data - email not valid" });
-        return;
       }
 
       logger.log(`Looking up user with email '${user.email}'`);
@@ -47,10 +46,9 @@ export default async function handler(
 
       if (!userByEmail || (userByEmail && !userByEmail.id)) {
         logger.error(`No user found with email '${user.email}'`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "User not found!" });
-        return;
       }
 
       logger.log(`Looking up user with new email '${emailNew}'`);
@@ -65,10 +63,9 @@ export default async function handler(
 
       if (userWithNewEmail) {
         logger.error(`New email '${emailNew}' is already taken`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Email address not available!" });
-        return;
       }
 
       const generatedToken = generateToken();
@@ -108,8 +105,7 @@ export default async function handler(
         MailType.ChangeEmail
       );
 
-      res.status(StatusCodes.CREATED).json(user.email);
-      break;
+      return res.status(StatusCodes.CREATED).json(user.email);
 
     case "PUT":
       logger.log(`Looking up email change token`);
@@ -121,10 +117,9 @@ export default async function handler(
 
       if (!lookupToken) {
         logger.error(`Provided email change token not found`);
-        res
+        return res
           .status(StatusCodes.NOT_FOUND)
           .json({ message: "Email change token not found" });
-        return;
       }
 
       if (
@@ -134,10 +129,9 @@ export default async function handler(
           lookupToken.expiryDate < new Date())
       ) {
         logger.error(`Email change token is obsolete`);
-        res
+        return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Email change token is obsolete!" });
-        return;
       }
 
       logger.log(`Updating email of user with id '${lookupToken.userId}'`);
@@ -167,11 +161,11 @@ export default async function handler(
         },
       });
 
-      res.status(StatusCodes.OK).json(lookupToken.newEmail);
-      break;
+      return res.status(StatusCodes.OK).json(lookupToken.newEmail);
 
     default:
-      res.status(StatusCodes.METHOD_NOT_ALLOWED).end("method not allowed");
-      break;
+      return res
+        .status(StatusCodes.METHOD_NOT_ALLOWED)
+        .json({ message: "method not allowed" });
   }
 }
