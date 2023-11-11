@@ -118,15 +118,30 @@ export default function EditOrgPage() {
   const { data: session } = useSession();
 
   const { org, isError: orgError } = useOrg(orgId);
-  const { users, isError: userError, mutate: userMutate } = useUsers(orgId);
+  const {
+    users,
+    isError: userError,
+    isLoading: isUserLoading,
+    mutate: userMutate,
+  } = useUsers(orgId);
 
   if (userError || orgError) return <div>Failed to load</div>;
 
   let userRole = "";
-  if (!!users && !userError) {
-    console.log("users: " + JSON.stringify(users));
+  if (Array.isArray(users) && users.length > 0) {
     userRole = users.find((i) => i.email === session?.user?.email)
       ?.role as string;
+  } else if (!isUserLoading) {
+    // this case should never happen, at least one user has to be in each organisation
+    toast({
+      title: "Error!",
+      description:
+        "An error occurred trying to access this page. You will be navigated to the dashboard.",
+      status: "error",
+      isClosable: true,
+      duration: 6000,
+    });
+    navigateToDashboardPage();
   }
 
   async function submitHandler(event: FormEvent<HTMLFormElement>) {
@@ -458,73 +473,75 @@ export default function EditOrgPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {users?.map((user, index) => {
-                  return (
-                    <Tr key={index}>
-                      <Td>
-                        <Avatar
-                          size={"sm"}
-                          name={user.firstName + " " + user.lastName}
-                        />
-                      </Td>
-                      <Td>{user.firstName + " " + user.lastName}</Td>
-                      <Td>{user.email}</Td>
-                      <Td>
-                        {userRole === "ADMIN" && (
-                          <div className="flex flex-row">
-                            <Select
-                              disabled={user.email === session?.user?.email}
-                              value={user.role}
-                              onChange={(event) =>
-                                handleRoleChange(index, event)
-                              }
-                            >
-                              {roles.map((value, index) => {
-                                return (
-                                  <option key={index} value={value}>
-                                    {value}
-                                  </option>
-                                );
-                              })}
-                            </Select>
-                            <Tooltip
-                              label={
-                                user.email === session?.user?.email
-                                  ? "leave organisation"
-                                  : "remove from organisation"
-                              }
-                            >
-                              <IconButton
-                                className="ml-4"
-                                aria-label={"remove user"}
-                                onClick={() => removeUser(user.email)}
+                {Array.isArray(users) &&
+                  users.length > 0 &&
+                  users?.map((user, index) => {
+                    return (
+                      <Tr key={index}>
+                        <Td>
+                          <Avatar
+                            size={"sm"}
+                            name={user.firstName + " " + user.lastName}
+                          />
+                        </Td>
+                        <Td>{user.firstName + " " + user.lastName}</Td>
+                        <Td>{user.email}</Td>
+                        <Td>
+                          {userRole === "ADMIN" && (
+                            <div className="flex flex-row">
+                              <Select
+                                disabled={user.email === session?.user?.email}
+                                value={user.role}
+                                onChange={(event) =>
+                                  handleRoleChange(index, event)
+                                }
                               >
-                                <MdDeleteForever />
-                              </IconButton>
-                            </Tooltip>
-                          </div>
-                        )}
-                        {userRole === "USER" && (
-                          <div>
-                            {(user.role as string).toLowerCase()}
-
-                            {user.email === session?.user?.email && (
-                              <Tooltip label="leave organisation">
+                                {roles.map((value, index) => {
+                                  return (
+                                    <option key={index} value={value}>
+                                      {value}
+                                    </option>
+                                  );
+                                })}
+                              </Select>
+                              <Tooltip
+                                label={
+                                  user.email === session?.user?.email
+                                    ? "leave organisation"
+                                    : "remove from organisation"
+                                }
+                              >
                                 <IconButton
                                   className="ml-4"
-                                  aria-label={"leave organisation"}
+                                  aria-label={"remove user"}
                                   onClick={() => removeUser(user.email)}
                                 >
                                   <MdDeleteForever />
                                 </IconButton>
                               </Tooltip>
-                            )}
-                          </div>
-                        )}
-                      </Td>
-                    </Tr>
-                  );
-                })}
+                            </div>
+                          )}
+                          {userRole === "USER" && (
+                            <div>
+                              {(user.role as string).toLowerCase()}
+
+                              {user.email === session?.user?.email && (
+                                <Tooltip label="leave organisation">
+                                  <IconButton
+                                    className="ml-4"
+                                    aria-label={"leave organisation"}
+                                    onClick={() => removeUser(user.email)}
+                                  >
+                                    <MdDeleteForever />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </div>
+                          )}
+                        </Td>
+                      </Tr>
+                    );
+                  })}
               </Tbody>
             </Table>
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
