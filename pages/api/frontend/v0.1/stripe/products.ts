@@ -11,9 +11,12 @@ const logger = new Logger(__filename);
 
 export async function getProducts(): Promise<Product[]> {
   const config = loadConfig();
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+
+  const stripeConfig = loadConfig().server.stripeConfig;
+  const stripe = new Stripe(stripeConfig.secretKey as string, {
     apiVersion: "2023-08-16",
   });
+
   const freeProduct: Product = {
     id: "FREE",
     description: "For checking it out",

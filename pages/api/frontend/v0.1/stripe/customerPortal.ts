@@ -38,7 +38,8 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+      const stripeConfig = loadConfig().server.stripeConfig;
+      const stripe = new Stripe(stripeConfig.secretKey as string, {
         apiVersion: "2023-08-16",
       });
 

@@ -64,6 +64,12 @@ export function loadConfig(): Config {
               env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
           ) ?? 0.2,
       },
+      stripeConfig: {
+        isEnabled:
+          parseBooleanEnvValue(
+            env.STRIPE_ENABLED ?? env.NEXT_PUBLIC_STRIPE_ENABLED
+          ) ?? false,
+      },
     },
     server: {
       nextAuth: {

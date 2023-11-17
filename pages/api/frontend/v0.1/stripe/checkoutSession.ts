@@ -37,7 +37,7 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripe = new Stripe(stripeConfig.secretKey, {
+      const stripe = new Stripe(stripeConfig.secretKey as string, {
         apiVersion: "2023-08-16",
       });
 
@@ -101,7 +101,7 @@ export default async function handler(
         let sessionOptions: Stripe.Checkout.SessionCreateParams = {
           allow_promotion_codes: true,
           automatic_tax: {
-            enabled: stripeConfig.useAutomaticTax,
+            enabled: !!stripeConfig.useAutomaticTax,
           },
           billing_address_collection: "required",
           client_reference_id: req.body.orgId,

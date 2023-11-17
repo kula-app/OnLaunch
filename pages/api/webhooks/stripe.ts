@@ -27,7 +27,7 @@ export default async function handler(
   const logger = new Logger(__filename);
 
   const stripeConfig = loadConfig().server.stripeConfig;
-  const stripe = new Stripe(stripeConfig.secretKey, {
+  const stripe = new Stripe(stripeConfig.secretKey as string, {
     apiVersion: "2023-08-16",
   });
 
