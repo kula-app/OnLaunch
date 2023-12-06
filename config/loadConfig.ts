@@ -66,9 +66,7 @@ export function loadConfig(): Config {
       },
       stripeConfig: {
         isEnabled:
-          parseBooleanEnvValue(
-            env.STRIPE_ENABLED ?? env.NEXT_PUBLIC_STRIPE_ENABLED
-          ) ?? false,
+          parseBooleanEnvValue(env.NEXT_PUBLIC_STRIPE_ENABLED) ?? false,
       },
     },
     server: {
