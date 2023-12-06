@@ -1,12 +1,11 @@
+import { Button, Heading, Spinner, useToast } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
-import { getSession } from "next-auth/react";
+import createVerifyToken from "../api/tokens/createVerifyToken";
 import updateVerifiedStatus from "../api/tokens/updateVerifiedStatus";
 import Routes from "../routes/routes";
-import { useCallback } from "react";
-import createVerifyToken from "../api/tokens/createVerifyToken";
-import { Button, useToast, Spinner, Heading } from "@chakra-ui/react";
+import styles from "../styles/Home.module.css";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -19,9 +18,9 @@ export default function VerifyPage() {
   const [obsolete, setObsolete] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
-  const navigateToAuthPage = useCallback(() => {
+  function navigateToAuthPage() {
     router.push(Routes.AUTH);
-  }, [router]);
+  }
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -31,8 +30,24 @@ export default function VerifyPage() {
         await updateVerifiedStatus(token as string);
 
         setVerified(true);
+
+        toast({
+          title: "Sucess!",
+          description:
+            "Thank you for verifying your account. You may login now",
+          status: "success",
+          isClosable: true,
+          duration: 6000,
+        });
       } catch (error) {
         if (String(error).includes("already verified")) {
+          toast({
+            title: "Error while verifying!",
+            description: `You are already verified`,
+            status: "error",
+            isClosable: true,
+            duration: 6000,
+          });
           // if user already verified, go to auth page
           navigateToAuthPage();
         } else if (String(error).includes("expired")) {
@@ -130,7 +145,12 @@ export default function VerifyPage() {
             </Button>
           )}
         {!signup && !verified && !!email && disabled && (
-          <Button colorScheme="blue" type="button" disabled onClick={resendLink}>
+          <Button
+            colorScheme="blue"
+            type="button"
+            disabled
+            onClick={resendLink}
+          >
             resend link
           </Button>
         )}

@@ -62,11 +62,8 @@ export async function getProducts(): Promise<Product[]> {
     // products from other services)
     const filteredProductsByMetadata = products.data.filter((product) => {
       product = product as Stripe.Product;
-      if (product.metadata["service"] && product.metadata["isActive"]) {
-        return (
-          product.metadata["service"].toLowerCase() === "onlaunch" &&
-          product.metadata["isActive"] === "true"
-        );
+      if (product.metadata["isActive"]) {
+        return product.metadata["isActive"] === "true";
       }
       return false;
     });
