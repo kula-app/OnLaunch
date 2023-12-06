@@ -115,7 +115,7 @@ export default function EditOrgPage() {
       setLoading(false);
     };
 
-    if (parseBooleanEnvValue(process.env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+    if (parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
       fetchUserSubscriptions();
     }
   }, [router.isReady, orgId, toast]);

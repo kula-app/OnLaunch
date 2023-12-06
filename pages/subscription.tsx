@@ -14,6 +14,18 @@ export default function ProfilePage() {
 
   let { success, canceled, orgId } = router.query;
 
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    function navigateToDashboardPage() {
+      router.push(Routes.DASHBOARD);
+    }
+
+    if (!parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+      navigateToDashboardPage();
+    }
+  }, [router.isReady, router]);
+
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);
   }
@@ -106,15 +118,6 @@ export async function getServerSideProps(context: any) {
     return {
       redirect: {
         destination: "/auth",
-        permanent: false,
-      },
-    };
-  }
-
-  if (!parseBooleanEnvValue(process.env.NEXT_PUBLIC_STRIPE_ENABLED)) {
-    return {
-      redirect: {
-        destination: "/dashboard",
         permanent: false,
       },
     };
