@@ -1,17 +1,18 @@
-import { FormEvent, useState } from "react";
-import styles from "../../styles/Home.module.css";
-import { getSession } from "next-auth/react";
 import {
-  Input,
-  useToast,
-  Heading,
+  Button,
   FormControl,
   FormLabel,
-  Button,
+  Heading,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
-import createOrg from "../../api/orgs/createOrg";
-import Routes from "../../routes/routes";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { FormEvent, useState } from "react";
+import createOrg from "../../api/orgs/createOrg";
+import { parseBooleanEnvValue } from "../../config/parser/parseBooleanEnvValue";
+import Routes from "../../routes/routes";
+import styles from "../../styles/Home.module.css";
 
 export default function NewOrgPage() {
   const router = useRouter();
@@ -24,10 +25,10 @@ export default function NewOrgPage() {
 
     try {
       const org = await createOrg(orgName);
-      
+
       toast({
         title: "Success!",
-        description: 'New organisation created.',
+        description: "New organisation created.",
         status: "success",
         isClosable: true,
         duration: 6000,
@@ -35,7 +36,11 @@ export default function NewOrgPage() {
 
       resetForm();
 
-      navigateToUpgradePage(org.orgId);
+      if (parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+        navigateToUpgradePage(org.orgId);
+      } else {
+        navigateToOrgAppsPage(org.orgId);
+      }
     } catch (error) {
       toast({
         title: "Error while creating new organisation!",
@@ -46,9 +51,13 @@ export default function NewOrgPage() {
       });
     }
   }
-  
+
   function navigateToUpgradePage(orgId: number) {
     router.push(Routes.getOrgUpgradeByOrgId(orgId));
+  }
+
+  function navigateToOrgAppsPage(orgId: number) {
+    router.push(Routes.getOrgAppsByOrgId(orgId));
   }
 
   function resetForm() {
@@ -59,24 +68,24 @@ export default function NewOrgPage() {
     <>
       <div>
         <main className={styles.main}>
-            <div>
-              <Heading className="text-center">New Organisation</Heading>
-              <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
-                <FormControl className="mt-4 flex flex-col items-center">
-                  <div>
-                    <FormLabel>Name</FormLabel>
-                    <Input
-                      required
-                      id="name"
-                      onChange={(event) => setOrgName(event.target.value)}
-                    />
-                  </div>
-                  <Button colorScheme="blue" className="mt-4" type="submit">
-                    next
-                  </Button>
-                </FormControl>
-              </form>
-            </div>
+          <div>
+            <Heading className="text-center">New Organisation</Heading>
+            <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
+              <FormControl className="mt-4 flex flex-col items-center">
+                <div>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    required
+                    id="name"
+                    onChange={(event) => setOrgName(event.target.value)}
+                  />
+                </div>
+                <Button colorScheme="blue" className="mt-4" type="submit">
+                  next
+                </Button>
+              </FormControl>
+            </form>
+          </div>
         </main>
       </div>
     </>

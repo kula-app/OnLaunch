@@ -553,7 +553,7 @@ export default function EditOrgPage() {
             {userRole === "ADMIN" && (
               <>
                 {parseBooleanEnvValue(
-                  process.env.NEXT_PUBLIC_STRIPE_ENABLED
+                  window.__env.NEXT_PUBLIC_STRIPE_ENABLED
                 ) && (
                   <>
                     <Heading className="text-center mt-16 mb-8">
