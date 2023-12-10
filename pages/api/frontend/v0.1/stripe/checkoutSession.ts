@@ -37,7 +37,10 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripe = new Stripe(stripeConfig.secretKey as string, {
+      if (!stripeConfig.secretKey) {
+        throw new Error("Stripe secret key is not configured");
+      }
+      const stripe = new Stripe(stripeConfig.secretKey, {
         apiVersion: "2023-08-16",
       });
 
