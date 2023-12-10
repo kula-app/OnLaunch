@@ -6,7 +6,10 @@ import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import { Logger } from "../logger";
 
 const stripeConfig = loadConfig().server.stripeConfig;
-const stripe = new Stripe(stripeConfig.secretKey as string, {
+if (!stripeConfig.secretKey) {
+  throw new Error("Stripe secret key is not configured");
+}
+const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: "2023-08-16",
 });
 

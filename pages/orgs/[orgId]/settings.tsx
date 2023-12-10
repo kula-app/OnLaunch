@@ -46,7 +46,6 @@ import createCustomerPortalSession from "../../../api/stripe/createCustomerPorta
 import getSubscriptions from "../../../api/stripe/getSubscriptions";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
 import { loadConfig } from "../../../config/loadConfig";
-import { parseBooleanEnvValue } from "../../../config/parser/parseBooleanEnvValue";
 import { Org } from "../../../models/org";
 import { Subscription } from "../../../models/subscription";
 import Routes from "../../../routes/routes";
@@ -56,7 +55,7 @@ import { getColorLabel, translateSubName } from "../../../util/nameTag";
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
-  const config = loadConfig();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
@@ -115,10 +114,10 @@ export default function EditOrgPage() {
       setLoading(false);
     };
 
-    if (parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+    if (stripeConfig.isEnabled) {
       fetchUserSubscriptions();
     }
-  }, [router.isReady, orgId, toast]);
+  }, [router.isReady, orgId, toast, stripeConfig.isEnabled]);
 
   const { data: session } = useSession();
 
@@ -552,9 +551,7 @@ export default function EditOrgPage() {
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
             {userRole === "ADMIN" && (
               <>
-                {parseBooleanEnvValue(
-                  window.__env.NEXT_PUBLIC_STRIPE_ENABLED
-                ) && (
+                {stripeConfig.isEnabled && (
                   <>
                     <Heading className="text-center mt-16 mb-8">
                       Your subscription

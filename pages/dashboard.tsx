@@ -28,7 +28,7 @@ import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
 import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
-import { parseBooleanEnvValue } from "../config/parser/parseBooleanEnvValue";
+import { loadConfig } from "../config/loadConfig";
 import { OrgInvite } from "../models/orgInvite";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
@@ -36,6 +36,7 @@ import { getColorLabel, translateSubName } from "../util/nameTag";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const { invite, directinvite } = router.query;
 
@@ -156,9 +157,7 @@ export default function DashboardPage() {
                     <Td width="5%">{org.id}</Td>
                     <Td>
                       {org.name}
-                      {parseBooleanEnvValue(
-                        window.__env.NEXT_PUBLIC_STRIPE_ENABLED
-                      ) && (
+                      {stripeConfig.isEnabled && (
                         <Tag
                           className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
                           size={"md"}

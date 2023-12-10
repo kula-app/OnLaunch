@@ -10,13 +10,14 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import createOrg from "../../api/orgs/createOrg";
-import { parseBooleanEnvValue } from "../../config/parser/parseBooleanEnvValue";
+import { loadConfig } from "../../config/loadConfig";
 import Routes from "../../routes/routes";
 import styles from "../../styles/Home.module.css";
 
 export default function NewOrgPage() {
   const router = useRouter();
   const toast = useToast();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const [orgName, setOrgName] = useState("");
 
@@ -36,7 +37,7 @@ export default function NewOrgPage() {
 
       resetForm();
 
-      if (parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+      if (stripeConfig.isEnabled) {
         navigateToUpgradePage(org.orgId);
       } else {
         navigateToOrgAppsPage(org.orgId);

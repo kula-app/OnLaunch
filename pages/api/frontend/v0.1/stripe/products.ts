@@ -13,7 +13,10 @@ export async function getProducts(): Promise<Product[]> {
   const config = loadConfig();
 
   const stripeConfig = loadConfig().server.stripeConfig;
-  const stripe = new Stripe(stripeConfig.secretKey as string, {
+  if (!stripeConfig.secretKey) {
+    throw new Error("Stripe secret key is not configured");
+  }
+  const stripe = new Stripe(stripeConfig.secretKey, {
     apiVersion: "2023-08-16",
   });
 
@@ -158,8 +161,8 @@ export default async function handler(
   if (!stripeConfig.isEnabled) {
     logger.error("stripe is disabled but endpoint has been called");
     return res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "Endpoint not found" });
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
   }
 
   switch (req.method) {

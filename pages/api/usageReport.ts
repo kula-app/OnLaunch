@@ -15,8 +15,8 @@ export default async function handler(
   if (!stripeConfig.isEnabled) {
     logger.error("stripe is disabled but endpoint has been called");
     return res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "Endpoint not found" });
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
   }
 
   if (

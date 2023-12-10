@@ -6,12 +6,13 @@ import { Heading, Skeleton, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useProducts } from "../../../api/stripe/useProducts";
 import ProductCard from "../../../components/ProductCard";
-import { parseBooleanEnvValue } from "../../../config/parser/parseBooleanEnvValue";
+import { loadConfig } from "../../../config/loadConfig";
 import Routes from "../../../routes/routes";
 
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const orgId = Number(router.query.orgId);
 
@@ -22,10 +23,10 @@ export default function EditOrgPage() {
       router.push(Routes.DASHBOARD);
     }
 
-    if (!parseBooleanEnvValue(window.__env.NEXT_PUBLIC_STRIPE_ENABLED)) {
+    if (!stripeConfig.isEnabled) {
       navigateToDashboardPage();
     }
-  }, [router.isReady, router]);
+  }, [router.isReady, router, stripeConfig.isEnabled]);
 
   const { products, isError, isLoading } = useProducts();
 
