@@ -111,8 +111,7 @@ export function loadConfig(): Config {
         sentinelPassword: env.REDIS_SENTINEL_PASSWORD,
       },
       stripeConfig: {
-        isEnabled:
-          parseBooleanEnvValue(env.NEXT_PUBLIC_STRIPE_ENABLED) ?? false,
+        isEnabled: parseBooleanEnvValue(env.STRIPE_ENABLED) ?? false,
         apiVersion: env.STRIPE_API_VERSION || "",
         webhookSecret: env.STRIPE_WEBHOOK_SECRET || "",
         secretKey: env.STRIPE_SECRET_KEY || "",
