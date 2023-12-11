@@ -27,9 +27,19 @@ export default async function handler(
   const logger = new Logger(__filename);
 
   const stripeConfig = loadConfig().server.stripeConfig;
+  if (!stripeConfig.secretKey) {
+    throw new Error("Stripe secret key is not configured");
+  }
   const stripe = new Stripe(stripeConfig.secretKey, {
     apiVersion: "2023-08-16",
   });
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
+  }
 
   switch (req.method) {
     case "POST":

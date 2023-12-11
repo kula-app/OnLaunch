@@ -2,16 +2,30 @@ import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { loadConfig } from "../config/loadConfig";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
   const toast = useToast();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const [loading, setLoading] = useState(true);
 
   let { success, canceled, orgId } = router.query;
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    function navigateToDashboardPage() {
+      router.push(Routes.DASHBOARD);
+    }
+
+    if (!stripeConfig.isEnabled) {
+      navigateToDashboardPage();
+    }
+  }, [router.isReady, router, stripeConfig.isEnabled]);
 
   function navigateToDashboardPage() {
     router.push(Routes.DASHBOARD);

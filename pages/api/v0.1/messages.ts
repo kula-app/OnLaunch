@@ -128,97 +128,99 @@ export default async function handler(
       }
 
       // Start of quota limitation
-      try {
-        const products = await getProducts();
+      if (config.server.stripeConfig.isEnabled) {
+        try {
+          const products = await getProducts();
 
-        // Check if there is a subItem with isMetered set to true
-        // Metered subItems do not have a limit
-        let hasMeteredSubItem = false;
-        // There should be 0 or 1 sub
-        let subFromDb = app?.organisation?.subs[0];
+          // Check if there is a subItem with isMetered set to true
+          // Metered subItems do not have a limit
+          let hasMeteredSubItem = false;
+          // There should be 0 or 1 sub
+          let subFromDb = app?.organisation?.subs[0];
 
-        if (app?.organisation?.subs) {
-          for (const sub of app.organisation.subs) {
-            if (sub.subItems?.some((subItem) => subItem.metered === true)) {
-              hasMeteredSubItem = true;
-              break;
+          if (app?.organisation?.subs) {
+            for (const sub of app.organisation.subs) {
+              if (sub.subItems?.some((subItem) => subItem.metered === true)) {
+                hasMeteredSubItem = true;
+                break;
+              }
             }
           }
-        }
 
-        // If not metered, check for the limit
-        if (!hasMeteredSubItem) {
-          let countingStartDate = new Date();
+          // If not metered, check for the limit
+          if (!hasMeteredSubItem) {
+            let countingStartDate = new Date();
 
-          // Free version counts back plainly one month
-          if (!subFromDb) {
-            countingStartDate.setMonth(countingStartDate.getMonth() - 1);
-          } else {
-            // use current period start of active subscription
-            countingStartDate = subFromDb.currentPeriodStart;
-          }
-
-          // Prepare array of app ids of organisation
-          const appIds = app?.organisation?.apps?.map((app) => app.id) || [];
-
-          // Count requests across all apps of the org
-          const requestCount = await prisma.loggedApiRequests.count({
-            where: {
-              appId: {
-                in: appIds,
-              },
-              createdAt: {
-                gte: countingStartDate,
-              },
-            },
-          });
-          logger.log(
-            `Request count for org with id '${app.orgId}' is ${requestCount}`
-          );
-
-          let isLimitReached = false;
-
-          // Check whether quota/limit for the request has been met (active subscription)
-          if (subFromDb) {
-            const targetProduct = products.find(
-              (product: { id: string | undefined }) =>
-                product.id === subFromDb?.subItems[0].productId
-            );
-
-            if (!targetProduct) {
-              logger.error(
-                `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`
-              );
-              return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .json({ message: "Please try again later" });
+            // Free version counts back plainly one month
+            if (!subFromDb) {
+              countingStartDate.setMonth(countingStartDate.getMonth() - 1);
+            } else {
+              // use current period start of active subscription
+              countingStartDate = subFromDb.currentPeriodStart;
             }
 
+            // Prepare array of app ids of organisation
+            const appIds = app?.organisation?.apps?.map((app) => app.id) || [];
+
+            // Count requests across all apps of the org
+            const requestCount = await prisma.loggedApiRequests.count({
+              where: {
+                appId: {
+                  in: appIds,
+                },
+                createdAt: {
+                  gte: countingStartDate,
+                },
+              },
+            });
             logger.log(
-              `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`
+              `Request count for org with id '${app.orgId}' is ${requestCount}`
             );
-            if (requestCount >= Number(targetProduct.requests)) {
+
+            let isLimitReached = false;
+
+            // Check whether quota/limit for the request has been met (active subscription)
+            if (subFromDb) {
+              const targetProduct = products.find(
+                (product: { id: string | undefined }) =>
+                  product.id === subFromDb?.subItems[0].productId
+              );
+
+              if (!targetProduct) {
+                logger.error(
+                  `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`
+                );
+                return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json({ message: "Please try again later" });
+              }
+
+              logger.log(
+                `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`
+              );
+              if (requestCount >= Number(targetProduct.requests)) {
+                isLimitReached = true;
+              }
+            } else if (!subFromDb && requestCount >= FREE_SUB_REQUEST_LIMIT) {
+              // Check quota/limit for free version
               isLimitReached = true;
             }
-          } else if (!subFromDb && requestCount >= FREE_SUB_REQUEST_LIMIT) {
-            // Check quota/limit for free version
-            isLimitReached = true;
-          }
 
-          // Return error if limit has been reached and the request cannot be served
-          if (isLimitReached) {
-            logger.log(
-              `The limit has been currently reached for org with id '${app?.orgId}'`
-            );
-            return res.status(StatusCodes.PAYMENT_REQUIRED).json({
-              message: "The limit for the current abo has been reached.",
-            });
+            // Return error if limit has been reached and the request cannot be served
+            if (isLimitReached) {
+              logger.log(
+                `The limit has been currently reached for org with id '${app?.orgId}'`
+              );
+              return res.status(StatusCodes.PAYMENT_REQUIRED).json({
+                message: "The limit for the current abo has been reached.",
+              });
+            }
           }
+        } catch (error: any) {
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: error.message });
         }
-      } catch (error: any) {
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: error.message });
       }
 
       logger.log(`Looking up all messages for app with id '${app.id}'`);

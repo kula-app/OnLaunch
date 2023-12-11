@@ -11,9 +11,15 @@ const logger = new Logger(__filename);
 
 export async function getProducts(): Promise<Product[]> {
   const config = loadConfig();
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+
+  const stripeConfig = loadConfig().server.stripeConfig;
+  if (!stripeConfig.secretKey) {
+    throw new Error("Stripe secret key is not configured");
+  }
+  const stripe = new Stripe(stripeConfig.secretKey, {
     apiVersion: "2023-08-16",
   });
+
   const freeProduct: Product = {
     id: "FREE",
     description: "For checking it out",
@@ -150,6 +156,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
+  }
+
   switch (req.method) {
     case "GET":
       try {

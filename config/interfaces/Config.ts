@@ -13,6 +13,7 @@ import { UsageReportConfig } from "./UsageReportConfig";
 export interface Config {
   client: {
     sentryConfig: SentryConfig;
+    stripeConfig: StripeConfig;
   };
   server: {
     database: DatabaseConfig;

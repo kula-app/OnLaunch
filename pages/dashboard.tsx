@@ -1,44 +1,42 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  Heading,
+  Skeleton,
+  Stack,
+  Table,
+  Tag,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useOrgs } from "../api/orgs/useOrgs";
 import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
 import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
-import { useOrgs } from "../api/orgs/useOrgs";
-import Routes from "../routes/routes";
+import { loadConfig } from "../config/loadConfig";
 import { OrgInvite } from "../models/orgInvite";
-import {
-  Button,
-  Table,
-  Thead,
-  Th,
-  Tr,
-  Td,
-  Tbody,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  AlertDialogCloseButton,
-  useToast,
-  useDisclosure,
-  Skeleton,
-  Stack,
-  Heading,
-  Tag,
-} from "@chakra-ui/react";
-import React from "react";
-import {
-  getColorLabel,
-  translateSubName,
-} from "../util/nameTag";
+import Routes from "../routes/routes";
+import styles from "../styles/Home.module.css";
+import { getColorLabel, translateSubName } from "../util/nameTag";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const { invite, directinvite } = router.query;
 
@@ -159,16 +157,18 @@ export default function DashboardPage() {
                     <Td width="5%">{org.id}</Td>
                     <Td>
                       {org.name}
-                      <Tag
-                        className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
-                        size={"md"}
-                        key={index}
-                        borderRadius="full"
-                        variant="solid"
-                        colorScheme={getColorLabel(org?.subName)}
-                      >
-                        {translateSubName(org?.subName)}
-                      </Tag>
+                      {stripeConfig.isEnabled && (
+                        <Tag
+                          className="whitespace-nowrap flex-shrink-0 justify-center ml-2"
+                          size={"md"}
+                          key={index}
+                          borderRadius="full"
+                          variant="solid"
+                          colorScheme={getColorLabel(org?.subName)}
+                        >
+                          {translateSubName(org?.subName)}
+                        </Tag>
+                      )}
                     </Td>
                   </Tr>
                 );

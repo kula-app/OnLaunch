@@ -8,8 +8,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const usageReportingConfig = loadConfig().server.usageReport;
   const logger = new Logger(__filename);
+  const usageReportingConfig = loadConfig().server.usageReport;
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
+  }
 
   if (
     req.headers.authorization !== `Bearer ${usageReportingConfig.apiKey}` &&

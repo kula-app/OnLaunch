@@ -12,8 +12,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const stripeConfig = loadConfig().server.stripeConfig;
   const logger = new Logger(__filename);
+  const stripeConfig = loadConfig().server.stripeConfig;
+
+  if (!stripeConfig.isEnabled) {
+    logger.error("stripe is disabled but endpoint has been called");
+    return res
+      .status(StatusCodes.SERVICE_UNAVAILABLE)
+      .json({ message: "Endpoint is disabled" });
+  }
 
   const userInOrg = await getUserWithRoleFromRequest(req, res);
 
@@ -30,6 +37,9 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
+      if (!stripeConfig.secretKey) {
+        throw new Error("Stripe secret key is not configured");
+      }
       const stripe = new Stripe(stripeConfig.secretKey, {
         apiVersion: "2023-08-16",
       });
@@ -44,11 +54,9 @@ export default async function handler(
 
       if (!org) {
         logger.error(`No organisation found with id ${userInOrg.orgId}`);
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({
-            message: `No organisation found with id ${userInOrg.orgId}`,
-          });
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `No organisation found with id ${userInOrg.orgId}`,
+        });
       }
 
       if (!req.body.products || !Array.isArray(req.body.products)) {
@@ -96,7 +104,7 @@ export default async function handler(
         let sessionOptions: Stripe.Checkout.SessionCreateParams = {
           allow_promotion_codes: true,
           automatic_tax: {
-            enabled: stripeConfig.useAutomaticTax,
+            enabled: !!stripeConfig.useAutomaticTax,
           },
           billing_address_collection: "required",
           client_reference_id: req.body.orgId,

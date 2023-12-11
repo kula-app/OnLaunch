@@ -3,15 +3,32 @@ import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
 
 import { Heading, Skeleton, useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useProducts } from "../../../api/stripe/useProducts";
 import ProductCard from "../../../components/ProductCard";
+import { loadConfig } from "../../../config/loadConfig";
+import Routes from "../../../routes/routes";
 
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
-  const { products, isError, isLoading } = useProducts();
+  const stripeConfig = loadConfig().client.stripeConfig;
 
   const orgId = Number(router.query.orgId);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    function navigateToDashboardPage() {
+      router.push(Routes.DASHBOARD);
+    }
+
+    if (!stripeConfig.isEnabled) {
+      navigateToDashboardPage();
+    }
+  }, [router.isReady, router, stripeConfig.isEnabled]);
+
+  const { products, isError, isLoading } = useProducts();
 
   if (isError) {
     toast({

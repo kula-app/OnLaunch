@@ -1,10 +1,15 @@
 import Stripe from "stripe";
+import { loadConfig } from "../../config/loadConfig";
 import prisma from "../../lib/services/db";
 import { Product } from "../../models/product";
 import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import { Logger } from "../logger";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+const stripeConfig = loadConfig().server.stripeConfig;
+if (!stripeConfig.secretKey) {
+  throw new Error("Stripe secret key is not configured");
+}
+const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: "2023-08-16",
 });
 
