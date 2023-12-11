@@ -72,7 +72,7 @@
     "next-router-mock": "^0.9.3",
     "start-server-and-test": "2.0.3",
     "tailwindcss": "^3.3.2",
-    "ts-node": "10.9.1",
+    "ts-node": "10.9.2",
     "typescript": "5.3.3"
   },
   "resolutions": {
