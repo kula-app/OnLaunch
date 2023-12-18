@@ -1,17 +1,8 @@
-import Stripe from "stripe";
-import { loadConfig } from "../../config/loadConfig";
 import prisma from "../../lib/services/db";
+import { createStripeClient } from "../../lib/services/stripe";
 import { Product } from "../../models/product";
 import { getProducts } from "../../pages/api/frontend/v0.1/stripe/products";
 import { Logger } from "../logger";
-
-const stripeConfig = loadConfig().server.stripeConfig;
-if (!stripeConfig.secretKey) {
-  throw new Error("Stripe secret key is not configured");
-}
-const stripe = new Stripe(stripeConfig.secretKey, {
-  apiVersion: "2023-08-16",
-});
 
 async function findProductDetailsById(id: string, products: any) {
   const product = products.find(
@@ -42,6 +33,8 @@ export async function reportOrgToStripe(
 ) {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for org with id '${orgId}'`);
+
+  const stripe = createStripeClient();
 
   // Retrieve org data including the active subscription and subItems
   const org = await prisma.organisation.findFirst({

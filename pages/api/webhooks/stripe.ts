@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { loadConfig } from "../../../config/loadConfig";
 import prisma from "../../../lib/services/db";
+import { createStripeClient } from "../../../lib/services/stripe";
 import { Logger } from "../../../util/logger";
 import { reportOrgToStripe } from "../../../util/stripe/reportUsage";
 
@@ -27,12 +28,6 @@ export default async function handler(
   const logger = new Logger(__filename);
 
   const stripeConfig = loadConfig().server.stripeConfig;
-  if (!stripeConfig.secretKey) {
-    throw new Error("Stripe secret key is not configured");
-  }
-  const stripe = new Stripe(stripeConfig.secretKey, {
-    apiVersion: "2023-08-16",
-  });
 
   if (!stripeConfig.isEnabled) {
     logger.error("stripe is disabled but endpoint has been called");
@@ -40,6 +35,8 @@ export default async function handler(
       .status(StatusCodes.SERVICE_UNAVAILABLE)
       .json({ message: "Endpoint is disabled" });
   }
+
+  const stripe = createStripeClient();
 
   switch (req.method) {
     case "POST":

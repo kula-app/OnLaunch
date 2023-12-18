@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import Stripe from "stripe";
 import { loadConfig } from "../../../../../config/loadConfig";
 import prisma from "../../../../../lib/services/db";
+import { createStripeClient } from "../../../../../lib/services/stripe";
 import Routes from "../../../../../routes/routes";
 import { getUserWithRoleFromRequest } from "../../../../../util/auth";
 import { Logger } from "../../../../../util/logger";
@@ -38,13 +38,7 @@ export default async function handler(
 
   switch (req.method) {
     case "POST":
-      const stripeConfig = config.server.stripeConfig;
-      if (!stripeConfig.secretKey) {
-        throw new Error("Stripe secret key is not configured");
-      }
-      const stripe = new Stripe(stripeConfig.secretKey, {
-        apiVersion: "2023-08-16",
-      });
+      const stripe = createStripeClient();
 
       // check whether organisation has a stripe customer id with prisma
       const orgFromDb = await prisma.organisation.findUnique({

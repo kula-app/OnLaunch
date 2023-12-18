@@ -114,7 +114,6 @@ export function loadConfig(): Config {
       },
       stripeConfig: {
         isEnabled: parseBooleanEnvValue(env.STRIPE_ENABLED) ?? false,
-        apiVersion: env.STRIPE_API_VERSION || "",
         webhookSecret: env.STRIPE_WEBHOOK_SECRET || "",
         secretKey: env.STRIPE_SECRET_KEY || "",
         useAutomaticTax:
