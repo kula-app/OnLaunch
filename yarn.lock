@@ -6613,9 +6613,9 @@ next-auth@^4.21.1:
     uuid "^8.3.2"
 
 next-router-mock@^0.9.3:
-  version "0.9.10"
-  resolved "https://registry.yarnpkg.com/next-router-mock/-/next-router-mock-0.9.10.tgz#c651ff556ad66cbcda30d4ebeadf575516fe42a3"
-  integrity sha512-bK6sRb/xGNFgHVUZuvuApn6KJBAKTPiP36A7a9mO77U4xQO5ukJx9WHlU67Tv8AuySd09pk0+Hu8qMVIAmLO6A==
+  version "0.9.11"
+  resolved "https://registry.yarnpkg.com/next-router-mock/-/next-router-mock-0.9.11.tgz#f4d4c0fa3249d9091d96d1fe6de494469a5e6e50"
+  integrity sha512-3w7DdXDtjsBbPvHk3kBtmzyvn5BwRh133JM4G3gdjqt8zBzs08dvdU6EEPMZIiQv3mgxZwp7nFKGYEmUnMV/rQ==
 
 next-swagger-doc@^0.4.0:
   version "0.4.0"
