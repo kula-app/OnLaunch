@@ -21,6 +21,16 @@ enum Role {
   ADMIN
 }
 
+enum AppAccessLevel {
+  FULL
+  // Magic Tokens are live for 5 minutes and will not be displayed in the UI during at any time
+  MAGIC
+}
+
+enum OrganisationAccessLevel {
+  FULL
+}
+
 model Action {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -67,6 +77,7 @@ model App {
   orgId        Int?
 
   loggedApiRequests LoggedApiRequests[]
+  appAdminToken     AppAdminToken[]
 }
 
 model User {
@@ -108,9 +119,10 @@ model Organisation {
   // create log when reporting usage to stripe
   usageReports     LoggedUsageReport[]
 
-  apps                App[]
-  users               UsersInOrganisations[]
-  userInvitationToken UserInvitationToken[]
+  apps                   App[]
+  users                  UsersInOrganisations[]
+  userInvitationToken    UserInvitationToken[]
+  organisationAdminToken OrganisationAdminToken[]
 }
 
 // this model indicates which users are in which organisation (with which role) and vice versa
@@ -254,4 +266,52 @@ model SubscriptionItem {
 
   sub   Subscription @relation(fields: [subId], references: [subId], onDelete: Cascade)
   subId String
+}
+
+model OrganisationAdminToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token String @unique
+
+  // note: there is no expiration date or time for org-level admin tokens
+  role      OrganisationAccessLevel @default(FULL)
+  // true indicates that this token has been revoked by a user
+  isRevoked Boolean                 @default(false)
+
+  // the org the token belongs to
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId Int
+}
+
+model AppAdminToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token String @unique
+
+  role       AppAccessLevel @default(FULL)
+  expiryDate DateTime
+  // true indicates that this token has been revoked by a user
+  isRevoked  Boolean        @default(false)
+
+  // the app the token belongs to
+  app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId Int?
+}
+
+// As a safety measure, the admin api is rate-limited
+model LoggedAdminApiRequests {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ip String
+
+  token   String  @default("")
+  // The success flag is used to indicate whether the provided token is an active one
+  // this is used to prevent brute force attacks
+  success Boolean @default(false)
 }
