@@ -4,11 +4,7 @@ export class Logger {
   private filename: string;
 
   constructor(filename: string) {
-    if (filename !== "Middleware") {
-      this.filename = path.basename(filename);
-    } else {
-      this.filename = filename;
-    }
+    this.filename = path.basename(filename);
   }
 
   private getTimeStamp(): string {

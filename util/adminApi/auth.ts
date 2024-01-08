@@ -1,25 +1,27 @@
 import { StatusCodes } from "http-status-codes";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import prisma from "./lib/services/db";
-import { decodeToken } from "./util/adminApi/tokenDecoding";
-import { Logger } from "./util/logger";
+import type { NextApiRequest, NextApiResponse } from "next";
+import requestIp from "request-ip";
+import prisma from "../../lib/services/db";
+import { Logger } from "../logger";
+import { decodeToken } from "./tokenDecoding";
 
-export async function middleware(req: NextRequest) {
-  const logger = new Logger("Middleware");
+export async function authenticate(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  type: string
+) {
+  const logger = new Logger(__filename);
 
-  logger.log(`Middleware called for path: ${req.nextUrl}`);
-
-  // Retrieve provided token
-  let authToken = req.headers.get("authorization");
+  // Retrieve provided authorization token
+  let authToken = req.headers.authorization;
 
   // Validate provided token
   if (!authToken) {
     // Token is missing, return 401 Unauthorized
     logger.error("Authorization token is missing");
-    return new NextResponse("Authorization token is required", {
-      status: StatusCodes.UNAUTHORIZED,
-    });
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: "Authorization token is required" });
   }
 
   // Check for "Bearer " prefix
@@ -28,7 +30,7 @@ export async function middleware(req: NextRequest) {
     authToken = authToken.substring("Bearer ".length);
   }
 
-  const ip = req.ip;
+  const ip = requestIp.getClientIp(req);
 
   // Only rate limit when an ip has been provided
   if (ip) {
@@ -55,11 +57,9 @@ export async function middleware(req: NextRequest) {
       logger.error(
         `Ip(=${ip}) had ${requestCount} failed requests within the last 24 hours and will thus not be processed.`
       );
-      return new NextResponse("Too many failed requests", {
-        status: StatusCodes.TOO_MANY_REQUESTS,
-        // Indicate that the client should wait for one day
-        headers: { "Retry-After": `${60 * 60 * 24}` },
-      });
+      return res
+        .status(StatusCodes.TOO_MANY_REQUESTS)
+        .json({ message: "Too many failed requests" });
     }
   } else {
     logger.error("No ip has been provided");
@@ -67,37 +67,48 @@ export async function middleware(req: NextRequest) {
 
   const tokenInfo = decodeToken(authToken);
 
-  if (
-    !tokenInfo ||
-    !tokenInfo.accessToken ||
-    !tokenInfo.id ||
-    !tokenInfo.type
-  ) {
+  if (!tokenInfo) {
     // Log failed request
     await logAdminApiRequest(authToken, false, ip);
 
     // Token has wrong format, return 403 Forbidden
     logger.error("Authorization token is invalid");
-    return new NextResponse("Authorization token is invalid", {
-      status: StatusCodes.FORBIDDEN,
-    });
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ message: "Authorization token is invalid" });
+  } else {
+    if (tokenInfo.type !== type) {
+      logger.error("Authorization token is used for wrong route");
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "Access denied. Wrong route." });
+    }
   }
+
   let tokenFromDb;
+
   if (tokenInfo.type === "org") {
     tokenFromDb = await prisma.organisationAdminToken.findFirst({
       where: {
         token: authToken,
-        isRevoked: false,
+        isDeleted: false,
       },
     });
   } else if (tokenInfo.type === "app") {
     tokenFromDb = await prisma.appAdminToken.findFirst({
       where: {
         token: authToken,
-        isRevoked: false,
-        expiryDate: {
-          gt: new Date(),
-        },
+        isDeleted: false,
+        OR: [
+          {
+            expiryDate: null,
+          },
+          {
+            expiryDate: {
+              gt: new Date(),
+            },
+          },
+        ],
       },
     });
   }
@@ -108,19 +119,19 @@ export async function middleware(req: NextRequest) {
     logger.log(`Successfully validated token(=${authToken})`);
   } else {
     logger.error(`Failed to validate token(=${authToken})`);
-    return new NextResponse("Authorization token is invalid", {
-      status: StatusCodes.FORBIDDEN,
-    });
+    return res
+      .status(StatusCodes.FORBIDDEN)
+      .json({ message: "Authorization token is invalid" });
   }
 
-  // If valid, just go to the intended admin api page
-  return NextResponse.next();
+  // Return the validated token
+  return authToken;
 }
 
 async function logAdminApiRequest(
   token: string,
   success: boolean,
-  ip: string | undefined
+  ip: string | null
 ): Promise<void> {
   if (!ip) {
     return;
@@ -138,8 +149,3 @@ async function logAdminApiRequest(
     console.error("Error logging admin API request:", error);
   }
 }
-
-// Matches all sub-paths of /api/adminApi/...
-export const config = {
-  matcher: ["/api/admin/:path*"],
-};

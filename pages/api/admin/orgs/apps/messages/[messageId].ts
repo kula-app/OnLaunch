@@ -1,10 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../../../../lib/services/db";
-import { Action } from "../../../../../../../../../models/action";
-import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
-import { Logger } from "../../../../../../../../../util/logger";
+import prisma from "../../../../../../lib/services/db";
+import { Action } from "../../../../../../models/action";
+import { authenticate } from "../../../../../../util/adminApi/auth";
+import { decodeToken } from "../../../../../../util/adminApi/tokenDecoding";
+import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,60 +13,70 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res);
+  const authToken = await authenticate(req, res, "app");
 
-  if (!user) {
-    return;
-  }
+  // When no authToken has been returned, then the NextApiResponse
+  // has already ended with an error
+  if (!authToken) return;
+
+  const tokenInfo = decodeToken(authToken);
+
+  const messageId = Number(req.query.messageId);
 
   switch (req.method) {
+    // Retrieve message
     case "GET":
-      logger.log(`Looking up message with id '${req.query.messageId}'`);
+      logger.log(
+        `Looking up message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+      );
       const message = await prisma.message.findUnique({
         include: {
           actions: true,
         },
         where: {
-          id: Number(req.query.messageId),
+          id: messageId,
+          appId: tokenInfo?.id,
         },
       });
 
       if (message == null) {
-        logger.log(`No message found with id '${req.query.messageId}'`);
+        logger.log(
+          `No message found with id '${messageId}' for app with id(=${tokenInfo?.id})`
+        );
         return res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: `No message found with id ${req.query.messageId}` });
+          .json({ message: `No message found with id ${messageId}` });
       }
 
       return res.status(StatusCodes.OK).json(message);
 
+    // Delete message
     case "DELETE":
       try {
-        logger.log(`Deleting actions with message id '${req.query.messageId}'`);
-        await prisma.action.deleteMany({
-          where: {
-            messageId: Number(req.query.messageId),
-          },
-        });
-
-        logger.log(`Deleting message with id '${req.query.messageId}'`);
+        logger.log(
+          `Deleting message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+        );
         const deletedMessage = await prisma.message.delete({
           where: {
-            id: Number(req.query.messageId),
+            id: messageId,
+            appId: tokenInfo?.id,
           },
         });
 
         return res.status(StatusCodes.OK).json(deletedMessage);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(`No message found with id '${req.query.messageId}'`);
+          logger.error(
+            `No message found with id '${messageId}' for app with id(=${tokenInfo?.id})`
+          );
           return res.status(StatusCodes.NOT_FOUND).json({
-            message: "No message found with id " + req.query.messageId,
+            message: "No message found with id " + messageId,
           });
         }
       }
       break;
 
+    // Updating new message
     case "PUT":
       try {
         if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
@@ -75,10 +86,13 @@ export default async function handler(
             .json({ message: "Start date has to be before end date" });
         }
 
-        logger.log(`Updating message with id '${req.query.messageId}'`);
+        logger.log(
+          `Updating message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+        );
         const updatedMessage = await prisma.message.update({
           where: {
-            id: Number(req.query.messageId),
+            id: messageId,
+            appId: tokenInfo?.id,
           },
           data: {
             blocking: req.body.blocking,
@@ -86,27 +100,24 @@ export default async function handler(
             body: req.body.body,
             startDate: new Date(req.body.startDate),
             endDate: new Date(req.body.endDate),
-            appId: req.body.appId,
           },
         });
 
-        logger.log(
-          `Deleting actions of message with id '${req.query.messageId}'`
-        );
+        logger.log(`Deleting actions of message with id '${messageId}'`);
         await prisma.action.deleteMany({
           where: {
-            messageId: Number(req.query.messageId),
+            messageId: messageId,
           },
         });
 
         if (req.body.actions.length > 0) {
           const actions: Action[] = req.body.actions;
+
           actions.forEach((action) => {
-            action.messageId = Number(req.query.messageId);
+            action.messageId = messageId;
           });
-          logger.log(
-            `Creating actions for message with id '${req.query.messageId}'`
-          );
+
+          logger.log(`Creating actions for message with id '${messageId}'`);
           await prisma.action.createMany({
             data: req.body.actions,
           });
@@ -115,9 +126,9 @@ export default async function handler(
         return res.status(StatusCodes.CREATED).json(updatedMessage);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.log(`No message found with id '${req.query.messageId}'`);
+          logger.log(`No message found with id '${messageId}'`);
           return res.status(StatusCodes.NOT_FOUND).json({
-            message: "No message found with id " + req.query.messageId,
+            message: "No message found with id " + messageId,
           });
         }
       }
