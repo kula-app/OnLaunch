@@ -1,37 +1,36 @@
-import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdClose } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import createMessage from "../../../../../../api/messages/createMessage";
-import Routes from "../../../../../../routes/routes";
-import { Action } from "../../../../../../models/action";
-import { Message } from "../../../../../../models/message";
 import {
   Button,
   FormControl,
   FormLabel,
+  Heading,
   IconButton,
   Input,
   Select,
   Switch,
   Table,
   Tbody,
+  Td,
   Textarea,
   Th,
   Thead,
   Tr,
-  Td,
   useToast,
-  Heading,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { MdClose, MdDeleteForever } from "react-icons/md";
+import createMessage from "../../../../../../api/messages/createMessage";
+import { Action } from "../../../../../../models/action";
+import { ActionType } from "../../../../../../models/actionType";
+import { ButtonDesign } from "../../../../../../models/buttonDesign";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
   const toast = useToast();
-
-  const actionTypes = ["DISMISS"];
-  const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -44,6 +43,9 @@ export default function NewMessageForAppPage() {
   const [body, setBody] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  const actionTypeValues = Object.values(ActionType);
+  const buttonDesignValues = Object.values(ButtonDesign);
 
   function navigateToAppMessagesPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
@@ -95,7 +97,11 @@ export default function NewMessageForAppPage() {
   function addAction() {
     setActions((oldActions) => [
       ...oldActions,
-      { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" },
+      {
+        actionType: ActionType.Dismiss,
+        buttonDesign: ButtonDesign.Filled,
+        title: "",
+      },
     ]);
   }
 
@@ -119,7 +125,15 @@ export default function NewMessageForAppPage() {
     event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
-    data[index]["actionType"] = event.target.value as string;
+    const selectedValue = event.target.value;
+
+    // Ensure the selected value is a valid ButtonDesign enum value
+    if (Object.values(ActionType).includes(selectedValue as ActionType)) {
+      data[index].actionType = selectedValue as ActionType;
+    } else {
+      console.error("Invalid button design selected");
+    }
+
     setActions(data);
   }
 
@@ -128,7 +142,15 @@ export default function NewMessageForAppPage() {
     event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
-    data[index]["buttonDesign"] = event.target.value as string;
+    const selectedValue = event.target.value;
+
+    // Ensure the selected value is a valid ButtonDesign enum value
+    if (Object.values(ButtonDesign).includes(selectedValue as ButtonDesign)) {
+      data[index].buttonDesign = selectedValue as ButtonDesign;
+    } else {
+      console.error("Invalid button design selected");
+    }
+
     setActions(data);
   }
 
@@ -180,6 +202,7 @@ export default function NewMessageForAppPage() {
                 <FormControl className="mt-4">
                   <FormLabel>Start Date</FormLabel>
                   <Input
+                    required
                     placeholder="Start Date"
                     type="datetime-local"
                     id="startDate"
@@ -223,7 +246,7 @@ export default function NewMessageForAppPage() {
                                   handleButtonDesignChange(index, event)
                                 }
                               >
-                                {buttonDesigns.map((value, index) => {
+                                {buttonDesignValues.map((value, index) => {
                                   return (
                                     <option key={index} value={value}>
                                       {value}
@@ -239,7 +262,7 @@ export default function NewMessageForAppPage() {
                                   handleActionTypeChange(index, event)
                                 }
                               >
-                                {actionTypes.map((value, index) => {
+                                {actionTypeValues.map((value, index) => {
                                   return (
                                     <option key={index} value={value}>
                                       {value}
@@ -275,10 +298,7 @@ export default function NewMessageForAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button
-                    colorScheme="blue"
-                    onClick={addAction}
-                  >
+                  <Button colorScheme="blue" onClick={addAction}>
                     New Action
                   </Button>
                 </div>

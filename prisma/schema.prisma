@@ -23,7 +23,7 @@ enum Role {
 
 enum AppAccessLevel {
   FULL
-  // Magic Tokens are live for 5 minutes and will not be displayed in the UI during at any time
+  // Magic Tokens are live for a short duration and will not be displayed in the UI during at any time
   MAGIC
 }
 
@@ -278,7 +278,7 @@ model OrganisationAdminToken {
   // note: there is no expiration date or time for org-level admin tokens
   role      OrganisationAccessLevel @default(FULL)
   // true indicates that this token has been revoked by a user
-  isRevoked Boolean                 @default(false)
+  isDeleted Boolean                 @default(false)
 
   // the org the token belongs to
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
@@ -293,13 +293,13 @@ model AppAdminToken {
   token String @unique
 
   role       AppAccessLevel @default(FULL)
-  expiryDate DateTime
+  expiryDate DateTime?
   // true indicates that this token has been revoked by a user
-  isRevoked  Boolean        @default(false)
+  isDeleted  Boolean        @default(false)
 
   // the app the token belongs to
-  app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
-  appId Int?
+  app   App @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId Int
 }
 
 // As a safety measure, the admin api is rate-limited

@@ -25,6 +25,32 @@ class ApiRoutes {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}`;
   }
 
+  static getOrgAdminTokensByOrgId(orgId: number): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/adminTokens`;
+  }
+
+  static getOrgAdminTokensByOrgIdAndTokenId(
+    orgId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/adminTokens/${tokenId}`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppId(
+    orgId: number,
+    appId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/adminTokens`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppIdAndTokenId(
+    orgId: number,
+    appId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/adminTokens/${tokenId}`;
+  }
+
   static getDashboardData(orgId: number, appId?: number): string {
     return `${ApiRoutes.API_BASE_URL}/dashboard?orgId=${orgId}${
       appId ? `&appId=${appId}` : ""

@@ -1,9 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../../../../lib/services/db";
-import { Action } from "../../../../../../../../../models/action";
-import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
-import { Logger } from "../../../../../../../../../util/logger";
+import prisma from "../../../../../../lib/services/db";
+import { Action } from "../../../../../../models/action";
+import { authenticate } from "../../../../../../util/adminApi/auth";
+import { decodeToken } from "../../../../../../util/adminApi/tokenDecoding";
+import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,26 +12,16 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const user = await getUserWithRoleFromRequest(req, res);
+  const authToken = await authenticate(req, res, "app");
 
-  if (!user) {
-    return;
-  }
+  // When no authToken has been returned, then the NextApiResponse
+  // has already ended with an error
+  if (!authToken) return;
+
+  const tokenInfo = decodeToken(authToken);
 
   switch (req.method) {
-    case "GET":
-      logger.log(`Looking up messages with app id '${req.query.appId}'`);
-      const allMessages = await prisma.message.findMany({
-        include: {
-          actions: true,
-        },
-        where: {
-          appId: Number(req.query.appId),
-        },
-      });
-
-      return res.status(StatusCodes.OK).json(allMessages);
-
+    // Create new message
     case "POST":
       if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
         logger.log("Start date has to be before end date");
@@ -47,7 +38,7 @@ export default async function handler(
           body: req.body.body,
           startDate: new Date(req.body.startDate),
           endDate: new Date(req.body.endDate),
-          appId: req.body.appId,
+          appId: tokenInfo?.id,
         },
       });
 
