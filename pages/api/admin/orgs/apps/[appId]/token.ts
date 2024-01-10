@@ -32,13 +32,6 @@ export default async function handler(
   switch (req.method) {
     // Create new magic AppAdminToken for app
     case "POST":
-      if (!appId) {
-        logger.error("No appId parameter provided for app!");
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: "No appId parameter provided for app!",
-        });
-      }
-
       // Check whether the app is part of the organisation
       const appFromDb = await prisma.app.findFirst({
         where: {
