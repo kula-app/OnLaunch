@@ -1,6 +1,5 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest } from "next";
-import requestIp from "request-ip";
 import prisma from "../../lib/services/db";
 import { Logger } from "../logger";
 import { decodeToken } from "./tokenDecoding";
@@ -40,46 +39,9 @@ export async function authenticate(
     authToken = authToken.substring(bearerPrefix.length);
   }
 
-  const ip = requestIp.getClientIp(req);
-
-  // Only rate limit when an ip has been provided
-  if (ip) {
-    let countingStartDate = new Date();
-    // Subtract one hour
-    countingStartDate = new Date(countingStartDate.getTime() - 60 * 60 * 1000);
-
-    // Count requests for ip (for rate limiting)
-    const requestCount = await prisma.loggedAdminApiRequests.count({
-      where: {
-        ip: ip,
-        createdAt: {
-          gte: countingStartDate,
-        },
-      },
-    });
-
-    // Limit requests for ips with at least 1000 requests
-    // within the last hour
-    if (requestCount >= 1000) {
-      logger.error(
-        `Ip(=${ip}) had ${requestCount} requests within the last hour and will thus not be processed.`
-      );
-      return {
-        success: false,
-        statusCode: StatusCodes.TOO_MANY_REQUESTS,
-        errorMessage: "Too many failed requests",
-      };
-    }
-  } else {
-    logger.error("No ip has been provided");
-  }
-
   const tokenInfo = decodeToken(authToken);
 
   if (!tokenInfo) {
-    // Log failed request
-    await logAdminApiRequest(authToken, false, ip);
-
     // Token has wrong format, return 403 Forbidden
     logger.error("Authorization token is invalid");
     return {
@@ -129,8 +91,6 @@ export async function authenticate(
     id = tokenFromDb?.appId;
   }
 
-  logAdminApiRequest(authToken, !!tokenFromDb, ip);
-
   if (tokenFromDb) {
     logger.log(`Successfully validated token(=${authToken})`);
   } else {
@@ -144,26 +104,4 @@ export async function authenticate(
 
   // Return the validated token
   return { success: true, authToken, id, statusCode: StatusCodes.OK };
-}
-
-async function logAdminApiRequest(
-  token: string,
-  success: boolean,
-  ip: string | null
-): Promise<void> {
-  if (!ip) {
-    return;
-  }
-
-  try {
-    await prisma.loggedAdminApiRequests.create({
-      data: {
-        token: token,
-        success: success,
-        ip: ip,
-      },
-    });
-  } catch (error) {
-    console.error("Error logging admin API request:", error);
-  }
 }

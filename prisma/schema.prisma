@@ -302,16 +302,3 @@ model AppAdminToken {
   appId Int
 }
 
-// As a safety measure, the admin api is rate-limited
-model LoggedAdminApiRequests {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  ip String
-
-  token   String  @default("")
-  // The success flag is used to indicate whether the provided token is an active one
-  // this is used to prevent brute force attacks
-  success Boolean @default(false)
-}
