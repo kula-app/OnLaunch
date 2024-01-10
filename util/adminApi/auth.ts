@@ -1,15 +1,22 @@
 import { StatusCodes } from "http-status-codes";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest } from "next";
 import requestIp from "request-ip";
 import prisma from "../../lib/services/db";
 import { Logger } from "../logger";
 import { decodeToken } from "./tokenDecoding";
 
+interface AuthResult {
+  success: boolean;
+  authToken?: string;
+  id?: number;
+  statusCode: number;
+  errorMessage?: string;
+}
+
 export async function authenticate(
   req: NextApiRequest,
-  res: NextApiResponse,
   type: string
-) {
+): Promise<AuthResult> {
   const logger = new Logger(__filename);
 
   // Retrieve provided authorization token
@@ -19,15 +26,18 @@ export async function authenticate(
   if (!authToken) {
     // Token is missing, return 401 Unauthorized
     logger.error("Authorization token is missing");
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: "Authorization token is required" });
+    return {
+      success: false,
+      statusCode: StatusCodes.UNAUTHORIZED,
+      errorMessage: "Authorization token is required",
+    };
   }
 
   // Check for "Bearer " prefix
-  if (authToken.startsWith("Bearer ")) {
+  const bearerPrefix = "Bearer ";
+  if (authToken.startsWith(bearerPrefix)) {
     // Remove the "Bearer " prefix
-    authToken = authToken.substring("Bearer ".length);
+    authToken = authToken.substring(bearerPrefix.length);
   }
 
   const ip = requestIp.getClientIp(req);
@@ -35,31 +45,30 @@ export async function authenticate(
   // Only rate limit when an ip has been provided
   if (ip) {
     let countingStartDate = new Date();
-    // Subtract one day
-    countingStartDate = new Date(
-      countingStartDate.getTime() - 24 * 60 * 60 * 1000
-    );
+    // Subtract one hour
+    countingStartDate = new Date(countingStartDate.getTime() - 60 * 60 * 1000);
 
     // Count requests for ip (for rate limiting)
     const requestCount = await prisma.loggedAdminApiRequests.count({
       where: {
         ip: ip,
-        success: false,
         createdAt: {
           gte: countingStartDate,
         },
       },
     });
 
-    // Limit requests for ips with at least 5 failed requests
-    // within the last 24 hours
-    if (requestCount >= 5) {
+    // Limit requests for ips with at least 1000 requests
+    // within the last hour
+    if (requestCount >= 1000) {
       logger.error(
-        `Ip(=${ip}) had ${requestCount} failed requests within the last 24 hours and will thus not be processed.`
+        `Ip(=${ip}) had ${requestCount} requests within the last hour and will thus not be processed.`
       );
-      return res
-        .status(StatusCodes.TOO_MANY_REQUESTS)
-        .json({ message: "Too many failed requests" });
+      return {
+        success: false,
+        statusCode: StatusCodes.TOO_MANY_REQUESTS,
+        errorMessage: "Too many failed requests",
+      };
     }
   } else {
     logger.error("No ip has been provided");
@@ -73,19 +82,24 @@ export async function authenticate(
 
     // Token has wrong format, return 403 Forbidden
     logger.error("Authorization token is invalid");
-    return res
-      .status(StatusCodes.FORBIDDEN)
-      .json({ message: "Authorization token is invalid" });
+    return {
+      success: false,
+      statusCode: StatusCodes.FORBIDDEN,
+      errorMessage: "Authorization token is invalid",
+    };
   } else {
     if (tokenInfo.type !== type) {
       logger.error("Authorization token is used for wrong route");
-      return res
-        .status(StatusCodes.FORBIDDEN)
-        .json({ message: "Access denied. Wrong route." });
+      return {
+        success: false,
+        statusCode: StatusCodes.FORBIDDEN,
+        errorMessage: "Access denied. Wrong route.",
+      };
     }
   }
 
   let tokenFromDb;
+  let id;
 
   if (tokenInfo.type === "org") {
     tokenFromDb = await prisma.organisationAdminToken.findFirst({
@@ -94,6 +108,7 @@ export async function authenticate(
         isDeleted: false,
       },
     });
+    id = tokenFromDb?.orgId;
   } else if (tokenInfo.type === "app") {
     tokenFromDb = await prisma.appAdminToken.findFirst({
       where: {
@@ -111,6 +126,7 @@ export async function authenticate(
         ],
       },
     });
+    id = tokenFromDb?.appId;
   }
 
   logAdminApiRequest(authToken, !!tokenFromDb, ip);
@@ -119,13 +135,15 @@ export async function authenticate(
     logger.log(`Successfully validated token(=${authToken})`);
   } else {
     logger.error(`Failed to validate token(=${authToken})`);
-    return res
-      .status(StatusCodes.FORBIDDEN)
-      .json({ message: "Authorization token is invalid" });
+    return {
+      success: false,
+      statusCode: StatusCodes.FORBIDDEN,
+      errorMessage: "Authorization token is invalid",
+    };
   }
 
   // Return the validated token
-  return authToken;
+  return { success: true, authToken, id, statusCode: StatusCodes.OK };
 }
 
 async function logAdminApiRequest(

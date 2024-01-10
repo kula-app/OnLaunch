@@ -4,7 +4,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
 import { Action } from "../../../../../../models/action";
 import { authenticate } from "../../../../../../util/adminApi/auth";
-import { decodeToken } from "../../../../../../util/adminApi/tokenDecoding";
 import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
@@ -13,13 +12,14 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const authToken = await authenticate(req, res, "app");
+  const authResult = await authenticate(req, "app");
 
-  // When no authToken has been returned, then the NextApiResponse
-  // has already ended with an error
-  if (!authToken) return;
-
-  const tokenInfo = decodeToken(authToken);
+  // When authResult was not successful, return error with respective
+  // code and message
+  if (!authResult.success)
+    return res
+      .status(authResult.statusCode)
+      .json({ message: authResult.errorMessage });
 
   const messageId = Number(req.query.messageId);
 
@@ -27,7 +27,7 @@ export default async function handler(
     // Retrieve message
     case "GET":
       logger.log(
-        `Looking up message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+        `Looking up message with id '${messageId}' for app with id(=${authResult.id})`
       );
       const message = await prisma.message.findUnique({
         include: {
@@ -35,13 +35,13 @@ export default async function handler(
         },
         where: {
           id: messageId,
-          appId: tokenInfo?.id,
+          appId: authResult.id,
         },
       });
 
       if (message == null) {
         logger.log(
-          `No message found with id '${messageId}' for app with id(=${tokenInfo?.id})`
+          `No message found with id '${messageId}' for app with id(=${authResult.id})`
         );
         return res
           .status(StatusCodes.NOT_FOUND)
@@ -54,12 +54,12 @@ export default async function handler(
     case "DELETE":
       try {
         logger.log(
-          `Deleting message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+          `Deleting message with id '${messageId}' for app with id(=${authResult.id})`
         );
         const deletedMessage = await prisma.message.delete({
           where: {
             id: messageId,
-            appId: tokenInfo?.id,
+            appId: authResult.id,
           },
         });
 
@@ -67,7 +67,7 @@ export default async function handler(
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(
-            `No message found with id '${messageId}' for app with id(=${tokenInfo?.id})`
+            `No message found with id '${messageId}' for app with id(=${authResult.id})`
           );
           return res.status(StatusCodes.NOT_FOUND).json({
             message: "No message found with id " + messageId,
@@ -87,12 +87,12 @@ export default async function handler(
         }
 
         logger.log(
-          `Updating message with id '${messageId}' for app with id(=${tokenInfo?.id})`
+          `Updating message with id '${messageId}' for app with id(=${authResult.id})`
         );
         const updatedMessage = await prisma.message.update({
           where: {
             id: messageId,
-            appId: tokenInfo?.id,
+            appId: authResult.id,
           },
           data: {
             blocking: req.body.blocking,

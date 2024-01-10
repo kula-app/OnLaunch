@@ -2,7 +2,6 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
 import { authenticate } from "../../../../../../util/adminApi/auth";
-import { decodeToken } from "../../../../../../util/adminApi/tokenDecoding";
 import { generateToken } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
 
@@ -12,21 +11,21 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const authToken = await authenticate(req, res, "org");
+  const authResult = await authenticate(req, "org");
 
-  // When no authToken has been returned, then the NextApiResponse
-  // has already ended with an error
-  if (!authToken) return;
-
-  const tokenInfo = decodeToken(authToken);
+  // When authResult was not successful, return error with respective
+  // code and message
+  if (!authResult.success)
+    return res
+      .status(authResult.statusCode)
+      .json({ message: authResult.errorMessage });
 
   const appId = Number(req.query.appId);
 
-  // The (app) id provided in the token has to match the app id of the query path
-  if (!tokenInfo || !appId || tokenInfo.id !== appId) {
-    logger.error(`Wrong token provided for app with id(=${appId})`);
+  if (!appId) {
+    logger.error(`No app id provided!`);
     return res.status(StatusCodes.BAD_REQUEST).json({
-      message: `Wrong token provided for app with id(=${appId})`,
+      message: `No app id provided!`,
     });
   }
 
@@ -44,16 +43,16 @@ export default async function handler(
       const appFromDb = await prisma.app.findFirst({
         where: {
           id: appId,
-          orgId: tokenInfo?.id,
+          orgId: authResult.id,
         },
       });
 
       if (!appFromDb) {
         logger.error(
-          `No app with id(=${appId}) found for org with id(=${tokenInfo?.id}!`
+          `No app with id(=${appId}) found for org with id(=${authResult.id}!`
         );
         return res.status(StatusCodes.NOT_FOUND).json({
-          message: `No app with id(=${appId}) found for org with id(=${tokenInfo?.id}!`,
+          message: `No app with id(=${appId}) found for org with id(=${authResult.id}!`,
         });
       }
 
@@ -66,7 +65,7 @@ export default async function handler(
 
       const appAdminToken = await prisma.appAdminToken.create({
         data: {
-          token: `app_${appId}_${generatedToken}`,
+          token: `app_${generatedToken}`,
           role: "MAGIC",
           expiryDate: expiryDate,
           appId: appId,
