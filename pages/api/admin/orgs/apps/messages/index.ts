@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
 import { Action } from "../../../../../../models/action";
 import { authenticate } from "../../../../../../util/adminApi/auth";
-import { decodeToken } from "../../../../../../util/adminApi/tokenDecoding";
 import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
@@ -12,13 +11,14 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const authToken = await authenticate(req, res, "app");
+  const authResult = await authenticate(req, "app");
 
-  // When no authToken has been returned, then the NextApiResponse
-  // has already ended with an error
-  if (!authToken) return;
-
-  const tokenInfo = decodeToken(authToken);
+  // When authResult was not successful, return error with respective
+  // code and message
+  if (!authResult.success)
+    return res
+      .status(authResult.statusCode)
+      .json({ message: authResult.errorMessage });
 
   switch (req.method) {
     // Create new message
@@ -38,7 +38,7 @@ export default async function handler(
           body: req.body.body,
           startDate: new Date(req.body.startDate),
           endDate: new Date(req.body.endDate),
-          appId: tokenInfo?.id,
+          appId: authResult.id,
         },
       });
 

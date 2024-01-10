@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../lib/services/db";
 import { authenticate } from "../../../../../util/adminApi/auth";
-import { decodeToken } from "../../../../../util/adminApi/tokenDecoding";
 import { generateToken } from "../../../../../util/auth";
 import { Logger } from "../../../../../util/logger";
 
@@ -13,20 +12,20 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const authToken = await authenticate(
+  const authResult = await authenticate(
     req,
-    res,
     // For getting/updating an app, the token has to be an
     // AppAdminToken, for creating/posting a new app, the
     // token has to be an OrganisationAdminToken
     req.method === "POST" ? "org" : "app"
   );
 
-  // When no authToken has been returned, then the NextApiResponse
-  // has already ended with an error
-  if (!authToken) return;
-
-  const tokenInfo = decodeToken(authToken);
+  // When authResult was not successful, return error with respective
+  // code and message
+  if (!authResult.success)
+    return res
+      .status(authResult.statusCode)
+      .json({ message: authResult.errorMessage });
 
   switch (req.method) {
     // Create new app
@@ -47,7 +46,7 @@ export default async function handler(
       const newApp = await prisma.app.create({
         data: {
           name: name,
-          orgId: tokenInfo?.id,
+          orgId: authResult.id,
           publicKey: generatedToken,
         },
       });
@@ -57,11 +56,11 @@ export default async function handler(
     // Find app by token
     // If found, return app data with message
     case "GET":
-      logger.log(`Looking up app with id(='${tokenInfo?.id}'`);
+      logger.log(`Looking up app with id(='${authResult.id}'`);
 
       const app = await prisma.app.findUnique({
         where: {
-          id: tokenInfo?.id,
+          id: authResult.id,
         },
         include: {
           messages: true,
@@ -69,9 +68,9 @@ export default async function handler(
       });
 
       if (app == null) {
-        logger.error(`No app found with id '${tokenInfo?.id}'`);
+        logger.error(`No app found with id '${authResult.id}'`);
         return res.status(StatusCodes.NOT_FOUND).json({
-          message: `No app found with id '${tokenInfo?.id}'`,
+          message: `No app found with id '${authResult.id}'`,
         });
       }
 
@@ -85,11 +84,11 @@ export default async function handler(
     // Update app
     case "PUT":
       try {
-        logger.log(`Updating app with id(='${tokenInfo?.id}'`);
+        logger.log(`Updating app with id(='${authResult.id}'`);
 
         const updatedApp = await prisma.app.update({
           where: {
-            id: tokenInfo?.id,
+            id: authResult.id,
           },
           data: {
             name: req.body.name,
@@ -99,10 +98,10 @@ export default async function handler(
         return res.status(StatusCodes.CREATED).json(updatedApp);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          logger.error(`No app found with id '${tokenInfo?.id}'`);
+          logger.error(`No app found with id '${authResult.id}'`);
           return res
             .status(StatusCodes.NOT_FOUND)
-            .json({ message: "No app found with id " + tokenInfo?.id });
+            .json({ message: "No app found with id " + authResult.id });
         }
       }
       break;

@@ -83,7 +83,7 @@ export default async function handler(
       logger.log(`Creating new app admin token for app id '${appId}'`);
       const appAdminToken = await prisma.appAdminToken.create({
         data: {
-          token: `app_${appId}_${generatedToken}`,
+          token: `app_${generatedToken}`,
           expiryDate: expiryDate,
           app: {
             connect: {

@@ -55,7 +55,7 @@ export default async function handler(
       logger.log(`Creating new organisation admin token for org id '${orgId}'`);
       const orgAdminToken = await prisma.organisationAdminToken.create({
         data: {
-          token: `org_${orgId}_${generatedToken}`,
+          token: `org_${generatedToken}`,
           orgId: orgId,
         },
       });
