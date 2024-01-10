@@ -23,7 +23,7 @@ export default async function handler(
     // Find org (including apps) by token
     // If found, return org data with apps
     case "GET":
-      logger.log(`Looking up organisation with id(='${authResult.id}'`);
+      logger.log(`Looking up organisation with id(='${authResult.id}')`);
 
       const org = await prisma.organisation.findUnique({
         where: {
