@@ -56,7 +56,7 @@ export default async function handler(
     // Find app by token
     // If found, return app data with message
     case "GET":
-      logger.log(`Looking up app with id(='${authResult.id}'`);
+      logger.log(`Looking up app with id(='${authResult.id})'`);
 
       const app = await prisma.app.findUnique({
         where: {
@@ -84,7 +84,7 @@ export default async function handler(
     // Update app
     case "PUT":
       try {
-        logger.log(`Updating app with id(='${authResult.id}'`);
+        logger.log(`Updating app with id(='${authResult.id})'`);
 
         const updatedApp = await prisma.app.update({
           where: {
