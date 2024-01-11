@@ -131,7 +131,7 @@ export default function NewMessageForAppPage() {
     if (Object.values(ActionType).includes(selectedValue as ActionType)) {
       data[index].actionType = selectedValue as ActionType;
     } else {
-      console.error("Invalid button design selected");
+      console.error("Invalid action type selected");
     }
 
     setActions(data);

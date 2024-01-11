@@ -139,7 +139,7 @@ export default function EditAppPage() {
 
   function handleDelete() {
     setIsAppDeletion(true);
-    setDialogHeaderText(`Delete App with id '${appId}?`);
+    setDialogHeaderText(`Delete app with id '${appId}?`);
 
     onOpen();
   }
