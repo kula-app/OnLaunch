@@ -49,15 +49,15 @@ export async function authenticate(
       statusCode: StatusCodes.FORBIDDEN,
       errorMessage: "Authorization token is invalid",
     };
-  } else {
-    if (tokenInfo.type !== type) {
-      logger.error("Authorization token is used for wrong route");
-      return {
-        success: false,
-        statusCode: StatusCodes.FORBIDDEN,
-        errorMessage: "Access denied. Wrong route.",
-      };
-    }
+  }
+
+  if (tokenInfo.type !== type) {
+    logger.error("Authorization token is used for wrong route");
+    return {
+      success: false,
+      statusCode: StatusCodes.FORBIDDEN,
+      errorMessage: "Access denied. Wrong route.",
+    };
   }
 
   let tokenFromDb;
@@ -66,7 +66,7 @@ export async function authenticate(
   if (tokenInfo.type === "org") {
     tokenFromDb = await prisma.organisationAdminToken.findFirst({
       where: {
-        token: authToken,
+        token: tokenInfo.token,
         isDeleted: false,
       },
     });
@@ -74,7 +74,7 @@ export async function authenticate(
   } else if (tokenInfo.type === "app") {
     tokenFromDb = await prisma.appAdminToken.findFirst({
       where: {
-        token: authToken,
+        token: tokenInfo.token,
         isDeleted: false,
         OR: [
           {
@@ -91,9 +91,7 @@ export async function authenticate(
     id = tokenFromDb?.appId;
   }
 
-  if (tokenFromDb) {
-    logger.log(`Successfully validated token(=${authToken})`);
-  } else {
+  if (!tokenFromDb) {
     logger.error(`Failed to validate token(=${authToken})`);
     return {
       success: false,
@@ -101,6 +99,8 @@ export async function authenticate(
       errorMessage: "Authorization token is invalid",
     };
   }
+
+  logger.log(`Successfully validated token(=${authToken})`);
 
   // Return the validated token
   return { success: true, authToken, id, statusCode: StatusCodes.OK };

@@ -2,6 +2,9 @@ class ApiRoutes {
   static VERSION = "0.1";
   static API_BASE_URL = `/api/frontend/v${ApiRoutes.VERSION}`;
 
+  static ADMIN_API_VERSION = "0.1";
+  static ADMIN_API_BASE_URL = `/api/admin/v${ApiRoutes.ADMIN_API_VERSION}`;
+
   static readonly USERS = `${ApiRoutes.API_BASE_URL}/users`;
   static readonly SIGNUP = `${ApiRoutes.API_BASE_URL}/users/register`;
   static readonly ORGS = `${ApiRoutes.API_BASE_URL}/orgs`;
@@ -23,32 +26,6 @@ class ApiRoutes {
 
   static getOrgById(orgId: number): string {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}`;
-  }
-
-  static getOrgAdminTokensByOrgId(orgId: number): string {
-    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/adminTokens`;
-  }
-
-  static getOrgAdminTokensByOrgIdAndTokenId(
-    orgId: number,
-    tokenId: number
-  ): string {
-    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/adminTokens/${tokenId}`;
-  }
-
-  static getAppAdminTokensByOrgIdAndAppId(
-    orgId: number,
-    appId: number
-  ): string {
-    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/adminTokens`;
-  }
-
-  static getAppAdminTokensByOrgIdAndAppIdAndTokenId(
-    orgId: number,
-    appId: number,
-    tokenId: number
-  ): string {
-    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/adminTokens/${tokenId}`;
   }
 
   static getDashboardData(orgId: number, appId?: number): string {
@@ -98,6 +75,34 @@ class ApiRoutes {
 
   static getPasswordResetByToken(token: string): string {
     return `${ApiRoutes.API_BASE_URL}/tokens/resetPassword/${token}`;
+  }
+
+  // -------- Admin API --------
+
+  static getOrgAdminTokensByOrgId(orgId: number): string {
+    return `${ApiRoutes.ADMIN_API_BASE_URL}/orgs/${orgId}/admin/tokens`;
+  }
+
+  static getOrgAdminTokensByOrgIdAndTokenId(
+    orgId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.ADMIN_API_BASE_URL}/orgs/${orgId}/admin/tokens/${tokenId}`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppId(
+    orgId: number,
+    appId: number
+  ): string {
+    return `${ApiRoutes.ADMIN_API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppIdAndTokenId(
+    orgId: number,
+    appId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.ADMIN_API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens/${tokenId}`;
   }
 }
 

@@ -23,8 +23,8 @@ enum Role {
 
 enum AppAccessLevel {
   FULL
-  // Magic Tokens are live for a short duration and will not be displayed in the UI during at any time
-  MAGIC
+  // Temporary Tokens are alive for a short duration and will not be displayed in the UI at any time
+  TEMP
 }
 
 enum OrganisationAccessLevel {
@@ -273,7 +273,8 @@ model OrganisationAdminToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  token String @unique
+  token String  @unique
+  label String?
 
   // note: there is no expiration date or time for org-level admin tokens
   role      OrganisationAccessLevel @default(FULL)
@@ -290,7 +291,8 @@ model AppAdminToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  token String @unique
+  token String  @unique
+  label String?
 
   role       AppAccessLevel @default(FULL)
   expiryDate DateTime?
@@ -301,4 +303,3 @@ model AppAdminToken {
   app   App @relation(fields: [appId], references: [id], onDelete: Cascade)
   appId Int
 }
-
