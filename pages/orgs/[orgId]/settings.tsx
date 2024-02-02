@@ -33,9 +33,9 @@ import { useRouter } from "next/router";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
-import createOrgAdminToken from "../../../api/orgs/adminTokens/createToken";
-import deleteOrgAdminToken from "../../../api/orgs/adminTokens/deleteOrgAdminToken";
-import { useOrgAdminTokens } from "../../../api/orgs/adminTokens/useOrgAdminTokens";
+import createOrgAdminToken from "../../../api/orgs/admin/tokens/createToken";
+import deleteOrgAdminToken from "../../../api/orgs/admin/tokens/deleteOrgAdminToken";
+import { useOrgAdminTokens } from "../../../api/orgs/admin/tokens/useOrgAdminTokens";
 import deleteOrg from "../../../api/orgs/deleteOrg";
 import deleteUserFromOrg from "../../../api/orgs/deleteUserFromOrg";
 import getOrg from "../../../api/orgs/getOrg";
@@ -64,6 +64,8 @@ export default function EditOrgPage() {
   const [isOrgDeletion, setIsOrgDeletion] = useState(false);
   const [tokenIdToDelete, setTokenIdToDelete] = useState(-1);
   const cancelRef = React.useRef(null);
+
+  const [tokenLabel, setTokenLabel] = useState("");
 
   const [subs, setSubs] = useState<Subscription[]>();
   const [loading, setLoading] = useState(true);
@@ -414,9 +416,10 @@ export default function EditOrgPage() {
 
   async function sendCreateNewToken() {
     try {
-      await createOrgAdminToken(orgId);
+      await createOrgAdminToken(orgId, tokenLabel);
 
       orgAdminTokenMutate();
+      setTokenLabel("");
 
       toast({
         title: "Success!",
@@ -645,6 +648,9 @@ export default function EditOrgPage() {
                             <strong>Id</strong>
                           </Th>
                           <Th>
+                            <strong>Label</strong>
+                          </Th>
+                          <Th>
                             <strong>Token</strong>
                           </Th>
                           <Th></Th>
@@ -655,10 +661,13 @@ export default function EditOrgPage() {
                           return (
                             <Tr key={index}>
                               <Td>{token.id}</Td>
+                              <Td>{token.label}</Td>
                               <Td>
-                                {token.token.length > 15
-                                  ? token.token.substring(0, 15) + "..."
-                                  : token.token}
+                                <Input
+                                  value={token.token}
+                                  readOnly
+                                  className="bg-gray-300"
+                                />
                               </Td>
                               <Td>
                                 <Button
@@ -715,6 +724,12 @@ export default function EditOrgPage() {
                     )}
 
                     <Center>
+                      <Input
+                        placeholder="Token label"
+                        className="mt-8 mr-4 max-w-96"
+                        value={tokenLabel}
+                        onChange={(event) => setTokenLabel(event.target.value)}
+                      />
                       <Button
                         colorScheme="blue"
                         variant="solid"

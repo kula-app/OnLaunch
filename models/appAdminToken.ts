@@ -3,4 +3,5 @@ export interface AppAdminToken {
   token: string;
   role: string;
   expiryDate?: string;
+  label?: string;
 }

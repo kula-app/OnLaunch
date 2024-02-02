@@ -31,9 +31,9 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { MdDeleteForever } from "react-icons/md";
-import createAppAdminToken from "../../../../../api/apps/adminTokens/createToken";
-import deleteAppAdminToken from "../../../../../api/apps/adminTokens/deleteAppAdminToken";
-import { useAppAdminTokens } from "../../../../../api/apps/adminTokens/useAppAdminTokens";
+import createAppAdminToken from "../../../../../api/apps/admin/tokens/createToken";
+import deleteAppAdminToken from "../../../../../api/apps/admin/tokens/deleteAppAdminToken";
+import { useAppAdminTokens } from "../../../../../api/apps/admin/tokens/useAppAdminTokens";
 import deleteApp from "../../../../../api/apps/deleteApp";
 import getApp from "../../../../../api/apps/getApp";
 import updateApp from "../../../../../api/apps/updateApp";
@@ -50,6 +50,8 @@ export default function EditAppPage() {
   const [tokenIdToDelete, setTokenIdToDelete] = useState(-1);
   const [dialogHeaderText, setDialogHeaderText] = useState("");
   const cancelRef = React.useRef(null);
+
+  const [tokenLabel, setTokenLabel] = useState("");
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -210,9 +212,10 @@ export default function EditAppPage() {
 
   async function sendCreateNewToken() {
     try {
-      await createAppAdminToken(orgId, appId, timeToLive);
+      await createAppAdminToken(orgId, appId, tokenLabel, timeToLive);
 
       appAdminTokenMutate();
+      setTokenLabel("");
 
       toast({
         title: "Success!",
@@ -292,6 +295,9 @@ export default function EditAppPage() {
                       <strong>Id</strong>
                     </Th>
                     <Th>
+                      <strong>Label</strong>
+                    </Th>
+                    <Th>
                       <strong>Token</strong>
                     </Th>
                     <Th>
@@ -305,10 +311,13 @@ export default function EditAppPage() {
                     return (
                       <Tr key={index}>
                         <Td>{token.id}</Td>
+                        <Td>{token.label}</Td>
                         <Td>
-                          {token.token.length > 15
-                            ? token.token.substring(0, 15) + "..."
-                            : token.token}
+                          <Input
+                            value={token.token}
+                            readOnly
+                            className="bg-gray-300"
+                          />
                         </Td>
                         <Td>
                           {token.expiryDate
@@ -368,6 +377,12 @@ export default function EditAppPage() {
 
               <Center className="mt-8 flex justify-center">
                 <Flex>
+                  <Input
+                    placeholder="Token label"
+                    className="mr-4 max-w-96"
+                    value={tokenLabel}
+                    onChange={(event) => setTokenLabel(event.target.value)}
+                  />
                   <Select value={timeToLive} onChange={handleSelectionChange}>
                     {options.map((option, index) => (
                       <option key={index} value={option.value}>
@@ -381,7 +396,7 @@ export default function EditAppPage() {
                     onClick={sendCreateNewToken}
                     className="ml-4"
                   >
-                    add token
+                    add
                   </Button>
                 </Flex>
               </Center>
