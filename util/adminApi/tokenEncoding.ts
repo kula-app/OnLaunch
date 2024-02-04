@@ -10,6 +10,6 @@ export function encodeAppToken(token: string): string {
   return encodeToken(token, AdminTokenType.App);
 }
 
-export function encodeToken(token: string, type: string): string {
+export function encodeToken(token: string, type: AdminTokenType): string {
   return `${type}${delimiter}${token}`;
 }

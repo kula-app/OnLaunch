@@ -59,7 +59,7 @@ export default async function handler(
             id: appAdminToken.id,
             createdAt: appAdminToken.createdAt,
             updatedAt: appAdminToken.updatedAt,
-            token: appAdminToken.token,
+            token: encodeAppToken(appAdminToken.token),
             role: appAdminToken.role,
             label: appAdminToken.label ? appAdminToken.label : "",
             expiryDate: appAdminToken.expiryDate

@@ -63,8 +63,13 @@ export default async function handler(
             message: "No message found with id " + req.query.messageId,
           });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     case "PUT":
       try {
@@ -120,8 +125,13 @@ export default async function handler(
             message: "No message found with id " + req.query.messageId,
           });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     default:
       return res
