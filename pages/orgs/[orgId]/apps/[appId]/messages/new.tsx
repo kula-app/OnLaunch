@@ -22,8 +22,6 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { MdClose, MdDeleteForever } from "react-icons/md";
 import createMessage from "../../../../../../api/messages/createMessage";
 import { Action } from "../../../../../../models/action";
-import { ActionType } from "../../../../../../models/actionType";
-import { ButtonDesign } from "../../../../../../models/buttonDesign";
 import { Message } from "../../../../../../models/message";
 import Routes from "../../../../../../routes/routes";
 import styles from "../../../../../../styles/Home.module.css";
@@ -31,6 +29,9 @@ import styles from "../../../../../../styles/Home.module.css";
 export default function NewMessageForAppPage() {
   const router = useRouter();
   const toast = useToast();
+
+  const actionTypes = ["DISMISS"];
+  const buttonDesigns = ["FILLED", "TEXT"];
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
@@ -43,9 +44,6 @@ export default function NewMessageForAppPage() {
   const [body, setBody] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  const actionTypeValues = Object.values(ActionType);
-  const buttonDesignValues = Object.values(ButtonDesign);
 
   function navigateToAppMessagesPage() {
     router.push(Routes.getMessagesByOrgIdAndAppId(orgId, appId));
@@ -97,11 +95,7 @@ export default function NewMessageForAppPage() {
   function addAction() {
     setActions((oldActions) => [
       ...oldActions,
-      {
-        actionType: ActionType.Dismiss,
-        buttonDesign: ButtonDesign.Filled,
-        title: "",
-      },
+      { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" },
     ]);
   }
 
@@ -125,14 +119,7 @@ export default function NewMessageForAppPage() {
     event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
-    const selectedValue = event.target.value;
-
-    // Ensure the selected value is a valid ButtonDesign enum value
-    if (Object.values(ActionType).includes(selectedValue as ActionType)) {
-      data[index].actionType = selectedValue as ActionType;
-    } else {
-      console.error("Invalid action type selected");
-    }
+    data[index]["actionType"] = event.target.value as string;
 
     setActions(data);
   }
@@ -142,14 +129,7 @@ export default function NewMessageForAppPage() {
     event: ChangeEvent<HTMLSelectElement>
   ) {
     let data = [...actions];
-    const selectedValue = event.target.value;
-
-    // Ensure the selected value is a valid ButtonDesign enum value
-    if (Object.values(ButtonDesign).includes(selectedValue as ButtonDesign)) {
-      data[index].buttonDesign = selectedValue as ButtonDesign;
-    } else {
-      console.error("Invalid button design selected");
-    }
+    data[index]["buttonDesign"] = event.target.value as string;
 
     setActions(data);
   }
@@ -246,7 +226,7 @@ export default function NewMessageForAppPage() {
                                   handleButtonDesignChange(index, event)
                                 }
                               >
-                                {buttonDesignValues.map((value, index) => {
+                                {buttonDesigns.map((value, index) => {
                                   return (
                                     <option key={index} value={value}>
                                       {value}
@@ -262,7 +242,7 @@ export default function NewMessageForAppPage() {
                                   handleActionTypeChange(index, event)
                                 }
                               >
-                                {actionTypeValues.map((value, index) => {
+                                {actionTypes.map((value, index) => {
                                   return (
                                     <option key={index} value={value}>
                                       {value}
