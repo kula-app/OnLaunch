@@ -1,11 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../../lib/services/db";
-import { AppAdminTokenDto } from "../../../../../../../models/dtos/appAdminTokenDto";
-import { authenticate } from "../../../../../../../util/adminApi/auth";
-import { encodeAppToken } from "../../../../../../../util/adminApi/tokenEncoding";
-import { generateToken } from "../../../../../../../util/auth";
-import { Logger } from "../../../../../../../util/logger";
+import prisma from "../../../../../../lib/services/db";
+import { AppAdminTokenDto } from "../../../../../../models/dtos/appAdminTokenDto";
+import { authenticate } from "../../../../../../util/adminApi/auth";
+import { encodeAppToken } from "../../../../../../util/adminApi/tokenEncoding";
+import { generateToken } from "../../../../../../util/auth";
+import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
   req: NextApiRequest,

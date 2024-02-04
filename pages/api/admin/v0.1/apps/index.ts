@@ -1,12 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../lib/services/db";
-import { AppDto } from "../../../../../../models/dtos/appDto";
-import { MessageDto } from "../../../../../../models/dtos/messageDto";
-import { authenticate } from "../../../../../../util/adminApi/auth";
-import { generateToken } from "../../../../../../util/auth";
-import { Logger } from "../../../../../../util/logger";
+import prisma from "../../../../../lib/services/db";
+import { AppDto } from "../../../../../models/dtos/appDto";
+import { MessageDto } from "../../../../../models/dtos/messageDto";
+import { authenticate } from "../../../../../util/adminApi/auth";
+import { Logger } from "../../../../../util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,13 +13,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const authResult = await authenticate(
-    req,
-    // For getting/updating an app, the token has to be an
-    // AppAdminToken, for creating/posting a new app, the
-    // token has to be an OrganisationAdminToken
-    req.method === "POST" ? "org" : "app"
-  );
+  const authResult = await authenticate(req, "app");
 
   // When authResult was not successful, return error with respective
   // code and message
@@ -30,39 +23,6 @@ export default async function handler(
       .json({ message: authResult.errorMessage });
 
   switch (req.method) {
-    // Create new app
-    case "POST":
-      const name = req.body.name;
-
-      if (!name) {
-        logger.error("No name parameter provided for new app!");
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: "No name parameter provided for new app!",
-        });
-      }
-
-      logger.log(`Creating app with name(='${name}'`);
-
-      const generatedToken = generateToken();
-
-      const newApp = await prisma.app.create({
-        data: {
-          name: name,
-          orgId: authResult.id,
-          publicKey: generatedToken,
-        },
-      });
-
-      const dto: AppDto = {
-        id: newApp.id,
-        createdAt: newApp.createdAt,
-        updatedAt: newApp.updatedAt,
-        name: newApp.name,
-        publicKey: newApp.publicKey,
-      };
-
-      return res.status(StatusCodes.CREATED).json(dto);
-
     // Find app by token
     // If found, return app data with message
     case "GET":

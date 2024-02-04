@@ -1,11 +1,11 @@
 import { Action } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../../../../lib/services/db";
-import { ActionDto } from "../../../../../../../models/dtos/actionDto";
-import { MessageDto } from "../../../../../../../models/dtos/messageDto";
-import { authenticate } from "../../../../../../../util/adminApi/auth";
-import { Logger } from "../../../../../../../util/logger";
+import prisma from "../../../../../../lib/services/db";
+import { ActionDto } from "../../../../../../models/dtos/actionDto";
+import { MessageDto } from "../../../../../../models/dtos/messageDto";
+import { authenticate } from "../../../../../../util/adminApi/auth";
+import { Logger } from "../../../../../../util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,6 +23,37 @@ export default async function handler(
       .json({ message: authResult.errorMessage });
 
   switch (req.method) {
+    // Get all messages for app
+    case "GET":
+      logger.log(`Creating message for app id '${authResult.id}'`);
+      const messages = await prisma.message.findMany({
+        where: {
+          appId: authResult.id,
+        },
+        include: {
+          actions: true,
+        },
+      });
+
+      const messageDtos: MessageDto[] = messages.map((message) => ({
+        id: message.id,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+        blocking: message.blocking,
+        title: message.title,
+        body: message.body,
+        endDate: message.endDate,
+        startDate: message.startDate,
+        actions: message.actions.map((action) => ({
+          id: action.id,
+          title: action.title,
+          actionType: action.actionType,
+          buttonDesign: action.buttonDesign,
+        })),
+      }));
+
+      return res.status(StatusCodes.CREATED).json(messageDtos);
+
     // Create new message
     case "POST":
       if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
@@ -32,7 +63,7 @@ export default async function handler(
           .json({ message: "Start date has to be before end date" });
       }
 
-      logger.log(`Creating message for app id '${req.query.appId}'`);
+      logger.log(`Creating message for app id '${authResult.id}'`);
       const message = await prisma.message.create({
         data: {
           blocking: req.body.blocking,
