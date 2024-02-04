@@ -101,7 +101,11 @@ export async function authenticate(
   }
 
   logger.log(`Successfully validated token(=${authToken})`);
-
   // Return the validated token
-  return { success: true, authToken, id, statusCode: StatusCodes.OK };
+  return {
+    success: true,
+    authToken: tokenInfo.token,
+    id,
+    statusCode: StatusCodes.OK,
+  };
 }
