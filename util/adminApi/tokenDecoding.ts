@@ -23,7 +23,7 @@ export function decodeToken(
     return null; // Invalid token type
   }
 
-  if (token.length > firstUnderscoreIndex) {
+  if (token.length - 1 > firstUnderscoreIndex) {
     const tokenWithoutPrefix = token.substring(firstUnderscoreIndex + 1);
     return {
       type: type as AdminTokenType,
