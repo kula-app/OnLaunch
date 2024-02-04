@@ -1,10 +1,7 @@
-import { ActionType } from "./actionType";
-import { ButtonDesign } from "./buttonDesign";
-
 export type Action = {
   id?: number;
-  actionType: ActionType;
-  buttonDesign: ButtonDesign;
+  actionType: string;
+  buttonDesign: string;
   title: string;
   messageId?: number;
 };
