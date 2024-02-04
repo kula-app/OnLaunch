@@ -45,11 +45,21 @@ export default function EditAppPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isAppDeletion, setIsAppDeletion] = useState(false);
+  const {
+    isOpen: isAppDeletionOpen,
+    onOpen: onAppDeletionOpen,
+    onClose: onAppDeletionClose,
+  } = useDisclosure();
+  const cancelAppDeletionRef = React.useRef(null);
+
   const [tokenIdToDelete, setTokenIdToDelete] = useState(-1);
-  const [dialogHeaderText, setDialogHeaderText] = useState("");
-  const cancelRef = React.useRef(null);
+  const [subtextOfTokenToDelete, setSubtextOfTokenToDelete] = useState("");
+  const {
+    isOpen: isTokenDeletionOpen,
+    onOpen: onTokenDeletionOpen,
+    onClose: onTokenDeletionClose,
+  } = useDisclosure();
+  const cancelTokenDeletionRef = React.useRef(null);
 
   const [tokenLabel, setTokenLabel] = useState("");
 
@@ -137,25 +147,6 @@ export default function EditAppPage() {
   function fillForm(app: App) {
     // fill the form
     setAppName(app.name);
-  }
-
-  function handleDelete() {
-    setIsAppDeletion(true);
-    setDialogHeaderText(`Delete app with id '${appId}?`);
-
-    onOpen();
-  }
-
-  function handleAppAdminTokenDelete(tokenId: number, token: string) {
-    setIsAppDeletion(false);
-    setTokenIdToDelete(tokenId);
-    setDialogHeaderText(
-      `Delete app token '${
-        token.length > 15 ? token.substring(0, 15) + "..." : token
-      }'`
-    );
-
-    onOpen();
   }
 
   async function callDeleteApp() {
@@ -350,9 +341,15 @@ export default function EditAppPage() {
                               colorScheme="red"
                               aria-label={"delete organisation admin token"}
                               className="ml-4"
-                              onClick={() =>
-                                handleAppAdminTokenDelete(token.id, token.token)
-                              }
+                              onClick={() => {
+                                setTokenIdToDelete(token.id);
+                                setSubtextOfTokenToDelete(
+                                  token.label
+                                    ? `The token for '${token.label}'`
+                                    : `The token '${token.token}'`
+                                );
+                                onTokenDeletionOpen();
+                              }}
                             >
                               <MdDeleteForever />
                             </IconButton>
@@ -403,38 +400,73 @@ export default function EditAppPage() {
             </div>
           )}
           <Heading className="text-center mt-16">Delete App</Heading>
-          <Button className="mt-8" colorScheme="red" onClick={handleDelete}>
+          <Button
+            className="mt-8"
+            colorScheme="red"
+            onClick={onAppDeletionOpen}
+          >
             delete
           </Button>
           <AlertDialog
-            isOpen={isOpen}
+            isOpen={isAppDeletionOpen}
             motionPreset="slideInBottom"
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
+            leastDestructiveRef={cancelAppDeletionRef}
+            onClose={onAppDeletionClose}
             isCentered
           >
             <AlertDialogOverlay />
 
             <AlertDialogContent>
-              <AlertDialogHeader>{dialogHeaderText}</AlertDialogHeader>
+              <AlertDialogHeader>{`Delete app with id '${appId}?`}</AlertDialogHeader>
               <AlertDialogCloseButton />
               <AlertDialogBody>
-                This cannot be undone and restoring it is not possible.
+                This cannot be undone and restoring the app is not possible.
               </AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
+                <Button ref={cancelAppDeletionRef} onClick={onAppDeletionClose}>
                   Cancel
                 </Button>
                 <Button
                   colorScheme="red"
                   ml={3}
                   onClick={() => {
-                    if (isAppDeletion) {
-                      callDeleteApp();
-                    } else {
-                      delAppAdminToken();
-                    }
-                    onClose();
+                    callDeleteApp();
+                    onAppDeletionClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog
+            isOpen={isTokenDeletionOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelTokenDeletionRef}
+            onClose={onTokenDeletionClose}
+            isCentered
+          >
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>{`Delete app token?`}</AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>
+                {`${subtextOfTokenToDelete} will be deleted forever.`}
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button
+                  ref={cancelTokenDeletionRef}
+                  onClick={onTokenDeletionClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    delAppAdminToken();
+                    onTokenDeletionClose();
                   }}
                 >
                   Confirm
