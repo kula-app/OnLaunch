@@ -56,21 +56,45 @@ export default async function handler(
 
     // Create new message
     case "POST":
-      if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(req.body.endDate);
+
+      if (startDate >= endDate) {
         logger.log("Start date has to be before end date");
         return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Start date has to be before end date" });
       }
 
+      const { blocking, body, title } = req.body;
+
+      if (!blocking) {
+        logger.log("Blocking parameter not provided");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Blocking parameter not provided" });
+      }
+      if (!body) {
+        logger.log("Body parameter not provided");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Body parameter not provided" });
+      }
+      if (!title) {
+        logger.log("Title parameter not provided");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Title parameter not provided" });
+      }
+
       logger.log(`Creating message for app id '${authResult.id}'`);
       const message = await prisma.message.create({
         data: {
-          blocking: req.body.blocking,
-          title: req.body.title,
-          body: req.body.body,
-          startDate: new Date(req.body.startDate),
-          endDate: new Date(req.body.endDate),
+          blocking: blocking,
+          title: title,
+          body: body,
+          startDate: startDate,
+          endDate: endDate,
           appId: authResult.id,
         },
       });
