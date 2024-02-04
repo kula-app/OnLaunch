@@ -60,10 +60,21 @@ export default function EditOrgPage() {
   const toast = useToast();
   const stripeConfig = loadConfig().client.stripeConfig;
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isOrgDeletion, setIsOrgDeletion] = useState(false);
+  const {
+    isOpen: isOrgDeletionOpen,
+    onOpen: onOrgDeletionOpen,
+    onClose: onOrgDeletionClose,
+  } = useDisclosure();
+  const cancelOrgDeletionRef = React.useRef(null);
+
   const [tokenIdToDelete, setTokenIdToDelete] = useState(-1);
-  const cancelRef = React.useRef(null);
+  const [subtextOfTokenToDelete, setSubtextOfTokenToDelete] = useState("");
+  const {
+    isOpen: isTokenDeletionOpen,
+    onOpen: onTokenDeletionOpen,
+    onClose: onTokenDeletionClose,
+  } = useDisclosure();
+  const cancelTokenDeletionRef = React.useRef(null);
 
   const [tokenLabel, setTokenLabel] = useState("");
 
@@ -74,7 +85,6 @@ export default function EditOrgPage() {
 
   const [orgName, setOrgName] = useState("");
   const [isCustomer, setIsCustomer] = useState(false);
-  const [dialogHeaderText, setDialogHeaderText] = useState("");
 
   const roles = ["ADMIN", "USER"];
   const [baseUrl, setBaseUrl] = useState("");
@@ -330,25 +340,6 @@ export default function EditOrgPage() {
         duration: 6000,
       });
     }
-  }
-
-  function handleDelete() {
-    setIsOrgDeletion(true);
-    setDialogHeaderText(`Delete Organisation '${org?.name}?`);
-
-    onOpen();
-  }
-
-  function handleOrgAdminTokenDelete(tokenId: number, token: string) {
-    setIsOrgDeletion(false);
-    setTokenIdToDelete(tokenId);
-    setDialogHeaderText(
-      `Delete org token '${
-        token.length > 15 ? token.substring(0, 15) + "..." : token
-      }'`
-    );
-
-    onOpen();
   }
 
   async function delOrg() {
@@ -695,12 +686,15 @@ export default function EditOrgPage() {
                                       "delete organisation admin token"
                                     }
                                     className="ml-4"
-                                    onClick={() =>
-                                      handleOrgAdminTokenDelete(
-                                        token.id,
-                                        token.token
-                                      )
-                                    }
+                                    onClick={() => {
+                                      setTokenIdToDelete(token.id);
+                                      setSubtextOfTokenToDelete(
+                                        token.label
+                                          ? `The token for '${token.label}'`
+                                          : `The token '${token.token}'`
+                                      );
+                                      onTokenDeletionOpen();
+                                    }}
                                   >
                                     <MdDeleteForever />
                                   </IconButton>
@@ -851,7 +845,7 @@ export default function EditOrgPage() {
                     <Button
                       className="mt-8"
                       colorScheme="red"
-                      onClick={handleDelete}
+                      onClick={onOrgDeletionOpen}
                     >
                       delete
                     </Button>
@@ -861,32 +855,65 @@ export default function EditOrgPage() {
             )}
           </div>
           <AlertDialog
-            isOpen={isOpen}
+            isOpen={isOrgDeletionOpen}
             motionPreset="slideInBottom"
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
+            leastDestructiveRef={cancelOrgDeletionRef}
+            onClose={onOrgDeletionClose}
             isCentered
           >
             <AlertDialogOverlay />
 
             <AlertDialogContent>
-              <AlertDialogHeader>{dialogHeaderText}</AlertDialogHeader>
+              <AlertDialogHeader>{`Delete org with id '${orgId}?`}</AlertDialogHeader>
               <AlertDialogCloseButton />
-              <AlertDialogBody>This cannot be undone.</AlertDialogBody>
+              <AlertDialogBody>
+                This cannot be undone and restoring the org is not possible.
+              </AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
+                <Button ref={cancelOrgDeletionRef} onClick={onOrgDeletionClose}>
                   Cancel
                 </Button>
                 <Button
                   colorScheme="red"
                   ml={3}
                   onClick={() => {
-                    if (isOrgDeletion) {
-                      delOrg();
-                    } else {
-                      delOrgAdminToken();
-                    }
-                    onClose();
+                    delOrg();
+                    onOrgDeletionClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog
+            isOpen={isTokenDeletionOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelTokenDeletionRef}
+            onClose={onTokenDeletionClose}
+            isCentered
+          >
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>{`Delete app token?`}</AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>
+                {`${subtextOfTokenToDelete} will be deleted forever.`}
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button
+                  ref={cancelTokenDeletionRef}
+                  onClick={onTokenDeletionClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    delOrgAdminToken();
+                    onTokenDeletionClose();
                   }}
                 >
                   Confirm
