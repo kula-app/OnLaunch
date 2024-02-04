@@ -2,6 +2,8 @@ import { Action } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../lib/services/db";
+import { ActionDto } from "../../../../../../../models/dtos/actionDto";
+import { MessageDto } from "../../../../../../../models/dtos/messageDto";
 import { authenticate } from "../../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../../util/logger";
 
@@ -42,18 +44,41 @@ export default async function handler(
         },
       });
 
+      let convertedActions: ActionDto[] = [];
       if (req.body.actions.length > 0) {
         logger.log(`Creating actions for message with id '${message.id}'`);
         const actions: Action[] = req.body.actions;
+
         actions.forEach((action) => {
           action.messageId = message.id;
         });
+
         await prisma.action.createMany({
           data: req.body.actions,
         });
+
+        convertedActions = actions.map(
+          (action): ActionDto => ({
+            title: action.title,
+            actionType: action.actionType,
+            buttonDesign: action.buttonDesign,
+          })
+        );
       }
 
-      return res.status(StatusCodes.CREATED).json(message);
+      const dto: MessageDto = {
+        id: message.id,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+        blocking: message.blocking,
+        title: message.title,
+        body: message.body,
+        startDate: message.startDate,
+        endDate: message.endDate,
+        actions: convertedActions,
+      };
+
+      return res.status(StatusCodes.CREATED).json(dto);
 
     default:
       return res

@@ -2,6 +2,8 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../../lib/services/db";
+import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/appAdminTokenDto";
+import { encodeAppToken } from "../../../../../../../../../../util/adminApi/tokenEncoding";
 import { getUserWithRoleFromRequest } from "../../../../../../../../../../util/auth";
 import { Logger } from "../../../../../../../../../../util/logger";
 
@@ -42,7 +44,16 @@ export default async function handler(
           },
         });
 
-        return res.status(StatusCodes.OK).json(appAdminToken);
+        const dto: AppAdminTokenDto = {
+          id: appAdminToken.id,
+          createdAt: appAdminToken.createdAt,
+          updatedAt: appAdminToken.updatedAt,
+          token: encodeAppToken(appAdminToken.token),
+          role: appAdminToken.role,
+          ...(appAdminToken.label && { label: appAdminToken.label }),
+        };
+
+        return res.status(StatusCodes.OK).json(dto);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No app admin token found with id '${tokenId}'`);
@@ -50,8 +61,13 @@ export default async function handler(
             .status(StatusCodes.NOT_FOUND)
             .json({ message: `No app admin token found with id '${tokenId}'` });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     default:
       return res

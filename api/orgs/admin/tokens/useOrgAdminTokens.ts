@@ -1,15 +1,15 @@
 import useSWR, { KeyedMutator } from "swr";
-import { OrgAdminToken } from "../../../../models/orgAdminToken";
+import { OrgAdminTokenDto } from "../../../../models/dtos/orgAdminTokenDto";
 import ApiRoutes from "../../../../routes/apiRoutes";
 import getFetcher from "../../../../util/fetcher";
 
 export function useOrgAdminTokens(orgId: number): {
-  orgAdminTokens?: OrgAdminToken[];
+  orgAdminTokens?: OrgAdminTokenDto[];
   isError?: Error;
   isLoading: boolean;
-  mutate: KeyedMutator<OrgAdminToken[]>;
+  mutate: KeyedMutator<OrgAdminTokenDto[]>;
 } {
-  const { data, isLoading, error, mutate } = useSWR<OrgAdminToken[]>(
+  const { data, isLoading, error, mutate } = useSWR<OrgAdminTokenDto[]>(
     ApiRoutes.getOrgAdminTokensByOrgId(orgId),
     getFetcher
   );

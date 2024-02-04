@@ -2,6 +2,8 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
+import { AppDto } from "../../../../../../models/dtos/appDto";
+import { MessageDto } from "../../../../../../models/dtos/messageDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { generateToken } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
@@ -51,7 +53,15 @@ export default async function handler(
         },
       });
 
-      return res.status(StatusCodes.CREATED).json(newApp);
+      const dto: AppDto = {
+        id: newApp.id,
+        createdAt: newApp.createdAt,
+        updatedAt: newApp.updatedAt,
+        name: newApp.name,
+        publicKey: newApp.publicKey,
+      };
+
+      return res.status(StatusCodes.CREATED).json(dto);
 
     // Find app by token
     // If found, return app data with message
@@ -74,12 +84,28 @@ export default async function handler(
         });
       }
 
-      return res.status(StatusCodes.OK).json({
+      const convertedMessages: MessageDto[] = app.messages.map(
+        (message): MessageDto => ({
+          id: message.id,
+          createdAt: message.createdAt,
+          updatedAt: message.updatedAt,
+          blocking: message.blocking,
+          title: message.title,
+          body: message.body,
+          endDate: message.endDate,
+          startDate: message.startDate,
+        })
+      );
+      const foundAppDto: AppDto = {
         id: app.id,
+        createdAt: app.createdAt,
+        updatedAt: app.updatedAt,
         name: app.name,
         publicKey: app.publicKey,
-        messages: app.messages,
-      });
+        messages: convertedMessages,
+      };
+
+      return res.status(StatusCodes.OK).json(foundAppDto);
 
     // Update app
     case "PUT":
@@ -95,7 +121,15 @@ export default async function handler(
           },
         });
 
-        return res.status(StatusCodes.CREATED).json(updatedApp);
+        const dto: AppDto = {
+          id: updatedApp.id,
+          createdAt: updatedApp.createdAt,
+          updatedAt: updatedApp.updatedAt,
+          name: updatedApp.name,
+          publicKey: updatedApp.publicKey,
+        };
+
+        return res.status(StatusCodes.CREATED).json(dto);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(`No app found with id '${authResult.id}'`);
@@ -103,8 +137,13 @@ export default async function handler(
             .status(StatusCodes.NOT_FOUND)
             .json({ message: "No app found with id " + authResult.id });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     default:
       return res
