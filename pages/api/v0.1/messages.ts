@@ -3,9 +3,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 import { loadConfig } from "../../../config/loadConfig";
 import prisma from "../../../lib/services/db";
-import { ActionType } from "../../../models/actionType";
 import { Logger } from "../../../util/logger";
 import { getProducts } from "../frontend/v0.1/stripe/products";
+
+enum ActionType {
+  Dismiss = "DISMISS",
+}
 
 type ActionDto = {
   actionType: ActionType;

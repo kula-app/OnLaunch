@@ -1,18 +1,4 @@
 import { AdminTokenType } from "../../models/adminTokenType";
-import { Logger } from "../logger";
-
-const logger = new Logger(__filename);
-
-const delimiter = "_";
-
-export function encodeToken(token: string, type: string): string | null {
-  if ((<any>Object).values(AdminTokenType).includes(type)) {
-    return `${type}${delimiter}${token}`;
-  } else {
-    logger.error(`Invalid token type to encode: ${type}`);
-    return null;
-  }
-}
 
 export function decodeToken(
   token: string | undefined

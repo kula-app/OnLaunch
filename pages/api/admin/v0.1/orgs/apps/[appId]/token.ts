@@ -1,7 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../lib/services/db";
+import { AppAdminTokenDto } from "../../../../../../../models/dtos/appAdminTokenDto";
 import { authenticate } from "../../../../../../../util/adminApi/auth";
+import { encodeAppToken } from "../../../../../../../util/adminApi/tokenEncoding";
 import { generateToken } from "../../../../../../../util/auth";
 import { Logger } from "../../../../../../../util/logger";
 
@@ -50,7 +52,7 @@ export default async function handler(
       }
 
       logger.log(
-        `Creating temporary AppAdminToken for app with id(='${appId}'`
+        `Creating temporary AppAdminToken for app with id(='${appId}')`
       );
 
       const generatedToken = generateToken();
@@ -67,7 +69,17 @@ export default async function handler(
         },
       });
 
-      return res.status(StatusCodes.CREATED).json(appAdminToken);
+      const dto: AppAdminTokenDto = {
+        id: appAdminToken.id,
+        createdAt: appAdminToken.createdAt,
+        updatedAt: appAdminToken.updatedAt,
+        token: encodeAppToken(appAdminToken.token),
+        role: appAdminToken.role,
+        ...(appAdminToken.label && { label: appAdminToken.label }),
+        expiryDate: expiryDate,
+      };
+
+      return res.status(StatusCodes.CREATED).json(dto);
 
     default:
       return res

@@ -2,6 +2,8 @@ import { Action, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../lib/services/db";
+import { ActionDto } from "../../../../../../../models/dtos/actionDto";
+import { MessageDto } from "../../../../../../../models/dtos/messageDto";
 import { authenticate } from "../../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../../util/logger";
 
@@ -47,7 +49,26 @@ export default async function handler(
           .json({ message: `No message found with id ${messageId}` });
       }
 
-      return res.status(StatusCodes.OK).json(message);
+      const convertedActions: ActionDto[] = message.actions.map(
+        (action): ActionDto => ({
+          title: action.title,
+          actionType: action.actionType,
+          buttonDesign: action.buttonDesign,
+        })
+      );
+      const dto: MessageDto = {
+        id: message.id,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+        blocking: message.blocking,
+        title: message.title,
+        body: message.body,
+        startDate: message.startDate,
+        endDate: message.endDate,
+        actions: convertedActions,
+      };
+
+      return res.status(StatusCodes.OK).json(dto);
 
     // Delete message
     case "DELETE":
@@ -62,7 +83,19 @@ export default async function handler(
           },
         });
 
-        return res.status(StatusCodes.OK).json(deletedMessage);
+        const dto: MessageDto = {
+          id: deletedMessage.id,
+          createdAt: deletedMessage.createdAt,
+          updatedAt: deletedMessage.updatedAt,
+          blocking: deletedMessage.blocking,
+          title: deletedMessage.title,
+          body: deletedMessage.body,
+          startDate: deletedMessage.startDate,
+          endDate: deletedMessage.endDate,
+          actions: [],
+        };
+
+        return res.status(StatusCodes.OK).json(dto);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.error(
@@ -72,10 +105,15 @@ export default async function handler(
             message: "No message found with id " + messageId,
           });
         }
-      }
-      break;
 
-    // Updating new message
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
+      }
+
+    // Updating message
     case "PUT":
       try {
         if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
@@ -109,6 +147,7 @@ export default async function handler(
           },
         });
 
+        let convertedActions: ActionDto[] = [];
         if (req.body.actions.length > 0) {
           const actions: Action[] = req.body.actions;
 
@@ -120,9 +159,29 @@ export default async function handler(
           await prisma.action.createMany({
             data: req.body.actions,
           });
+
+          convertedActions = actions.map(
+            (action): ActionDto => ({
+              title: action.title,
+              actionType: action.actionType,
+              buttonDesign: action.buttonDesign,
+            })
+          );
         }
 
-        return res.status(StatusCodes.CREATED).json(updatedMessage);
+        const dto: MessageDto = {
+          id: updatedMessage.id,
+          createdAt: updatedMessage.createdAt,
+          updatedAt: updatedMessage.updatedAt,
+          blocking: updatedMessage.blocking,
+          title: updatedMessage.title,
+          body: updatedMessage.body,
+          startDate: updatedMessage.startDate,
+          endDate: updatedMessage.endDate,
+          actions: convertedActions,
+        };
+
+        return res.status(StatusCodes.CREATED).json(dto);
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.log(`No message found with id '${messageId}'`);
@@ -130,8 +189,13 @@ export default async function handler(
             message: "No message found with id " + messageId,
           });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     default:
       return res

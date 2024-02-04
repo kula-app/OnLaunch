@@ -1,5 +1,5 @@
 import useSWR, { KeyedMutator } from "swr";
-import { AppAdminToken } from "../../../../models/appAdminToken";
+import { AppAdminTokenDto } from "../../../../models/dtos/appAdminTokenDto";
 import ApiRoutes from "../../../../routes/apiRoutes";
 import getFetcher from "../../../../util/fetcher";
 
@@ -7,12 +7,12 @@ export function useAppAdminTokens(
   orgId: number,
   appId: number
 ): {
-  appAdminTokens?: AppAdminToken[];
+  appAdminTokens?: AppAdminTokenDto[];
   isError?: Error;
   isLoading: boolean;
-  mutate: KeyedMutator<AppAdminToken[]>;
+  mutate: KeyedMutator<AppAdminTokenDto[]>;
 } {
-  const { data, isLoading, error, mutate } = useSWR<AppAdminToken[]>(
+  const { data, isLoading, error, mutate } = useSWR<AppAdminTokenDto[]>(
     ApiRoutes.getAppAdminTokensByOrgIdAndAppId(orgId, appId),
     getFetcher
   );

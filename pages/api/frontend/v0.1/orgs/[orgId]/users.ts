@@ -2,8 +2,8 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
+import { UserDto } from "../../../../../../models/dtos/userDto";
 import { MailType } from "../../../../../../models/mailType";
-import { UserDto } from "../../../../../../models/userDto";
 import {
   generateToken,
   getUserWithRoleFromRequest,

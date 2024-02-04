@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../lib/services/db";
-import { OrgAdminToken } from "../../../../../../../../models/orgAdminToken";
+import { OrgAdminTokenDto } from "../../../../../../../../models/dtos/orgAdminTokenDto";
 import {
   generateToken,
   getUserWithRoleFromRequest,
@@ -40,9 +40,11 @@ export default async function handler(
       });
 
       return res.status(StatusCodes.OK).json(
-        orgAdminTokens.map((orgAdminToken): OrgAdminToken => {
+        orgAdminTokens.map((orgAdminToken): OrgAdminTokenDto => {
           return {
             id: orgAdminToken.id,
+            createdAt: orgAdminToken.createdAt,
+            updatedAt: orgAdminToken.updatedAt,
             token: orgAdminToken.token,
             role: orgAdminToken.role,
             label: orgAdminToken.label ? orgAdminToken.label : "",
