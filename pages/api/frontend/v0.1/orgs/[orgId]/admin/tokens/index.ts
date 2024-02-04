@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../lib/services/db";
 import { OrgAdminTokenDto } from "../../../../../../../../models/dtos/orgAdminTokenDto";
+import { encodeOrgToken } from "../../../../../../../../util/adminApi/tokenEncoding";
 import {
   generateToken,
   getUserWithRoleFromRequest,
@@ -45,7 +46,7 @@ export default async function handler(
             id: orgAdminToken.id,
             createdAt: orgAdminToken.createdAt,
             updatedAt: orgAdminToken.updatedAt,
-            token: orgAdminToken.token,
+            token: encodeOrgToken(orgAdminToken.token),
             role: orgAdminToken.role,
             label: orgAdminToken.label ? orgAdminToken.label : "",
           };
@@ -67,7 +68,16 @@ export default async function handler(
         },
       });
 
-      return res.status(StatusCodes.CREATED).json(orgAdminToken);
+      const dto: OrgAdminTokenDto = {
+        id: orgAdminToken.id,
+        createdAt: orgAdminToken.createdAt,
+        updatedAt: orgAdminToken.updatedAt,
+        token: encodeOrgToken(orgAdminToken.token),
+        label: orgAdminToken.label,
+        role: orgAdminToken.role,
+      };
+
+      return res.status(StatusCodes.CREATED).json(dto);
 
     default:
       return res
