@@ -84,6 +84,7 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
   try {
     // Check the database connection
     await prisma.$connect();
+    await prisma.$queryRaw`SELECT 1`;
     checks["postgres:connected"] = [
       {
         status: "ok",
