@@ -23,7 +23,6 @@ jest.mock("../../../util/adminApi/tokenDecoding", () => ({
   decodeToken: jest.fn(),
 }));
 
-const delimiter = "_";
 const appPrefix = "app";
 const orgPrefix = "org";
 const testToken = "abcdefgh1234567890";
