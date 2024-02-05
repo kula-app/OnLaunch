@@ -26,7 +26,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Caching Yarn Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         timeout-minutes: 10
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
@@ -57,7 +57,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Caching Yarn Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         timeout-minutes: 10
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
@@ -87,7 +87,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Caching Yarn Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         timeout-minutes: 10
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
@@ -145,7 +145,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Caching Yarn Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         timeout-minutes: 10
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
