@@ -6,6 +6,67 @@ import { OrgDto } from "../../../../../models/dtos/response/orgDto";
 import { authenticate } from "../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../util/logger";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin API
+ *     description: Operations related to the management in the Admin API
+ *
+ * /api/admin/v0.1/org:
+ *   get:
+ *     tags:
+ *       - Admin API
+ *     summary: Get organisation details
+ *     description: Retrieves details of the authenticated organisation, including its apps.
+ *     responses:
+ *       200:
+ *         description: Organisation details retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrgDto'
+ *       401:
+ *         description: Authentication failed, invalid or missing credentials.
+ *       404:
+ *         description: Organisation not found with the provided ID.
+ *       405:
+ *         description: Method not allowed, only GET method is supported for this endpoint.
+ *
+ * components:
+ *   schemas:
+ *     OrgDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         apps:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/AppDto'
+ *     AppDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         publicKey:
+ *           type: string
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
