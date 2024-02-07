@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../../lib/services/db";
-import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/appAdminTokenDto";
+import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/response/appAdminTokenDto";
 import { encodeAppToken } from "../../../../../../../../../../util/adminApi/tokenEncoding";
 import {
   generateToken,

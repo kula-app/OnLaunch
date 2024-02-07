@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../lib/services/db";
-import { AppDto } from "../../../../../models/dtos/appDto";
-import { OrgDto } from "../../../../../models/dtos/orgDto";
+import { AppDto } from "../../../../../models/dtos/response/appDto";
+import { OrgDto } from "../../../../../models/dtos/response/orgDto";
 import { authenticate } from "../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../util/logger";
 

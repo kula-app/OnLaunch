@@ -1,9 +1,12 @@
 import { Prisma } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../lib/services/db";
-import { AppDto } from "../../../../../models/dtos/appDto";
-import { MessageDto } from "../../../../../models/dtos/messageDto";
+import { CreateAppDto } from "../../../../../models/dtos/request/createAppDto";
+import { AppDto } from "../../../../../models/dtos/response/appDto";
+import { MessageDto } from "../../../../../models/dtos/response/messageDto";
 import { authenticate } from "../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../util/logger";
 
@@ -69,6 +72,22 @@ export default async function handler(
 
     // Update app
     case "PUT":
+      const updateAppDto = plainToInstance(CreateAppDto, req.body);
+      const validationErrors = await validate(updateAppDto);
+
+      if (validationErrors.length > 0) {
+        const errors = validationErrors
+          .flatMap((error) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : ["An unknown error occurred"]
+          )
+          .join(", ");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: `Validation failed: ${errors}` });
+      }
+
       try {
         logger.log(`Updating app with id(='${authResult.id})'`);
 
@@ -77,7 +96,7 @@ export default async function handler(
             id: authResult.id,
           },
           data: {
-            name: req.body.name,
+            name: updateAppDto.name,
           },
         });
 

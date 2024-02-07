@@ -1,7 +1,10 @@
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
-import { AppDto } from "../../../../../../models/dtos/appDto";
+import { CreateAppDto } from "../../../../../../models/dtos/request/createAppDto";
+import { AppDto } from "../../../../../../models/dtos/response/appDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { generateToken } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
@@ -24,14 +27,23 @@ export default async function handler(
   switch (req.method) {
     // Create new app
     case "POST":
-      const name = req.body.name;
+      const createAppDto = plainToInstance(CreateAppDto, req.body);
+      const validationErrors = await validate(createAppDto);
 
-      if (!name) {
-        logger.error("No name parameter provided for new app!");
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: "No name parameter provided for new app!",
-        });
+      if (validationErrors.length > 0) {
+        const errors = validationErrors
+          .flatMap((error) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : ["An unknown error occurred"]
+          )
+          .join(", ");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: `Validation failed: ${errors}` });
       }
+
+      const name = createAppDto.name;
 
       logger.log(`Creating app with name(='${name}'`);
 
