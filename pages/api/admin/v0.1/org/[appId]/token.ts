@@ -7,6 +7,65 @@ import { encodeAppToken } from "../../../../../../util/adminApi/tokenEncoding";
 import { generateToken } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin API
+ *     description: Operations related to the management in the Admin API
+ *
+ * /api/admin/v0.1/org/[appId]/token:
+ *   post:
+ *     tags:
+ *       - Admin API
+ *     summary: Create temporary AppAdminToken for app
+ *     description: Creates a temporary AppAdminToken for the specified app belonging to the authenticated organization.
+ *     parameters:
+ *       - in: path
+ *         name: appId
+ *         required: true
+ *         description: The ID of the app for which to create the token.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Temporary AppAdminToken created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppAdminTokenDto'
+ *       400:
+ *         description: No app ID provided or invalid request.
+ *       401:
+ *         description: Authentication failed, invalid or missing credentials.
+ *       404:
+ *         description: No app found for the provided ID belonging to the authenticated organization.
+ *       405:
+ *         description: Method not allowed, only POST method is supported for this endpoint.
+ *
+ * components:
+ *   schemas:
+ *     AppAdminTokenDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         token:
+ *           type: string
+ *         role:
+ *           type: string
+ *           enum: [TEMP, FULL]
+ *         label:
+ *           type: string
+ *         expiryDate:
+ *           type: string
+ *           format: date-time
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

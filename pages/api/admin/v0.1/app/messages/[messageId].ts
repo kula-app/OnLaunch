@@ -10,6 +10,127 @@ import { MessageDto } from "../../../../../../models/dtos/response/messageDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../util/logger";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin API
+ *     description: Operations related to the management in the Admin API
+ *
+ * /api/admin/v0.1/app/message/{messageId}:
+ *   get:
+ *     tags:
+ *       - Admin API
+ *     summary: Retrieve a message by ID
+ *     description: Retrieves a message along with its actions for a given message ID.
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The message ID
+ *     responses:
+ *       200:
+ *         description: A message object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageDto'
+ *       404:
+ *         description: No message found with the provided ID
+ *
+ *   delete:
+ *     tags:
+ *       - Admin API
+ *     summary: Delete a message by ID
+ *     description: Deletes a message for a given message ID.
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The message ID to delete
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageDto'
+ *       404:
+ *         description: No message found with the provided ID
+ *
+ *   put:
+ *     tags:
+ *       - Admin API
+ *     summary: Update a message
+ *     description: Updates an existing message with new information.
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The message ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateMessageDto'
+ *     responses:
+ *       201:
+ *         description: Successfully updated the message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageDto'
+ *       404:
+ *         description: No message found with the provided ID
+ *
+ * components:
+ *   schemas:
+ *     MessageDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         blocking:
+ *           type: boolean
+ *         title:
+ *           type: string
+ *         body:
+ *           type: string
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *         actions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/ActionDto'
+ *     ActionDto:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *         actionType:
+ *           type: string
+ *           enum: [DISMISS]
+ *         buttonDesign:
+ *           type: string
+ *           enum: [FILLED, TEXT]
+ *
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

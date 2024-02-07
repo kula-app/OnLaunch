@@ -9,6 +9,62 @@ import { authenticate } from "../../../../../../util/adminApi/auth";
 import { generateToken } from "../../../../../../util/auth";
 import { Logger } from "../../../../../../util/logger";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin API
+ *     description: Operations related to the management in the Admin API
+ *
+ * /api/admin/v0.1/org/app:
+ *   post:
+ *     tags:
+ *       - Admin API
+ *     summary: Create new app
+ *     description: Creates a new app for the authenticated organization.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateAppDto'
+ *     responses:
+ *       201:
+ *         description: New app created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AppDto'
+ *       400:
+ *         description: Validation failed or invalid request.
+ *       401:
+ *         description: Authentication failed, invalid or missing credentials.
+ *       405:
+ *         description: Method not allowed, only POST method is supported for this endpoint.
+ *
+ * components:
+ *   schemas:
+ *     CreateAppDto:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the app to be created.
+ *     AppDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         publicKey:
+ *           type: string
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

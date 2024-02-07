@@ -10,6 +10,117 @@ import { MessageDto } from "../../../../../../models/dtos/response/messageDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../util/logger";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin API
+ *     description: Operations related to the management in the Admin API
+ *
+ * /api/admin/v0.1/app/messages:
+ *   get:
+ *     tags:
+ *       - Admin API
+ *     summary: Get all messages for an app
+ *     description: Retrieves all messages associated with an app, identified by the app's authentication credentials.
+ *     responses:
+ *       200:
+ *         description: An array of message objects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MessageDto'
+ *       401:
+ *         description: Authentication failed, invalid or missing credentials
+ *
+ *   post:
+ *     tags:
+ *       - Admin API
+ *     summary: Create a new message
+ *     description: Creates a new message for an app, with details provided in the request body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateMessageDto'
+ *     responses:
+ *       201:
+ *         description: Message created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageDto'
+ *       400:
+ *         description: Validation failed for the provided message data
+ *       401:
+ *         description: Authentication failed, invalid or missing credentials
+ *
+ * components:
+ *   schemas:
+ *     MessageDto:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         blocking:
+ *           type: boolean
+ *         title:
+ *           type: string
+ *         body:
+ *           type: string
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *         actions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/ActionDto'
+ *     ActionDto:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *         actionType:
+ *           type: string
+ *         buttonDesign:
+ *           type: string
+ *     CreateMessageDto:
+ *       type: object
+ *       required:
+ *         - blocking
+ *         - title
+ *         - body
+ *         - startDate
+ *         - endDate
+ *       properties:
+ *         blocking:
+ *           type: boolean
+ *         title:
+ *           type: string
+ *         body:
+ *           type: string
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *         actions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/ActionDto'
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
