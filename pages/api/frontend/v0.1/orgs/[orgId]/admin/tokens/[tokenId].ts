@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../lib/services/db";
-import { OrgAdminTokenDto } from "../../../../../../../../models/dtos/orgAdminTokenDto";
+import { OrgAdminTokenDto } from "../../../../../../../../models/dtos/response/orgAdminTokenDto";
 import { encodeOrgToken } from "../../../../../../../../util/adminApi/tokenEncoding";
 import { getUserWithRoleFromRequest } from "../../../../../../../../util/auth";
 import { Logger } from "../../../../../../../../util/logger";

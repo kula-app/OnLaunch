@@ -1,9 +1,12 @@
 import { Action } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
-import { ActionDto } from "../../../../../../models/dtos/actionDto";
-import { MessageDto } from "../../../../../../models/dtos/messageDto";
+import { CreateMessageDto } from "../../../../../../models/dtos/request/createMessageDto";
+import { ActionDto } from "../../../../../../models/dtos/response/actionDto";
+import { MessageDto } from "../../../../../../models/dtos/response/messageDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../util/logger";
 
@@ -25,7 +28,7 @@ export default async function handler(
   switch (req.method) {
     // Get all messages for app
     case "GET":
-      logger.log(`Creating message for app id '${authResult.id}'`);
+      logger.log(`Getting messages for app with id(=${authResult.id})`);
       const messages = await prisma.message.findMany({
         where: {
           appId: authResult.id,
@@ -56,60 +59,45 @@ export default async function handler(
 
     // Create new message
     case "POST":
-      const startDate = new Date(req.body.startDate);
-      const endDate = new Date(req.body.endDate);
+      const createMessageDto = plainToInstance(CreateMessageDto, req.body);
+      const validationErrors = await validate(createMessageDto);
 
-      if (startDate >= endDate) {
-        logger.log("Start date has to be before end date");
+      if (validationErrors.length > 0) {
+        const errors = validationErrors
+          .flatMap((error) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : ["An unknown error occurred"]
+          )
+          .join(", ");
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Start date has to be before end date" });
-      }
-
-      const { blocking, body, title } = req.body;
-
-      if (!blocking) {
-        logger.log("Blocking parameter not provided");
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Blocking parameter not provided" });
-      }
-      if (!body) {
-        logger.log("Body parameter not provided");
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Body parameter not provided" });
-      }
-      if (!title) {
-        logger.log("Title parameter not provided");
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Title parameter not provided" });
+          .json({ message: `Validation failed: ${errors}` });
       }
 
       logger.log(`Creating message for app id '${authResult.id}'`);
       const message = await prisma.message.create({
         data: {
-          blocking: blocking,
-          title: title,
-          body: body,
-          startDate: startDate,
-          endDate: endDate,
+          blocking: createMessageDto.blocking,
+          title: createMessageDto.title,
+          body: createMessageDto.body,
+          startDate: new Date(createMessageDto.startDate),
+          endDate: new Date(createMessageDto.endDate),
           appId: authResult.id,
         },
       });
 
       let convertedActions: ActionDto[] = [];
-      if (req.body.actions.length > 0) {
+      if (createMessageDto.actions && createMessageDto.actions.length > 0) {
         logger.log(`Creating actions for message with id '${message.id}'`);
-        const actions: Action[] = req.body.actions;
+        const actions: Action[] = createMessageDto.actions;
 
         actions.forEach((action) => {
           action.messageId = message.id;
         });
 
         await prisma.action.createMany({
-          data: req.body.actions,
+          data: createMessageDto.actions,
         });
 
         convertedActions = actions.map(

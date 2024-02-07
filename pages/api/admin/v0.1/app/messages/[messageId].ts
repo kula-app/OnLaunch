@@ -1,9 +1,12 @@
 import { Action, Prisma } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
-import { ActionDto } from "../../../../../../models/dtos/actionDto";
-import { MessageDto } from "../../../../../../models/dtos/messageDto";
+import { CreateMessageDto } from "../../../../../../models/dtos/request/createMessageDto";
+import { ActionDto } from "../../../../../../models/dtos/response/actionDto";
+import { MessageDto } from "../../../../../../models/dtos/response/messageDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { Logger } from "../../../../../../util/logger";
 
@@ -115,14 +118,23 @@ export default async function handler(
 
     // Updating message
     case "PUT":
-      try {
-        if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
-          logger.error("Start date is not before end date");
-          return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ message: "Start date has to be before end date" });
-        }
+      const updateMessageDto = plainToInstance(CreateMessageDto, req.body);
+      const validationErrors = await validate(updateMessageDto);
 
+      if (validationErrors.length > 0) {
+        const errors = validationErrors
+          .flatMap((error) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : ["An unknown error occurred"]
+          )
+          .join(", ");
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: `Validation failed: ${errors}` });
+      }
+
+      try {
         logger.log(
           `Updating message with id '${messageId}' for app with id(=${authResult.id})`
         );
@@ -132,11 +144,11 @@ export default async function handler(
             appId: authResult.id,
           },
           data: {
-            blocking: req.body.blocking,
-            title: req.body.title,
-            body: req.body.body,
-            startDate: new Date(req.body.startDate),
-            endDate: new Date(req.body.endDate),
+            blocking: updateMessageDto.blocking,
+            title: updateMessageDto.title,
+            body: updateMessageDto.body,
+            startDate: new Date(updateMessageDto.startDate),
+            endDate: new Date(updateMessageDto.endDate),
           },
         });
 
@@ -148,8 +160,8 @@ export default async function handler(
         });
 
         let convertedActions: ActionDto[] = [];
-        if (req.body.actions.length > 0) {
-          const actions: Action[] = req.body.actions;
+        if (updateMessageDto.actions && updateMessageDto.actions.length > 0) {
+          const actions: Action[] = updateMessageDto.actions;
 
           actions.forEach((action) => {
             action.messageId = messageId;
@@ -157,7 +169,7 @@ export default async function handler(
 
           logger.log(`Creating actions for message with id '${messageId}'`);
           await prisma.action.createMany({
-            data: req.body.actions,
+            data: updateMessageDto.actions,
           });
 
           convertedActions = actions.map(
