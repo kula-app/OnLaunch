@@ -1,3 +1,5 @@
+![OnLaunch](https://github.com/kula-app/OnLaunch/blob/main/public/github_header.png)
+
 ## Technologies Used
 
 - [Next.js](https://nextjs.org/)
