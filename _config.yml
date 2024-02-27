@@ -2,3 +2,5 @@ markdown: kramdown
 
 kramdown:
   input: GFM
+
+theme: just-the-docs
