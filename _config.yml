@@ -2,7 +2,7 @@ title: OnLaunch - Documentation
 description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
 remote_theme: base-jekyll-template
 
-url: https://kula-app.github.io/OnLaunch
+baseurl: https://kula-app.github.io/OnLaunch
 
 markdown: kramdown
 kramdown:
