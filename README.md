@@ -1,12 +1,8 @@
-## Technologies Used
+# Getting Started
 
-- [Next.js](https://nextjs.org/)
-- [Chakra UI](https://chakra-ui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Prisma.io](https://www.prisma.io/)
-- [Docker](https://www.docker.com/)
+See the [Documentation Overview](/docs/overview.md) for detailed documentation.
 
-## Getting Started
+## Quick Start
 
 First, you have to meet these requirements.
 
@@ -70,6 +66,14 @@ With Prisma Studio you can easily inspect the data within your database.
 ## Contributing Guide
 
 Please see our [Contributing Guide](https://github.com/kula-app/OnLaunch/blob/main/CONTRIBUTING.md).
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/)
+- [Chakra UI](https://chakra-ui.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Prisma.io](https://www.prisma.io/)
+- [Docker](https://www.docker.com/)
 
 ## License
 
