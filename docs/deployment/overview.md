@@ -2,7 +2,7 @@
 
 ## OnLaunch SaaS Platform
 
-If you prefer to skip dealing with hosting and maintaing the deployment of OnLaunch, checkout https://onlaunch.kula.app right now. Simply sign up, setup your app and integrate it using any of our [Client SDKs](/README.md#client-sdks).
+If you prefer to skip dealing with hosting and maintaing the deployment of OnLaunch, checkout [https://onlaunch.kula.app](https://onlaunch.kula.app) right now. Simply sign up, setup your app and integrate it using any of our [Client SDKs](/README.md#client-sdks).
 
 ## Self-Hosting Overview
 
