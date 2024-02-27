@@ -1,51 +1,19 @@
-remote_theme: CloudCannon/base-jekyll-template
-
 # ----
 # Site
 
 title: OnLaunch - Documentation
-url: "https://orange-ape.cloudvent.net/"
+url: "https://kula-app.github.io/OnLaunch/"
 
 # -----
 # Build
 
 timezone: Etc/UTC
 
-permalink: /:categories/:title/
-
-plugins:
-  - jekyll-extract-element
-  - jekyll-sitemap
-  - jekyll-seo-tag
-  - jekyll-feed
-  - jekyll-archives
-
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
   - LICENCE
-
-# -----------
-# CloudCannon
-
-social_icons:
-  - Facebook
-  - Google Plus
-  - Instagram
-  - LinkedIn
-  - Pinterest
-  - Tumblr
-  - Twitter
-  - YouTube
-  - Email
-  - RSS
-
-types:
-  - Document
-  - Video
-
-_comments:
 
 # -------------------
 # Markdown Processing
