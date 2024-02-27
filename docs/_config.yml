@@ -1,6 +1,17 @@
+remote_theme: CloudCannon/base-jekyll-template
+
+# ----
+# Site
+
 title: OnLaunch - Documentation
-description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
-remote_theme: CloudCannon/edition-jekyll-template
+url: "https://orange-ape.cloudvent.net/"
+
+# -----
+# Build
+
+timezone: Etc/UTC
+
+permalink: /:categories/:title/
 
 plugins:
   - jekyll-extract-element
@@ -8,10 +19,36 @@ plugins:
   - jekyll-seo-tag
   - jekyll-feed
   - jekyll-archives
-  - jekyll-paginate
-  - jekyll-gist
-  - jemoji
-  - jekyll-include-cache
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - LICENCE
+
+# -----------
+# CloudCannon
+
+social_icons:
+  - Facebook
+  - Google Plus
+  - Instagram
+  - LinkedIn
+  - Pinterest
+  - Tumblr
+  - Twitter
+  - YouTube
+  - Email
+  - RSS
+
+types:
+  - Document
+  - Video
+
+_comments:
+
+# -------------------
+# Markdown Processing
 
 markdown: kramdown
 kramdown:
