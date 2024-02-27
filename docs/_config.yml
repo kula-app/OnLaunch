@@ -2,6 +2,14 @@ title: OnLaunch - Documentation
 description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
 remote_theme: CloudCannon/edition-jekyll-template
 
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
+
 markdown: kramdown
 kramdown:
   input: GFM
