@@ -2,7 +2,7 @@
 # Site
 
 title: OnLaunch - Documentation
-url: "https://kula-app.github.io/OnLaunch/"
+baseurl: "https://kula-app.github.io/OnLaunch/"
 
 # -----
 # Build
