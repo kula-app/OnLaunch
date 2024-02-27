@@ -1,6 +1,9 @@
-markdown: kramdown
+title: OnLaunch - Documentation
+description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
+theme: just-the-docs
 
+url: https://kula-app.github.io/OnLaunch
+
+markdown: kramdown
 kramdown:
   input: GFM
-
-theme: just-the-docs
