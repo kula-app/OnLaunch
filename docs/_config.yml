@@ -2,12 +2,9 @@
 # Site
 
 title: OnLaunch - Documentation
-baseurl: "https://kula-app.github.io/OnLaunch/"
 
 # -----
 # Build
-
-timezone: Etc/UTC
 
 exclude:
   - Gemfile
