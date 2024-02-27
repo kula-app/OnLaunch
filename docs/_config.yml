@@ -1,0 +1,13 @@
+# ----
+# Site
+
+title: OnLaunch - Documentation
+description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
+author:
+  name: kula app GmbH
+  email: opensource@kula.app
+
+# -----
+# Build
+
+timezone: Etc/UTC
