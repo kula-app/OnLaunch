@@ -2,20 +2,12 @@
 # Site
 
 title: OnLaunch - Documentation
-baseurl: https://kula-app.github.io/OnLaunch/
+description: OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance.
+author:
+  name: kula app GmbH
+  email: opensource@kula.app
 
 # -----
 # Build
 
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - README.md
-  - LICENCE
-
-# -------------------
-# Markdown Processing
-
-markdown: kramdown
-kramdown:
-  input: GFM
+timezone: Etc/UTC
