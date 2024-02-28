@@ -31,7 +31,7 @@ To configure Sentry for client-side error tracking in OnLaunch:
 4. Ensure you prefix it with `NEXT_PUBLIC_` if you want it to be accessible in your frontend code, like this: `NEXT_PUBLIC_SENTRY_DSN=<your_dsn_here>`.
 5. Initialize Sentry in your application with the DSN. You can do this in the main entry file of your Next.js app or wherever you see fit.
 
-You can see an example of how the parameters are used in `sentry.client.config.tx`.
+You can see an example of how the parameters are used in `sentry.client.config.ts`.
 
 ### Stripe - Client-Side
 
