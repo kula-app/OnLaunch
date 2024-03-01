@@ -2,7 +2,7 @@
 
 # OnLaunch
 
-OnLaunch is a service that allows app developers to notify app users about updates, warnings, and maintenance. Our open-source framework provides a server and two easy-to-integrate clients to communicate with the backend and display the user interface. You can self-host the server or let us do the work for you!
+OnLaunch is a service that allows app developers to notify app users about updates, warnings, and maintenance. Our open-source framework provides a server and easy-to-integrate clients for Swift, Kotlin, and Flutter to communicate with the backend and display the user interface. You can self-host the server or let us do the work for you!
 
 After an initial implementation of OnLaunch into your app, no more development tasks are needed. Due to our intuitive GUI, little to no technological knowledge is needed to create and manage messages that are displayed within the apps: 
 
@@ -48,6 +48,7 @@ To see how check out our client repos:
 
 - [Android Client](https://github.com/kula-app/OnLaunch-Android-Client)
 - [iOS Client](https://github.com/kula-app/OnLaunch-iOS-Client)
+- [Flutter Client](https://github.com/kula-app/OnLaunch-Flutter-Client)
 
 ## Local Deployment
 
