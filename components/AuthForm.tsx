@@ -1,17 +1,17 @@
-import { useState, FormEvent } from "react";
-import styles from "../styles/Home.module.css";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
-import Routes from "../routes/routes";
-import signupUser from "../api/users/signupUser";
 import {
   Button,
+  FormControl,
+  FormLabel,
+  Heading,
   Input,
   useToast,
-  Heading,
-  FormLabel,
-  FormControl,
 } from "@chakra-ui/react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { FormEvent, useState } from "react";
+import signupUser from "../api/users/signupUser";
+import Routes from "../routes/routes";
+import styles from "../styles/Home.module.css";
 
 export default function AuthForm() {
   const router = useRouter();
@@ -130,12 +130,12 @@ export default function AuthForm() {
               </FormControl>
             )}
             <div className="flex flex-col mt-8">
-              <Button colorScheme="blue" type="submit">
+              <Button colorScheme="highlightPurple" type="submit">
                 {isLoginMode ? "login" : "create account"}
               </Button>
               <Button
                 variant="ghost"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="button"
                 onClick={switchLoginMode}
               >
@@ -146,7 +146,7 @@ export default function AuthForm() {
               {isLoginMode && (
                 <Button
                   variant="ghost"
-                  colorScheme="blue"
+                  colorScheme="highlightPurple"
                   type="button"
                   onClick={navigateToPasswordResetPage}
                 >

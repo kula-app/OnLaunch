@@ -378,7 +378,11 @@ export default function EditOrgPage() {
                   />
                 </FormControl>
                 <Center>
-                  <Button colorScheme="blue" className="mt-4" type="submit">
+                  <Button
+                    colorScheme="highlightPurple"
+                    className="mt-4"
+                    type="submit"
+                  >
                     update
                   </Button>
                 </Center>
@@ -402,7 +406,7 @@ export default function EditOrgPage() {
                 </FormControl>
                 <Stack>
                   <Button
-                    colorScheme="blue"
+                    colorScheme="highlightPurple"
                     className="ml-5 mt-5"
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -422,7 +426,7 @@ export default function EditOrgPage() {
                     copy
                   </Button>
                   <Button
-                    colorScheme="blue"
+                    colorScheme="highlightPurple"
                     className="ml-5 mt-1"
                     onClick={resetInvitation}
                   >
@@ -448,7 +452,11 @@ export default function EditOrgPage() {
                       onChange={(event) => setUserEmail(event.target.value)}
                     />
                     <Center>
-                      <Button className="ml-4" colorScheme="blue" type="submit">
+                      <Button
+                        className="ml-4"
+                        colorScheme="highlightPurple"
+                        type="submit"
+                      >
                         invite user
                       </Button>
                     </Center>
@@ -603,7 +611,7 @@ export default function EditOrgPage() {
                         <Center>
                           <Button
                             rightIcon={<FiExternalLink />}
-                            colorScheme="blue"
+                            colorScheme="highlightPurple"
                             variant="solid"
                             className="mt-4"
                             onClick={sendCreateCustomerPortalSession}
@@ -629,7 +637,7 @@ export default function EditOrgPage() {
                     {!loading && subs?.length == 0 && (
                       <Center>
                         <Button
-                          colorScheme="blue"
+                          colorScheme="highlightPurple"
                           variant="solid"
                           className="mt-4"
                           onClick={navigateToUpgradePage}
@@ -642,7 +650,7 @@ export default function EditOrgPage() {
                       <Center>
                         <Button
                           rightIcon={<FiExternalLink />}
-                          colorScheme="blue"
+                          colorScheme="highlightPurple"
                           variant="solid"
                           className="mt-4"
                           onClick={sendCreateCustomerPortalSession}

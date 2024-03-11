@@ -1,31 +1,30 @@
-import { getSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
-import createEmailChangeToken from "../api/tokens/createEmailChangeToken";
-import deleteUser from "../api/users/deleteUser";
-import getUser from "../api/users/getUser";
-import updatePassword from "../api/tokens/updatePassword";
-import { User } from "../models/user";
 import {
-  Button,
-  Input,
-  useToast,
-  useDisclosure,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
-  Text,
-  Heading,
+  Button,
+  Center,
   FormControl,
   FormLabel,
-  Center,
+  Heading,
+  Input,
+  Text,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import { getSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import createEmailChangeToken from "../api/tokens/createEmailChangeToken";
+import updatePassword from "../api/tokens/updatePassword";
+import deleteUser from "../api/users/deleteUser";
+import getUser from "../api/users/getUser";
+import { User } from "../models/user";
+import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -168,7 +167,11 @@ export default function ProfilePage() {
             />
           </FormControl>
           <Center>
-            <Button colorScheme="blue" className="mt-4" onClick={sendNewEmail}>
+            <Button
+              colorScheme="highlightPurple"
+              className="mt-4"
+              onClick={sendNewEmail}
+            >
               change email
             </Button>
           </Center>
@@ -216,7 +219,7 @@ export default function ProfilePage() {
           </FormControl>
           <Center>
             <Button
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-4"
               onClick={sendNewPassword}
             >

@@ -1,30 +1,28 @@
-import { useRouter } from "next/router";
-import { FormEvent, useEffect, useState } from "react";
-import styles from "../../../../../styles/Home.module.css";
-import { getSession } from "next-auth/react";
-import getApp from "../../../../../api/apps/getApp";
-import updateApp from "../../../../../api/apps/updateApp";
-import Routes from "../../../../../routes/routes";
-import { App } from "../../../../../models/app";
-import deleteApp from "../../../../../api/apps/deleteApp";
 import {
-  Input,
-  Button,
-  useToast,
-  useDisclosure,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
-  Text,
-  Heading,
+  Button,
   FormControl,
   FormLabel,
+  Heading,
+  Input,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { FormEvent, useEffect, useState } from "react";
+import deleteApp from "../../../../../api/apps/deleteApp";
+import getApp from "../../../../../api/apps/getApp";
+import updateApp from "../../../../../api/apps/updateApp";
+import { App } from "../../../../../models/app";
+import Routes from "../../../../../routes/routes";
+import styles from "../../../../../styles/Home.module.css";
 
 export default function EditAppPage() {
   const router = useRouter();
@@ -150,7 +148,11 @@ export default function EditAppPage() {
               />
             </FormControl>
             <div className="flex justify-center">
-              <Button colorScheme="blue" className="mt-4" type="submit">
+              <Button
+                colorScheme="highlightPurple"
+                className="mt-4"
+                type="submit"
+              >
                 update
               </Button>
             </div>
@@ -163,7 +165,7 @@ export default function EditAppPage() {
                 <Input disabled id="publicKey" value={appKey} />
                 <Button
                   className="ml-2"
-                  colorScheme="blue"
+                  colorScheme="highlightPurple"
                   onClick={() => {
                     navigator.clipboard.writeText(appKey as string);
                     toast({
@@ -181,11 +183,7 @@ export default function EditAppPage() {
             </FormControl>
           </div>
           <Heading className="text-center mt-16">Delete App</Heading>
-          <Button
-            className="mt-8"
-            colorScheme="red"
-            onClick={handleDelete}
-          >
+          <Button className="mt-8" colorScheme="red" onClick={handleDelete}>
             delete
           </Button>
           <AlertDialog

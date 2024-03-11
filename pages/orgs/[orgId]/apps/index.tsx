@@ -113,7 +113,7 @@ export default function AppsPage() {
         </Heading>
         <Button
           className="mt-8"
-          colorScheme="blue"
+          colorScheme="highlightPurple"
           onClick={() => {
             navigateToOrgSettingsPage(orgId);
           }}
@@ -128,7 +128,7 @@ export default function AppsPage() {
             {currentPeriodStart && (
               <Button
                 variant="ghost"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-8"
                 onClick={() => {
                   setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
@@ -153,7 +153,7 @@ export default function AppsPage() {
           <div>
             <Button
               className="mt-8"
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               onClick={navigateToNewAppPage}
             >
               New App

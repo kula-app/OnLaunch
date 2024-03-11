@@ -42,6 +42,7 @@
 
 /* text (message title) on the screen */
 .phoneScreen h1 {
+  color: black;
   font-family: 'Roboto-Regular';
   font-size: 32px;
   text-align: left;
@@ -52,6 +53,7 @@
 
 /* text (message body) on the screen */
 .phoneScreen p {
+  color: black;
   font-family: 'Roboto-Regular';
   font-size: 19px;
   text-align: left;

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { Button, Checkbox, Divider, Heading, Text } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import createCheckoutSession from "../api/stripe/createCheckoutSession";
 import { Product } from "../models/product";
 import { ProductType } from "../models/productType";
-import { Button, Checkbox, Divider, Heading, Text } from "@chakra-ui/react";
 import Routes from "../routes/routes";
-import { useRouter } from "next/router";
-import createCheckoutSession from "../api/stripe/createCheckoutSession";
 
 interface Props {
   product: Product;
@@ -97,14 +97,16 @@ const ProductCard = (props: Props) => {
             }}
           >
             unlimited exceeding requests at{" "}
-            {formatCurrency((props.product.unlimitedOption.priceAmount as number))}{" "}
+            {formatCurrency(
+              props.product.unlimitedOption.priceAmount as number
+            )}{" "}
             per extra request
           </Checkbox>
         </div>
       )}
       <div className="flex-grow"></div>
       <Button
-        colorScheme="blue"
+        colorScheme="highlightPurple"
         onClick={() => handleSubscription()}
         className="mt-4 flex w-full"
         role="link"

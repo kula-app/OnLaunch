@@ -1,30 +1,30 @@
-import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdClose } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import createMessage from "../../../../../../api/messages/createMessage";
-import Routes from "../../../../../../routes/routes";
-import { Action } from "../../../../../../models/action";
-import { Message } from "../../../../../../models/message";
 import {
   Button,
   FormControl,
   FormLabel,
+  Heading,
   IconButton,
   Input,
   Select,
   Switch,
   Table,
   Tbody,
+  Td,
   Textarea,
   Th,
   Thead,
   Tr,
-  Td,
   useToast,
-  Heading,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { MdClose, MdDeleteForever } from "react-icons/md";
+import createMessage from "../../../../../../api/messages/createMessage";
+import { Action } from "../../../../../../models/action";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
@@ -275,10 +275,7 @@ export default function NewMessageForAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button
-                    colorScheme="blue"
-                    onClick={addAction}
-                  >
+                  <Button colorScheme="highlightPurple" onClick={addAction}>
                     New Action
                   </Button>
                 </div>
@@ -286,7 +283,7 @@ export default function NewMessageForAppPage() {
               <Button
                 style={{ width: 655 }}
                 className="my-4"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="submit"
               >
                 Save
@@ -317,14 +314,14 @@ export default function NewMessageForAppPage() {
                     actions.map((action: Action, index: number) => {
                       if (action.buttonDesign === "FILLED") {
                         return (
-                          <Button colorScheme="blue" key={index}>
+                          <Button colorScheme="highlightPurple" key={index}>
                             {action.title}
                           </Button>
                         );
                       } else {
                         return (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="highlightPurple"
                             variant="ghost"
                             key={index}
                           >

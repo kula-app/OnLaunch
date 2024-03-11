@@ -1,18 +1,17 @@
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  useToast,
+} from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import styles from "../styles/Home.module.css";
 import createPasswordResetToken from "../api/tokens/createPasswordResetToken";
 import Routes from "../routes/routes";
-import {
-  Input,
-  Button,
-  useToast,
-  Text,
-  Heading,
-  FormControl,
-  FormLabel,
-} from "@chakra-ui/react";
+import styles from "../styles/Home.module.css";
 
 export default function ResetPage() {
   const router = useRouter();
@@ -62,12 +61,16 @@ export default function ResetPage() {
               />
             </FormControl>
             <div className="flex flex-col">
-              <Button className="mt-4" colorScheme="blue" type="submit">
+              <Button
+                className="mt-4"
+                colorScheme="highlightPurple"
+                type="submit"
+              >
                 reset password
               </Button>
               <Button
                 variant="ghost"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="button"
                 onClick={navigateToAuthPage}
               >

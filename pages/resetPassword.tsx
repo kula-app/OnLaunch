@@ -1,21 +1,20 @@
+import {
+  Button,
+  Center,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
-import { getSession } from "next-auth/react";
 import getPasswordResetToken from "../api/tokens/getPasswordResetToken";
 import resetPassword from "../api/tokens/resetPassword";
 import Routes from "../routes/routes";
-import {
-  Button,
-  Spinner,
-  Input,
-  useToast,
-  Text,
-  Heading,
-  FormControl,
-  FormLabel,
-  Center,
-} from "@chakra-ui/react";
+import styles from "../styles/Home.module.css";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -122,7 +121,7 @@ export default function ResetPasswordPage() {
             </FormControl>
             <Center>
               <Button
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-4"
                 onClick={sendNewPassword}
               >

@@ -81,7 +81,11 @@ export default function NewOrgPage() {
                     onChange={(event) => setOrgName(event.target.value)}
                   />
                 </div>
-                <Button colorScheme="blue" className="mt-4" type="submit">
+                <Button
+                  colorScheme="highlightPurple"
+                  className="mt-4"
+                  type="submit"
+                >
                   next
                 </Button>
               </FormControl>

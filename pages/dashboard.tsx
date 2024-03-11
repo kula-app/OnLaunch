@@ -124,7 +124,7 @@ export default function DashboardPage() {
         <div>
           <Button
             className="mt-8"
-            colorScheme="blue"
+            colorScheme="highlightPurple"
             onClick={navigateToNewOrgPage}
           >
             New Organisation
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                 Cancel
               </Button>
               <Button
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 ml={3}
                 onClick={() => {
                   joinOrg(Number(orgInvite?.id));

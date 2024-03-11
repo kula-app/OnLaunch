@@ -1,42 +1,41 @@
-import Moment from "moment";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import deleteMessage from "../../../../../../api/messages/deleteMessage";
-import { useApp } from "../../../../../../api/apps/useApp";
-import Routes from "../../../../../../routes/routes";
-import { Message } from "../../../../../../models/message";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
+  Heading,
   IconButton,
-  Stack,
   Skeleton,
+  Stack,
   Table,
   Tag,
   Tbody,
+  Td,
+  Text,
   Th,
   Thead,
   Tooltip,
   Tr,
-  Text,
-  Td,
-  useToast,
   useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  AlertDialogCloseButton,
-  Heading,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import Moment from "moment";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { useApp } from "../../../../../../api/apps/useApp";
+import getDashboardData from "../../../../../../api/dashboard/getDashboardData";
+import deleteMessage from "../../../../../../api/messages/deleteMessage";
 import { useOrg } from "../../../../../../api/orgs/useOrg";
 import RequestsChart from "../../../../../../components/RequestsChart";
-import getDashboardData from "../../../../../../api/dashboard/getDashboardData";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
@@ -186,7 +185,7 @@ export default function MessagesOfAppPage() {
           <Heading className="text-center">{data?.name}</Heading>
           {data?.role === "ADMIN" && (
             <Button
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-8"
               onClick={navigateToAppSettingsPage}
             >
@@ -205,7 +204,7 @@ export default function MessagesOfAppPage() {
           )}
           <div>
             <Button
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-8"
               onClick={navigateToNewMessagePage}
             >
@@ -215,7 +214,7 @@ export default function MessagesOfAppPage() {
           <div>
             <Button
               variant="ghost"
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-8"
               onClick={() => {
                 setShowHistory(!showHistory);

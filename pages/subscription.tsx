@@ -69,14 +69,14 @@ export default function ProfilePage() {
             <Stack>
               <Button
                 onClick={() => navigateToDashboardPage()}
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-8"
               >
                 go to dashboard
               </Button>
               <Button
                 onClick={navigateToNewOrgPage}
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-2"
               >
                 create another
@@ -99,7 +99,7 @@ export default function ProfilePage() {
             <Stack>
               <Button
                 onClick={navigateToDashboardPage}
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-8"
               >
                 go to dashboard

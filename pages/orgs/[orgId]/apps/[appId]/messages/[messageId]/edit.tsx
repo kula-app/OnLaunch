@@ -305,7 +305,7 @@ export default function EditMessageOfAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button colorScheme="blue" onClick={addAction}>
+                  <Button colorScheme="highlightPurple" onClick={addAction}>
                     New Action
                   </Button>
                 </div>
@@ -313,7 +313,7 @@ export default function EditMessageOfAppPage() {
               <Button
                 style={{ width: 655 }}
                 className="my-4"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="submit"
               >
                 Save
@@ -344,14 +344,14 @@ export default function EditMessageOfAppPage() {
                     actions.map((action: Action, index: number) => {
                       if (action.buttonDesign === "FILLED") {
                         return (
-                          <Button colorScheme="blue" key={index}>
+                          <Button colorScheme="highlightPurple" key={index}>
                             {action.title}
                           </Button>
                         );
                       } else {
                         return (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="highlightPurple"
                             variant="ghost"
                             key={index}
                           >

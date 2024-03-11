@@ -1,10 +1,10 @@
+import { Button, Center, Heading, Spinner, useToast } from "@chakra-ui/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
-import { signOut, useSession } from "next-auth/react";
 import validateEmailChange from "../api/tokens/validateEmailChange";
 import Routes from "../routes/routes";
-import { Button, Center, Heading, Spinner, useToast } from "@chakra-ui/react";
+import styles from "../styles/Home.module.css";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
             </Center>
             <Center>
               <Button
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 sx={{ marginTop: 5 }}
                 onClick={navigateToAuthPage}
               >

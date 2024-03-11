@@ -1,13 +1,12 @@
-import React from "react";
 import {
-  Stack,
-  Link,
   Collapse,
-  Icon,
-  useColorModeValue,
-  Text,
   Flex,
-  useDisclosure
+  Icon,
+  Link,
+  Stack,
+  Text,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { MdExpandMore } from "react-icons/md";
 import Routes from "../routes/routes";
@@ -78,7 +77,7 @@ function MobileNavItem({ label, children, href }: NavItem) {
           pl={4}
           borderLeft={1}
           borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "gray.700")}
+          borderColor={useColorModeValue("gray.400", "gray.700")}
           align={"start"}
         >
           {children &&
