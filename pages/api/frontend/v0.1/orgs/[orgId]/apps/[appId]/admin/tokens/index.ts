@@ -1,6 +1,9 @@
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../../lib/services/db";
+import { CreateAppAdminTokenDto } from "../../../../../../../../../../models/dtos/request/createAppAdminTokenDto";
 import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/response/appAdminTokenDto";
 import { encodeAppToken } from "../../../../../../../../../../util/adminApi/tokenEncoding";
 import {
@@ -70,15 +73,18 @@ export default async function handler(
       );
 
     case "POST":
-      // Extract time to live and token label from request body
-      const { timeToLive, label } = req.body;
+      const requestObj = plainToInstance(CreateAppAdminTokenDto, req.body);
+      const errors = await validate(requestObj);
 
-      if (typeof timeToLive !== "number" || timeToLive < 0) {
+      if (errors.length > 0) {
         logger.error("Invalid time to live");
         return res
           .status(StatusCodes.FORBIDDEN)
           .json({ message: "Invalid time to live" });
       }
+
+      const { timeToLive, label } = requestObj;
+
       const generatedToken = generateToken();
 
       const expiryDate =
@@ -89,8 +95,7 @@ export default async function handler(
         data: {
           token: generatedToken,
           expiryDate: expiryDate,
-          // Only add label data when the parameter was actually passed via body
-          ...(label && { label: label }),
+          label: label,
           app: {
             connect: {
               id: appId,
@@ -105,10 +110,8 @@ export default async function handler(
         updatedAt: appAdminToken.updatedAt,
         token: encodeAppToken(appAdminToken.token),
         role: appAdminToken.role,
-        ...(appAdminToken.label && { label: appAdminToken.label }),
-        expiryDate: appAdminToken.expiryDate
-          ? appAdminToken.expiryDate
-          : undefined,
+        label: appAdminToken.label ?? undefined,
+        expiryDate: appAdminToken.expiryDate ?? undefined,
       };
 
       return res.status(StatusCodes.CREATED).json(dto);

@@ -133,7 +133,7 @@ import { Logger } from "../../../../../../util/logger";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<MessageDto | ErrorDto>
 ) {
   const logger = new Logger(__filename);
 
@@ -144,7 +144,7 @@ export default async function handler(
   if (!authResult.success)
     return res
       .status(authResult.statusCode)
-      .json({ message: authResult.errorMessage });
+      .json(getErrorDto(authResult.errorMessage));
 
   const messageId = Number(req.query.messageId);
 
@@ -170,7 +170,7 @@ export default async function handler(
         );
         return res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: `No message found with id ${messageId}` });
+          .json(getErrorDto(`No message found with id ${messageId}`));
       }
 
       const convertedActions: ActionDto[] = message.actions.map(
@@ -225,16 +225,19 @@ export default async function handler(
           logger.error(
             `No message found with id '${messageId}' for app with id(=${authResult.id})`
           );
-          return res.status(StatusCodes.NOT_FOUND).json({
-            message: "No message found with id " + messageId,
-          });
+          return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(getErrorDto("No message found with id " + messageId));
         }
 
         logger.error(`Internal server error occurred: ${e}`);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          message:
-            "An internal server error occurred - please try again later!",
-        });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json(
+            getErrorDto(
+              "An internal server error occurred - please try again later!"
+            )
+          );
       }
 
     // Updating message
@@ -252,7 +255,7 @@ export default async function handler(
           .join(", ");
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: `Validation failed: ${errors}` });
+          .json(getErrorDto(`Validation failed: ${errors}`));
       }
 
       try {
@@ -318,21 +321,24 @@ export default async function handler(
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           logger.log(`No message found with id '${messageId}'`);
-          return res.status(StatusCodes.NOT_FOUND).json({
-            message: "No message found with id " + messageId,
-          });
+          return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(getErrorDto("No message found with id " + messageId));
         }
 
         logger.error(`Internal server error occurred: ${e}`);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          message:
-            "An internal server error occurred - please try again later!",
-        });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json(
+            getErrorDto(
+              "An internal server error occurred - please try again later!"
+            )
+          );
       }
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json(getErrorDto("method not allowed"));
   }
 }

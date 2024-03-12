@@ -113,7 +113,7 @@ import { Logger } from "../../../../../util/logger";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<AppDto | ErrorDto>
 ) {
   const logger = new Logger(__filename);
 
@@ -124,7 +124,7 @@ export default async function handler(
   if (!authResult.success)
     return res
       .status(authResult.statusCode)
-      .json({ message: authResult.errorMessage });
+      .json(getErrorDto(authResult.errorMessage));
 
   switch (req.method) {
     // Find app by token
@@ -143,9 +143,9 @@ export default async function handler(
 
       if (app == null) {
         logger.error(`No app found with id '${authResult.id}'`);
-        return res.status(StatusCodes.NOT_FOUND).json({
-          message: `No app found with id '${authResult.id}'`,
-        });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json(getErrorDto(`No app found with id '${authResult.id}'`));
       }
 
       const convertedMessages: MessageDto[] = app.messages.map(
@@ -186,7 +186,7 @@ export default async function handler(
           .join(", ");
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: `Validation failed: ${errors}` });
+          .json(getErrorDto(`Validation failed: ${errors}`));
       }
 
       try {
@@ -215,19 +215,22 @@ export default async function handler(
           logger.error(`No app found with id '${authResult.id}'`);
           return res
             .status(StatusCodes.NOT_FOUND)
-            .json({ message: "No app found with id " + authResult.id });
+            .json(getErrorDto("No app found with id " + authResult.id));
         }
 
         logger.error(`Internal server error occurred: ${e}`);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          message:
-            "An internal server error occurred - please try again later!",
-        });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json(
+            getErrorDto(
+              "An internal server error occurred - please try again later!"
+            )
+          );
       }
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json(getErrorDto("method not allowed"));
   }
 }
