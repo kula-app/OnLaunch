@@ -45,6 +45,8 @@ function IsAfter(property: string, validationOptions?: ValidationOptions) {
 
 class ActionDto {
   @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
   title!: string;
 
   @IsEnum(ActionType)
