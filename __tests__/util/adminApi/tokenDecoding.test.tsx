@@ -55,5 +55,10 @@ describe("Test token decoding util", () => {
     const decodedToken = decodeToken(encodedToken);
 
     expect(decodedToken).toBeNull();
+
+  it("returns null when the token is undefined", () => {
+    const decodedToken = decodeToken(undefined);
+
+    expect(decodedToken).toBeNull();
   });
 });
