@@ -69,7 +69,7 @@ import { Logger } from "../../../../../util/logger";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<OrgDto | ErrorDto>
 ) {
   const logger = new Logger(__filename);
 
@@ -80,7 +80,7 @@ export default async function handler(
   if (!authResult.success)
     return res
       .status(authResult.statusCode)
-      .json({ message: authResult.errorMessage });
+      .json(getErrorDto(authResult.errorMessage));
 
   switch (req.method) {
     // Find org (including apps) by token
@@ -100,9 +100,11 @@ export default async function handler(
 
       if (org == null) {
         logger.error(`No organisation found with id '${authResult.id}'`);
-        return res.status(StatusCodes.NOT_FOUND).json({
-          message: `No organisation found with id '${authResult.id}'`,
-        });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json(
+            getErrorDto(`No organisation found with id '${authResult.id}'`)
+          );
       }
 
       const convertedApps: AppDto[] = org.apps.map(
@@ -127,6 +129,6 @@ export default async function handler(
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json(getErrorDto("method not allowed"));
   }
 }

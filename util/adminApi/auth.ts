@@ -37,6 +37,16 @@ export async function authenticate(
   if (authToken.startsWith(bearerPrefix)) {
     // Remove the "Bearer " prefix
     authToken = authToken.substring(bearerPrefix.length);
+  } else {
+    logger.error(
+      'Authorization token is invalid - missing the "Bearer " prefix'
+    );
+    return {
+      success: false,
+      statusCode: StatusCodes.FORBIDDEN,
+      errorMessage:
+        'Authorization token is invalid - missing the "Bearer " prefix',
+    };
   }
 
   const tokenInfo = decodeToken(authToken);

@@ -50,7 +50,7 @@ export default async function handler(
           updatedAt: appAdminToken.updatedAt,
           token: encodeAppToken(appAdminToken.token),
           role: appAdminToken.role,
-          ...(appAdminToken.label && { label: appAdminToken.label }),
+          label: appAdminToken.label ?? undefined,
         };
 
         return res.status(StatusCodes.OK).json(dto);

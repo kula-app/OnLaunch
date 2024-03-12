@@ -68,7 +68,7 @@ import { Logger } from "../../../../../../util/logger";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<AppAdminTokenDto | ErrorDto>
 ) {
   const logger = new Logger(__filename);
 
@@ -79,15 +79,15 @@ export default async function handler(
   if (!authResult.success)
     return res
       .status(authResult.statusCode)
-      .json({ message: authResult.errorMessage });
+      .json(getErrorDto(authResult.errorMessage));
 
   const appId = Number(req.query.appId);
 
   if (!appId) {
     logger.error(`No app id provided!`);
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: `No app id provided!`,
-    });
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json(getErrorDto(`No app id provided!`));
   }
 
   switch (req.method) {
@@ -105,9 +105,13 @@ export default async function handler(
         logger.error(
           `No app with id(=${appId}) found for org with id(=${authResult.id}!`
         );
-        return res.status(StatusCodes.NOT_FOUND).json({
-          message: `No app with id(=${appId}) found for org with id(=${authResult.id}!`,
-        });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json(
+            getErrorDto(
+              `No app with id(=${appId}) found for org with id(=${authResult.id}!`
+            )
+          );
       }
 
       logger.log(
@@ -134,7 +138,6 @@ export default async function handler(
         updatedAt: appAdminToken.updatedAt,
         token: encodeAppToken(appAdminToken.token),
         role: appAdminToken.role,
-        ...(appAdminToken.label && { label: appAdminToken.label }),
         expiryDate: expiryDate,
       };
 
@@ -143,6 +146,6 @@ export default async function handler(
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json(getErrorDto("method not allowed"));
   }
 }

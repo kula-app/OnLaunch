@@ -6,42 +6,11 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsString,
+  MaxLength,
   ValidateNested,
-  ValidationArguments,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  registerDecorator,
 } from "class-validator";
-
-@ValidatorConstraint({ async: false })
-class IsAfterConstraint implements ValidatorConstraintInterface {
-  validate(endDate: any, args: ValidationArguments) {
-    const [relatedPropertyName] = args.constraints;
-    const startDate = (args.object as any)[relatedPropertyName];
-    return (
-      typeof startDate === "string" &&
-      typeof endDate === "string" &&
-      new Date(startDate) < new Date(endDate)
-    );
-  }
-
-  defaultMessage(args: ValidationArguments) {
-    return `"${args.property}" must be after "${args.constraints[0]}"`;
-  }
-}
-
-function IsAfter(property: string, validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      target: object.constructor,
-      propertyName: propertyName,
-      options: validationOptions,
-      constraints: [property],
-      validator: IsAfterConstraint,
-    });
-  };
-}
+import { IsAfter } from "../../validators/isAfterValidator";
 
 class ActionDto {
   @IsNotEmpty()

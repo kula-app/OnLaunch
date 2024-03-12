@@ -80,32 +80,6 @@ describe("Test auth for admin api tokens", () => {
     });
   });
 
-  it("authenticates org admin api token without Bearer prefix successfully", async () => {
-    // -- Arrange --
-    const req = { headers: { authorization: "org_abcdefgh1234567890" } };
-
-    (decodeToken as jest.Mock).mockReturnValue({
-      token: testToken,
-      type: orgPrefix,
-    });
-    (prisma.organisationAdminToken.findFirst as jest.Mock).mockResolvedValue({
-      orgId: 123,
-      token: testToken,
-      isDeleted: false,
-    });
-
-    // -- Act  --
-    const result = await authenticate(req as any, "org");
-
-    // -- Assert  --
-    expect(result).toEqual({
-      success: true,
-      authToken: testToken,
-      id: 123,
-      statusCode: StatusCodes.OK,
-    });
-  });
-
   it("should return 401 if authorization token is missing", async () => {
     // -- Arrange --
     // Mocked request without authorization header

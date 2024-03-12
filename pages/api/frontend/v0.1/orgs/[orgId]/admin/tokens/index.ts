@@ -63,8 +63,7 @@ export default async function handler(
         data: {
           token: generatedToken,
           orgId: orgId,
-          // Only add label data when the parameter was actually passed via body
-          ...(label && { label: label }),
+          label: label,
         },
       });
 

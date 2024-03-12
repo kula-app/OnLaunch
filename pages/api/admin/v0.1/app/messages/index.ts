@@ -123,7 +123,7 @@ import { Logger } from "../../../../../../util/logger";
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<MessageDto | MessageDto[] | ErrorDto>
 ) {
   const logger = new Logger(__filename);
 
@@ -134,7 +134,7 @@ export default async function handler(
   if (!authResult.success)
     return res
       .status(authResult.statusCode)
-      .json({ message: authResult.errorMessage });
+      .json(getErrorDto(authResult.errorMessage));
 
   switch (req.method) {
     // Get all messages for app
@@ -183,7 +183,7 @@ export default async function handler(
           .join(", ");
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: `Validation failed: ${errors}` });
+          .json(getErrorDto(`Validation failed: ${errors}`));
       }
 
       logger.log(`Creating message for app id '${authResult.id}'`);
@@ -237,6 +237,6 @@ export default async function handler(
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json(getErrorDto("method not allowed"));
   }
 }
