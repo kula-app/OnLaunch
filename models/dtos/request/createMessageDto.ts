@@ -61,6 +61,8 @@ export class CreateMessageDto {
   blocking!: boolean;
 
   @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
   title!: string;
 
   @IsNotEmpty()
