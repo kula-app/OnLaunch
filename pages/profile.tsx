@@ -169,7 +169,7 @@ export default function ProfilePage() {
           <Center>
             <Button
               colorScheme="highlightPurple"
-              className="mt-4"
+              className="mt-4 w-full"
               onClick={sendNewEmail}
             >
               change email
@@ -220,7 +220,7 @@ export default function ProfilePage() {
           <Center>
             <Button
               colorScheme="highlightPurple"
-              className="mt-4"
+              className="mt-4 w-full"
               onClick={sendNewPassword}
             >
               change password

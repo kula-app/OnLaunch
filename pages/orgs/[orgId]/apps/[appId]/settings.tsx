@@ -150,7 +150,7 @@ export default function EditAppPage() {
             <div className="flex justify-center">
               <Button
                 colorScheme="highlightPurple"
-                className="mt-4"
+                className="mt-4 w-full"
                 type="submit"
               >
                 update

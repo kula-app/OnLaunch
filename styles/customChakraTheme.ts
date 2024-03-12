@@ -1,23 +1,25 @@
 import { extendTheme } from "@chakra-ui/react";
+import AppColors from "./appColors";
 
 const customTheme = extendTheme({
   colors: {
-    backgroundBlack: "#000000",
-    backgroundGray: "#2A292C",
-    textWhite: "#FFFFFF",
-    textGray: "#8D8D92",
+    backgroundBlack: AppColors.backgroundBlack,
+    backgroundGray: AppColors.backgroundGray,
+    textWhite: AppColors.textWhite,
+    textGray: AppColors.textGray,
     highlightPurple: {
-      500: "#7823C9", // Main shade
-      600: "#6a21b3", // Darker shade for hover
-      700: "#5d1e9d", // Even darker for active
+      500: AppColors.highlightPurple[500], // Main shade
+      600: AppColors.highlightPurple[600], // Darker shade for hover
+      700: AppColors.highlightPurple[700], // Even darker for active
     },
-    detailGrayPurple: "#ADA2C4",
+    detailGrayPurple: {
+      500: AppColors.detailGrayPurple[500],
+      600: AppColors.detailGrayPurple[600],
+    },
   },
   components: {
     Input: {
-      // Style configuration for the Input component
       variants: {
-        // You can add this style under each variant you use, e.g., 'outline', 'filled', etc.
         outline: {
           field: {
             _focus: {
@@ -29,9 +31,7 @@ const customTheme = extendTheme({
       },
     },
     Textarea: {
-      // Style configuration for the Textarea component
       variants: {
-        // Similarly, add this under each variant you use
         outline: {
           _focus: {
             borderColor: "highlightPurple.500",
@@ -52,7 +52,7 @@ const customTheme = extendTheme({
         color: "textWhite",
       },
       a: {
-        color: "highlightPurple.500",
+        color: "gray.500",
         _hover: {
           textDecoration: "underline",
         },
@@ -62,9 +62,10 @@ const customTheme = extendTheme({
         _hover: {
           bg: "gray.600",
         },
+        color: "white",
       },
       "input, textarea": {
-        borderColor: "detailGrayPurple",
+        borderColor: "detailGrayPurple.500",
       },
     },
   },

@@ -50,6 +50,7 @@ import { Org } from "../../../models/org";
 import { Subscription } from "../../../models/subscription";
 import Routes from "../../../routes/routes";
 import styles from "../../../styles/Home.module.css";
+import AppColors from "../../../styles/appColors";
 import { getColorLabel, translateSubName } from "../../../util/nameTag";
 
 export default function EditOrgPage() {
@@ -377,15 +378,13 @@ export default function EditOrgPage() {
                     onChange={(event) => setOrgName(event.target.value)}
                   />
                 </FormControl>
-                <Center>
-                  <Button
-                    colorScheme="highlightPurple"
-                    className="mt-4"
-                    type="submit"
-                  >
-                    update
-                  </Button>
-                </Center>
+                <Button
+                  colorScheme="highlightPurple"
+                  className="mt-4 w-full"
+                  type="submit"
+                >
+                  update
+                </Button>
               </form>
             </div>
           )}
@@ -471,17 +470,16 @@ export default function EditOrgPage() {
             >
               <Thead>
                 <Tr>
-                  <Th></Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}></Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Name</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Email</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Role</strong>
                   </Th>
-                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -490,15 +488,19 @@ export default function EditOrgPage() {
                   users?.map((user, index) => {
                     return (
                       <Tr key={index}>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           <Avatar
                             size={"sm"}
                             name={user.firstName + " " + user.lastName}
                           />
                         </Td>
-                        <Td>{user.firstName + " " + user.lastName}</Td>
-                        <Td>{user.email}</Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
+                          {user.firstName + " " + user.lastName}
+                        </Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
+                          {user.email}
+                        </Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           {userRole === "ADMIN" && (
                             <div className="flex flex-row">
                               <Select
@@ -527,9 +529,11 @@ export default function EditOrgPage() {
                                   className="ml-4"
                                   aria-label={"remove user"}
                                   onClick={() => removeUser(user.email)}
-                                >
-                                  <MdDeleteForever />
-                                </IconButton>
+                                  icon={<MdDeleteForever />}
+                                  colorScheme="red"
+                                  color="white"
+                                  variant="solid"
+                                />
                               </Tooltip>
                             </div>
                           )}
@@ -543,9 +547,11 @@ export default function EditOrgPage() {
                                     className="ml-4"
                                     aria-label={"leave organisation"}
                                     onClick={() => removeUser(user.email)}
-                                  >
-                                    <MdDeleteForever />
-                                  </IconButton>
+                                    icon={<MdDeleteForever />}
+                                    colorScheme="red"
+                                    color="white"
+                                    variant="solid"
+                                  />
                                 </Tooltip>
                               )}
                             </div>
@@ -573,25 +579,40 @@ export default function EditOrgPage() {
                         >
                           <Thead>
                             <Tr>
-                              <Th>
+                              <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                                 <strong>Org Id</strong>
                               </Th>
-                              <Th>
+                              <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                                 <strong>Organisation</strong>
                               </Th>
-                              <Th>
+                              <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                                 <strong>Subscription</strong>
                               </Th>
-                              <Th></Th>
                             </Tr>
                           </Thead>
                           <Tbody>
                             {subs?.map((sub, index) => {
                               return (
                                 <Tr key={index}>
-                                  <Td>{sub.org.id}</Td>
-                                  <Td>{sub.org.name}</Td>
-                                  <Td>
+                                  <Td
+                                    sx={{
+                                      borderColor: AppColors.tdBorderColor,
+                                    }}
+                                  >
+                                    {sub.org.id}
+                                  </Td>
+                                  <Td
+                                    sx={{
+                                      borderColor: AppColors.tdBorderColor,
+                                    }}
+                                  >
+                                    {sub.org.name}
+                                  </Td>
+                                  <Td
+                                    sx={{
+                                      borderColor: AppColors.tdBorderColor,
+                                    }}
+                                  >
                                     <Tag
                                       size={"md"}
                                       key={index}

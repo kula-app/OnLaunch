@@ -72,7 +72,7 @@ export default function NewOrgPage() {
           <div>
             <Heading className="text-center">New Organisation</Heading>
             <form className="mt-8" id="orgForm" onSubmit={submitHandler}>
-              <FormControl className="mt-4 flex flex-col items-center">
+              <FormControl className="mt-4 flex flex-col">
                 <div>
                   <FormLabel>Name</FormLabel>
                   <Input
@@ -83,7 +83,7 @@ export default function NewOrgPage() {
                 </div>
                 <Button
                   colorScheme="highlightPurple"
-                  className="mt-4"
+                  className="mt-4 w-full"
                   type="submit"
                 >
                   next

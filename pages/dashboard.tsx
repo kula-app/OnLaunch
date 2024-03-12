@@ -32,6 +32,7 @@ import { loadConfig } from "../config/loadConfig";
 import { OrgInvite } from "../models/orgInvite";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
+import AppColors from "../styles/appColors";
 import { getColorLabel, translateSubName } from "../util/nameTag";
 
 export default function DashboardPage() {
@@ -138,10 +139,10 @@ export default function DashboardPage() {
           >
             <Thead>
               <Tr>
-                <Th width="5%">
+                <Th width="5%" sx={{ borderColor: AppColors.tdBorderColor }}>
                   <strong>ID</strong>
                 </Th>
-                <Th>
+                <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                   <strong>Name</strong>
                 </Th>
               </Tr>
@@ -154,8 +155,13 @@ export default function DashboardPage() {
                     key={index}
                     onClick={() => navigateToAppsPage(org.id)}
                   >
-                    <Td width="5%">{org.id}</Td>
-                    <Td>
+                    <Td
+                      width="5%"
+                      sx={{ borderColor: AppColors.tdBorderColor }}
+                    >
+                      {org.id}
+                    </Td>
+                    <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                       {org.name}
                       {stripeConfig.isEnabled && (
                         <Tag

@@ -70,15 +70,13 @@ export default function NewAppPage() {
                 onChange={(event) => setAppName(event.target.value)}
               />
             </FormControl>
-            <div className="flex justify-center">
-              <Button
-                colorScheme="highlightPurple"
-                className="mt-4"
-                type="submit"
-              >
-                save
-              </Button>
-            </div>
+            <Button
+              colorScheme="highlightPurple"
+              className="mt-4 w-full"
+              type="submit"
+            >
+              save
+            </Button>
           </form>
         </main>
       </div>
