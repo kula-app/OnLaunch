@@ -1,6 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 
 export class CreateAppDto {
-  @IsNotEmpty()
+  @IsString()
+  @MaxLength(150)
   name!: string;
 }
