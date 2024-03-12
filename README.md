@@ -10,7 +10,7 @@ After an initial implementation of OnLaunch into your app, no more development t
 
 # Getting Started
 
-See the [Documentation Overview](/docs/overview.md) for detailed documentation.
+See the [Documentation Overview](/docs/index.md) for detailed documentation.
 
 ## Quick Start
 
