@@ -1,0 +1,47 @@
+<mxfile host="Electron" modified="2024-02-22T14:34:43.750Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="l3eKoowWNC9LPm1-9b-G" version="23.1.5" type="device">
+  <diagram name="Page-1" id="do2emqceEcD7DS_VpWg2">
+    <mxGraphModel dx="1238" dy="892" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="15F91J-D37EmK4DCzmP2-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" target="15F91J-D37EmK4DCzmP2-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="64" y="83.4" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-2" value="Developer" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;spacingBottom=0;labelBackgroundColor=default;" vertex="1" parent="1">
+          <mxGeometry x="41.19999999999999" width="45.6" height="61.800000000000004" as="geometry" />
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-12" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;targetPerimeterSpacing=0;sourcePerimeterSpacing=0;entryX=0.475;entryY=-0.005;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="15F91J-D37EmK4DCzmP2-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="220" y="83.4" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-4" value="SDK Client" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Smartphone.svg;" vertex="1" parent="1">
+          <mxGeometry x="212.10000000000002" y="18.599999999999994" width="19.8" height="43.199999999999996" as="geometry" />
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" target="15F91J-D37EmK4DCzmP2-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="220" y="233.4" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-6" value="OnLaunch REST API" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/app_services/App_Service_Plans.svg;" vertex="1" parent="1">
+          <mxGeometry x="190" y="143.4" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-7" value="PostgreSQL" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
+          <mxGeometry x="197" y="283.4" width="48" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-9" value="OnLaunch Dashboard" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/app_services/App_Service_Domains.svg;" vertex="1" parent="1">
+          <mxGeometry x="30" y="143.4" width="68" height="55.00000000000001" as="geometry" />
+        </mxCell>
+        <mxCell id="15F91J-D37EmK4DCzmP2-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.015;entryY=0.466;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.996;exitY=0.545;exitDx=0;exitDy=0;exitPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="15F91J-D37EmK4DCzmP2-9" target="15F91J-D37EmK4DCzmP2-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="189" y="173.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,7 +1,4 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
@@ -14,8 +11,16 @@
       "name": "Start Server",
       "request": "launch",
       "command": "yarn dev",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node-terminal"
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node-terminal",
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome",
+        "killOnServerStop": true
+      }
     },
     {
       "name": "Start Resources",
@@ -35,9 +40,7 @@
       "name": "Develop",
       "configurations": [
         "Start Resources",
-        "Start Prisma Studio",
-        "Start Server",
-        "Open Mailhog"
+        "Start Server"
       ]
     }
   ]
