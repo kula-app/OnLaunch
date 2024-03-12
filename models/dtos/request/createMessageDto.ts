@@ -64,6 +64,8 @@ export class CreateMessageDto {
   title!: string;
 
   @IsNotEmpty()
+  @IsString()
+  @MaxLength(500)
   body!: string;
 
   @IsDateString()
