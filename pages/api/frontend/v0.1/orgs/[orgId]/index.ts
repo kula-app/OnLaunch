@@ -89,6 +89,19 @@ export default async function handler(
           });
         }
 
+        logger.log(
+          `Setting the isDeleted flag for all active orgAdminTokens for org with id(=${orgId})`
+        );
+        await prisma.organisationAdminToken.updateMany({
+          where: {
+            orgId: orgId,
+            isDeleted: false,
+          },
+          data: {
+            isDeleted: true,
+          },
+        });
+
         logger.log(`Deleting organisation with id '${orgId}'`);
         const deletedOrg = await prisma.organisation.update({
           where: {

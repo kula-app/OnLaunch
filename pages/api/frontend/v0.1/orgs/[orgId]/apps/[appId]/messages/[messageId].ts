@@ -2,19 +2,9 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../lib/services/db";
+import { Action } from "../../../../../../../../../models/action";
 import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
 import { Logger } from "../../../../../../../../../util/logger";
-
-enum ActionType {
-  Dismiss = "DISMISS",
-}
-
-type Action = {
-  id: number;
-  actionType: ActionType;
-  title: string;
-  messageId: number;
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -73,8 +63,13 @@ export default async function handler(
             message: "No message found with id " + req.query.messageId,
           });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     case "PUT":
       try {
@@ -130,8 +125,13 @@ export default async function handler(
             message: "No message found with id " + req.query.messageId,
           });
         }
+
+        logger.error(`Internal server error occurred: ${e}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "An internal server error occurred - please try again later!",
+        });
       }
-      break;
 
     default:
       return res

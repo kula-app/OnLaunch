@@ -1,9 +1,10 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
-import Navbar from "../components/Navbar";
-import "cal-sans";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import "cal-sans";
+import { SessionProvider } from "next-auth/react";
+import type { AppProps } from "next/app";
+import "reflect-metadata";
+import Navbar from "../components/Navbar";
+import "../styles/globals.css";
 
 const chakraTheme = extendTheme();
 

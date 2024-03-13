@@ -73,6 +73,32 @@ class ApiRoutes {
   static getPasswordResetByToken(token: string): string {
     return `${ApiRoutes.API_BASE_URL}/tokens/resetPassword/${token}`;
   }
+
+  static getOrgAdminTokensByOrgId(orgId: number): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/admin/tokens`;
+  }
+
+  static getOrgAdminTokensByOrgIdAndTokenId(
+    orgId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/admin/tokens/${tokenId}`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppId(
+    orgId: number,
+    appId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens`;
+  }
+
+  static getAppAdminTokensByOrgIdAndAppIdAndTokenId(
+    orgId: number,
+    appId: number,
+    tokenId: number
+  ): string {
+    return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens/${tokenId}`;
+  }
 }
 
 export default ApiRoutes;

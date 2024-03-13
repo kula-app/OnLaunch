@@ -150,6 +150,7 @@ export default function EditMessageOfAppPage() {
   ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
+
     setActions(data);
   }
 
@@ -159,6 +160,7 @@ export default function EditMessageOfAppPage() {
   ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
+
     setActions(data);
   }
 

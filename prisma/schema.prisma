@@ -21,6 +21,16 @@ enum Role {
   ADMIN
 }
 
+enum AppAccessLevel {
+  FULL
+  // Temporary Tokens are alive for a short duration and will not be displayed in the UI at any time
+  TEMP
+}
+
+enum OrganisationAccessLevel {
+  FULL
+}
+
 model Action {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -67,6 +77,7 @@ model App {
   orgId        Int?
 
   loggedApiRequests LoggedApiRequests[]
+  appAdminToken     AppAdminToken[]
 }
 
 model User {
@@ -108,9 +119,10 @@ model Organisation {
   // create log when reporting usage to stripe
   usageReports     LoggedUsageReport[]
 
-  apps                App[]
-  users               UsersInOrganisations[]
-  userInvitationToken UserInvitationToken[]
+  apps                   App[]
+  users                  UsersInOrganisations[]
+  userInvitationToken    UserInvitationToken[]
+  organisationAdminToken OrganisationAdminToken[]
 }
 
 // this model indicates which users are in which organisation (with which role) and vice versa
@@ -254,4 +266,40 @@ model SubscriptionItem {
 
   sub   Subscription @relation(fields: [subId], references: [subId], onDelete: Cascade)
   subId String
+}
+
+model OrganisationAdminToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token String  @unique
+  label String?
+
+  // note: there is no expiration date or time for org-level admin tokens
+  role      OrganisationAccessLevel @default(FULL)
+  // true indicates that this token has been revoked by a user
+  isDeleted Boolean                 @default(false)
+
+  // the org the token belongs to
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId Int
+}
+
+model AppAdminToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token String  @unique
+  label String?
+
+  role       AppAccessLevel @default(FULL)
+  expiryDate DateTime?
+  // true indicates that this token has been revoked by a user
+  isDeleted  Boolean        @default(false)
+
+  // the app the token belongs to
+  app   App @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId Int
 }

@@ -29,8 +29,14 @@ interface ErrorObjectDto {
 
 /**
  * @swagger
+ * tags:
+ *   - name: Client API
+ *     description: Operations related to the retrieval of messages for the (mobile) clients
+ *
  * /api/v0.1/messages:
  *   get:
+ *     tags:
+ *       - Client API
  *     summary: Get messages for an app.
  *     description: Retrieves all messages for an app based on the provided API key.
  *     parameters:

@@ -1,25 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../lib/services/db";
+import { Action } from "../../../../../../../../../models/action";
 import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
 import { Logger } from "../../../../../../../../../util/logger";
-
-enum ActionType {
-  Dismiss = "DISMISS",
-}
-
-enum ButtonDesign {
-  Text = "TEXT",
-  Filled = "FILLED",
-}
-
-type Action = {
-  id: number;
-  actionType: ActionType;
-  buttonDesign: ButtonDesign;
-  title: string;
-  messageId: number;
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,7 +19,7 @@ export default async function handler(
 
   switch (req.method) {
     case "GET":
-      logger.log(`Looking up message with app id '${req.query.appId}'`);
+      logger.log(`Looking up messages with app id '${req.query.appId}'`);
       const allMessages = await prisma.message.findMany({
         include: {
           actions: true,

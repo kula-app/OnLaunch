@@ -1,30 +1,30 @@
-import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdClose } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import createMessage from "../../../../../../api/messages/createMessage";
-import Routes from "../../../../../../routes/routes";
-import { Action } from "../../../../../../models/action";
-import { Message } from "../../../../../../models/message";
 import {
   Button,
   FormControl,
   FormLabel,
+  Heading,
   IconButton,
   Input,
   Select,
   Switch,
   Table,
   Tbody,
+  Td,
   Textarea,
   Th,
   Thead,
   Tr,
-  Td,
   useToast,
-  Heading,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { MdClose, MdDeleteForever } from "react-icons/md";
+import createMessage from "../../../../../../api/messages/createMessage";
+import { Action } from "../../../../../../models/action";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
@@ -120,6 +120,7 @@ export default function NewMessageForAppPage() {
   ) {
     let data = [...actions];
     data[index]["actionType"] = event.target.value as string;
+
     setActions(data);
   }
 
@@ -129,6 +130,7 @@ export default function NewMessageForAppPage() {
   ) {
     let data = [...actions];
     data[index]["buttonDesign"] = event.target.value as string;
+
     setActions(data);
   }
 
@@ -180,6 +182,7 @@ export default function NewMessageForAppPage() {
                 <FormControl className="mt-4">
                   <FormLabel>Start Date</FormLabel>
                   <Input
+                    required
                     placeholder="Start Date"
                     type="datetime-local"
                     id="startDate"
@@ -275,10 +278,7 @@ export default function NewMessageForAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button
-                    colorScheme="blue"
-                    onClick={addAction}
-                  >
+                  <Button colorScheme="blue" onClick={addAction}>
                     New Action
                   </Button>
                 </div>

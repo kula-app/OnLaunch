@@ -33,6 +33,9 @@ import { useRouter } from "next/router";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
+import createOrgAdminToken from "../../../api/orgs/admin/tokens/createToken";
+import deleteOrgAdminToken from "../../../api/orgs/admin/tokens/deleteOrgAdminToken";
+import { useOrgAdminTokens } from "../../../api/orgs/admin/tokens/useOrgAdminTokens";
 import deleteOrg from "../../../api/orgs/deleteOrg";
 import deleteUserFromOrg from "../../../api/orgs/deleteUserFromOrg";
 import getOrg from "../../../api/orgs/getOrg";
@@ -57,8 +60,23 @@ export default function EditOrgPage() {
   const toast = useToast();
   const stripeConfig = loadConfig().client.stripeConfig;
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef(null);
+  const {
+    isOpen: isOrgDeletionOpen,
+    onOpen: onOrgDeletionOpen,
+    onClose: onOrgDeletionClose,
+  } = useDisclosure();
+  const cancelOrgDeletionRef = React.useRef(null);
+
+  const [tokenIdToDelete, setTokenIdToDelete] = useState(-1);
+  const [subtextOfTokenToDelete, setSubtextOfTokenToDelete] = useState("");
+  const {
+    isOpen: isTokenDeletionOpen,
+    onOpen: onTokenDeletionOpen,
+    onClose: onTokenDeletionClose,
+  } = useDisclosure();
+  const cancelTokenDeletionRef = React.useRef(null);
+
+  const [tokenLabel, setTokenLabel] = useState("");
 
   const [subs, setSubs] = useState<Subscription[]>();
   const [loading, setLoading] = useState(true);
@@ -128,8 +146,15 @@ export default function EditOrgPage() {
     isLoading: isUserLoading,
     mutate: userMutate,
   } = useUsers(orgId);
+  const {
+    orgAdminTokens,
+    isError: orgAdminTokenError,
+    isLoading: isOrgAdminTokenLoading,
+    mutate: orgAdminTokenMutate,
+  } = useOrgAdminTokens(orgId);
 
-  if (userError || orgError) return <div>Failed to load</div>;
+  if (userError || orgError || orgAdminTokenError)
+    return <div>Failed to load</div>;
 
   let userRole = "";
   if (Array.isArray(users) && users.length > 0) {
@@ -317,10 +342,6 @@ export default function EditOrgPage() {
     }
   }
 
-  function handleDelete() {
-    onOpen();
-  }
-
   async function delOrg() {
     try {
       await deleteOrg(orgId);
@@ -345,10 +366,59 @@ export default function EditOrgPage() {
     }
   }
 
+  async function delOrgAdminToken() {
+    try {
+      await deleteOrgAdminToken(orgId, tokenIdToDelete);
+
+      orgAdminTokenMutate();
+
+      toast({
+        title: "Success!",
+        description: "Organisation admin token has been deleted!",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
+    } catch (error) {
+      toast({
+        title: `Error while deleting org admin token!`,
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
+    }
+  }
+
   async function sendCreateCustomerPortalSession() {
     try {
       const data = await createCustomerPortalSession(orgId);
       window.location.assign(data);
+    } catch (error) {
+      toast({
+        title: "Error while sending createCustomerPortalSession request!",
+        description: `${error}`,
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
+    }
+  }
+
+  async function sendCreateNewToken() {
+    try {
+      await createOrgAdminToken(orgId, tokenLabel);
+
+      orgAdminTokenMutate();
+      setTokenLabel("");
+
+      toast({
+        title: "Success!",
+        description: "Created new organisation admin token",
+        status: "success",
+        isClosable: true,
+        duration: 6000,
+      });
     } catch (error) {
       toast({
         title: "Error while sending createCustomerPortalSession request!",
@@ -516,6 +586,7 @@ export default function EditOrgPage() {
                                 }
                               >
                                 <IconButton
+                                  colorScheme="red"
                                   className="ml-4"
                                   aria-label={"remove user"}
                                   onClick={() => removeUser(user.email)}
@@ -532,6 +603,7 @@ export default function EditOrgPage() {
                               {user.email === session?.user?.email && (
                                 <Tooltip label="leave organisation">
                                   <IconButton
+                                    colorScheme="red"
                                     className="ml-4"
                                     aria-label={"leave organisation"}
                                     onClick={() => removeUser(user.email)}
@@ -551,6 +623,118 @@ export default function EditOrgPage() {
             {users?.length == 0 && <p className="mt-4">no data to show</p>}
             {userRole === "ADMIN" && (
               <>
+                <Heading className="text-center mt-16 mb-8">
+                  Admin Api Tokens
+                </Heading>
+                {!isOrgAdminTokenLoading && (
+                  <div>
+                    <Table
+                      className="mt-8"
+                      sx={{ minWidth: 650, maxWidth: 1000 }}
+                      aria-label="simple table"
+                    >
+                      <Thead>
+                        <Tr>
+                          <Th width="5%">
+                            <strong>Id</strong>
+                          </Th>
+                          <Th>
+                            <strong>Label</strong>
+                          </Th>
+                          <Th>
+                            <strong>Token</strong>
+                          </Th>
+                          <Th></Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {orgAdminTokens?.map((token, index) => {
+                          return (
+                            <Tr key={index}>
+                              <Td>{token.id}</Td>
+                              <Td>{token.label}</Td>
+                              <Td>
+                                <Input
+                                  value={token.token}
+                                  readOnly
+                                  className="bg-gray-300"
+                                />
+                              </Td>
+                              <Td>
+                                <Button
+                                  className="ml-2"
+                                  colorScheme="blue"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      token.token as string
+                                    );
+                                    toast({
+                                      title: "Success!",
+                                      description: "Token copied to clipboard.",
+                                      status: "success",
+                                      isClosable: true,
+                                      duration: 3000,
+                                    });
+                                  }}
+                                >
+                                  copy
+                                </Button>
+                                <Tooltip label="delete">
+                                  <IconButton
+                                    colorScheme="red"
+                                    aria-label={
+                                      "delete organisation admin token"
+                                    }
+                                    className="ml-4"
+                                    onClick={() => {
+                                      setTokenIdToDelete(token.id);
+                                      setSubtextOfTokenToDelete(
+                                        token.label
+                                          ? `The token for '${token.label}'`
+                                          : `The token '${token.token}'`
+                                      );
+                                      onTokenDeletionOpen();
+                                    }}
+                                  >
+                                    <MdDeleteForever />
+                                  </IconButton>
+                                </Tooltip>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+                    {orgAdminTokens?.length == 0 && (
+                      <Center className="my-4">
+                        currently no active organisation admin tokens
+                      </Center>
+                    )}
+                    {isOrgAdminTokenLoading && (
+                      <div>
+                        <Heading className="text-center">loading ...</Heading>
+                        <Spinner />
+                      </div>
+                    )}
+
+                    <Center>
+                      <Input
+                        placeholder="Token label"
+                        className="mt-8 mr-4 max-w-96"
+                        value={tokenLabel}
+                        onChange={(event) => setTokenLabel(event.target.value)}
+                      />
+                      <Button
+                        colorScheme="blue"
+                        variant="solid"
+                        className="mt-8"
+                        onClick={sendCreateNewToken}
+                      >
+                        add token
+                      </Button>
+                    </Center>
+                  </div>
+                )}
                 {stripeConfig.isEnabled && (
                   <>
                     <Heading className="text-center mt-16 mb-8">
@@ -661,7 +845,7 @@ export default function EditOrgPage() {
                     <Button
                       className="mt-8"
                       colorScheme="red"
-                      onClick={handleDelete}
+                      onClick={onOrgDeletionOpen}
                     >
                       delete
                     </Button>
@@ -671,20 +855,22 @@ export default function EditOrgPage() {
             )}
           </div>
           <AlertDialog
-            isOpen={isOpen}
+            isOpen={isOrgDeletionOpen}
             motionPreset="slideInBottom"
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
+            leastDestructiveRef={cancelOrgDeletionRef}
+            onClose={onOrgDeletionClose}
             isCentered
           >
             <AlertDialogOverlay />
 
             <AlertDialogContent>
-              <AlertDialogHeader>{`Delete Organisation '${org?.name}?`}</AlertDialogHeader>
+              <AlertDialogHeader>{`Delete org with id '${orgId}?`}</AlertDialogHeader>
               <AlertDialogCloseButton />
-              <AlertDialogBody>This cannot be undone.</AlertDialogBody>
+              <AlertDialogBody>
+                This cannot be undone and restoring the org is not possible.
+              </AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
+                <Button ref={cancelOrgDeletionRef} onClick={onOrgDeletionClose}>
                   Cancel
                 </Button>
                 <Button
@@ -692,7 +878,42 @@ export default function EditOrgPage() {
                   ml={3}
                   onClick={() => {
                     delOrg();
-                    onClose();
+                    onOrgDeletionClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog
+            isOpen={isTokenDeletionOpen}
+            motionPreset="slideInBottom"
+            leastDestructiveRef={cancelTokenDeletionRef}
+            onClose={onTokenDeletionClose}
+            isCentered
+          >
+            <AlertDialogOverlay />
+
+            <AlertDialogContent>
+              <AlertDialogHeader>{`Delete app token?`}</AlertDialogHeader>
+              <AlertDialogCloseButton />
+              <AlertDialogBody>
+                {`${subtextOfTokenToDelete} will be deleted forever.`}
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button
+                  ref={cancelTokenDeletionRef}
+                  onClick={onTokenDeletionClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  ml={3}
+                  onClick={() => {
+                    delOrgAdminToken();
+                    onTokenDeletionClose();
                   }}
                 >
                   Confirm
