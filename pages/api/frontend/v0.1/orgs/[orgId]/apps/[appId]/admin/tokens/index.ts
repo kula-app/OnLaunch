@@ -74,13 +74,20 @@ export default async function handler(
 
     case "POST":
       const requestObj = plainToInstance(CreateAppAdminTokenDto, req.body);
-      const errors = await validate(requestObj);
+      const validationErrors = await validate(requestObj);
 
-      if (errors.length > 0) {
-        logger.error("Invalid time to live");
+      if (validationErrors.length > 0) {
+        const errors = validationErrors
+          .flatMap((error) =>
+            error.constraints
+              ? Object.values(error.constraints)
+              : ["An unknown error occurred"]
+          )
+          .join(", ");
+        logger.error(`Validation failed: ${errors}`);
         return res
-          .status(StatusCodes.FORBIDDEN)
-          .json({ message: "Invalid time to live" });
+          .status(StatusCodes.BAD_REQUEST)
+          .json(getErrorDto(`Validation failed: ${errors}`));
       }
 
       const { timeToLive, label } = requestObj;
