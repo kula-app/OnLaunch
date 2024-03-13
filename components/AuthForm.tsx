@@ -135,7 +135,7 @@ export default function AuthForm() {
               </Button>
               <Button
                 variant="ghost"
-                colorScheme="highlightPurple"
+                colorScheme="detailGrayPurple"
                 type="button"
                 onClick={switchLoginMode}
               >
@@ -146,7 +146,7 @@ export default function AuthForm() {
               {isLoginMode && (
                 <Button
                   variant="ghost"
-                  colorScheme="highlightPurple"
+                  colorScheme="detailGrayPurple"
                   type="button"
                   onClick={navigateToPasswordResetPage}
                 >
