@@ -1,31 +1,30 @@
-import React from "react";
 import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  Button,
-  Stack,
-  Collapse,
-  Link,
-  useColorModeValue,
-  useBreakpointValue,
-  useDisclosure,
   Avatar,
+  Box,
+  Button,
   Center,
+  Collapse,
+  Flex,
+  IconButton,
+  Link,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { MdMenu, MdClose } from "react-icons/md";
-import Routes from "../routes/routes";
-import { useRouter } from "next/router";
-import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
-import MobileNav from "./NavbarMobile";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { MdClose, MdMenu } from "react-icons/md";
+import Routes from "../routes/routes";
 import DesktopNav from "./NavbarDesktop";
+import MobileNav from "./NavbarMobile";
 
 interface Props {
   session: Session;
@@ -42,14 +41,14 @@ export default function Header(props: Props) {
   return (
     <Box>
       <Flex
-        bg={useColorModeValue("white", "gray.800")}
-        color={useColorModeValue("gray.600", "white")}
+        bg={useColorModeValue("black", "black")}
+        color={useColorModeValue("white", "white")}
         minH={"60px"}
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}
         borderStyle={"solid"}
-        borderColor={useColorModeValue("gray.200", "gray.900")}
+        borderColor={useColorModeValue("gray.200", "gray.200")}
         align={"center"}
       >
         <Flex
@@ -71,9 +70,9 @@ export default function Header(props: Props) {
             <Text
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
-              color={useColorModeValue("gray.800", "white")}
-              as='b'
-              textDecoration='none'
+              color={useColorModeValue("white", "white")}
+              as="b"
+              textDecoration="none"
             >
               OnLaunch &#128640;
             </Text>
@@ -85,6 +84,7 @@ export default function Header(props: Props) {
         </Flex>
 
         <Stack
+          color={useColorModeValue("white", "white")}
           flex={{ base: 1, md: 0 }}
           justify={"flex-end"}
           direction={"row"}
@@ -111,18 +111,12 @@ export default function Header(props: Props) {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar
-                  size={"sm"}
-                  name={props.session.user.name}
-                />
+                <Avatar size={"sm"} name={props.session.user.name} />
               </MenuButton>
-              <MenuList alignItems={"center"}>
+              <MenuList alignItems={"center"} bg={"black"}>
                 <br />
                 <Center>
-                  <Avatar
-                    size={"2xl"}
-                    name={props.session.user.name}
-                  />
+                  <Avatar size={"2xl"} name={props.session.user.name} />
                 </Center>
                 <br />
                 <Center>
@@ -130,10 +124,10 @@ export default function Header(props: Props) {
                 </Center>
                 <br />
                 <MenuDivider />
-                <MenuItem as="a" href={Routes.DASHBOARD}>
+                <MenuItem as="a" href={Routes.DASHBOARD} bg={"black"}>
                   Your Organisations
                 </MenuItem>
-                <MenuItem as="a" href="/profile">
+                <MenuItem as="a" href="/profile" bg={"black"}>
                   Your Profile
                 </MenuItem>
                 <MenuDivider />
@@ -142,6 +136,7 @@ export default function Header(props: Props) {
                     signOut();
                     navigateToAuthPage();
                   }}
+                  bg={"black"}
                 >
                   Logout
                 </MenuItem>

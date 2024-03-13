@@ -1,30 +1,31 @@
-import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdClose } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import createMessage from "../../../../../../api/messages/createMessage";
-import Routes from "../../../../../../routes/routes";
-import { Action } from "../../../../../../models/action";
-import { Message } from "../../../../../../models/message";
 import {
   Button,
   FormControl,
   FormLabel,
+  Heading,
   IconButton,
   Input,
   Select,
   Switch,
   Table,
   Tbody,
+  Td,
   Textarea,
   Th,
   Thead,
   Tr,
-  Td,
   useToast,
-  Heading,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { MdClose, MdDeleteForever } from "react-icons/md";
+import createMessage from "../../../../../../api/messages/createMessage";
+import { Action } from "../../../../../../models/action";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
+import AppColors from "../../../../../../styles/appColors";
 
 export default function NewMessageForAppPage() {
   const router = useRouter();
@@ -168,7 +169,11 @@ export default function NewMessageForAppPage() {
                   alignItems="center"
                   className="mt-4"
                 >
-                  <FormLabel htmlFor="blocking-toggle" mb="0">
+                  <FormLabel
+                    colorScheme="purple"
+                    htmlFor="blocking-toggle"
+                    mb="0"
+                  >
                     Blocking
                   </FormLabel>
                   <Switch
@@ -194,7 +199,6 @@ export default function NewMessageForAppPage() {
                     placeholder="End Date"
                     type="datetime-local"
                     id="endDate"
-                    className="mt-8"
                     value={endDate}
                     onChange={(event) => setEndDate(event.target.value)}
                   />
@@ -205,10 +209,16 @@ export default function NewMessageForAppPage() {
                 <Table aria-label="simple table" className="mt-4">
                   <Thead>
                     <Tr>
-                      <Th>Design</Th>
-                      <Th>Type</Th>
-                      <Th>Title</Th>
-                      <Th></Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Design
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Type
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Title
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}></Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -216,7 +226,7 @@ export default function NewMessageForAppPage() {
                       actions.map((action: Action, index: number) => {
                         return (
                           <Tr key={index}>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Select
                                 value={action.buttonDesign}
                                 onChange={(event) =>
@@ -225,14 +235,20 @@ export default function NewMessageForAppPage() {
                               >
                                 {buttonDesigns.map((value, index) => {
                                   return (
-                                    <option key={index} value={value}>
+                                    <option
+                                      style={{
+                                        background: AppColors.background,
+                                      }}
+                                      key={index}
+                                      value={value}
+                                    >
                                       {value}
                                     </option>
                                   );
                                 })}
                               </Select>
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Select
                                 value={action.actionType}
                                 onChange={(event) =>
@@ -241,14 +257,20 @@ export default function NewMessageForAppPage() {
                               >
                                 {actionTypes.map((value, index) => {
                                   return (
-                                    <option key={index} value={value}>
+                                    <option
+                                      style={{
+                                        background: AppColors.background,
+                                      }}
+                                      key={index}
+                                      value={value}
+                                    >
                                       {value}
                                     </option>
                                   );
                                 })}
                               </Select>
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Input
                                 type="text"
                                 name="actionTitle"
@@ -258,13 +280,15 @@ export default function NewMessageForAppPage() {
                                 }
                               />
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <IconButton
                                 onClick={() => deleteAction(index)}
                                 aria-label={""}
-                              >
-                                <MdDeleteForever />
-                              </IconButton>
+                                icon={<MdDeleteForever />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                              />
                             </Td>
                           </Tr>
                         );
@@ -275,10 +299,7 @@ export default function NewMessageForAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button
-                    colorScheme="blue"
-                    onClick={addAction}
-                  >
+                  <Button colorScheme="highlightPurple" onClick={addAction}>
                     New Action
                   </Button>
                 </div>
@@ -286,7 +307,7 @@ export default function NewMessageForAppPage() {
               <Button
                 style={{ width: 655 }}
                 className="my-4"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="submit"
               >
                 Save
@@ -317,14 +338,14 @@ export default function NewMessageForAppPage() {
                     actions.map((action: Action, index: number) => {
                       if (action.buttonDesign === "FILLED") {
                         return (
-                          <Button colorScheme="blue" key={index}>
+                          <Button colorScheme="highlightPurple" key={index}>
                             {action.title}
                           </Button>
                         );
                       } else {
                         return (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="highlightPurple"
                             variant="ghost"
                             key={index}
                           >

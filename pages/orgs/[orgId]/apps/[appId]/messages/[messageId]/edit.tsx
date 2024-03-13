@@ -27,6 +27,7 @@ import { Action } from "../../../../../../../models/action";
 import { Message } from "../../../../../../../models/message";
 import Routes from "../../../../../../../routes/routes";
 import styles from "../../../../../../../styles/Home.module.css";
+import AppColors from "../../../../../../../styles/appColors";
 
 export default function EditMessageOfAppPage() {
   const router = useRouter();
@@ -235,10 +236,16 @@ export default function EditMessageOfAppPage() {
                 <Table aria-label="simple table" className="mt-4">
                   <Thead>
                     <Tr>
-                      <Th>Design</Th>
-                      <Th>Type</Th>
-                      <Th>Title</Th>
-                      <Th></Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Design
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Type
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}>
+                        Title
+                      </Th>
+                      <Th sx={{ borderColor: AppColors.tdBorderColor }}></Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -246,7 +253,7 @@ export default function EditMessageOfAppPage() {
                       actions.map((action: Action, index: number) => {
                         return (
                           <Tr key={index}>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Select
                                 value={action.buttonDesign}
                                 onChange={(event) =>
@@ -255,14 +262,20 @@ export default function EditMessageOfAppPage() {
                               >
                                 {buttonDesigns.map((value, index) => {
                                   return (
-                                    <option key={index} value={value}>
+                                    <option
+                                      style={{
+                                        background: AppColors.background,
+                                      }}
+                                      key={index}
+                                      value={value}
+                                    >
                                       {value}
                                     </option>
                                   );
                                 })}
                               </Select>
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Select
                                 value={action.actionType}
                                 onChange={(event) =>
@@ -271,14 +284,20 @@ export default function EditMessageOfAppPage() {
                               >
                                 {actionTypes.map((value, index) => {
                                   return (
-                                    <option key={index} value={value}>
+                                    <option
+                                      style={{
+                                        background: AppColors.background,
+                                      }}
+                                      key={index}
+                                      value={value}
+                                    >
                                       {value}
                                     </option>
                                   );
                                 })}
                               </Select>
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <Input
                                 type="text"
                                 name="actionTitle"
@@ -288,13 +307,15 @@ export default function EditMessageOfAppPage() {
                                 }
                               />
                             </Td>
-                            <Td>
+                            <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                               <IconButton
                                 onClick={() => deleteAction(index)}
                                 aria-label={""}
-                              >
-                                <MdDeleteForever />
-                              </IconButton>
+                                icon={<MdDeleteForever />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                              />
                             </Td>
                           </Tr>
                         );
@@ -305,7 +326,7 @@ export default function EditMessageOfAppPage() {
                   <p className="text-center mt-4 ">no actions added</p>
                 )}
                 <div className="mt-4 flex justify-center">
-                  <Button colorScheme="blue" onClick={addAction}>
+                  <Button colorScheme="highlightPurple" onClick={addAction}>
                     New Action
                   </Button>
                 </div>
@@ -313,7 +334,7 @@ export default function EditMessageOfAppPage() {
               <Button
                 style={{ width: 655 }}
                 className="my-4"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 type="submit"
               >
                 Save
@@ -344,14 +365,14 @@ export default function EditMessageOfAppPage() {
                     actions.map((action: Action, index: number) => {
                       if (action.buttonDesign === "FILLED") {
                         return (
-                          <Button colorScheme="blue" key={index}>
+                          <Button colorScheme="highlightPurple" key={index}>
                             {action.title}
                           </Button>
                         );
                       } else {
                         return (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="highlightPurple"
                             variant="ghost"
                             key={index}
                           >

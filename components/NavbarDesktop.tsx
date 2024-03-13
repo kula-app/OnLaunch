@@ -1,15 +1,14 @@
-import React from "react";
 import {
   Box,
-  Link,
-  Stack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  useColorModeValue,
-  Text,
   Flex,
   Icon,
+  Link,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Stack,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { MdChevronRight } from "react-icons/md";
 import Routes from "../routes/routes";
@@ -29,9 +28,9 @@ const NAV_ITEMS: Array<NavItem> = [
 ];
 
 export default function DesktopNav() {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
-  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const linkColor = useColorModeValue("white", "white");
+  const linkHoverColor = useColorModeValue("gray.200", "gray.200");
+  const popoverContentBgColor = useColorModeValue("gray.200", "gray.200");
 
   return (
     <Stack direction={"row"} spacing={4}>
@@ -85,7 +84,7 @@ function DesktopSubNav({ label, href, subLabel }: NavItem) {
       display={"block"}
       p={2}
       rounded={"md"}
-      _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
+      _hover={{ bg: useColorModeValue("pink.50", "pink.50") }}
     >
       <Stack direction={"row"} align={"center"}>
         <Box>

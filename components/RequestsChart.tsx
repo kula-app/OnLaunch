@@ -1,14 +1,13 @@
-import React from "react";
 import {
-  Chart as ChartJS,
   CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
+  Chart as ChartJS,
   Filler,
   Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Title,
+  Tooltip,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
@@ -40,8 +39,16 @@ export const options = {
   },
   scales: {
     y: {
+      grid: {
+        color: "#8D8D92", // Set grid line color to grey
+      },
       ticks: {
         precision: 0, // Ensure that only whole numbers are shown
+      },
+    },
+    x: {
+      grid: {
+        color: "#8D8D92", // Set grid line color to grey
       },
     },
   },
@@ -82,8 +89,8 @@ export default function RequestChart({ requestData }: RequestChartProps) {
         fill: true,
         label: "Requests per day",
         data: dataSet,
-        borderColor: "rgb(53, 162, 235)",
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
+        borderColor: "#7823C9",
+        backgroundColor: "#7823C9",
       },
     ],
   };

@@ -22,6 +22,7 @@ import { useOrg } from "../../../../api/orgs/useOrg";
 import RequestsChart from "../../../../components/RequestsChart";
 import Routes from "../../../../routes/routes";
 import styles from "../../../../styles/Home.module.css";
+import AppColors from "../../../../styles/appColors";
 
 export default function AppsPage() {
   const router = useRouter();
@@ -113,7 +114,7 @@ export default function AppsPage() {
         </Heading>
         <Button
           className="mt-8"
-          colorScheme="blue"
+          colorScheme="highlightPurple"
           onClick={() => {
             navigateToOrgSettingsPage(orgId);
           }}
@@ -128,7 +129,7 @@ export default function AppsPage() {
             {currentPeriodStart && (
               <Button
                 variant="ghost"
-                colorScheme="blue"
+                colorScheme="highlightPurple"
                 className="mt-8"
                 onClick={() => {
                   setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
@@ -153,7 +154,7 @@ export default function AppsPage() {
           <div>
             <Button
               className="mt-8"
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               onClick={navigateToNewAppPage}
             >
               New App
@@ -168,13 +169,13 @@ export default function AppsPage() {
           >
             <Thead>
               <Tr>
-                <Th width="5%">
+                <Th width="5%" sx={{ borderColor: AppColors.tdBorderColor }}>
                   <strong>ID</strong>
                 </Th>
-                <Th>
+                <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                   <strong>App Name</strong>
                 </Th>
-                <Th width="5%">
+                <Th width="5%" sx={{ borderColor: AppColors.tdBorderColor }}>
                   <strong># Active Messages</strong>
                 </Th>
               </Tr>
@@ -189,9 +190,19 @@ export default function AppsPage() {
                       className="clickable-row h-16"
                       onClick={() => navigateToMessagesPage(app.id)}
                     >
-                      <Td width="5%">{app.id}</Td>
-                      <Td>{app.name}</Td>
-                      <Td width="5%">
+                      <Td
+                        width="5%"
+                        sx={{ borderColor: AppColors.tdBorderColor }}
+                      >
+                        {app.id}
+                      </Td>
+                      <Td sx={{ borderColor: AppColors.tdBorderColor }}>
+                        {app.name}
+                      </Td>
+                      <Td
+                        width="5%"
+                        sx={{ borderColor: AppColors.tdBorderColor }}
+                      >
                         <Tooltip
                           label={
                             app.activeMessages +

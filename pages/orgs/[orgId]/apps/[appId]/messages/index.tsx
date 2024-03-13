@@ -1,42 +1,42 @@
-import Moment from "moment";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import styles from "../../../../../../styles/Home.module.css";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
-import { getSession } from "next-auth/react";
-import deleteMessage from "../../../../../../api/messages/deleteMessage";
-import { useApp } from "../../../../../../api/apps/useApp";
-import Routes from "../../../../../../routes/routes";
-import { Message } from "../../../../../../models/message";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
+  Heading,
   IconButton,
-  Stack,
   Skeleton,
+  Stack,
   Table,
   Tag,
   Tbody,
+  Td,
+  Text,
   Th,
   Thead,
   Tooltip,
   Tr,
-  Text,
-  Td,
-  useToast,
   useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  AlertDialogCloseButton,
-  Heading,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import Moment from "moment";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { useApp } from "../../../../../../api/apps/useApp";
+import getDashboardData from "../../../../../../api/dashboard/getDashboardData";
+import deleteMessage from "../../../../../../api/messages/deleteMessage";
 import { useOrg } from "../../../../../../api/orgs/useOrg";
 import RequestsChart from "../../../../../../components/RequestsChart";
-import getDashboardData from "../../../../../../api/dashboard/getDashboardData";
+import { Message } from "../../../../../../models/message";
+import Routes from "../../../../../../routes/routes";
+import styles from "../../../../../../styles/Home.module.css";
+import AppColors from "../../../../../../styles/appColors";
 
 export default function MessagesOfAppPage() {
   const router = useRouter();
@@ -186,7 +186,7 @@ export default function MessagesOfAppPage() {
           <Heading className="text-center">{data?.name}</Heading>
           {data?.role === "ADMIN" && (
             <Button
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-8"
               onClick={navigateToAppSettingsPage}
             >
@@ -205,7 +205,7 @@ export default function MessagesOfAppPage() {
           )}
           <div>
             <Button
-              colorScheme="blue"
+              colorScheme="highlightPurple"
               className="mt-8"
               onClick={navigateToNewMessagePage}
             >
@@ -215,7 +215,7 @@ export default function MessagesOfAppPage() {
           <div>
             <Button
               variant="ghost"
-              colorScheme="blue"
+              colorScheme="detailGrayPurple"
               className="mt-8"
               onClick={() => {
                 setShowHistory(!showHistory);
@@ -239,29 +239,29 @@ export default function MessagesOfAppPage() {
             >
               <Thead>
                 <Tr>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>ID</strong>
                   </Th>
-                  <Th></Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}></Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Title</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Body</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Blocking</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>Start Date</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong>End Date</strong>
                   </Th>
-                  <Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}>
                     <strong># Actions</strong>
                   </Th>
-                  <Th></Th>
+                  <Th sx={{ borderColor: AppColors.tdBorderColor }}></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -270,8 +270,10 @@ export default function MessagesOfAppPage() {
                   messages.map((message: Message, index: number) => {
                     return (
                       <Tr key={index}>
-                        <Td>{message.id}</Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
+                          {message.id}
+                        </Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           <div className="flex justify-center">
                             {Moment(message.startDate).isBefore(now) &&
                               Moment(message.endDate).isAfter(now) && (
@@ -315,33 +317,35 @@ export default function MessagesOfAppPage() {
                             )}
                           </div>
                         </Td>
-                        <Td>{message.title}</Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
+                          {message.title}
+                        </Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           {message.body.length >= 70
                             ? message.body.slice(0, 50) + "..."
                             : message.body}
                         </Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           <div className="flex justify-center">
                             {String(message.blocking)}
                           </div>
                         </Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           {Moment(message.startDate).format(
                             "DD.MM.YYYY HH:mm:ss"
                           )}
                         </Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           {Moment(message.endDate).format(
                             "DD.MM.YYYY HH:mm:ss"
                           )}
                         </Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           <div className="flex justify-center">
                             {!!message.actions ? message.actions.length : 0}
                           </div>
                         </Td>
-                        <Td>
+                        <Td sx={{ borderColor: AppColors.tdBorderColor }}>
                           <div className="flex flex-row">
                             <Tooltip label="edit">
                               <IconButton
@@ -358,9 +362,11 @@ export default function MessagesOfAppPage() {
                               <IconButton
                                 aria-label={"delete message"}
                                 onClick={() => handleDelete(Number(message.id))}
-                              >
-                                <MdDeleteForever />
-                              </IconButton>
+                                icon={<MdDeleteForever />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                              />
                             </Tooltip>
                           </div>
                         </Td>

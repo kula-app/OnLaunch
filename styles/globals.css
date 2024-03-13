@@ -107,3 +107,12 @@ tbody tr:hover {
 tbody tr.clickable-row:hover {
   cursor: pointer;
 }
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+select option {
+  background-color: #222222;
+  color: #FFFFFF;
+}
