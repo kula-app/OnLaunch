@@ -62,7 +62,7 @@
     "@testing-library/user-event": "14.5.2",
     "@types/js-yaml": "^4.0.8",
     "@types/node": "20.11.27",
-    "@types/react": "18.2.65",
+    "@types/react": "18.2.66",
     "@types/react-dom": "18.2.22",
     "@types/request-ip": "^0.0.41",
     "@types/testing-library__jest-dom": "5.14.9",
@@ -79,6 +79,6 @@
     "typescript": "5.4.2"
   },
   "resolutions": {
-    "@types/react": "18.2.65"
+    "@types/react": "18.2.66"
   }
 }
