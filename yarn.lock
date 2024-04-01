@@ -2723,11 +2723,11 @@
   integrity sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==
 
 "@types/ramda@~0.29.6":
-  version "0.29.11"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.11.tgz#86d4ff34320862535fbcef54c9f33d14bdb12951"
-  integrity sha512-jm1+PmNOpE7aPS+mMcuB4a72VkCXUJqPSaQRu2YqR8MbsFfaowYXgKxc7bluYdDpRHNXT5Z+xu+Lgr3/ml6wSA==
+  version "0.29.12"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.12.tgz#fd8a23849176c6c1b3510243b64084c067e6a48f"
+  integrity sha512-sgIEjpJhdQPB52gDF4aphs9nl0xe54CR22DPdWqT8gQHjZYmVApgA0R3/CpMbl0Y8az2TEZrPNL2zy0EvjbkLA==
   dependencies:
-    types-ramda "^0.29.9"
+    types-ramda "^0.29.10"
 
 "@types/react-dom@18.2.23":
   version "18.2.23"
@@ -6903,9 +6903,9 @@ next@13.5.6:
     "@next/swc-win32-x64-msvc" "13.5.6"
 
 node-abi@^3.3.0:
-  version "3.56.0"
-  resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.56.0.tgz#ca807d5ff735ac6bbbd684ae3ff2debc1c2a40a7"
-  integrity sha512-fZjdhDOeRcaS+rcpve7XuwHBmktS1nS1gzgghwKUQQ8nTy2FdSDr6ZT8k6YhvlJeHmmQMYiT/IH9hfco5zeW2Q==
+  version "3.57.0"
+  resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.57.0.tgz#d772cb899236c0aa46778d0d25256917cf15eb15"
+  integrity sha512-Dp+A9JWxRaKuHP35H77I4kCKesDy5HUDEmScia2FyncMTOXASMyg251F5PhFoDA5uqBrDDffiLpbqnrZmNXW+g==
   dependencies:
     semver "^7.3.5"
 
@@ -8564,9 +8564,9 @@ swagger-parser@^10.0.3:
     "@apidevtools/swagger-parser" "10.0.3"
 
 swagger-ui-react@^5.0.0:
-  version "5.12.3"
-  resolved "https://registry.yarnpkg.com/swagger-ui-react/-/swagger-ui-react-5.12.3.tgz#9f7dddba52d62b25ecd359b54e11a43f1a59a5d9"
-  integrity sha512-RxYJZizeS/FqFQ8fCACrEvBGWrIprmxaRLapcpbAsOxrh05pg5NV+6O40zWMmv0hglI8p1d3dr4Hvvaa9VZ0yw==
+  version "5.13.0"
+  resolved "https://registry.yarnpkg.com/swagger-ui-react/-/swagger-ui-react-5.13.0.tgz#a49bcc62cef23a215f17a62dadd0e478abdf0240"
+  integrity sha512-R/BarkuPXPMSMnBFWPpZjxlxL1gCJtjv/SjZbRhCwPZq9UScfYU2t779XFQV7WjunK+19fIMvo/ya+dNSPkckA==
   dependencies:
     "@babel/runtime-corejs3" "^7.24.1"
     "@braintree/sanitize-url" "=7.0.1"
@@ -8962,10 +8962,10 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
-types-ramda@^0.29.9:
-  version "0.29.9"
-  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.9.tgz#b1995d99421a3519cab9e800c6db3c0921816a8e"
-  integrity sha512-B+VbLtW68J4ncG/rccKaYDhlirKlVH/Izh2JZUfaPJv+3Tl2jbbgYsB1pvole1vXKSgaPlAe/wgEdOnMdAu52A==
+types-ramda@^0.29.10:
+  version "0.29.10"
+  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.10.tgz#820432905b820301c74f6396f07aa2359b41cde4"
+  integrity sha512-5PJiW/eiTPyXXBYGZOYGezMl6qj7keBiZheRwfjJZY26QPHsNrjfJnz0mru6oeqqoTHOni893Jfd6zyUXfQRWg==
   dependencies:
     ts-toolbelt "^9.6.0"
 
