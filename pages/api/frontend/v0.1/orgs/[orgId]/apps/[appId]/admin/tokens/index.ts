@@ -5,127 +5,145 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../../lib/services/db";
 import { CreateAppAdminTokenDto } from "../../../../../../../../../../models/dtos/request/createAppAdminTokenDto";
 import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/response/appAdminTokenDto";
+import { User } from "../../../../../../../../../../models/user";
 import { encodeAppToken } from "../../../../../../../../../../util/adminApi/tokenEncoding";
-import {
-  generateToken,
-  getUserWithRoleFromRequest,
-} from "../../../../../../../../../../util/auth";
+import { generateToken } from "../../../../../../../../../../util/auth";
+import { authenticatedHandler } from "../../../../../../../../../../util/authenticatedHandler";
 import { Logger } from "../../../../../../../../../../util/logger";
+
+const logger = new Logger(__filename);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  user: User
 ) {
-  const logger = new Logger(__filename);
-
-  const user = await getUserWithRoleFromRequest(req, res);
-
-  if (!user) {
-    return;
-  }
-
-  if (user.role !== "ADMIN") {
-    logger.error("User has no admin rights");
-    return res
-      .status(StatusCodes.FORBIDDEN)
-      .json({ message: "You are not an admin" });
-  }
-
-  const appId = Number(req.query.appId);
-
-  switch (req.method) {
-    case "GET":
-      logger.log(`Looking up appAdminTokens for app with id(=${appId})`);
-      const appAdminTokens = await prisma.appAdminToken.findMany({
-        where: {
-          appId: appId,
-          isDeleted: false,
-          role: {
-            not: "TEMP",
-          },
-          OR: [
-            {
-              expiryDate: null,
-            },
-            {
-              expiryDate: {
-                gt: new Date(),
-              },
-            },
-          ],
-        },
-      });
-
-      return res.status(StatusCodes.OK).json(
-        appAdminTokens.map((appAdminToken): AppAdminTokenDto => {
-          return {
-            id: appAdminToken.id,
-            createdAt: appAdminToken.createdAt,
-            updatedAt: appAdminToken.updatedAt,
-            token: encodeAppToken(appAdminToken.token),
-            role: appAdminToken.role,
-            label: appAdminToken.label ? appAdminToken.label : "",
-            expiryDate: appAdminToken.expiryDate
-              ? appAdminToken.expiryDate
-              : undefined,
-          };
-        })
-      );
-
-    case "POST":
-      const requestObj = plainToInstance(CreateAppAdminTokenDto, req.body);
-      const validationErrors = await validate(requestObj);
-
-      if (validationErrors.length > 0) {
-        const errors = validationErrors
-          .flatMap((error) =>
-            error.constraints
-              ? Object.values(error.constraints)
-              : ["An unknown error occurred"]
-          )
-          .join(", ");
-        logger.error(`Validation failed: ${errors}`);
+  return authenticatedHandler(
+    req,
+    res,
+    { method: "withRole" },
+    async (req, res, user) => {
+      if (user.role !== "ADMIN") {
+        logger.error("User has no admin rights");
         return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json(getErrorDto(`Validation failed: ${errors}`));
+          .status(StatusCodes.FORBIDDEN)
+          .json({ message: "You are not an admin" });
       }
 
-      const { timeToLive, label } = requestObj;
+      switch (req.method) {
+        case "GET":
+          return getHandler(req, res, user);
 
-      const generatedToken = generateToken();
+        case "POST":
+          return postHandler(req, res, user);
 
-      const expiryDate =
-        timeToLive === 0 ? null : new Date(Date.now() + timeToLive * 1000);
+        default:
+          return res
+            .status(StatusCodes.METHOD_NOT_ALLOWED)
+            .json({ message: "method not allowed" });
+      }
+    }
+  );
+}
 
-      logger.log(`Creating new app admin token for app id '${appId}'`);
-      const appAdminToken = await prisma.appAdminToken.create({
-        data: {
-          token: generatedToken,
-          expiryDate: expiryDate,
-          label: label,
-          app: {
-            connect: {
-              id: appId,
-            },
+async function getHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
+  const appId = Number(req.query.appId);
+
+  logger.log(`Looking up appAdminTokens for app with id(=${appId})`);
+  const appAdminTokens = await prisma.appAdminToken.findMany({
+    where: {
+      appId: appId,
+      isDeleted: false,
+      role: {
+        not: "TEMP",
+      },
+      OR: [
+        {
+          expiryDate: null,
+        },
+        {
+          expiryDate: {
+            gt: new Date(),
           },
         },
-      });
+      ],
+    },
+  });
 
-      const dto: AppAdminTokenDto = {
+  return res.status(StatusCodes.OK).json(
+    appAdminTokens.map((appAdminToken): AppAdminTokenDto => {
+      return {
         id: appAdminToken.id,
         createdAt: appAdminToken.createdAt,
         updatedAt: appAdminToken.updatedAt,
         token: encodeAppToken(appAdminToken.token),
         role: appAdminToken.role,
-        label: appAdminToken.label ?? undefined,
-        expiryDate: appAdminToken.expiryDate ?? undefined,
+        label: appAdminToken.label ? appAdminToken.label : "",
+        expiryDate: appAdminToken.expiryDate
+          ? appAdminToken.expiryDate
+          : undefined,
       };
+    })
+  );
+}
 
-      return res.status(StatusCodes.CREATED).json(dto);
+async function postHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
+  const requestObj = plainToInstance(CreateAppAdminTokenDto, req.body);
+  const validationErrors = await validate(requestObj);
+  const appId = Number(req.query.appId);
 
-    default:
-      return res
-        .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+  if (validationErrors.length > 0) {
+    const errors = validationErrors
+      .flatMap((error) =>
+        error.constraints
+          ? Object.values(error.constraints)
+          : ["An unknown error occurred"]
+      )
+      .join(", ");
+    logger.error(`Validation failed: ${errors}`);
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json(getErrorDto(`Validation failed: ${errors}`));
   }
+
+  const { timeToLive, label } = requestObj;
+
+  const generatedToken = generateToken();
+
+  const expiryDate =
+    timeToLive === 0 ? null : new Date(Date.now() + timeToLive * 1000);
+
+  logger.log(`Creating new app admin token for app id '${appId}'`);
+  const appAdminToken = await prisma.appAdminToken.create({
+    data: {
+      token: generatedToken,
+      expiryDate: expiryDate,
+      label: label,
+      app: {
+        connect: {
+          id: appId,
+        },
+      },
+    },
+  });
+
+  const dto: AppAdminTokenDto = {
+    id: appAdminToken.id,
+    createdAt: appAdminToken.createdAt,
+    updatedAt: appAdminToken.updatedAt,
+    token: encodeAppToken(appAdminToken.token),
+    role: appAdminToken.role,
+    label: appAdminToken.label ?? undefined,
+    expiryDate: appAdminToken.expiryDate ?? undefined,
+  };
+
+  return res.status(StatusCodes.CREATED).json(dto);
 }

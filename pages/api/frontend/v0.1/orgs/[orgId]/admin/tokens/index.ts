@@ -2,85 +2,104 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../lib/services/db";
 import { OrgAdminTokenDto } from "../../../../../../../../models/dtos/response/orgAdminTokenDto";
+import { User } from "../../../../../../../../models/user";
 import { encodeOrgToken } from "../../../../../../../../util/adminApi/tokenEncoding";
-import {
-  generateToken,
-  getUserWithRoleFromRequest,
-} from "../../../../../../../../util/auth";
+import { generateToken } from "../../../../../../../../util/auth";
+import { authenticatedHandler } from "../../../../../../../../util/authenticatedHandler";
 import { Logger } from "../../../../../../../../util/logger";
+
+const logger = new Logger(__filename);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  user: User
 ) {
-  const logger = new Logger(__filename);
+  return authenticatedHandler(
+    req,
+    res,
+    { method: "withRole" },
+    async (req, res, user) => {
+      if (user.role !== "ADMIN") {
+        logger.error("User has no admin rights");
+        return res
+          .status(StatusCodes.FORBIDDEN)
+          .json({ message: "You are not an admin" });
+      }
 
-  const user = await getUserWithRoleFromRequest(req, res);
+      switch (req.method) {
+        case "GET":
+          return getHandler(req, res, user);
 
-  if (!user) {
-    return;
-  }
+        case "POST":
+          return postHandler(req, res, user);
 
-  if (user.role !== "ADMIN") {
-    logger.error("User has no admin rights");
-    return res
-      .status(StatusCodes.FORBIDDEN)
-      .json({ message: "You are not an admin" });
-  }
+        default:
+          return res
+            .status(StatusCodes.METHOD_NOT_ALLOWED)
+            .json({ message: "method not allowed" });
+      }
+    }
+  );
+}
 
+async function getHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
   const orgId = Number(req.query.orgId);
 
-  switch (req.method) {
-    case "GET":
-      logger.log(`Looking up orgAdminTokens for org with id(=${orgId})`);
-      const orgAdminTokens = await prisma.organisationAdminToken.findMany({
-        where: {
-          orgId: orgId,
-          isDeleted: false,
-        },
-      });
+  logger.log(`Looking up orgAdminTokens for org with id(=${orgId})`);
+  const orgAdminTokens = await prisma.organisationAdminToken.findMany({
+    where: {
+      orgId: orgId,
+      isDeleted: false,
+    },
+  });
 
-      return res.status(StatusCodes.OK).json(
-        orgAdminTokens.map((orgAdminToken): OrgAdminTokenDto => {
-          return {
-            id: orgAdminToken.id,
-            createdAt: orgAdminToken.createdAt,
-            updatedAt: orgAdminToken.updatedAt,
-            token: encodeOrgToken(orgAdminToken.token),
-            role: orgAdminToken.role,
-            label: orgAdminToken.label ? orgAdminToken.label : "",
-          };
-        })
-      );
-
-    case "POST":
-      const label = req.body.label;
-
-      const generatedToken = generateToken();
-
-      logger.log(`Creating new organisation admin token for org id '${orgId}'`);
-      const orgAdminToken = await prisma.organisationAdminToken.create({
-        data: {
-          token: generatedToken,
-          orgId: orgId,
-          label: label,
-        },
-      });
-
-      const dto: OrgAdminTokenDto = {
+  return res.status(StatusCodes.OK).json(
+    orgAdminTokens.map((orgAdminToken): OrgAdminTokenDto => {
+      return {
         id: orgAdminToken.id,
         createdAt: orgAdminToken.createdAt,
         updatedAt: orgAdminToken.updatedAt,
         token: encodeOrgToken(orgAdminToken.token),
-        label: orgAdminToken.label,
         role: orgAdminToken.role,
+        label: orgAdminToken.label ? orgAdminToken.label : "",
       };
+    })
+  );
+}
 
-      return res.status(StatusCodes.CREATED).json(dto);
+async function postHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
+  const orgId = Number(req.query.orgId);
 
-    default:
-      return res
-        .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
-  }
+  const label = req.body.label;
+
+  const generatedToken = generateToken();
+
+  logger.log(`Creating new organisation admin token for org id '${orgId}'`);
+  const orgAdminToken = await prisma.organisationAdminToken.create({
+    data: {
+      token: generatedToken,
+      orgId: orgId,
+      label: label,
+    },
+  });
+
+  const dto: OrgAdminTokenDto = {
+    id: orgAdminToken.id,
+    createdAt: orgAdminToken.createdAt,
+    updatedAt: orgAdminToken.updatedAt,
+    token: encodeOrgToken(orgAdminToken.token),
+    label: orgAdminToken.label,
+    role: orgAdminToken.role,
+  };
+
+  return res.status(StatusCodes.CREATED).json(dto);
 }

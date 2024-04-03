@@ -2,71 +2,90 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../lib/services/db";
 import { Action } from "../../../../../../../../../models/action";
-import { getUserWithRoleFromRequest } from "../../../../../../../../../util/auth";
+import { User } from "../../../../../../../../../models/user";
+import { authenticatedHandler } from "../../../../../../../../../util/authenticatedHandler";
 import { Logger } from "../../../../../../../../../util/logger";
+
+const logger = new Logger(__filename);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  user: User
 ) {
-  const logger = new Logger(__filename);
+  return authenticatedHandler(
+    req,
+    res,
+    { method: "withRole" },
+    async (req, res, user) => {
+      switch (req.method) {
+        case "GET":
+          return getHandler(req, res, user);
 
-  const user = await getUserWithRoleFromRequest(req, res);
+        case "POST":
+          return postHandler(req, res, user);
 
-  if (!user) {
-    return;
+        default:
+          return res
+            .status(StatusCodes.METHOD_NOT_ALLOWED)
+            .json({ message: "method not allowed" });
+      }
+    }
+  );
+}
+
+async function getHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
+  logger.log(`Looking up messages with app id '${req.query.appId}'`);
+  const allMessages = await prisma.message.findMany({
+    include: {
+      actions: true,
+    },
+    where: {
+      appId: Number(req.query.appId),
+    },
+  });
+
+  return res.status(StatusCodes.OK).json(allMessages);
+}
+
+async function postHandler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User
+) {
+  if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
+    logger.log("Start date has to be before end date");
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Start date has to be before end date" });
   }
 
-  switch (req.method) {
-    case "GET":
-      logger.log(`Looking up messages with app id '${req.query.appId}'`);
-      const allMessages = await prisma.message.findMany({
-        include: {
-          actions: true,
-        },
-        where: {
-          appId: Number(req.query.appId),
-        },
-      });
+  logger.log(`Creating message for app id '${req.query.appId}'`);
+  const message = await prisma.message.create({
+    data: {
+      blocking: req.body.blocking,
+      title: req.body.title,
+      body: req.body.body,
+      startDate: new Date(req.body.startDate),
+      endDate: new Date(req.body.endDate),
+      appId: req.body.appId,
+    },
+  });
 
-      return res.status(StatusCodes.OK).json(allMessages);
-
-    case "POST":
-      if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
-        logger.log("Start date has to be before end date");
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Start date has to be before end date" });
-      }
-
-      logger.log(`Creating message for app id '${req.query.appId}'`);
-      const message = await prisma.message.create({
-        data: {
-          blocking: req.body.blocking,
-          title: req.body.title,
-          body: req.body.body,
-          startDate: new Date(req.body.startDate),
-          endDate: new Date(req.body.endDate),
-          appId: req.body.appId,
-        },
-      });
-
-      if (req.body.actions.length > 0) {
-        logger.log(`Creating actions for message with id '${message.id}'`);
-        const actions: Action[] = req.body.actions;
-        actions.forEach((action) => {
-          action.messageId = message.id;
-        });
-        await prisma.action.createMany({
-          data: req.body.actions,
-        });
-      }
-
-      return res.status(StatusCodes.CREATED).json(message);
-
-    default:
-      return res
-        .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+  if (req.body.actions.length > 0) {
+    logger.log(`Creating actions for message with id '${message.id}'`);
+    const actions: Action[] = req.body.actions;
+    actions.forEach((action) => {
+      action.messageId = message.id;
+    });
+    await prisma.action.createMany({
+      data: req.body.actions,
+    });
   }
+
+  return res.status(StatusCodes.CREATED).json(message);
 }
