@@ -195,8 +195,10 @@ async function putHandler(
           req.query.orgId,
       });
     }
+
+    logger.error(`Error: ${e}`);
     return res
-      .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: "Not implemented: unhandled response path" });
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json("An internal server error occurred, please try again later");
   }
 }

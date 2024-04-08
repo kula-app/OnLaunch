@@ -17,74 +17,17 @@ export default async function handler(
   res: NextApiResponse
 ) {
   switch (req.method) {
-    case "PUT":
-      return putHandler(req, res);
     case "POST":
       return postHandler(req, res);
+
+    case "PUT":
+      return putHandler(req, res);
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
   }
-}
-
-async function postHandler(req: NextApiRequest, res: NextApiResponse) {
-  const { email } = req.body;
-
-  logger.log(`Looking up user with email '${email}'`);
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-      NOT: {
-        isDeleted: true,
-      },
-    },
-  });
-
-  if (!user || (user && !user.id)) {
-    logger.error(`No user found with email '${email}'`);
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "User not found" });
-  }
-
-  const generatedToken = generateToken();
-
-  var expiryDate = new Date();
-  // set expiryDate one hour from now
-  expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
-
-  logger.log(
-    `Updating previous password reset tokens for user with id '${user.id}' as obsolete`
-  );
-  await prisma.passwordResetToken.updateMany({
-    where: {
-      userId: user.id,
-      isObsolete: false,
-    },
-    data: {
-      isObsolete: true,
-    },
-  });
-
-  logger.log(`Create new password reset token for user with id '${user.id}'`);
-  await prisma.passwordResetToken.create({
-    data: {
-      userId: user.id,
-      token: generatedToken,
-      expiryDate: expiryDate,
-    },
-  });
-
-  sendTokenPerMail(
-    user.email as string,
-    user.firstName as string,
-    generatedToken,
-    MailType.ResetPassword
-  );
-
-  return res.status(StatusCodes.OK).json(user);
 }
 
 async function putHandler(req: NextApiRequest, res: NextApiResponse) {
@@ -154,4 +97,62 @@ async function putHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   return res.status(StatusCodes.OK).json(updatedUser);
+}
+
+async function postHandler(req: NextApiRequest, res: NextApiResponse) {
+  const { email } = req.body;
+
+  logger.log(`Looking up user with email '${email}'`);
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email,
+      NOT: {
+        isDeleted: true,
+      },
+    },
+  });
+
+  if (!user || (user && !user.id)) {
+    logger.error(`No user found with email '${email}'`);
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User not found" });
+  }
+
+  const generatedToken = generateToken();
+
+  var expiryDate = new Date();
+  // set expiryDate one hour from now
+  expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
+
+  logger.log(
+    `Updating previous password reset tokens for user with id '${user.id}' as obsolete`
+  );
+  await prisma.passwordResetToken.updateMany({
+    where: {
+      userId: user.id,
+      isObsolete: false,
+    },
+    data: {
+      isObsolete: true,
+    },
+  });
+
+  logger.log(`Create new password reset token for user with id '${user.id}'`);
+  await prisma.passwordResetToken.create({
+    data: {
+      userId: user.id,
+      token: generatedToken,
+      expiryDate: expiryDate,
+    },
+  });
+
+  sendTokenPerMail(
+    user.email as string,
+    user.firstName as string,
+    generatedToken,
+    MailType.ResetPassword
+  );
+
+  return res.status(StatusCodes.OK).json(user);
 }

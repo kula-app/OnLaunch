@@ -33,6 +33,11 @@ export default async function handler(
       switch (req.method) {
         case "POST":
           return postHandler(req, res, user, config);
+
+        default:
+          return res
+            .status(StatusCodes.METHOD_NOT_ALLOWED)
+            .json({ message: "method not allowed" });
       }
     }
   );

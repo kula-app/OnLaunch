@@ -14,10 +14,9 @@ export default async function handler(
       return await getHandler(req, res);
 
     default:
-      res
+      return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
         .json({ message: "method not allowed" });
-      return;
   }
 }
 

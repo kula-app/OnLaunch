@@ -15,9 +15,9 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "POST":
-      return putHandler(req, res);
-    case "POST":
       return postHandler(req, res);
+    case "PUT":
+      return putHandler(req, res);
 
     default:
       return res

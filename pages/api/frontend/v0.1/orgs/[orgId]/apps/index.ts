@@ -117,5 +117,6 @@ async function postHandler(
       publicKey: generatedToken,
     },
   });
+
   return res.status(StatusCodes.CREATED).json(app);
 }

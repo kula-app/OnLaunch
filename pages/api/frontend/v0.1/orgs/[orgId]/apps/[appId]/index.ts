@@ -165,8 +165,10 @@ async function putHandler(
         .status(StatusCodes.NOT_FOUND)
         .json({ message: "No app found with id " + req.query.appId });
     }
+
+    logger.error(`Error: ${e}`);
     return res
-      .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: "Not implemented: unhandled response path" });
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json("An internal server error occurred, please try again later");
   }
 }
