@@ -34,6 +34,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   );
 }
+
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
