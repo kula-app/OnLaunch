@@ -1,16 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest } from "next";
 import prisma from "../../lib/services/db";
+import { AuthResult } from "../../models/authResult";
 import { Logger } from "../logger";
 import { decodeToken } from "./tokenDecoding";
-
-interface AuthResult {
-  success: boolean;
-  authToken?: string;
-  id?: number;
-  statusCode: number;
-  errorMessage?: string;
-}
 
 export async function authenticate(
   req: NextApiRequest,
