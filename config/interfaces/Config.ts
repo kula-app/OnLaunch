@@ -1,3 +1,4 @@
+import { AdminApiConfig } from "./AdminApiConfig";
 import { DatabaseConfig } from "./DatabaseConfig";
 import { EmailContentConfig } from "./EmailContentConfig";
 import { FreeSubConfig } from "./FreeSubConfig";
@@ -16,6 +17,7 @@ export interface Config {
     stripeConfig: StripeConfig;
   };
   server: {
+    adminApi: AdminApiConfig;
     database: DatabaseConfig;
     emailContent: EmailContentConfig;
     freeSub: FreeSubConfig;

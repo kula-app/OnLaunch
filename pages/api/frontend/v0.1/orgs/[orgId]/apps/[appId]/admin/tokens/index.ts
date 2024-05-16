@@ -3,6 +3,7 @@ import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../../../../../lib/services/db";
+import { getErrorDto } from "../../../../../../../../../../models/dtos/error";
 import { CreateAppAdminTokenDto } from "../../../../../../../../../../models/dtos/request/createAppAdminTokenDto";
 import { AppAdminTokenDto } from "../../../../../../../../../../models/dtos/response/appAdminTokenDto";
 import { User } from "../../../../../../../../../../models/user";

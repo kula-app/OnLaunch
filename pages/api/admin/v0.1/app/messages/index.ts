@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
 import { AuthResult } from "../../../../../../models/authResult";
+import { ErrorDto, getErrorDto } from "../../../../../../models/dtos/error";
 import { CreateMessageDto } from "../../../../../../models/dtos/request/createMessageDto";
 import { ActionDto } from "../../../../../../models/dtos/response/actionDto";
 import { MessageDto } from "../../../../../../models/dtos/response/messageDto";
