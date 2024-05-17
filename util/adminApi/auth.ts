@@ -114,7 +114,7 @@ export async function authenticate(
     logger.error("Authorization token is used for wrong route");
 
     if (ip) {
-      logAdminApiRequest(authToken, false, ip);
+      await logAdminApiRequest(authToken, false, ip);
     }
 
     return {
