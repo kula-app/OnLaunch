@@ -159,7 +159,7 @@ export async function authenticate(
     logger.error(`Failed to validate token(=${authToken})`);
 
     if (ip) {
-      logAdminApiRequest(authToken, false, ip);
+      await logAdminApiRequest(authToken, false, ip);
     }
 
     return {
