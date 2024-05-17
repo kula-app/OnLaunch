@@ -25,7 +25,7 @@ export async function authenticate(
     logger.error("Authorization token is missing");
 
     if (ip) {
-      logAdminApiRequest("", false, ip);
+      await logAdminApiRequest("", false, ip);
     }
 
     return {
