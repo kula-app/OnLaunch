@@ -72,6 +72,11 @@ export function loadConfig(): Config {
       },
     },
     server: {
+      adminApi: {
+        requestLimit:
+          // request limit per hour
+          parseNumberEnvValue(env.ADMIN_API_REQUEST_LIMIT) ?? 1000,
+      },
       nextAuth: {
         url: env.NEXTAUTH_URL ?? "http://localhost:3000",
       },
