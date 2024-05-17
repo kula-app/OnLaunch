@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../../lib/services/db";
 import { AuthResult } from "../../../../../../models/authResult";
+import { ErrorDto, getErrorDto } from "../../../../../../models/dtos/error";
 import { AppAdminTokenDto } from "../../../../../../models/dtos/response/appAdminTokenDto";
 import { authenticate } from "../../../../../../util/adminApi/auth";
 import { encodeAppToken } from "../../../../../../util/adminApi/tokenEncoding";
