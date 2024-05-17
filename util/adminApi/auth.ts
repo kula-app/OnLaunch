@@ -169,7 +169,7 @@ export async function authenticate(
     };
   }
 
-  logAdminApiRequest(authToken, !!tokenFromDb, ip);
+  await logAdminApiRequest(authToken, !!tokenFromDb, ip);
 
   logger.log(`Successfully validated token(=${authToken})`);
   // Return the validated token
