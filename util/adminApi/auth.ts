@@ -80,7 +80,7 @@ export async function authenticate(
       );
 
       if (ip) {
-        logAdminApiRequest(authToken, false, ip);
+        await logAdminApiRequest(authToken, false, ip);
       }
 
       return {
