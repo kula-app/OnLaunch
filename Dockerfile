@@ -18,6 +18,7 @@ COPY yarn.lock .
 # Files required for compilation
 COPY next.config.js .
 COPY tsconfig.json .
+COPY .env .
 
 # ---- Dependencies ----
 # Node -- Install Production & Development Node Dependencies
@@ -62,11 +63,18 @@ COPY routes ./routes
 COPY api ./api
 COPY pages ./pages
 
-# ---- Production ----
+# ---- Generate Swagger Docs ----
+  FROM build_setup AS swagger_docs
+  COPY --from=dependencies /home/node/app/node_modules ./node_modules
+  COPY swagger.ts ./
+  COPY .env .
+  RUN yarn ts-node swagger.ts
+  
+  # ---- Production ----
 # build development server
-FROM build_setup AS build_production
-# copy node_modules with all build tools included
-COPY --from=dependencies /home/node/app/node_modules ./node_modules
+  FROM swagger_docs AS build_production
+  COPY --from=dependencies /home/node/app/node_modules ./node_modules
+  COPY swagger-output.json ./swagger-output.json
 # build the server
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn prisma generate

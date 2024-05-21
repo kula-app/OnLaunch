@@ -52,6 +52,7 @@
     "request-ip": "3.3.0",
     "stripe": "14.25.0",
     "styled-components": "6.1.11",
+    "swagger-autogen": "2.23.7",
     "swagger-jsdoc": "6.2.8",
     "swagger-ui-react": "5.17.10",
     "swr": "2.2.5"
