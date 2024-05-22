@@ -53,7 +53,7 @@ export async function verifyPassword(
 
 export function generateToken() {
   logger.log("Generating token");
-  return base64url(crypto.randomBytes(32));
+  return crypto.randomBytes(32).toString("hex");
 }
 
 export function sendTokenPerMail(
