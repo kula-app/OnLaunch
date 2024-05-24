@@ -55,7 +55,7 @@
     "stripe": "14.25.0",
     "styled-components": "6.1.11",
     "swagger-jsdoc": "6.2.8",
-    "swagger-ui-react": "5.17.10",
+    "swagger-ui-react": "5.17.12",
     "swr": "2.2.5"
   },
   "devDependencies": {
