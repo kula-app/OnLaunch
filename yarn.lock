@@ -8841,10 +8841,10 @@ swagger-parser@^10.0.3:
   dependencies:
     "@apidevtools/swagger-parser" "10.0.3"
 
-swagger-ui-react@5.17.13:
-  version "5.17.13"
-  resolved "https://registry.yarnpkg.com/swagger-ui-react/-/swagger-ui-react-5.17.13.tgz#92ce5b67f27838adb21bc0fb21f1a5098d1f07c3"
-  integrity sha512-m844a+6KytjQtGAVWQwIZWNZFyeX9FTj7w54XAH5X5m8MeGFwQ6vc0v9gqROe733t1lgo0jUCJII8wq3Urfalw==
+swagger-ui-react@5.17.14:
+  version "5.17.14"
+  resolved "https://registry.yarnpkg.com/swagger-ui-react/-/swagger-ui-react-5.17.14.tgz#3301bd92f3446f9136597fb5d70360290f92006d"
+  integrity sha512-mCXerZrbcn4ftPYifUF0+iKIRTHoVCv0HcJc/sXl9nCe3oeWdsjmOWVqKabzzAkAa0NwsbKNJFv2UL/Ivnf6VQ==
   dependencies:
     "@babel/runtime-corejs3" "^7.24.5"
     "@braintree/sanitize-url" "=7.0.2"
