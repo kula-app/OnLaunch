@@ -439,6 +439,17 @@
   resolved "https://registry.yarnpkg.com/@braintree/sanitize-url/-/sanitize-url-7.0.2.tgz#60a9710a8c5eb808959f2b5b25091bc239b4ff8e"
   integrity sha512-NVf/1YycDMs6+FxS0Tb/W8MjJRDQdXF+tBfDtZ5UZeiRUkTmwKc4vmYCKZTyymfJk1gnMsauvZSX/HiV9jOABw==
 
+"@cfaester/enzyme-adapter-react-18@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@cfaester/enzyme-adapter-react-18/-/enzyme-adapter-react-18-0.8.0.tgz#313814eb79658a6e74209f9f1743bcefff14a46f"
+  integrity sha512-3Z3ThTUouHwz8oIyhTYQljEMNRFtlVyc3VOOHCbxs47U6cnXs8K9ygi/c1tv49s7MBlTXeIcuN+Ttd9aPtILFQ==
+  dependencies:
+    enzyme-shallow-equal "^1.0.0"
+    function.prototype.name "^1.1.6"
+    has "^1.0.4"
+    react-is "^18.2.0"
+    react-shallow-renderer "^16.15.0"
+
 "@chakra-ui/accordion@2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@chakra-ui/accordion/-/accordion-2.3.1.tgz#a326509e286a5c4e8478de9bc2b4b05017039e6b"
@@ -3854,10 +3865,10 @@ cliui@^8.0.1:
     strip-ansi "^6.0.1"
     wrap-ansi "^7.0.0"
 
-clsx@^1.1.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
-  integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
+clsx@^2.0.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
+  integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
 cluster-key-slot@^1.1.0:
   version "1.1.2"
@@ -4445,6 +4456,14 @@ entities@^4.4.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
+
+enzyme-shallow-equal@^1.0.0:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/enzyme-shallow-equal/-/enzyme-shallow-equal-1.0.7.tgz#4e3aa678022387a68e6c47aff200587851885b5e"
+  integrity sha512-/um0GFqUXnpM9SvKtje+9Tjoz3f1fpBC3eXRFrNs8kpYn69JljciYP7KZTqM/YQbUY9KUjvKB4jo/q+L6WGGvg==
+  dependencies:
+    hasown "^2.0.0"
+    object-is "^1.1.5"
 
 error-ex@^1.3.1:
   version "1.3.2"
@@ -5455,6 +5474,11 @@ has-unicode@^2.0.1:
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha512-8Rf9Y83NBReMnx0gFzA8JImQACstCYWUplepDa9xprwwtmgEZUF0h/i5xSA625zB/I37EtrswSST6OXxwaaIJQ==
 
+has@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/has/-/has-1.0.4.tgz#2eb2860e000011dae4f1406a86fe80e530fb2ec6"
+  integrity sha512-qdSAmqLF6209RFj4VVItywPMbm3vWylknmB3nvNiUIs72xAimcM8nVYxYr7ncvZq5qzk9MKIZR8ijqD/1QuYjQ==
+
 hasown@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/hasown/-/hasown-2.0.2.tgz#003eaf91be7adc372e84ec59dc37252cedb80003"
@@ -6107,7 +6131,7 @@ jest-each@^29.7.0:
     jest-util "^29.7.0"
     pretty-format "^29.7.0"
 
-jest-environment-jsdom@29.7.0, jest-environment-jsdom@^29.7.0:
+jest-environment-jsdom@29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-environment-jsdom/-/jest-environment-jsdom-29.7.0.tgz#d206fa3551933c3fd519e5dfdb58a0f5139a837f"
   integrity sha512-k9iQbsf9OyOfdzWH8HDmrRT0gSIcX+FLNW7IQq94tFX0gynPwqDTW0Ho6iMVNjGz/nb+l/vW3dWM2bbLLpkbXA==
@@ -6945,17 +6969,19 @@ mkdirp@^1.0.3:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-mobx-react-lite@^3.4.0:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-3.4.3.tgz#3a4c22c30bfaa8b1b2aa48d12b2ba811c0947ab7"
-  integrity sha512-NkJREyFTSUXR772Qaai51BnE1voWx56LOL80xG7qkZr6vo8vEaLF3sz1JNUVh+rxmUzxYaqOhfuxTfqUh0FXUg==
-
-mobx-react@^7.2.0:
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-7.6.0.tgz#ebf0456728a9bd2e5c24fdcf9b36e285a222a7d6"
-  integrity sha512-+HQUNuh7AoQ9ZnU6c4rvbiVVl+wEkb9WqYsVDzGLng+Dqj1XntHu79PvEWKtSMoMj67vFp/ZPXcElosuJO8ckA==
+mobx-react-lite@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-4.0.7.tgz#f4e21e18d05c811010dcb1d3007e797924c4d90b"
+  integrity sha512-RjwdseshK9Mg8On5tyJZHtGD+J78ZnCnRaxeQDSiciKVQDUbfZcXhmld0VMxAwvcTnPEHZySGGewm467Fcpreg==
   dependencies:
-    mobx-react-lite "^3.4.0"
+    use-sync-external-store "^1.2.0"
+
+mobx-react@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-9.1.1.tgz#b96e0d5d74a3d02fc62729fd344b2a3ad2a88aae"
+  integrity sha512-gVV7AdSrAAxqXOJ2bAbGa5TkPqvITSzaPiiEkzpW4rRsMhSec7C2NBCJYILADHKp2tzOAIETGRsIY0UaCV5aEw==
+  dependencies:
+    mobx-react-lite "^4.0.7"
 
 mobx@6.12.3:
   version "6.12.3"
@@ -7239,6 +7265,14 @@ object-inspect@^1.13.1:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.13.1.tgz#b96c6109324ccfef6b12216a956ca4dc2ff94bc2"
   integrity sha512-5qoj1RUiKOMsCCNLV1CBiPYE10sziTsnmNxkAI/rZhiD63CF7IqdFGC/XzjWjpSgLf0LxXX3bDFIh0E18f6UhQ==
+
+object-is@^1.1.5:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/object-is/-/object-is-1.1.6.tgz#1a6a53aed2dd8f7e6775ff870bea58545956ab07"
+  integrity sha512-F8cZ+KfGlSGi09lJT7/Nd6KJZ9ygtvYC0/UYYLI9nmQKLMnydpB9yvbv9K1uSkEu7FU9vYPmVwLg328tX+ot3Q==
+  dependencies:
+    call-bind "^1.0.7"
+    define-properties "^1.2.1"
 
 object-keys@^1.1.1:
   version "1.1.1"
@@ -7893,6 +7927,11 @@ react-inspector@^6.0.1:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
+"react-is@^16.12.0 || ^17.0.0 || ^18.0.0", react-is@^18.2.0:
+  version "18.3.1"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
+  integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -7935,6 +7974,14 @@ react-remove-scroll@^2.5.6:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
+react-shallow-renderer@^16.15.0:
+  version "16.15.0"
+  resolved "https://registry.yarnpkg.com/react-shallow-renderer/-/react-shallow-renderer-16.15.0.tgz#48fb2cf9b23d23cde96708fe5273a7d3446f4457"
+  integrity sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==
+  dependencies:
+    object-assign "^4.1.1"
+    react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
+
 react-style-singleton@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-style-singleton/-/react-style-singleton-2.2.1.tgz#f99e420492b2d8f34d38308ff660b60d0b1205b4"
@@ -7955,12 +8002,12 @@ react-syntax-highlighter@^15.5.0:
     prismjs "^1.27.0"
     refractor "^3.6.0"
 
-react-tabs@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/react-tabs/-/react-tabs-4.3.0.tgz#9f4db0fd209ba4ab2c1e78993ff964435f84af62"
-  integrity sha512-2GfoG+f41kiBIIyd3gF+/GRCCYtamC8/2zlAcD8cqQmqI9Q+YVz7fJLHMmU9pXDVYYHpJeCgUSBJju85vu5q8Q==
+react-tabs@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/react-tabs/-/react-tabs-6.0.2.tgz#bc1065c3828561fee285a8fd045f22e0fcdde1eb"
+  integrity sha512-aQXTKolnM28k3KguGDBSAbJvcowOQr23A+CUJdzJtOSDOtTwzEaJA+1U4KwhNL9+Obe+jFS7geuvA7ICQPXOnQ==
   dependencies:
-    clsx "^1.1.0"
+    clsx "^2.0.0"
     prop-types "^15.5.0"
 
 react@18.3.1:
@@ -8013,29 +8060,29 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-redoc@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/redoc/-/redoc-2.1.4.tgz#a9173e730ea38ae8615bc22db37d7efe16a6783c"
-  integrity sha512-wqStZ9oPDTCmp2DMLqecxvxjltX4Bi2xfJiQq3+5Ty1g9Au7TGpJi9PPs42x7p/FxG8t+HlJ6xA7pXpWLZ+UyQ==
+redoc@2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/redoc/-/redoc-2.1.5.tgz#421307b22036b244171095bfc7ea3cfd419563c8"
+  integrity sha512-POSbVg+7WLf+/5/c6GWLxL7+9t2D+1WlZdLN0a6qaCQc+ih3XYzteRBkXEN5kjrYrRNjdspfxTZkDLN5WV3Tzg==
   dependencies:
+    "@cfaester/enzyme-adapter-react-18" "^0.8.0"
     "@redocly/openapi-core" "^1.4.0"
     classnames "^2.3.2"
     decko "^1.2.0"
     dompurify "^3.0.6"
     eventemitter3 "^5.0.1"
-    jest-environment-jsdom "^29.7.0"
     json-pointer "^0.6.2"
     lunr "^2.3.9"
     mark.js "^8.11.1"
     marked "^4.3.0"
-    mobx-react "^7.2.0"
+    mobx-react "^9.1.1"
     openapi-sampler "^1.5.0"
     path-browserify "^1.0.1"
     perfect-scrollbar "^1.5.5"
     polished "^4.2.2"
     prismjs "^1.29.0"
     prop-types "^15.8.1"
-    react-tabs "^4.3.0"
+    react-tabs "^6.0.2"
     slugify "~1.4.7"
     stickyfill "^1.1.1"
     swagger2openapi "^7.0.8"
