@@ -76,7 +76,7 @@
     "local-cypress": "1.2.6",
     "next-router-mock": "0.9.13",
     "start-server-and-test": "2.0.4",
-    "tailwindcss": "3.4.6",
+    "tailwindcss": "3.4.7",
     "ts-node": "10.9.2",
     "typescript": "5.5.4"
   },
