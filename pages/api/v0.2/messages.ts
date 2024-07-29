@@ -1,4 +1,4 @@
-import { $Enums } from "@prisma/client";
+import { ActionType } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
@@ -7,28 +7,30 @@ import prisma from "../../../lib/services/db";
 import { Logger } from "../../../util/logger";
 import { getProducts } from "../frontend/v0.1/stripe/products";
 
-enum ActionType {
-  Dismiss = "DISMISS",
+const logger = new Logger(__filename);
+
+enum MessageActionDtoType {
+  DISMISS = "DISMISS",
 }
 
-type ActionDto = {
-  actionType: ActionType;
+interface MessageActionDto {
+  actionType: MessageActionDtoType;
   title: string;
-};
+}
 
-type ResponseDto = {
+interface MessageDto {
   id: number;
   blocking: boolean;
   title: string;
   body: string;
-  actions: ActionDto[];
-};
+  actions: MessageActionDto[];
+}
 
 interface ErrorObjectDto {
   message: string;
 }
 
-const logger = new Logger(__filename);
+type ResponseDto = MessageDto[] | ErrorObjectDto;
 
 /**
  * @swagger
@@ -48,7 +50,6 @@ const logger = new Logger(__filename);
  *         description: The API key for the app.
  *         required: true
  *         type: string
- *     deprecated: true
  *     responses:
  *       200:
  *         description: Successful response. Returns an array of messages.
@@ -87,7 +88,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseDto[] | ErrorObjectDto>
+  res: NextApiResponse<ResponseDto>
 ) {
   switch (req.method) {
     case "GET":
@@ -282,28 +283,29 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   return res.status(StatusCodes.OK).json(
-    allMessages.map((message): ResponseDto => {
+    allMessages.map((message): MessageDto => {
       return {
         id: message.id,
         blocking: message.blocking,
         title: message.title,
         body: message.body,
-        actions: message.actions.reduce((prev, action): ActionDto[] => {
-          let actionType: ActionType;
+        actions: message.actions.reduce((prev, action): MessageActionDto[] => {
+          // Filter out actions that are not supported
+          let actionType: MessageActionDtoType;
           switch (action.actionType) {
-            case $Enums.ActionType.DISMISS:
-              actionType = ActionType.Dismiss;
+            case ActionType.DISMISS:
+              actionType = MessageActionDtoType.DISMISS;
               break;
             default:
               return prev;
           }
           return prev.concat([
             {
-              actionType: action.actionType as ActionType,
+              actionType: actionType,
               title: action.title,
             },
           ]);
-        }, new Array<ActionDto>()),
+        }, new Array<MessageActionDto>()),
       };
     })
   );
