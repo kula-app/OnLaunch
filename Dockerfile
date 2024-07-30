@@ -18,6 +18,7 @@ COPY yarn.lock .
 # Files required for compilation
 COPY next.config.js .
 COPY tsconfig.json .
+COPY next-swagger-doc.json .
 
 # ---- Dependencies ----
 # Node -- Install Production & Development Node Dependencies
