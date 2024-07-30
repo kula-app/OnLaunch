@@ -264,6 +264,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         },
       ],
     },
+    orderBy: {
+      startDate: "asc",
+    },
   });
 
   const ip = requestIp.getClientIp(req);
