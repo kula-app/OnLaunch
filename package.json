@@ -23,7 +23,7 @@
     "@prisma/client": "5.17.0",
     "@sentry/nextjs": "7.118.0",
     "@stripe/react-stripe-js": "2.7.3",
-    "@stripe/stripe-js": "1.54.2",
+    "@stripe/stripe-js": "4.1.0",
     "@types/bcrypt": "5.0.2",
     "autoprefixer": "10.4.19",
     "base64url": "3.0.1",
