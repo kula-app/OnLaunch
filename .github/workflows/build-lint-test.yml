@@ -26,6 +26,9 @@ jobs:
           cache: "yarn"
           node-version-file: ".node-version"
 
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
       - name: Build
         run: yarn build
 
@@ -43,6 +46,9 @@ jobs:
           cache: "yarn"
           node-version-file: ".node-version"
 
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
       - name: Lint
         run: yarn lint
 
@@ -58,6 +64,9 @@ jobs:
         with:
           cache: "yarn"
           node-version-file: ".node-version"
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
 
       - name: Run Tests
         run: yarn test:ci
@@ -102,6 +111,9 @@ jobs:
         with:
           cache: "yarn"
           node-version-file: ".node-version"
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
 
       - name: Reset the database
         env:
