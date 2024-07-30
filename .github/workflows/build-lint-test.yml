@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout Repository
@@ -23,19 +23,8 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v4
         with:
+          cache: "yarn"
           node-version-file: ".node-version"
-
-      - name: Caching Yarn Dependencies
-        uses: actions/cache@v4
-        timeout-minutes: 10
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
@@ -45,7 +34,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout Repository
@@ -54,19 +43,8 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v4
         with:
+          cache: "yarn"
           node-version-file: ".node-version"
-
-      - name: Caching Yarn Dependencies
-        uses: actions/cache@v4
-        timeout-minutes: 10
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
@@ -76,7 +54,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -84,19 +62,8 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v4
         with:
+          cache: "yarn"
           node-version-file: ".node-version"
-
-      - name: Caching Yarn Dependencies
-        uses: actions/cache@v4
-        timeout-minutes: 10
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
@@ -114,7 +81,7 @@ jobs:
 
   test-e2e:
     name: Test E2E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -142,20 +109,8 @@ jobs:
       - name: Installing Node
         uses: actions/setup-node@v4
         with:
+          cache: "yarn"
           node-version-file: ".node-version"
-
-      - name: Caching Yarn Dependencies
-        uses: actions/cache@v4
-        timeout-minutes: 10
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-        with:
-          path: |
-            node_modules
-            /home/runner/.cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
