@@ -47,6 +47,10 @@ async function getHandler(
     where: {
       appId: Number(req.query.appId),
     },
+    orderBy: {
+      startDate: "asc",
+      endDate: "asc",
+    },
   });
 
   return res.status(StatusCodes.OK).json(allMessages);
