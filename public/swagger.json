@@ -3,5 +3,8 @@
   "info": {
     "title": "OnLaunch - Next Swagger API",
     "version": "1.0"
-  }
+  },
+  "paths": {},
+  "components": {},
+  "tags": []
 }
