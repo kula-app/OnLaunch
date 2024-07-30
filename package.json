@@ -5,7 +5,8 @@
   "scripts": {
     "cypress:ci": "cypress run",
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn generate:docs && next build",
+    "generate:docs": "next-swagger-doc-cli next-swagger-doc.json --output ./public/swagger.json",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
