@@ -68,7 +68,7 @@ FROM build_setup AS build_production
 # copy node_modules with all build tools included
 COPY --from=dependencies /home/node/app/node_modules ./node_modules
 # build the server
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn prisma generate
 RUN yarn build
 
@@ -118,10 +118,10 @@ COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
 # select user
 USER node
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-ENV PORT 3000
+ENV PORT=3000
 EXPOSE 3000
 
 # Setup Health Check
