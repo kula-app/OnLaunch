@@ -27,7 +27,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable --inline-builds --check-cache
 
       - name: Build
         run: yarn build
@@ -47,7 +47,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Lint
         run: yarn lint
@@ -66,7 +66,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable --inline-builds --check-cache
 
       - name: Run Tests
         run: yarn test:ci
@@ -113,7 +113,7 @@ jobs:
           node-version-file: ".node-version"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable --inline-builds --check-cache
 
       - name: Reset the database
         env:
