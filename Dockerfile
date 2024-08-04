@@ -2,14 +2,13 @@
 
 # ---- Base ----
 FROM node:20.16.0 AS base
-# install additional dependencies
-# --> noop
 
-# ---- Project Setup ----
-# Install Production & Development Dependencies
-FROM base AS project_setup
 # Set Working Directory
 WORKDIR /home/node/app
+
+# Setup the environment
+COPY .yarnrc.yml .
+COPY .yarn/releases .yarn/releases
 
 # Node Dependency Management
 COPY package.json .
@@ -21,17 +20,30 @@ COPY tsconfig.json .
 COPY next-swagger-doc.json .
 
 # ---- Dependencies ----
-# Node -- Install Production & Development Node Dependencies
-FROM project_setup AS dependencies
-# install ALL node_modules, including 'devDependencies'
-RUN yarn install \
-  --frozen-lockfile \
-  --ignore-scripts \
-  --no-progress \
-  --network-timeout 1000000
+FROM base AS dependencies_development
+# install all node_modules, including 'devDependencies'
+RUN \
+  --mount=type=cache,target=/root/.yarn/cache \
+  yarn workspaces focus
+
+# Copy the prisma schema to generate the client
+COPY prisma ./prisma
+
+# Generate the prisma client
+RUN yarn prisma generate
+
+FROM base AS dependencies_production
+# Install production node_modules, excluding 'devDependencies'
+RUN \
+  --mount=type=cache,target=/root/.yarn/cache \
+  yarn workspaces focus --production
+
+# Copy the generated prisma client into the production node_modules
+COPY --from=dependencies_development /home/node/app/prisma ./prisma
+COPY --from=dependencies_development /home/node/app/node_modules/.prisma ./node_modules/.prisma
 
 # ---- Build Setup ----
-FROM project_setup AS build_setup
+FROM base AS build
 # Copy resources required for the build process.
 # Caching depends on previous layers, therefore a changed layer will invalidate all following layers.
 # Order the layers from least-to-change to frequent-to-change.
@@ -58,19 +70,16 @@ COPY components ./components
 # Frequently changed
 COPY lib ./lib
 COPY models ./models
-COPY prisma ./prisma
 COPY routes ./routes
 COPY api ./api
 COPY pages ./pages
 
-# ---- Production ----
-# build development server
-FROM build_setup AS build_production
 # copy node_modules with all build tools included
-COPY --from=dependencies /home/node/app/node_modules ./node_modules
+COPY --from=dependencies_development /home/node/app/prisma ./prisma
+COPY --from=dependencies_development /home/node/app/node_modules ./node_modules
+
 # build the server
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN yarn prisma generate
 RUN yarn build
 
 # # ---- Release ----
@@ -86,41 +95,42 @@ LABEL org.label-schema.vcs-url="https://github.com/kula/OnLaunch"
 LABEL org.label-schema.vendor="kula app GmbH"
 
 # install additional dependencies
+# - openssl: required for prisma
+# - tini: required for signal handling
 RUN apt-get update -qq > /dev/null  \
   && apt-get install -qq --no-install-recommends \
-  curl \
+  openssl \
   tini \
-  && rm -rf /var/cache/apk/*
+  && rm -rf /var/lib/apt/lists/*
 # Set tini as entrypoint
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Change runtime working directory
 WORKDIR /home/node/app/
 
+# Setup the environment
+COPY .yarnrc.yml .
+COPY .yarn/releases .yarn/releases
+
 # Setup custom runtime
 COPY --chown=node:node docker/env.sh ./
 RUN chmod +x env.sh
 
-# copy build output required for yarn install for better build efficiency
-COPY --from=build_production --chown=node:node /home/node/app/package.json ./
-COPY --from=build_production --chown=node:node /home/node/app/prisma       ./prisma
-
-# install production dependencies
-RUN yarn install \
-  --frozen-lockfile \
-  --no-progress \
-  --production \
-  --network-timeout 1000000
+# copy production node_modules
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules ./node_modules
 
 # copy remaining build output
-COPY --from=build_production --chown=node:node /home/node/app/public ./public
-COPY --from=build_production --chown=node:node /home/node/app/.next  ./.next
+COPY --from=build /home/node/app/next.config.js ./next.config.js
+COPY --from=build /home/node/app/prisma ./prisma
+COPY --from=build --chown=node:node /home/node/app/public ./public
+COPY --from=build --chown=node:node /home/node/app/.next  ./.next
 
 # select user
 USER node
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_SHARP_PATH=/home/node/app/node_modules/sharp
 
 ENV PORT=3000
 EXPOSE 3000
@@ -129,5 +139,8 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
+# Smoke Tests
+RUN ./node_modules/.bin/next info
+
 # Run application
-CMD ["/bin/bash", "-c", "./env.sh && ./node_modules/.bin/prisma migrate deploy && ././node_modules/.bin/next start"]
+CMD ["/bin/bash", "-c", "./env.sh && ./node_modules/.bin/prisma migrate deploy && ./node_modules/.bin/next start"]
