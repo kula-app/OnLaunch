@@ -24,7 +24,7 @@
     "@stripe/react-stripe-js": "2.7.3",
     "@stripe/stripe-js": "4.1.0",
     "@types/bcrypt": "5.0.2",
-    "autoprefixer": "10.4.19",
+    "autoprefixer": "10.4.20",
     "base64url": "3.0.1",
     "bcrypt": "5.1.1",
     "cal-sans": "1.0.1",
