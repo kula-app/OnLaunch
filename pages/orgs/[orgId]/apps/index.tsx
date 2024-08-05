@@ -89,6 +89,14 @@ export default function AppsPage() {
   );
 
   const { apps, isError: error, isLoading } = useApps(orgId);
+  // TODO: implement auto-redirection to new app page if no apps exist
+  // useEffect(() => {
+  //   // If there are no apps, navigate to the new app page
+  //   if (!isLoading && apps && apps.length === 0) {
+  //     navigateToNewAppPage();
+  //   }
+  // });
+
   const { org, isError: orgError } = useOrg(orgId);
 
   if (error || orgError) return <div>Failed to load</div>;

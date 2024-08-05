@@ -77,7 +77,14 @@ export default function DashboardPage() {
     router.push(Routes.getOrgAppsByOrgId(id));
   }
 
+  // Fetch the organizations
   const { orgs, isLoading, isError } = useOrgs();
+  useEffect(() => {
+    // If there are no organizations, navigate to the new org page
+    if (orgs && orgs.length === 0) {
+      navigateToNewOrgPage();
+    }
+  });
   if (isError) return <div>Failed to load</div>;
 
   function navigateToNewOrgPage() {
