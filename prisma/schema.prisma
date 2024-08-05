@@ -221,6 +221,24 @@ model LoggedApiRequests {
   app       App    @relation(fields: [appId], references: [id], onDelete: Cascade)
   appId     Int
   publicKey String @default("")
+
+  // -- Additional context sent with the request --
+  // Bundle identifier of the app
+  clientBundleId String?
+  // Version of the app
+  clientBundleVersion String?
+  // Locale of the device
+  clientLocale String?
+  // Language code of the locale
+  clientLocaleLanguageCode String?
+  // Region code of the locale
+  clientLocaleRegionCode String?
+  // Name of the platform
+  clientPlatformName String?
+  // Version of the platform
+  clientPlatformVersion String?
+  // Version of the release
+  clientReleaseVersion String?
 }
 
 model LoggedUsageReport {

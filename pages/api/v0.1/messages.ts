@@ -1,4 +1,13 @@
 import { $Enums } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import {
+  IsDefined,
+  IsOptional,
+  IsString,
+  MaxLength,
+  validateOrReject,
+  ValidationError,
+} from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
@@ -6,6 +15,52 @@ import { loadConfig } from "../../../config/loadConfig";
 import prisma from "../../../lib/services/db";
 import { Logger } from "../../../util/logger";
 import { getProducts } from "../frontend/v0.1/stripe/products";
+
+class MessagesRequestHeadersDto {
+  @IsString()
+  @IsDefined()
+  "x-api-key"!: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-bundle-id"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-bundle-version"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-locale"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-locale-language-code"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-locale-region-code"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-platform-name"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-platform-version"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-release-version"?: string;
+}
 
 enum ActionType {
   Dismiss = "DISMISS",
@@ -101,6 +156,24 @@ export default async function handler(
 }
 
 async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+  const headers = plainToInstance(MessagesRequestHeadersDto, req.headers);
+  try {
+    await validateOrReject(headers, {
+      stopAtFirstError: true,
+    });
+  } catch (error: any) {
+    logger.verbose(`Validation Error: ${JSON.stringify(error)}`);
+
+    if (error instanceof Array && error[0] instanceof ValidationError) {
+      const validationError = error[0] as ValidationError;
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Validation Error",
+        constraints: validationError.constraints,
+      });
+    }
+
+    throw error;
+  }
   const config = loadConfig();
   const FREE_SUB_REQUEST_LIMIT = config.server.freeSub.requestLimit;
 
@@ -281,6 +354,15 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       ip: ip as string,
       appId: app.id,
       publicKey: publicKey,
+
+      clientBundleId: headers["x-onlaunch-bundle-id"],
+      clientBundleVersion: headers["x-onlaunch-bundle-version"],
+      clientLocale: headers["x-onlaunch-locale"],
+      clientLocaleLanguageCode: headers["x-onlaunch-locale-language-code"],
+      clientLocaleRegionCode: headers["x-onlaunch-locale-region-code"],
+      clientPlatformName: headers["x-onlaunch-platform-name"],
+      clientPlatformVersion: headers["x-onlaunch-platform-version"],
+      clientReleaseVersion: headers["x-onlaunch-release-version"],
     },
   });
 

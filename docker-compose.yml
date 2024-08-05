@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
@@ -11,6 +9,27 @@ services:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@kula.app
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    entrypoint: /bin/sh -c "chmod 600 /pgpass; /entrypoint.sh;"
+    user: root
+    configs:
+      - source: servers.json
+        target: /pgadmin4/servers.json
+      - source: pgpass
+        target: /pgpass
 
   redis-sentinel:
     image: docker.io/bitnami/redis-sentinel:7.2
@@ -55,8 +74,26 @@ services:
   #   ports:
   #     - 3000:3000
 
+configs:
+  pgpass:
+    content: db:5432:*:onlaunch:password
+  servers.json:
+    content: |
+      {"Servers": {"1": {
+        "Group": "Servers",
+        "Name": "My Local Postgres DB",
+        "Host": "db",
+        "Port": 5432,
+        "MaintenanceDB": "postgres",
+        "Username": "onlaunch",
+        "PassFile": "/pgpass",
+        "SSLMode": "prefer"
+      }}}
+
 volumes:
   postgres_data:
+    driver: local
+  pgadmin_data:
     driver: local
   redis-sentinel_data:
     driver: local
