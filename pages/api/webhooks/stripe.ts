@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-import { loadConfig } from "../../../config/loadConfig";
+import { loadServerConfig } from "../../../config/loadServerConfig";
 import prisma from "../../../lib/services/db";
 import { createStripeClient } from "../../../lib/services/stripe";
 import { Logger } from "../../../util/logger";
@@ -27,7 +27,7 @@ export default async function handler(
 ) {
   const logger = new Logger(__filename);
 
-  const stripeConfig = loadConfig().server.stripeConfig;
+  const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.isEnabled) {
     logger.error("stripe is disabled but endpoint has been called");

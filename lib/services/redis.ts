@@ -1,10 +1,10 @@
 import Redis, { RedisOptions } from "ioredis";
 import { RedisConfig } from "../../config/interfaces/RedisConfig";
-import { loadConfig } from "../../config/loadConfig";
+import { loadServerConfig } from "../../config/loadServerConfig";
 import { Logger } from "../../util/logger";
 
 function getRedisConfiguration(): RedisConfig {
-  return loadConfig().server.redisConfig;
+  return loadServerConfig().redisConfig;
 }
 
 function redisClientSingleton(config = getRedisConfiguration()):

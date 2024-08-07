@@ -50,8 +50,7 @@ FROM base AS build
 
 # Rarely changed
 COPY sentry.client.config.ts .
-COPY sentry.edge.config.ts .
-COPY sentry.server.config.ts .
+COPY instrumentation.ts .
 
 COPY postcss.config.js .
 COPY tailwind.config.js .

@@ -48,7 +48,7 @@ import { useUsers } from "../../../api/orgs/useUsers";
 import createCustomerPortalSession from "../../../api/stripe/createCustomerPortalSession";
 import getSubscriptions from "../../../api/stripe/getSubscriptions";
 import resetOrgInvitationToken from "../../../api/tokens/resetOrgInvitationToken";
-import { loadConfig } from "../../../config/loadConfig";
+import { loadClientConfig } from "../../../config/loadClientConfig";
 import { Org } from "../../../models/org";
 import { Subscription } from "../../../models/subscription";
 import Routes from "../../../routes/routes";
@@ -58,7 +58,7 @@ import { getColorLabel, translateSubName } from "../../../util/nameTag";
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
-  const stripeConfig = loadConfig().client.stripeConfig;
+  const stripeConfig = loadClientConfig().stripeConfig;
 
   const {
     isOpen: isOrgDeletionOpen,

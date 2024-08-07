@@ -1,8 +1,8 @@
 import Stripe from "stripe";
-import { loadConfig } from "../../config/loadConfig";
+import { loadServerConfig } from "../../config/loadServerConfig";
 
 export function createStripeClient() {
-  const stripeConfig = loadConfig().server.stripeConfig;
+  const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.secretKey) {
     throw new Error("Stripe secret key is not configured");

@@ -6,13 +6,13 @@ import { Heading, Skeleton, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useProducts } from "../../../api/stripe/useProducts";
 import ProductCard from "../../../components/ProductCard";
-import { loadConfig } from "../../../config/loadConfig";
+import { loadClientConfig } from "../../../config/loadClientConfig";
 import Routes from "../../../routes/routes";
 
 export default function EditOrgPage() {
   const router = useRouter();
   const toast = useToast();
-  const stripeConfig = loadConfig().client.stripeConfig;
+  const stripeConfig = loadClientConfig().stripeConfig;
 
   const orgId = Number(router.query.orgId);
 

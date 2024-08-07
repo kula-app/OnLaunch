@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest } from "next";
 import requestIp from "request-ip";
-import { loadConfig } from "../../config/loadConfig";
+import { loadServerConfig } from "../../config/loadServerConfig";
 import prisma from "../../lib/services/db";
 import { AuthResult } from "../../models/authResult";
 import { Logger } from "../logger";
@@ -12,7 +12,7 @@ export async function authenticate(
   type: string
 ): Promise<AuthResult> {
   const logger = new Logger(__filename);
-  const adminApiConfig = loadConfig().server.adminApi;
+  const adminApiConfig = loadServerConfig().adminApi;
 
   const ip = requestIp.getClientIp(req);
 

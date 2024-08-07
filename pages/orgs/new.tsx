@@ -10,14 +10,14 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import createOrg from "../../api/orgs/createOrg";
-import { loadConfig } from "../../config/loadConfig";
+import { loadClientConfig } from "../../config/loadClientConfig";
 import Routes from "../../routes/routes";
 import styles from "../../styles/Home.module.css";
 
 export default function NewOrgPage() {
   const router = useRouter();
   const toast = useToast();
-  const stripeConfig = loadConfig().client.stripeConfig;
+  const stripeConfig = loadClientConfig().stripeConfig;
 
   const [orgName, setOrgName] = useState("");
 

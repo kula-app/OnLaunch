@@ -11,7 +11,7 @@ import {
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
-import { loadConfig } from "../../../config/loadConfig";
+import { loadServerConfig } from "../../../config/loadServerConfig";
 import prisma from "../../../lib/services/db";
 import { Logger } from "../../../util/logger";
 import { getProducts } from "../frontend/v0.1/stripe/products";
@@ -174,8 +174,8 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
 
     throw error;
   }
-  const config = loadConfig();
-  const FREE_SUB_REQUEST_LIMIT = config.server.freeSub.requestLimit;
+  const config = loadServerConfig();
+  const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
 
   const publicKey = req.headers["x-api-key"] as string;
 
@@ -220,7 +220,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   // Start of quota limitation
-  if (config.server.stripeConfig.isEnabled) {
+  if (config.stripeConfig.isEnabled) {
     try {
       const products = await getProducts();
 

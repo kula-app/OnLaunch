@@ -28,7 +28,7 @@ import getDirectInviteToken from "../api/tokens/getDirectInviteToken";
 import getOrgInviteToken from "../api/tokens/getOrgInviteToken";
 import joinOrgViaDirectInvite from "../api/tokens/joinOrgViaDirectInvite";
 import joinOrgViaOrgInvite from "../api/tokens/joinOrgViaOrgInvite";
-import { loadConfig } from "../config/loadConfig";
+import { loadClientConfig } from "../config/loadClientConfig";
 import { OrgInvite } from "../models/orgInvite";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
@@ -36,7 +36,7 @@ import { getColorLabel, translateSubName } from "../util/nameTag";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const stripeConfig = loadConfig().client.stripeConfig;
+  const stripeConfig = loadClientConfig().stripeConfig;
 
   const { invite, directinvite } = router.query;
 

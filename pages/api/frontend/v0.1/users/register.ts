@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { loadConfig } from "../../../../../config/loadConfig";
+import { loadServerConfig } from "../../../../../config/loadServerConfig";
 import prisma from "../../../../../lib/services/db";
 import { MailType } from "../../../../../models/mailType";
 import {
@@ -29,13 +29,13 @@ export default async function handler(
 }
 
 async function postHandler(req: NextApiRequest, res: NextApiResponse) {
-  const config = loadConfig();
+  const config = loadServerConfig();
 
   const data = req.body;
 
   const { email, password, firstName, lastName } = data;
 
-  if (!config.server.signup.isEnabled) {
+  if (!config.signup.isEnabled) {
     logger.error("Signups are currently disabled");
     return res
       .status(StatusCodes.METHOD_NOT_ALLOWED)

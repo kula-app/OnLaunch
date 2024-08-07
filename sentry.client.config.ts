@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
-import { loadConfig } from "./config/loadConfig";
+import { loadClientConfig } from "./config/loadClientConfig";
 
-const sentryConfig = loadConfig().client.sentryConfig;
+const sentryConfig = loadClientConfig().sentryConfig;
 
 Sentry.init({
   dsn: sentryConfig.dsn,

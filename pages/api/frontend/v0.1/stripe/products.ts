@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-import { loadConfig } from "../../../../../config/loadConfig";
+import { loadServerConfig } from "../../../../../config/loadServerConfig";
 import redis from "../../../../../lib/services/redis";
 import { createStripeClient } from "../../../../../lib/services/stripe";
 import { Product } from "../../../../../models/product";
@@ -11,7 +11,7 @@ const PRODUCTS_REDIS_KEY = "products";
 const logger = new Logger(__filename);
 
 export async function getProducts(): Promise<Product[]> {
-  const config = loadConfig();
+  const config = loadServerConfig();
 
   const stripe = createStripeClient();
 
@@ -22,7 +22,7 @@ export async function getProducts(): Promise<Product[]> {
     nameTag: "free",
     priceId: "",
     priceAmount: 0,
-    requests: config.server.freeSub.requestLimit,
+    requests: config.freeSub.requestLimit,
   };
 
   try {
@@ -124,7 +124,7 @@ export async function getProducts(): Promise<Product[]> {
       if (redis.isEnabled) {
         // cache data set to expire after 1 hour
         // after expiration, the data will be retrieved again from stripe
-        const MAX_AGE = 60_000 * config.server.redisConfig.cacheMaxAge;
+        const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
         const EXPIRY_MS = `PX`; // milliseconds
         const redisClient = redis.client;
         logger.log("Saving stripe products to redis cache");
@@ -151,7 +151,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const stripeConfig = loadConfig().server.stripeConfig;
+  const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.isEnabled) {
     logger.error("Stripe is disabled but endpoint has been called");
