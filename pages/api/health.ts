@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as os from "os";
-import { loadConfig } from "../../config/loadConfig";
+import { loadServerConfig } from "../../config/loadServerConfig";
 import prisma from "../../lib/services/db";
 import redis from "../../lib/services/redis";
 import { Logger } from "../../util/logger";
@@ -18,8 +18,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data | {}>
 ) {
-  const config = loadConfig();
-  if (req.headers.authorization !== `token ${config.server.health.apiKey}`) {
+  const config = loadServerConfig();
+  if (req.headers.authorization !== `token ${config.health.apiKey}`) {
     return res.status(StatusCodes.FORBIDDEN).json({
       error: {
         message: "Invalid API Key",

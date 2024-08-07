@@ -11,23 +11,17 @@ import { SmtpConfig } from "./SmtpConfig";
 import { StripeConfig } from "./StripeConfig";
 import { UsageReportConfig } from "./UsageReportConfig";
 
-export interface Config {
-  client: {
-    sentryConfig: SentryConfig;
-    stripeConfig: StripeConfig;
-  };
-  server: {
-    adminApi: AdminApiConfig;
-    database: DatabaseConfig;
-    emailContent: EmailContentConfig;
-    freeSub: FreeSubConfig;
-    health: HealthConfig;
-    nextAuth: NextAuthConfig;
-    redisConfig: RedisConfig;
-    sentryConfig: SentryConfig;
-    signup: SignupConfig;
-    smtp: SmtpConfig;
-    stripeConfig: StripeConfig;
-    usageReport: UsageReportConfig;
-  };
+export interface ServerConfig {
+  adminApi: AdminApiConfig;
+  database: DatabaseConfig;
+  emailContent: EmailContentConfig;
+  freeSub: FreeSubConfig;
+  health: HealthConfig;
+  nextAuth: NextAuthConfig;
+  redisConfig: RedisConfig;
+  sentryConfig: SentryConfig;
+  signup: SignupConfig;
+  smtp: SmtpConfig;
+  stripeConfig: StripeConfig;
+  usageReport: UsageReportConfig;
 }

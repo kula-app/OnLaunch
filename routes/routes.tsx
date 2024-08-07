@@ -1,6 +1,6 @@
-import { loadConfig } from "../config/loadConfig";
+import { loadServerConfig } from "../config/loadServerConfig";
 
-const config = loadConfig();
+const config = loadServerConfig();
 
 class Routes {
   static readonly INDEX = "/";
@@ -64,27 +64,27 @@ class Routes {
   // the bellow functions use the full path of website for external usage
 
   static changeEmailWithToken(token: string): string {
-    return `${config.server.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
+    return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
   }
 
   static directInviteWithToken(token: string): string {
-    return `${config.server.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
+    return `${config.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
   }
 
   static resetPasswordWithToken(token: string): string {
-    return `${config.server.nextAuth.url}/${Routes.RESET_PASSWORD}?token=${token}`;
+    return `${config.nextAuth.url}/${Routes.RESET_PASSWORD}?token=${token}`;
   }
 
   static verifyWithToken(token: string): string {
-    return `${config.server.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
+    return `${config.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
   }
 
   static subscriptionPageSuccess(orgId: string): string {
-    return `${config.server.nextAuth.url}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
+    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
   }
 
   static subscriptionPageCancelled(): string {
-    return `${config.server.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`;
+    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`;
   }
 }
 

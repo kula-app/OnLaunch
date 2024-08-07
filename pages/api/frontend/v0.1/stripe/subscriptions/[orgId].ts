@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { loadConfig } from "../../../../../../config/loadConfig";
+import { loadServerConfig } from "../../../../../../config/loadServerConfig";
 import prisma from "../../../../../../lib/services/db";
 import { User } from "../../../../../../models/user";
 import { authenticatedHandler } from "../../../../../../util/authenticatedHandler";
@@ -18,7 +18,7 @@ export default async function handler(
     res,
     { method: "withRole" },
     async (req, res, user) => {
-      const stripeConfig = loadConfig().server.stripeConfig;
+      const stripeConfig = loadServerConfig().stripeConfig;
 
       if (!stripeConfig.isEnabled) {
         logger.error("stripe is disabled but endpoint has been called");

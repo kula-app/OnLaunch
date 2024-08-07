@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { StripeConfig } from "../../../../../config/interfaces/StripeConfig";
-import { loadConfig } from "../../../../../config/loadConfig";
+import { loadServerConfig } from "../../../../../config/loadServerConfig";
 import prisma from "../../../../../lib/services/db";
 import { createStripeClient } from "../../../../../lib/services/stripe";
 import { ProductType } from "../../../../../models/productType";
@@ -23,7 +23,7 @@ export default async function handler(
     res,
     { method: "withRole" },
     async (req, res, user) => {
-      const stripeConfig = loadConfig().server.stripeConfig;
+      const stripeConfig = loadServerConfig().stripeConfig;
 
       if (!stripeConfig.isEnabled) {
         logger.error("Stripe is disabled but endpoint has been called");

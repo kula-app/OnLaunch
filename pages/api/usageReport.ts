@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { loadConfig } from "../../config/loadConfig";
+import { loadServerConfig } from "../../config/loadServerConfig";
 import { Logger } from "../../util/logger";
 import { reportAllOrgsToStripe } from "../../util/stripe/reportAllUsage";
 
@@ -9,8 +9,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const logger = new Logger(__filename);
-  const usageReportingConfig = loadConfig().server.usageReport;
-  const stripeConfig = loadConfig().server.stripeConfig;
+  const usageReportingConfig = loadServerConfig().usageReport;
+  const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.isEnabled) {
     logger.error("stripe is disabled but endpoint has been called");

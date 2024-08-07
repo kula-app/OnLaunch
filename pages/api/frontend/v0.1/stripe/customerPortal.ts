@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Config } from "../../../../../config/interfaces/Config";
-import { loadConfig } from "../../../../../config/loadConfig";
+import { ServerConfig } from "../../../../../config/interfaces/ServerConfig";
+import { loadServerConfig } from "../../../../../config/loadServerConfig";
 import prisma from "../../../../../lib/services/db";
 import { createStripeClient } from "../../../../../lib/services/stripe";
 import { User } from "../../../../../models/user";
@@ -21,9 +21,9 @@ export default async function handler(
     res,
     { method: "withRole" },
     async (req, res, user) => {
-      const config = loadConfig();
+      const config = loadServerConfig();
 
-      if (!config.server.stripeConfig.isEnabled) {
+      if (!config.stripeConfig.isEnabled) {
         logger.error("stripe is disabled but endpoint has been called");
         return res
           .status(StatusCodes.SERVICE_UNAVAILABLE)
@@ -47,7 +47,7 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  config: Config
+  config: ServerConfig
 ) {
   const orgId = req.body.orgId;
 
@@ -88,7 +88,7 @@ async function postHandler(
     logger.log("Creating customer portal session for organisation");
     const session = await stripe.billingPortal.sessions.create({
       customer: orgFromDb.stripeCustomerId,
-      return_url: `${config.server.nextAuth.url}${Routes.DASHBOARD}`,
+      return_url: `${config.nextAuth.url}${Routes.DASHBOARD}`,
     });
 
     logger.log("Redirecting to Stripe customer portal");

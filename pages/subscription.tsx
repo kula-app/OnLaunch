@@ -2,14 +2,14 @@ import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { loadConfig } from "../config/loadConfig";
+import { loadClientConfig } from "../config/loadClientConfig";
 import Routes from "../routes/routes";
 import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
   const toast = useToast();
-  const stripeConfig = loadConfig().client.stripeConfig;
+  const stripeConfig = loadClientConfig().stripeConfig;
 
   const [loading, setLoading] = useState(true);
 

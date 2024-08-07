@@ -2,7 +2,7 @@ import { compare, genSalt, hash } from "bcrypt";
 import { StatusCodes } from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { loadConfig } from "../config/loadConfig";
+import { loadServerConfig } from "../config/loadServerConfig";
 import prisma from "../lib/services/db";
 import { createChangeEmailTemplate } from "../mailTemplate/changeEmail";
 import { createDirectInviteTemplate } from "../mailTemplate/directInvite";
@@ -15,8 +15,7 @@ import { authOptions } from "../pages/api/auth/[...nextauth]";
 import Routes from "../routes/routes";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 import { Logger } from "./logger";
-var crypto = require("crypto");
-var base64url = require("base64url");
+import { generateRandomHex } from "./random";
 
 const nodemailer = require("nodemailer");
 
@@ -53,7 +52,7 @@ export async function verifyPassword(
 
 export function generateToken() {
   logger.log("Generating token");
-  return crypto.randomBytes(32).toString("hex");
+  return generateRandomHex(32);
 }
 
 export function sendTokenPerMail(
@@ -64,8 +63,8 @@ export function sendTokenPerMail(
 ) {
   logger.log(`Sending mail of type '${mailType}'`);
 
-  const config = loadConfig();
-  const smtpConfig = config.server.smtp;
+  const config = loadServerConfig();
+  const smtpConfig = config.smtp;
 
   let transporter = nodemailer.createTransport({
     host: smtpConfig.host,
@@ -76,7 +75,7 @@ export function sendTokenPerMail(
     },
   });
 
-  const senderName = config.server.emailContent.senderName;
+  const senderName = config.emailContent.senderName;
 
   switch (mailType) {
     case MailType.Verification:
@@ -175,7 +174,7 @@ export function sendTokenPerMail(
   }
 
   function getSenderData(senderName: string) {
-    return `"${senderName}" <${config.server.emailContent.senderAddress}>`;
+    return `"${senderName}" <${config.emailContent.senderAddress}>`;
   }
 }
 
