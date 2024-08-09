@@ -1,6 +1,7 @@
 import { $Enums } from "@prisma/client";
-import { plainToInstance } from "class-transformer";
+import { plainToInstance, Transform } from "class-transformer";
 import {
+  IsBoolean,
   IsDefined,
   IsOptional,
   IsString,
@@ -48,6 +49,11 @@ class MessagesRequestHeadersDto {
 
   @IsString()
   @IsOptional()
+  @MaxLength(150)
+  "x-onlaunch-package-name"?: string;
+
+  @IsString()
+  @IsOptional()
   @MaxLength(200)
   "x-onlaunch-platform-name"?: string;
 
@@ -60,6 +66,25 @@ class MessagesRequestHeadersDto {
   @IsOptional()
   @MaxLength(200)
   "x-onlaunch-release-version"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-version-code"?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  "x-onlaunch-version-name"?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === "true") return true;
+    else if (value === "false") return false;
+    return value;
+  })
+  "x-onlaunch-update-available"?: boolean;
 }
 
 enum ActionType {
@@ -100,9 +125,103 @@ const logger = new Logger(__filename);
  *     parameters:
  *       - name: x-api-key
  *         in: header
- *         description: The API key for the app.
+ *         description: The API key for the app, used to authenticate the client and identify the requested app.
  *         required: true
  *         type: string
+ *       - name: x-onlaunch-bundle-id
+ *         in: header
+ *         description: The bundle ID of the app, provided by iOS clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: com.example.app
+ *       - name: x-onlaunch-bundle-version
+ *         in: header
+ *         description: The bundle version of the app, provided by iOS clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: 1.0.0
+ *       - name: x-onlaunch-locale
+ *         in: header
+ *         description: The locale of the app, should be provided by all clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: en_US
+ *       - name: x-onlaunch-locale-language-code
+ *         in: header
+ *         description: The language code of the app's locale, should be provided by all clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: en
+ *       - name: x-onlaunch-locale-region-code
+ *         in: header
+ *         description: The region code of the app's locale, should be provided by all clients
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: US
+ *       - name: x-onlaunch-package-name
+ *         in: header
+ *         description: The package name of the app, should be provided by Android clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 150
+ *         example: com.example.app
+ *       - name: x-onlaunch-platform-name
+ *         in: header
+ *         description: The platform name of the app, should be provided by all clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: android
+ *       - name: x-onlaunch-platform-version
+ *         in: header
+ *         description: The platform version of the app, should be provided by all clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: 21
+ *       - name: x-onlaunch-release-version
+ *         in: header
+ *         description: The release version of the app, provided by iOS clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: 123
+ *       - name: x-onlaunch-version-code
+ *         in: header
+ *         description: The version code of the app, provided by Android clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: 123
+ *       - name: x-onlaunch-version-name
+ *         in: header
+ *         description: The version name of the app, provided by Android clients.
+ *         required: false
+ *         schema:
+ *           type: string
+ *           maxLength: 200
+ *         example: 1.0.0
+ *       - name: x-onlaunch-update-available
+ *         in: header
+ *         description: Indicates if an update is available for the app, should be provided by Android clients.
+ *         required: false
+ *         schema:
+ *           type: boolean
  *     deprecated: true
  *     responses:
  *       200:
@@ -134,7 +253,7 @@ const logger = new Logger(__filename);
  *                         title:
  *                           type: string
  *       400:
- *         description: Bad request. No API key provided.
+ *         description: Bad request. See response body for validation errors.
  *       404:
  *         description: App not found. No app found for the provided API key.
  *       405:
@@ -360,9 +479,13 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       clientLocale: headers["x-onlaunch-locale"],
       clientLocaleLanguageCode: headers["x-onlaunch-locale-language-code"],
       clientLocaleRegionCode: headers["x-onlaunch-locale-region-code"],
+      clientPackageName: headers["x-onlaunch-package-name"],
       clientPlatformName: headers["x-onlaunch-platform-name"],
       clientPlatformVersion: headers["x-onlaunch-platform-version"],
       clientReleaseVersion: headers["x-onlaunch-release-version"],
+      clientVersionCode: headers["x-onlaunch-version-code"],
+      clientVersionName: headers["x-onlaunch-version-name"],
+      clientUpdateAvailable: headers["x-onlaunch-update-available"],
     },
   });
 

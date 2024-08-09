@@ -233,12 +233,20 @@ model LoggedApiRequests {
   clientLocaleLanguageCode String?
   // Region code of the locale
   clientLocaleRegionCode String?
+  // Name of the package
+  clientPackageName String?
   // Name of the platform
   clientPlatformName String?
   // Version of the platform
   clientPlatformVersion String?
   // Version of the release
   clientReleaseVersion String?
+  // Version code of the package
+  clientVersionCode String?
+  // Version name of the package
+  clientVersionName String?
+  // Flag if update was available at the client
+  clientUpdateAvailable Boolean?
 }
 
 model LoggedUsageReport {
