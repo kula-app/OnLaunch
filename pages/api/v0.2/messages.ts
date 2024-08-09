@@ -152,7 +152,7 @@ export default async function handler(
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: "method not allowed" });
+        .json({ message: "Method not allowed" });
   }
 }
 
