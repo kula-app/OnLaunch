@@ -61,7 +61,7 @@ yarn dev
 2. Start docker resources
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 This will start a Postgres and a Mailhog instance.
