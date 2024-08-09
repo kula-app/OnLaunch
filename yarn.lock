@@ -11036,7 +11036,7 @@ __metadata:
     reflect-metadata: "npm:0.2.2"
     request-ip: "npm:3.3.0"
     start-server-and-test: "npm:2.0.5"
-    stripe: "npm:14.25.0"
+    stripe: "npm:16.6.0"
     styled-components: "npm:6.1.12"
     swagger-jsdoc: "npm:6.2.8"
     swagger-ui-react: "npm:5.17.14"
@@ -13264,13 +13264,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:14.25.0":
-  version: 14.25.0
-  resolution: "stripe@npm:14.25.0"
+"stripe@npm:16.6.0":
+  version: 16.6.0
+  resolution: "stripe@npm:16.6.0"
   dependencies:
     "@types/node": "npm:>=8.1.0"
     qs: "npm:^6.11.0"
-  checksum: 10c0/3f98230d537bdcb9e31775576743e9f2e2137d45021b3a59afe5af17dc54397e8f27bab7abce6fbb81545f69dc73f4c1325c987d2e0c88c2149e135c783d14ff
+  checksum: 10c0/c7e6237d6964fac0bc9c01a77b9b3a8fc5ae303ecde298c084f639524c896b39cc7158c6e4bf9c589a045afe864e0b93b6c8c25e0ba921b8c6adc6df7ff08c33
   languageName: node
   linkType: hard
 
