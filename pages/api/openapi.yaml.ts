@@ -13,7 +13,7 @@ export default async function handler(
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "OnLaunch - Next Swagger API",
+        title: "OnLaunch - API Documentation",
         version: "1.0",
       },
     },

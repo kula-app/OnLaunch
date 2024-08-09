@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from "next/dynamic";
 
 const RedocStandalone = dynamic(
@@ -5,8 +7,8 @@ const RedocStandalone = dynamic(
   { ssr: false }
 );
 
-const ApiDoc = () => {
+const UI = () => {
   return <RedocStandalone specUrl="/api/openapi.yaml" />;
 };
 
-export default ApiDoc;
+export default UI;
