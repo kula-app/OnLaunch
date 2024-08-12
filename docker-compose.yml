@@ -31,7 +31,7 @@ services:
         target: /pgpass
 
   redis-sentinel:
-    image: docker.io/bitnami/redis-sentinel:7.2
+    image: docker.io/bitnami/redis-sentinel:7.4
     volumes:
       - redis-sentinel_data:/bitnami
 
