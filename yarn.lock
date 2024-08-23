@@ -5869,12 +5869,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.4.3":
-  version: 4.4.3
-  resolution: "chart.js@npm:4.4.3"
+"chart.js@npm:4.4.4":
+  version: 4.4.4
+  resolution: "chart.js@npm:4.4.4"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: 10c0/910113b07983d1b2f52689afcd88d0c5fecbd30fbbe89f4e122d78397fd4521e1563fd6d80f7742a391abe7cfbfa8deaf12c58b83c9636431fa77e7285d85c2e
+  checksum: 10c0/9fa3206403a6103916f7762c2665d322c42b0cc07fba91526b1d033ddb887c1ba74b3ebc0bd0748a9e55abd1017f25fdb2292cdd6579d8c2d3bcb1c58f71281c
   languageName: node
   linkType: hard
 
@@ -11016,7 +11016,7 @@ __metadata:
     base64url: "npm:3.0.1"
     bcrypt: "npm:5.1.1"
     cal-sans: "npm:1.0.1"
-    chart.js: "npm:4.4.3"
+    chart.js: "npm:4.4.4"
     class-transformer: "npm:0.5.1"
     class-validator: "npm:0.14.1"
     core-js: "npm:^3.38.0"
