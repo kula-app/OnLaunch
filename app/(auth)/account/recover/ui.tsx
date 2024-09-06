@@ -1,7 +1,8 @@
 "use client";
 
-import createPasswordResetToken from "@/api/tokens/createPasswordResetToken";
-import AuthFooter from "@/app/(auth)/(components)/AuthFooter";
+import { requestPasswordResetEmail } from "@/app/actions/request-password-reset-email";
+import { AuthFooter } from "@/components/auth/AuthFooter";
+import Routes from "@/routes/routes";
 import {
   Box,
   Button,
@@ -13,16 +14,18 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
+import { useRouter } from "next/navigation";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../../(components)/AuthCoverImageColumn";
-import { AuthHeader } from "../../(components)/AuthHeader";
-import { AuthTextField } from "../../(components)/AuthTextField";
+import { AuthCoverImageColumn } from "../../../../components/auth/AuthCoverImageColumn";
+import { AuthHeader } from "../../../../components/auth/AuthHeader";
+import { AuthTextField } from "../../../../components/auth/AuthTextField";
 
 const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),
 });
 
 const UI: NextPage = () => {
+  const router = useRouter();
   const toast = useToast();
 
   return (
@@ -55,6 +58,7 @@ const UI: NextPage = () => {
                   lg: "32px",
                 }}
                 w={"100%"}
+                spacing={"16px"}
               >
                 <VStack textAlign={"left"} align={"left"} w={"100%"}>
                   <Text
@@ -76,7 +80,7 @@ const UI: NextPage = () => {
                   }}
                   onSubmit={async (values, { setStatus }) => {
                     try {
-                      await createPasswordResetToken(values.email);
+                      await requestPasswordResetEmail(values.email);
                       setStatus({
                         isSent: values.email,
                       });
@@ -93,19 +97,13 @@ const UI: NextPage = () => {
                 >
                   {(props) => (
                     <Form style={{ width: "100%" }}>
-                      <VStack spacing={"32px"} w={"100%"}>
-                        <Text
-                          fontSize="md"
-                          color="white"
-                          fontWeight="normal"
-                          mt="10px"
-                          w={"full"}
-                        >
+                      <VStack spacing={"32px"} w={"100%"} color="white">
+                        <Text w={"full"}>
                           {props.status.isSent ? (
                             <>
-                              We have sent an email to the address registered
-                              with this account containing further instructions
-                              to reset your password.
+                              We have sent an email to the address{" "}
+                              <b>{props.values.email}</b> with instructions to
+                              recover access to your account.
                             </>
                           ) : (
                             <>
@@ -138,6 +136,36 @@ const UI: NextPage = () => {
                               isLoading={props.isSubmitting}
                             >
                               Send Email
+                            </Button>
+                          </VStack>
+                        )}
+                        {props.status.isSent && (
+                          <VStack spacing={"16px"} w="100%">
+                            <Button
+                              variant={"brand"}
+                              w="100%"
+                              minH="50"
+                              onClick={() =>
+                                router.push(
+                                  Routes.login({
+                                    reason: "account-recovery-requested",
+                                  })
+                                )
+                              }
+                            >
+                              Back To Login
+                            </Button>
+                            <Button
+                              colorScheme="gray"
+                              w="100%"
+                              minH="50"
+                              onClick={() => {
+                                props.setStatus({
+                                  isSent: undefined,
+                                });
+                              }}
+                            >
+                              Try Another Email
                             </Button>
                           </VStack>
                         )}

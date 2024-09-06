@@ -1,8 +1,14 @@
 "use client";
 
-import signupUser from "@/api/users/signupUser";
-import AuthFooter from "@/app/(auth)/(components)/AuthFooter";
-import GradientBorder from "@/app/(auth)/(components)/GradientBorder";
+import { signUp } from "@/app/actions/sign-up";
+import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
+import { AuthFooter } from "@/components/auth/AuthFooter";
+import { AuthGradientBorder } from "@/components/auth/AuthGradientBorder";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthLegalConsent } from "@/components/auth/AuthLegalConsent";
+import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
+import { AuthTextField } from "@/components/auth/AuthTextField";
+import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import Routes from "@/routes/routes";
 import {
   Box,
@@ -18,12 +24,6 @@ import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../(components)/AuthCoverImageColumn";
-import { AuthHeader } from "../(components)/AuthHeader";
-import { AuthLegalConsent } from "../(components)/AuthLegalConsent";
-import { AuthSocialLogin } from "../(components)/AuthSocialLogin";
-import { AuthTextField } from "../(components)/AuthTextField";
-import { AuthVerificationEmailSent } from "../(components)/AuthVerificationEmailSent";
 
 const SignupFormSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -77,7 +77,7 @@ const UI: NextPage = () => {
               </Text>
             </VStack>
             <Box p={"30px"} w={"100%"} maxW={{ base: "650px", lg: "450px" }}>
-              <GradientBorder p="2px">
+              <AuthGradientBorder p="2px">
                 <VStack
                   background="transparent"
                   borderRadius="30px"
@@ -103,12 +103,12 @@ const UI: NextPage = () => {
                     validationSchema={SignupFormSchema}
                     onSubmit={async (values, { setStatus }) => {
                       try {
-                        await signupUser(
-                          values.email,
-                          values.password,
-                          values.firstName,
-                          values.lastName
-                        );
+                        await signUp({
+                          email: values.email,
+                          password: values.password,
+                          firstName: values.firstName,
+                          lastName: values.lastName,
+                        });
                         setStatus({
                           isWaitingVerificationForEmail: values.email,
                         });
@@ -169,7 +169,7 @@ const UI: NextPage = () => {
                                 isLoading={props.isSubmitting}
                                 mt={"6px"}
                               >
-                                SIGN UP
+                                Sign Up
                               </Button>
                               <AuthSocialLogin />
                               <AuthLegalConsent action={"sign-up"} />
@@ -181,7 +181,7 @@ const UI: NextPage = () => {
                               as={NextLink}
                               color={"white"}
                               ms="5px"
-                              href={Routes.LOGIN}
+                              href={Routes.login()}
                               fontWeight="bold"
                             >
                               Sign In
@@ -192,7 +192,7 @@ const UI: NextPage = () => {
                     )}
                   </Formik>
                 </VStack>
-              </GradientBorder>
+              </AuthGradientBorder>
             </Box>
             <Box>
               <AuthFooter />

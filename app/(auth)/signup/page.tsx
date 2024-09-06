@@ -1,5 +1,5 @@
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import Routes from "@/routes/routes";
+import { authOptions } from "@/util/auth-options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import UI from "./ui";

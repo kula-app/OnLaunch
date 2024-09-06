@@ -35,5 +35,6 @@
     "editor.formatOnSave": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "testing.openTesting": "neverOpen"
+  "testing.openTesting": "neverOpen",
+  "typescript.preferences.preferTypeOnlyAutoImports": true
 }

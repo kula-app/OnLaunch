@@ -2,7 +2,7 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { Field, FieldProps } from "formik";
 import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from "react";
 import { AuthErrorMessage } from "./AuthErrorMessage";
-import GradientBorder from "./GradientBorder";
+import { AuthGradientBorder } from "./AuthGradientBorder";
 
 export const AuthTextField: React.FC<{
   name: string;
@@ -15,7 +15,7 @@ export const AuthTextField: React.FC<{
     <FormLabel color={"white"} ms="4px" fontSize="sm" fontWeight="normal">
       {label}
     </FormLabel>
-    <GradientBorder h="50px" w={"100%"} borderRadius="20px">
+    <AuthGradientBorder h="50px" w={"100%"} borderRadius="20px">
       <Field name={name}>
         {({ field }: FieldProps) => (
           <Input
@@ -41,7 +41,7 @@ export const AuthTextField: React.FC<{
           />
         )}
       </Field>
-    </GradientBorder>
+    </AuthGradientBorder>
     <AuthErrorMessage name={name} />
   </FormControl>
 );

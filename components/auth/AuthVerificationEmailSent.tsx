@@ -1,4 +1,4 @@
-import createVerifyToken from "@/api/tokens/createVerifyToken";
+import { requestAccountVerificationEmail } from "@/app/actions/request-account-verification-email";
 import { useCooldown } from "@/hooks/useCooldown";
 import { Box, Button, Heading, Text, useToast, VStack } from "@chakra-ui/react";
 import { useState } from "react";
@@ -11,12 +11,12 @@ export const AuthVerificationEmailSent: React.FC<{
   const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
-  const cooldown = useCooldown([30, 60]);
+  const cooldown = useCooldown(60);
 
   async function resendVerificationEmail(email: string) {
     setIsLoading(true);
     try {
-      await createVerifyToken(email);
+      await requestAccountVerificationEmail(email);
       cooldown.start();
     } catch (error: any) {
       toast({
@@ -34,7 +34,7 @@ export const AuthVerificationEmailSent: React.FC<{
     <VStack color="white" textAlign={"center"} spacing={"24px"}>
       <Heading size="md">Please verify your email address to continue.</Heading>
       <Box>
-        <Text>You're almost there! We sent an email to</Text>
+        <Text>You&apos;re almost there! We sent an email to</Text>
         <Text>
           <strong>{email}</strong>
         </Text>
@@ -42,12 +42,12 @@ export const AuthVerificationEmailSent: React.FC<{
       <Box>
         <Text>
           Just click on the link that email to complete your signup. If you
-          don't see the email, you may need to <strong>check your spam</strong>{" "}
-          folder.
+          don&apos;t see the email, you may need to{" "}
+          <strong>check your spam</strong> folder.
         </Text>
       </Box>
       <Box>
-        <Text>Still didn't receive the email? No problem.</Text>
+        <Text>Still didn&apos;t receive the email? No problem.</Text>
       </Box>
       <VStack spacing={"16px"} w="100%">
         <Button
@@ -58,7 +58,7 @@ export const AuthVerificationEmailSent: React.FC<{
           isLoading={isLoading}
           isDisabled={cooldown.isActive}
         >
-          RESEND EMAIL {cooldown.isActive && `(${cooldown.seconds}s)`}
+          Send Email Again {cooldown.isActive && `(${cooldown.seconds}s)`}
         </Button>
         {isBackButtonVisible && (
           <Button
@@ -67,7 +67,7 @@ export const AuthVerificationEmailSent: React.FC<{
             minH="50"
             onClick={onBackButtonClick}
           >
-            TRY ANOTHER EMAIL
+            Try Another Email
           </Button>
         )}
       </VStack>

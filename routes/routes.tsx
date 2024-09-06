@@ -7,13 +7,8 @@ class Routes {
   static readonly DASHBOARD = "/dashboard";
   static readonly CHANGE_EMAIL = "/changeEmail";
   static readonly PROFILE = "/profile";
-  static readonly VERIFY = "/verify";
-  static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
-  static readonly SUBSCRIPTION = "/subscription";
 
-  static getVerifyWithEmail(email: string): string {
-    return `/verify?email=${email}`;
-  }
+  static readonly SUBSCRIPTION = "/subscription";
 
   static get createNewOrg(): string {
     return "/orgs/new";
@@ -58,7 +53,29 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }
 
-  static readonly LOGIN = "/login";
+  static login(params?: {
+    email?: string | null;
+    redirect?: string | null;
+    reason?:
+      | "account-recovery-requested"
+      | "account-recovered"
+      | "account-verified"
+      | "logout";
+  }): string {
+    const path = "/login";
+    const searchParams = new URLSearchParams();
+    if (params?.email) {
+      searchParams.set("email", params.email);
+    }
+    if (params?.redirect) {
+      searchParams.set("redirect", params.redirect);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
+  }
+
   static readonly SIGNUP = "/signup";
   static readonly ACCOUNT_RECOVERY = "/account/recover";
   static readonly ACCOUNT_RECOVERY_CONFIRM = "/account/recover/confirm";
@@ -77,8 +94,12 @@ class Routes {
     return `${config.nextAuth.url}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
   }
 
-  static verifyWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
+  static accountVerify(params: { token: string; email: string }): string {
+    const url = new URL(config.nextAuth.url);
+    url.pathname = "/account/verify";
+    url.searchParams.set("token", params.token);
+    url.searchParams.set("email", params.email);
+    return url.toString();
   }
 
   static subscriptionPageSuccess(orgId: string): string {

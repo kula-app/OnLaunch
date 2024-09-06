@@ -1,9 +1,9 @@
 import { Flex, HTMLChakraProps } from "@chakra-ui/react";
 
-interface GradientBorderProps extends HTMLChakraProps<"div"> {}
-
-export default function GradientBorder(props: GradientBorderProps) {
-  const { children, ...rest } = props;
+export const AuthGradientBorder: React.FC<HTMLChakraProps<"div">> = ({
+  children,
+  ...rest
+}) => {
   return (
     <Flex
       p="2px"
@@ -17,4 +17,4 @@ export default function GradientBorder(props: GradientBorderProps) {
       {children}
     </Flex>
   );
-}
+};

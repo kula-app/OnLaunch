@@ -44,7 +44,7 @@ export default function ResetPasswordPage() {
   }, [router.isReady, token, router, session, loading, toast]);
 
   function navigateToAuthPage() {
-    router.push(Routes.LOGIN);
+    router.push(Routes.login());
   }
 
   return (

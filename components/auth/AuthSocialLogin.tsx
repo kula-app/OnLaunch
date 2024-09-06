@@ -10,7 +10,7 @@ import {
 import { getProviders, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
-import GradientBorder from "./GradientBorder";
+import { AuthGradientBorder } from "./AuthGradientBorder";
 
 export const AuthSocialLogin: React.FC<{}> = ({}) => {
   const toast = useToast();
@@ -49,21 +49,26 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
   const [isGitHubEnabled, setIsGitHubEnabled] = useState(false);
   const [isGoogleEnabled, setIsGoogleEnabled] = useState(false);
 
-  useEffect(() => {
-    async function fetchProviders() {
-      const providers = await getProviders();
-      if (providers?.github) {
-        setIsSocialLoginEnabled(true);
-        setIsGitHubEnabled(true);
+  useEffect(
+    () => {
+      async function fetchProviders() {
+        const providers = await getProviders();
+        if (providers?.github) {
+          setIsSocialLoginEnabled(true);
+          setIsGitHubEnabled(true);
+        }
+        if (providers?.google) {
+          setIsSocialLoginEnabled(true);
+          setIsGoogleEnabled(true);
+        }
       }
-      if (providers?.google) {
-        setIsSocialLoginEnabled(true);
-        setIsGoogleEnabled(true);
-      }
-    }
 
-    fetchProviders();
-  });
+      fetchProviders();
+    },
+    [
+      /* Keep this empty array, to run the effect exactly once */
+    ]
+  );
 
   if (!isSocialLoginEnabled) {
     return null;
@@ -81,7 +86,7 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
         </HStack>
         <HStack spacing="15px" justify="center">
           {isGitHubEnabled && (
-            <GradientBorder borderRadius="15px" onClick={loginWithGitHub}>
+            <AuthGradientBorder borderRadius="15px" onClick={loginWithGitHub}>
               <Flex
                 _hover={{ filter: "brightness(150%)" }}
                 transition="all .25s ease"
@@ -101,10 +106,10 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
                   _hover={{ filter: "brightness(150%)" }}
                 />
               </Flex>
-            </GradientBorder>
+            </AuthGradientBorder>
           )}
           {isGoogleEnabled && (
-            <GradientBorder borderRadius="15px" onClick={loginWithGoogle}>
+            <AuthGradientBorder borderRadius="15px" onClick={loginWithGoogle}>
               <Flex
                 _hover={{ filter: "brightness(150%)" }}
                 transition="all .25s ease"
@@ -124,7 +129,7 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
                   _hover={{ filter: "brightness(150%)" }}
                 />
               </Flex>
-            </GradientBorder>
+            </AuthGradientBorder>
           )}
         </HStack>
       </VStack>

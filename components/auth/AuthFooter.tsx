@@ -1,7 +1,7 @@
 import { HStack, Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 
-function AuthFooter() {
+export const AuthFooter: React.FC = () => {
   return (
     <VStack w={"100%"} color="white">
       <HStack>
@@ -26,6 +26,4 @@ function AuthFooter() {
       </Text>
     </VStack>
   );
-}
-
-export default AuthFooter;
+};

@@ -89,7 +89,7 @@ async function getHandler(
       id: userInOrg.userId,
       firstName: userInOrg.user.firstName as string,
       lastName: userInOrg.user.lastName as string,
-      email: userInOrg.user.email as string,
+      email: userInOrg.user.email ?? "",
       role: userInOrg.role,
     };
   });

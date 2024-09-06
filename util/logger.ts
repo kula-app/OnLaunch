@@ -21,6 +21,12 @@ export class Logger {
     );
   }
 
+  warn(message: string) {
+    console.warn(
+      `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`
+    );
+  }
+
   public verbose(message: string): void {
     console.log(
       `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`

@@ -378,7 +378,9 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: Routes.LOGIN,
+        destination: Routes.login({
+          redirect: context.req.url,
+        }),
         permanent: false,
       },
     };

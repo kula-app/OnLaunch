@@ -1,6 +1,6 @@
 "use client";
 
-import AuthFooter from "@/app/(auth)/(components)/AuthFooter";
+import { AuthFooter } from "@/components/auth/AuthFooter";
 import Routes from "@/routes/routes";
 import {
   Box,
@@ -16,14 +16,14 @@ import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { signIn } from "next-auth/react";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../(components)/AuthCoverImageColumn";
-import { AuthHeader } from "../(components)/AuthHeader";
-import { AuthLegalConsent } from "../(components)/AuthLegalConsent";
-import { AuthSocialLogin } from "../(components)/AuthSocialLogin";
-import { AuthTextField } from "../(components)/AuthTextField";
-import { AuthVerificationEmailSent } from "../(components)/AuthVerificationEmailSent";
+import { AuthCoverImageColumn } from "../../../components/auth/AuthCoverImageColumn";
+import { AuthHeader } from "../../../components/auth/AuthHeader";
+import { AuthLegalConsent } from "../../../components/auth/AuthLegalConsent";
+import { AuthSocialLogin } from "../../../components/auth/AuthSocialLogin";
+import { AuthTextField } from "../../../components/auth/AuthTextField";
+import { AuthVerificationEmailSent } from "../../../components/auth/AuthVerificationEmailSent";
 
 const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),
@@ -33,6 +33,8 @@ const LoginFormSchema = Yup.object().shape({
 const UI: NextPage = () => {
   const router = useRouter();
   const toast = useToast();
+
+  const searchParams = useSearchParams();
 
   return (
     <HStack spacing={0} align={"stretch"}>
@@ -91,7 +93,7 @@ const UI: NextPage = () => {
                 </VStack>
                 <Formik
                   initialValues={{
-                    email: "",
+                    email: searchParams?.get("email") ?? "",
                     password: "",
                   }}
                   validationSchema={LoginFormSchema}
@@ -107,7 +109,9 @@ const UI: NextPage = () => {
                         redirect: false,
                       });
                       if (result?.ok) {
-                        router.push(Routes.DASHBOARD);
+                        router.push(
+                          searchParams?.get("redirect") ?? Routes.DASHBOARD
+                        );
                       } else if (result?.error) {
                         if (result.error === "Verify account!") {
                           setStatus({
@@ -183,7 +187,7 @@ const UI: NextPage = () => {
                               mt={"6px"}
                               isLoading={props.isSubmitting}
                             >
-                              SIGN IN
+                              Sign In
                             </Button>
                             <AuthSocialLogin />
                             <AuthLegalConsent action={"sign-in"} />

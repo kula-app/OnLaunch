@@ -6,7 +6,9 @@ import React from "react";
 
 export const UI: React.FC = () => {
   signOut({
-    callbackUrl: Routes.LOGIN,
+    callbackUrl: Routes.login({
+      reason: "logout",
+    }),
   });
 
   return null;

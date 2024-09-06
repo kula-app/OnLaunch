@@ -11,8 +11,8 @@ import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
 import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
 import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
 import Routes from "../routes/routes";
+import { authOptions } from "./auth-options";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 import { Logger } from "./logger";
 import { generateRandomHex } from "./random";
@@ -57,7 +57,7 @@ export function generateToken() {
 
 export function sendTokenPerMail(
   email: string,
-  firstName: string,
+  firstName: string | null,
   token: string,
   mailType: MailType
 ) {
@@ -81,7 +81,7 @@ export function sendTokenPerMail(
     case MailType.Verification:
       const verificationTemplate = createVerificationTemplate(
         firstName,
-        Routes.verifyWithToken(token),
+        Routes.accountVerify({ token, email }),
         senderName
       );
 

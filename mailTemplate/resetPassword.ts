@@ -1,7 +1,7 @@
 import { Template } from "../models/template";
 
 export function createResetPasswordTemplate(
-  firstName: string,
+  firstName: string | null,
   urlWithToken: string,
   senderName: string
 ): Template {
