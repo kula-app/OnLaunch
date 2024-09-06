@@ -20,7 +20,7 @@
     "@emotion/styled": "11.13.0",
     "@next/font": "13.5.6",
     "@prisma/client": "5.19.1",
-    "@sentry/nextjs": "8.27.0",
+    "@sentry/nextjs": "8.28.0",
     "@stripe/react-stripe-js": "2.8.0",
     "@stripe/stripe-js": "4.4.0",
     "@types/bcrypt": "5.0.2",
