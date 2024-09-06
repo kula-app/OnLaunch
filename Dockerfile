@@ -67,9 +67,11 @@ COPY styles ./styles
 COPY util ./util
 COPY components ./components
 COPY theme ./theme
+COPY providers ./providers
 
 # Frequently changed
 COPY lib ./lib
+COPY errors ./errors
 COPY models ./models
 COPY routes ./routes
 COPY api ./api
