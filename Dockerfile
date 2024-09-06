@@ -62,15 +62,18 @@ COPY public ./public
 
 # Regularly changed
 COPY types ./types
+COPY hooks ./hooks
 COPY styles ./styles
 COPY util ./util
 COPY components ./components
+COPY theme ./theme
 
 # Frequently changed
 COPY lib ./lib
 COPY models ./models
 COPY routes ./routes
 COPY api ./api
+COPY app ./app
 COPY pages ./pages
 
 # copy node_modules with all build tools included

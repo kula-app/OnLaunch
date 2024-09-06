@@ -5,11 +5,8 @@ const config = loadServerConfig();
 class Routes {
   static readonly INDEX = "/";
   static readonly DASHBOARD = "/dashboard";
-  static readonly AUTH = "/auth";
   static readonly CHANGE_EMAIL = "/changeEmail";
   static readonly PROFILE = "/profile";
-  static readonly RESET = "/reset";
-  static readonly RESET_PASSWORD = "/resetPassword";
   static readonly VERIFY = "/verify";
   static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
   static readonly SUBSCRIPTION = "/subscription";
@@ -61,6 +58,11 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }
 
+  static readonly LOGIN = "/login";
+  static readonly SIGNUP = "/signup";
+  static readonly ACCOUNT_RECOVERY = "/account/recover";
+  static readonly ACCOUNT_RECOVERY_CONFIRM = "/account/recover/confirm";
+
   // the bellow functions use the full path of website for external usage
 
   static changeEmailWithToken(token: string): string {
@@ -71,8 +73,8 @@ class Routes {
     return `${config.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
   }
 
-  static resetPasswordWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.RESET_PASSWORD}?token=${token}`;
+  static accountRecoverConfirmWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
   }
 
   static verifyWithToken(token: string): string {

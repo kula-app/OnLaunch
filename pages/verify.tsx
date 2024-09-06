@@ -19,7 +19,7 @@ export default function VerifyPage() {
   const [disabled, setDisabled] = useState(false);
 
   function navigateToAuthPage() {
-    router.push(Routes.AUTH);
+    router.push(Routes.SIGNUP);
   }
 
   useEffect(() => {

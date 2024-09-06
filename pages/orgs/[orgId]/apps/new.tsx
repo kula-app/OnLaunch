@@ -1,17 +1,17 @@
-import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import styles from "../../../../styles/Home.module.css";
-import { getSession } from "next-auth/react";
-import createApp from "../../../../api/apps/createApp";
-import Routes from "../../../../routes/routes";
 import {
-  Input,
   Button,
-  useToast,
-  Heading,
   FormControl,
   FormLabel,
+  Heading,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { FormEvent, useState } from "react";
+import createApp from "../../../../api/apps/createApp";
+import Routes from "../../../../routes/routes";
+import styles from "../../../../styles/Home.module.css";
 
 export default function NewAppPage() {
   const router = useRouter();
@@ -88,7 +88,7 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: Routes.LOGIN,
         permanent: false,
       },
     };

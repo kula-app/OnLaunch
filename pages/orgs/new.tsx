@@ -99,7 +99,7 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: Routes.LOGIN,
         permanent: false,
       },
     };

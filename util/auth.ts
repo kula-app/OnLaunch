@@ -97,7 +97,7 @@ export function sendTokenPerMail(
     case MailType.ResetPassword:
       const resetPasswordTemplate = createResetPasswordTemplate(
         firstName,
-        Routes.resetPasswordWithToken(token),
+        Routes.accountRecoverConfirmWithToken(token),
         senderName
       );
 
