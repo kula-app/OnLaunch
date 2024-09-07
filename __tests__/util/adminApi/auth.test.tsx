@@ -1,9 +1,9 @@
+import prisma from "@/services/db";
+import { authenticate } from "@/util/adminApi/auth";
+import { decodeToken } from "@/util/adminApi/tokenDecoding";
 import { StatusCodes } from "http-status-codes";
-import prisma from "../../../lib/services/db";
-import { authenticate } from "../../../util/adminApi/auth";
-import { decodeToken } from "../../../util/adminApi/tokenDecoding";
 
-jest.mock("../../../lib/services/db", () => ({
+jest.mock("../../../src/services/db", () => ({
   organisationAdminToken: {
     findFirst: jest.fn(),
   },
@@ -12,14 +12,14 @@ jest.mock("../../../lib/services/db", () => ({
   },
 }));
 
-jest.mock("../../../util/logger", () => ({
+jest.mock("../../../src/util/logger", () => ({
   Logger: jest.fn().mockImplementation(() => ({
     log: jest.fn(),
     error: jest.fn(),
   })),
 }));
 
-jest.mock("../../../util/adminApi/tokenDecoding", () => ({
+jest.mock("../../../src/util/adminApi/tokenDecoding", () => ({
   decodeToken: jest.fn(),
 }));
 

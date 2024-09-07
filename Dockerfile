@@ -48,35 +48,14 @@ FROM base AS build
 # Caching depends on previous layers, therefore a changed layer will invalidate all following layers.
 # Order the layers from least-to-change to frequent-to-change.
 
-# Rarely changed
 COPY sentry.client.config.ts .
-COPY instrumentation.ts .
 
 COPY postcss.config.js .
 COPY tailwind.config.js .
 
-COPY config ./config
-COPY fonts ./fonts
-COPY mailTemplate ./mailTemplate
-COPY public ./public
-
-# Regularly changed
 COPY types ./types
-COPY hooks ./hooks
-COPY styles ./styles
-COPY util ./util
-COPY components ./components
-COPY theme ./theme
-COPY providers ./providers
-
-# Frequently changed
-COPY lib ./lib
-COPY errors ./errors
-COPY models ./models
-COPY routes ./routes
-COPY api ./api
-COPY app ./app
-COPY pages ./pages
+COPY public ./public
+COPY src ./src
 
 # copy node_modules with all build tools included
 COPY --from=dependencies_development /home/node/app/prisma ./prisma

@@ -1,7 +1,4 @@
-import {
-  encodeAppToken,
-  encodeOrgToken,
-} from "../../../util/adminApi/tokenEncoding";
+import { encodeAppToken, encodeOrgToken } from "@/util/adminApi/tokenEncoding";
 
 const delimiter = "_";
 const appPrefix = "app";
