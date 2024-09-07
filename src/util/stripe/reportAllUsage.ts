@@ -1,6 +1,6 @@
-import prisma from '@/services/db';
-import { Logger } from '../logger';
-import { reportOrgToStripe } from './reportUsage';
+import prisma from "@/services/db";
+import { Logger } from "../logger";
+import { reportOrgToStripe } from "./reportUsage";
 
 export async function reportAllOrgsToStripe() {
   const logger = new Logger(__filename);

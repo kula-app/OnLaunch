@@ -1,10 +1,10 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -16,24 +16,24 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       const orgId = Number(req.query.orgId);
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user, orgId);
 
-        case 'DELETE':
+        case "DELETE":
           return deleteHandler(req, res, user, orgId);
 
-        case 'PUT':
+        case "PUT":
           return putHandler(req, res, user, orgId);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -68,7 +68,7 @@ async function getHandler(
     apps: org.apps,
     role: user.role,
     customer: org.stripeCustomerId,
-    invitationToken: user.role === 'ADMIN' ? org.invitationToken : '',
+    invitationToken: user.role === "ADMIN" ? org.invitationToken : "",
   });
 }
 
@@ -79,12 +79,12 @@ async function deleteHandler(
   orgId: number,
 ) {
   try {
-    if (user.role === 'USER') {
+    if (user.role === "USER") {
       logger.error(
         `You are not allowed to delete organisation with id '${orgId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
-        message: 'You are not allowed to delete organisation with id ' + orgId,
+        message: "You are not allowed to delete organisation with id " + orgId,
       });
     }
 
@@ -102,7 +102,7 @@ async function deleteHandler(
     });
 
     if (orgToDelete && orgToDelete.isDeleted) {
-      logger.error('Organisation has already been deleted');
+      logger.error("Organisation has already been deleted");
       return res.status(StatusCodes.NOT_FOUND).json({
         message: `Organisation with id '${orgId}' not found`,
       });
@@ -110,11 +110,11 @@ async function deleteHandler(
 
     if (orgToDelete && orgToDelete.subs.length > 0) {
       logger.error(
-        'Cannot delete organisation with active subscription! Cancel subscription first',
+        "Cannot delete organisation with active subscription! Cancel subscription first",
       );
       return res.status(StatusCodes.BAD_REQUEST).json({
         message:
-          'Cannot delete organisation with active subscription! Cancel subscription first',
+          "Cannot delete organisation with active subscription! Cancel subscription first",
       });
     }
 
@@ -147,12 +147,12 @@ async function deleteHandler(
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(`Error while deleting org with id '${orgId}': ${e}`);
       return res.status(StatusCodes.NOT_FOUND).json({
-        message: 'Error while deleting org!',
+        message: "Error while deleting org!",
       });
     }
     return res
       .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: 'Not implemented: unhandled response path' });
+      .json({ message: "Not implemented: unhandled response path" });
   }
 }
 
@@ -163,12 +163,12 @@ async function putHandler(
   orgId: number,
 ) {
   try {
-    if (user.role === 'USER') {
+    if (user.role === "USER") {
       logger.error(
         `You are not allowed to update organisation with id '${orgId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
-        message: 'You are not allowed to update organisation with id ' + orgId,
+        message: "You are not allowed to update organisation with id " + orgId,
       });
     }
 
@@ -196,11 +196,11 @@ async function putHandler(
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(`No organisation found with id '${orgId}'`);
       return res.status(StatusCodes.NOT_FOUND).json({
-        message: 'No organisation found with id ' + orgId,
+        message: "No organisation found with id " + orgId,
       });
     }
     return res
       .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: 'Not implemented: unhandled response path' });
+      .json({ message: "Not implemented: unhandled response path" });
   }
 }

@@ -1,7 +1,7 @@
-import { App } from '@/models/app';
-import ApiRoutes from '@/routes/apiRoutes';
-import getFetcher from '@/util/fetcher';
-import useSWR, { KeyedMutator } from 'swr';
+import { App } from "@/models/app";
+import ApiRoutes from "@/routes/apiRoutes";
+import getFetcher from "@/util/fetcher";
+import useSWR, { KeyedMutator } from "swr";
 
 export function useApp(
   orgId: number,

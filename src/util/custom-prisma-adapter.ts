@@ -1,15 +1,15 @@
-import prisma from '@/services/db';
-import type { Account, AuthToken, Session, User } from '@prisma/client';
+import prisma from "@/services/db";
+import type { Account, AuthToken, Session, User } from "@prisma/client";
 import type {
   Adapter,
   AdapterAccount,
   AdapterSession,
   AdapterUser,
   VerificationToken as AdapterVerificationToken,
-} from 'next-auth/adapters';
-import type { ProviderType } from 'next-auth/providers';
-import { v4 as uuid } from 'uuid';
-import { Logger } from './logger';
+} from "next-auth/adapters";
+import type { ProviderType } from "next-auth/providers";
+import { v4 as uuid } from "uuid";
+import { Logger } from "./logger";
 
 const logger = new Logger(__filename);
 
@@ -20,8 +20,8 @@ function mapUserToAdapterUser(user: User): AdapterUser {
     name:
       user.firstName && user.lastName
         ? `${user.firstName} ${user.lastName}`
-        : (user.firstName ?? user.lastName ?? ''),
-    email: user.email ?? '',
+        : (user.firstName ?? user.lastName ?? ""),
+    email: user.email ?? "",
     emailVerified: user.verifiedAt,
 
     image: null,

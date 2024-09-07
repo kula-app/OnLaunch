@@ -1,7 +1,7 @@
-import { Product } from '@/models/product';
-import ApiRoutes from '@/routes/apiRoutes';
-import getFetcher from '@/util/fetcher';
-import useSWR, { KeyedMutator } from 'swr';
+import { Product } from "@/models/product";
+import ApiRoutes from "@/routes/apiRoutes";
+import getFetcher from "@/util/fetcher";
+import useSWR, { KeyedMutator } from "swr";
 
 export function useProducts(): {
   products?: Product[];

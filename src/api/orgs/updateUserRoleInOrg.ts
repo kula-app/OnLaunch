@@ -1,5 +1,5 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const updateUserRoleInOrg = async (
   orgId: number,
@@ -7,10 +7,10 @@ const updateUserRoleInOrg = async (
   role: string,
 ) => {
   const response = await fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
-    method: 'PUT',
+    method: "PUT",
     body: JSON.stringify({ role: role, userId: userId, orgId: orgId }),
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 

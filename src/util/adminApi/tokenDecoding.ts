@@ -1,4 +1,4 @@
-import { AdminTokenType } from '@/models/adminTokenType';
+import { AdminTokenType } from "@/models/adminTokenType";
 
 export function decodeToken(
   token: string | undefined,
@@ -8,7 +8,7 @@ export function decodeToken(
   }
 
   // Find the position of the first underscore
-  const firstUnderscoreIndex = token.indexOf('_');
+  const firstUnderscoreIndex = token.indexOf("_");
 
   // Check if the underscore is found
   // The encoded token may contain more than 1 underscore

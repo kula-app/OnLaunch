@@ -1,11 +1,11 @@
-import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
+import { defineStyle, defineStyleConfig } from "@chakra-ui/react";
 
 const PanelContent = defineStyleConfig({
   baseStyle: defineStyle({
-    ms: 'auto',
-    me: 'auto',
-    ps: '15px',
-    pe: '15px',
+    ms: "auto",
+    me: "auto",
+    ps: "15px",
+    pe: "15px",
   }),
 });
 

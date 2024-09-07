@@ -1,10 +1,10 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Organisation, UserInvitationToken } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Organisation, UserInvitationToken } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -12,13 +12,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return authenticatedHandler(
     req,
     res,
-    { method: 'basic' },
+    { method: "basic" },
     async (req, res, user) => {
       const data = req.query;
 
       const { token } = data;
 
-      logger.log('Looking up user invitation token');
+      logger.log("Looking up user invitation token");
       const userInvitationToken = await prisma.userInvitationToken.findFirst({
         where: {
           token: token as string,
@@ -63,7 +63,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(
             req,
             res,
@@ -71,12 +71,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             organisation,
             userInvitationToken.token,
           );
-        case 'POST':
+        case "POST":
           return postHandler(req, res, user, organisation, userInvitationToken);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -125,7 +125,7 @@ async function postHandler(
       },
     });
   } catch (error) {
-    logger.error('User already in organisation');
+    logger.error("User already in organisation");
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `User already in organisation` });

@@ -1,11 +1,11 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const joinOrgViaOrgInvite = async (token: string) => {
   const response = await fetch(ApiRoutes.getOrgsInvitationByToken(token), {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 

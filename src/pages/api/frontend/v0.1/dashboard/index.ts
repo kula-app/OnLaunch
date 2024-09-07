@@ -1,9 +1,9 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type QueryResult = {
   date: string;
@@ -20,25 +20,25 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
-      if (user.role !== 'ADMIN') {
+      if (user.role !== "ADMIN") {
         logger.log(
           `User with id '${user.id}' tried to access dashboard data without sufficient rights`,
         );
         return res.status(StatusCodes.FORBIDDEN).json({
-          message: 'You do not have the rights to access this information',
+          message: "You do not have the rights to access this information",
         });
       }
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -92,7 +92,7 @@ async function getHandler(
     const serializedResult = result.map((entry) => ({
       ...entry,
       count:
-        typeof entry.count === 'bigint' ? entry.count.toString() : entry.count,
+        typeof entry.count === "bigint" ? entry.count.toString() : entry.count,
     }));
 
     let jsonResponse: any = {
@@ -104,6 +104,6 @@ async function getHandler(
     logger.error(`Error: ${error}`);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: 'an internal server error occurred' });
+      .json({ message: "an internal server error occurred" });
   }
 }

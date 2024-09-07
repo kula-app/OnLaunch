@@ -1,11 +1,11 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { AuthResult } from '@/models/authResult';
-import prisma from '@/services/db';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest } from 'next';
-import requestIp from 'request-ip';
-import { Logger } from '../logger';
-import { decodeToken } from './tokenDecoding';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { AuthResult } from "@/models/authResult";
+import prisma from "@/services/db";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest } from "next";
+import requestIp from "request-ip";
+import { Logger } from "../logger";
+import { decodeToken } from "./tokenDecoding";
 
 export async function authenticate(
   req: NextApiRequest,
@@ -22,21 +22,21 @@ export async function authenticate(
   // Validate provided token
   if (!authToken) {
     // Token is missing, return 401 Unauthorized
-    logger.error('Authorization token is missing');
+    logger.error("Authorization token is missing");
 
     if (ip) {
-      await logAdminApiRequest('', false, ip);
+      await logAdminApiRequest("", false, ip);
     }
 
     return {
       success: false,
       statusCode: StatusCodes.UNAUTHORIZED,
-      errorMessage: 'Authorization token is required',
+      errorMessage: "Authorization token is required",
     };
   }
 
   // Check for "Bearer " prefix
-  const bearerPrefix = 'Bearer ';
+  const bearerPrefix = "Bearer ";
   if (authToken.startsWith(bearerPrefix)) {
     // Remove the "Bearer " prefix
     authToken = authToken.substring(bearerPrefix.length);
@@ -86,18 +86,18 @@ export async function authenticate(
       return {
         success: false,
         statusCode: StatusCodes.TOO_MANY_REQUESTS,
-        errorMessage: 'Too many requests',
+        errorMessage: "Too many requests",
       };
     }
   } else {
-    logger.error('No ip has been provided');
+    logger.error("No ip has been provided");
   }
 
   const tokenInfo = decodeToken(authToken);
 
   if (!tokenInfo) {
     // Token has wrong format, return 403 Forbidden
-    logger.error('Authorization token is invalid');
+    logger.error("Authorization token is invalid");
 
     if (ip) {
       await logAdminApiRequest(authToken, false, ip);
@@ -106,12 +106,12 @@ export async function authenticate(
     return {
       success: false,
       statusCode: StatusCodes.FORBIDDEN,
-      errorMessage: 'Authorization token is invalid',
+      errorMessage: "Authorization token is invalid",
     };
   }
 
   if (tokenInfo.type !== type) {
-    logger.error('Authorization token is used for wrong route');
+    logger.error("Authorization token is used for wrong route");
 
     if (ip) {
       await logAdminApiRequest(authToken, false, ip);
@@ -120,14 +120,14 @@ export async function authenticate(
     return {
       success: false,
       statusCode: StatusCodes.FORBIDDEN,
-      errorMessage: 'Access denied. Wrong route.',
+      errorMessage: "Access denied. Wrong route.",
     };
   }
 
   let tokenFromDb;
   let id;
 
-  if (tokenInfo.type === 'org') {
+  if (tokenInfo.type === "org") {
     tokenFromDb = await prisma.organisationAdminToken.findFirst({
       where: {
         token: tokenInfo.token,
@@ -135,7 +135,7 @@ export async function authenticate(
       },
     });
     id = tokenFromDb?.orgId;
-  } else if (tokenInfo.type === 'app') {
+  } else if (tokenInfo.type === "app") {
     tokenFromDb = await prisma.appAdminToken.findFirst({
       where: {
         token: tokenInfo.token,
@@ -165,7 +165,7 @@ export async function authenticate(
     return {
       success: false,
       statusCode: StatusCodes.FORBIDDEN,
-      errorMessage: 'Authorization token is invalid',
+      errorMessage: "Authorization token is invalid",
     };
   }
 
@@ -199,6 +199,6 @@ async function logAdminApiRequest(
       },
     });
   } catch (error) {
-    console.error('Error logging admin API request:', error);
+    console.error("Error logging admin API request:", error);
   }
 }

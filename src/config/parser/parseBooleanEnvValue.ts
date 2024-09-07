@@ -9,5 +9,5 @@ export function parseBooleanEnvValue(value?: string): boolean | undefined {
   if (value == undefined) {
     return undefined;
   }
-  return value.toLowerCase() === 'true';
+  return value.toLowerCase() === "true";
 }

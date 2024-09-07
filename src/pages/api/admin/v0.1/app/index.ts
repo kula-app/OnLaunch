@@ -1,16 +1,16 @@
-import { AuthResult } from '@/models/authResult';
-import { ErrorDto, getErrorDto } from '@/models/dtos/error';
-import { CreateAppDto } from '@/models/dtos/request/createAppDto';
-import { AppDto } from '@/models/dtos/response/appDto';
-import { MessageDto } from '@/models/dtos/response/messageDto';
-import prisma from '@/services/db';
-import { authenticate } from '@/util/adminApi/auth';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { AuthResult } from "@/models/authResult";
+import { ErrorDto, getErrorDto } from "@/models/dtos/error";
+import { CreateAppDto } from "@/models/dtos/request/createAppDto";
+import { AppDto } from "@/models/dtos/response/appDto";
+import { MessageDto } from "@/models/dtos/response/messageDto";
+import prisma from "@/services/db";
+import { authenticate } from "@/util/adminApi/auth";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -119,7 +119,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AppDto | ErrorDto>,
 ) {
-  const authResult = await authenticate(req, 'app');
+  const authResult = await authenticate(req, "app");
 
   // When authResult was not successful, return error with respective
   // code and message
@@ -131,15 +131,15 @@ export default async function handler(
   switch (req.method) {
     // Find app by token
     // If found, return app data with message
-    case 'GET':
+    case "GET":
       return getHandler(req, res, authResult);
     // Update app
-    case 'PUT':
+    case "PUT":
       return putHandler(req, res, authResult);
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json(getErrorDto('method not allowed'));
+        .json(getErrorDto("method not allowed"));
   }
 }
 
@@ -203,9 +203,9 @@ async function putHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ['An unknown error occurred'],
+          : ["An unknown error occurred"],
       )
-      .join(', ');
+      .join(", ");
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json(getErrorDto(`Validation failed: ${errors}`));
@@ -237,7 +237,7 @@ async function putHandler(
       logger.error(`No app found with id '${authResult.id}'`);
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json(getErrorDto('No app found with id ' + authResult.id));
+        .json(getErrorDto("No app found with id " + authResult.id));
     }
 
     logger.error(`Internal server error occurred: ${e}`);
@@ -245,7 +245,7 @@ async function putHandler(
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
         getErrorDto(
-          'An internal server error occurred - please try again later!',
+          "An internal server error occurred - please try again later!",
         ),
       );
   }

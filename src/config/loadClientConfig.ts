@@ -1,8 +1,8 @@
-import { getEnvironment } from './getEnvironment';
-import { ClientConfig } from './interfaces/ClientConfig';
-import { parseBooleanEnvValue } from './parser/parseBooleanEnvValue';
-import { parseNumberEnvValue } from './parser/parseNumberEnvValue';
-import { sortKeys } from './sortKeys';
+import { getEnvironment } from "./getEnvironment";
+import { ClientConfig } from "./interfaces/ClientConfig";
+import { parseBooleanEnvValue } from "./parser/parseBooleanEnvValue";
+import { parseNumberEnvValue } from "./parser/parseNumberEnvValue";
+import { sortKeys } from "./sortKeys";
 
 export function loadClientConfig(): ClientConfig {
   let env = getEnvironment();

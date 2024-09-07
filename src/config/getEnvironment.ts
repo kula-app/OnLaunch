@@ -4,7 +4,7 @@ export function getEnvironment(): {
   let env: {
     [keyof: string]: string | undefined;
   };
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     // Called by the backend, therefore access the process environment
     env = process.env;
   } else {

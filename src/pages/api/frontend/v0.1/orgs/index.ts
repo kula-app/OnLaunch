@@ -1,10 +1,10 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { generateToken } from '@/util/auth';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { generateToken } from "@/util/auth";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type OrganisationDto = {
   id: number;
@@ -19,17 +19,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return authenticatedHandler(
     req,
     res,
-    { method: 'basic' },
+    { method: "basic" },
     async (req, res, user) => {
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
-        case 'POST':
+        case "POST":
           return postHandler(req, res, user);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -75,7 +75,7 @@ async function getHandler(
         subName:
           organisation.org.subs && organisation.org.subs.length > 0
             ? organisation.org.subs[0].subName
-            : 'free',
+            : "free",
       };
     }),
   );
@@ -96,7 +96,7 @@ async function postHandler(
           id: user.id,
         },
       },
-      role: 'ADMIN',
+      role: "ADMIN",
       org: {
         create: {
           name: req.body.name,

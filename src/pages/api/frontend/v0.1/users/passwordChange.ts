@@ -1,14 +1,14 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
 import {
   hashAndSaltPassword,
   validatePassword,
   verifyPassword,
-} from '@/util/auth';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+} from "@/util/auth";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -16,15 +16,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return authenticatedHandler(
     req,
     res,
-    { method: 'basic' },
+    { method: "basic" },
     async (req, res, user) => {
       switch (req.method) {
-        case 'PUT':
+        case "PUT":
           return putHandler(req, res, user);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -40,9 +40,9 @@ async function putHandler(
   const id = user.id;
 
   if (!(await validatePassword(password))) {
-    logger.error('New password is too short');
+    logger.error("New password is too short");
     return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
-      message: 'Invalid data - new password consists of less than 8 characters',
+      message: "Invalid data - new password consists of less than 8 characters",
     });
   }
 
@@ -60,7 +60,7 @@ async function putHandler(
     logger.error(`No user found with id '${id}'`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'User not found!' });
+      .json({ message: "User not found!" });
   }
 
   if (
@@ -70,10 +70,10 @@ async function putHandler(
       userById.password as string,
     ))
   ) {
-    logger.error('Current password is wrong');
+    logger.error("Current password is wrong");
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Current password is wrong' });
+      .json({ message: "Current password is wrong" });
   }
 
   const { hashedSaltedPassword: newHashedSaltedPassword, salt: newSalt } =

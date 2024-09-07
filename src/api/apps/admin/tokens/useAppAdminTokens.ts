@@ -1,7 +1,7 @@
-import { AppAdminTokenDto } from '@/models/dtos/response/appAdminTokenDto';
-import ApiRoutes from '@/routes/apiRoutes';
-import getFetcher from '@/util/fetcher';
-import useSWR, { KeyedMutator } from 'swr';
+import { AppAdminTokenDto } from "@/models/dtos/response/appAdminTokenDto";
+import ApiRoutes from "@/routes/apiRoutes";
+import getFetcher from "@/util/fetcher";
+import useSWR, { KeyedMutator } from "swr";
 
 export function useAppAdminTokens(
   orgId: number,

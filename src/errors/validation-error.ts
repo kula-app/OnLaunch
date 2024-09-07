@@ -1,7 +1,7 @@
-import { ServerError } from './server-error';
+import { ServerError } from "./server-error";
 
 export class ValidationError extends ServerError {
   constructor(message: string) {
-    super('ValidationError', message);
+    super("ValidationError", message);
   }
 }

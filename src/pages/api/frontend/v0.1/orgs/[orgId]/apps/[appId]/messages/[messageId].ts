@@ -1,11 +1,11 @@
-import { Action } from '@/models/action';
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { Action } from "@/models/action";
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -17,22 +17,22 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
 
-        case 'DELETE':
+        case "DELETE":
           return deleteHandler(req, res, user);
 
-        case 'PUT':
+        case "PUT":
           return putHandler(req, res, user);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -88,13 +88,13 @@ async function deleteHandler(
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(`No message found with id '${req.query.messageId}'`);
       return res.status(StatusCodes.NOT_FOUND).json({
-        message: 'No message found with id ' + req.query.messageId,
+        message: "No message found with id " + req.query.messageId,
       });
     }
 
     logger.error(`Internal server error occurred: ${e}`);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: 'An internal server error occurred - please try again later!',
+      message: "An internal server error occurred - please try again later!",
     });
   }
 }
@@ -106,10 +106,10 @@ async function putHandler(
 ) {
   try {
     if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
-      logger.error('Start date is not before end date');
+      logger.error("Start date is not before end date");
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: 'Start date has to be before end date' });
+        .json({ message: "Start date has to be before end date" });
     }
 
     logger.log(`Updating message with id '${req.query.messageId}'`);
@@ -152,13 +152,13 @@ async function putHandler(
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.log(`No message found with id '${req.query.messageId}'`);
       return res.status(StatusCodes.NOT_FOUND).json({
-        message: 'No message found with id ' + req.query.messageId,
+        message: "No message found with id " + req.query.messageId,
       });
     }
 
     logger.error(`Internal server error occurred: ${e}`);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: 'An internal server error occurred - please try again later!',
+      message: "An internal server error occurred - please try again later!",
     });
   }
 }

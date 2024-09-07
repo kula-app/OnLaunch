@@ -1,11 +1,11 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import prisma from '@/services/db';
-import { createStripeClient } from '@/services/stripe';
-import { Logger } from '@/util/logger';
-import { reportOrgToStripe } from '@/util/stripe/reportUsage';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import Stripe from 'stripe';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import prisma from "@/services/db";
+import { createStripeClient } from "@/services/stripe";
+import { Logger } from "@/util/logger";
+import { reportOrgToStripe } from "@/util/stripe/reportUsage";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 
 export const config = { api: { bodyParser: false } };
 
@@ -13,7 +13,7 @@ async function buffer(req: NextApiRequest) {
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
     chunks.push(
-      typeof chunk === 'string'
+      typeof chunk === "string"
         ? Buffer.from(chunk as string)
         : (chunk as Buffer),
     );
@@ -30,31 +30,31 @@ export default async function handler(
   const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.isEnabled) {
-    logger.error('stripe is disabled but endpoint has been called');
+    logger.error("stripe is disabled but endpoint has been called");
     return res
       .status(StatusCodes.SERVICE_UNAVAILABLE)
-      .json({ message: 'Endpoint is disabled' });
+      .json({ message: "Endpoint is disabled" });
   }
 
   const stripe = createStripeClient();
 
   switch (req.method) {
-    case 'POST':
+    case "POST":
       const buf = await buffer(req);
-      const sig = req.headers['stripe-signature'];
+      const sig = req.headers["stripe-signature"];
       const webhookSecret = stripeConfig.webhookSecret;
 
       let event;
 
       try {
         if (!sig || !webhookSecret) {
-          logger.error('Webhook secret not provided');
+          logger.error("Webhook secret not provided");
           return res
             .status(StatusCodes.BAD_REQUEST)
-            .json({ message: 'No signature or webhook secret provided' });
+            .json({ message: "No signature or webhook secret provided" });
         }
 
-        logger.log('Constructing stripe webhook event');
+        logger.log("Constructing stripe webhook event");
         event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
       } catch (error: any) {
         logger.error(`Stripe webhook error: ${error.message}`);
@@ -66,20 +66,20 @@ export default async function handler(
       logger.log(`Event type: ${event.type}`);
 
       switch (event.type) {
-        case 'customer.created':
-          logger.log('Customer created!');
+        case "customer.created":
+          logger.log("Customer created!");
           const eventData = event.data.object as Stripe.Customer;
           break;
 
-        case 'checkout.session.completed':
-          logger.log('Checkout session completed!');
+        case "checkout.session.completed":
+          logger.log("Checkout session completed!");
           const sessionData = event.data.object as Stripe.Checkout.Session;
 
           try {
             const session = await stripe.checkout.sessions.retrieve(
               sessionData.id,
               {
-                expand: ['subscription'],
+                expand: ["subscription"],
               },
             );
 
@@ -98,7 +98,7 @@ export default async function handler(
               );
               return res
                 .status(StatusCodes.BAD_REQUEST)
-                .json({ message: 'no subscription was retrieved' });
+                .json({ message: "no subscription was retrieved" });
             }
 
             // looking up whether subscription is already saved in database (for idempotency)
@@ -111,7 +111,7 @@ export default async function handler(
 
             // handle case when sub is already in the database
             if (subFromDb) {
-              logger.log('Subscription is already in the database');
+              logger.log("Subscription is already in the database");
               // for idempotency we just use a break-statement here and later return ok
               break;
             }
@@ -126,7 +126,7 @@ export default async function handler(
             const transformedItems = items.map((item) => {
               return {
                 subItemId: item.id,
-                metered: item.plan.aggregate_usage === 'sum',
+                metered: item.plan.aggregate_usage === "sum",
                 productId: item.price.product as string,
               };
             });
@@ -134,7 +134,7 @@ export default async function handler(
             await prisma.subscription.create({
               data: {
                 subId: sub.id as string,
-                subName: subName ? subName : 'loading',
+                subName: subName ? subName : "loading",
                 org: {
                   connect: { id: Number(session.client_reference_id) },
                 },
@@ -163,12 +163,12 @@ export default async function handler(
           }
           break;
 
-        case 'customer.subscription.created':
-          logger.log('Customer subscription created!');
+        case "customer.subscription.created":
+          logger.log("Customer subscription created!");
           break;
 
-        case 'customer.subscription.deleted':
-          logger.log('Customer subscription deleted!');
+        case "customer.subscription.deleted":
+          logger.log("Customer subscription deleted!");
           const subData = event.data.object as Stripe.Subscription;
           try {
             const toDeleteSubFromDb = await prisma.subscription.findUnique({
@@ -204,8 +204,8 @@ export default async function handler(
           }
           break;
 
-        case 'customer.subscription.updated':
-          logger.log('Customer subscription updated!');
+        case "customer.subscription.updated":
+          logger.log("Customer subscription updated!");
           const updatedSub = event.data.object as Stripe.Subscription;
           try {
             const updatedSubFromDb = await prisma.subscription.findUnique({
@@ -261,28 +261,28 @@ export default async function handler(
           }
           break;
 
-        case 'invoice.created':
-          logger.log('Invoice created!');
+        case "invoice.created":
+          logger.log("Invoice created!");
           break;
 
-        case 'payment_intent.payment_failed':
-          logger.error('Payment failed!');
+        case "payment_intent.payment_failed":
+          logger.error("Payment failed!");
           break;
 
-        case 'payment_intent.succeeded':
-          logger.log('Payment succeeded!');
+        case "payment_intent.succeeded":
+          logger.log("Payment succeeded!");
           break;
 
-        case 'product.created':
-          logger.log('Product created!');
+        case "product.created":
+          logger.log("Product created!");
           break;
 
-        case 'product.deleted':
-          logger.log('Product deleted!');
+        case "product.deleted":
+          logger.log("Product deleted!");
           break;
 
-        case 'product.updated':
-          logger.log('Product updated!');
+        case "product.updated":
+          logger.log("Product updated!");
           break;
       }
 
@@ -291,6 +291,6 @@ export default async function handler(
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: 'Method not allowed' });
+        .json({ message: "Method not allowed" });
   }
 }

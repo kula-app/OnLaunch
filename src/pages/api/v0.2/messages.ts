@@ -1,8 +1,8 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import prisma from '@/services/db';
-import { Logger } from '@/util/logger';
-import { ActionType } from '@prisma/client';
-import { plainToInstance, Transform } from 'class-transformer';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import prisma from "@/services/db";
+import { Logger } from "@/util/logger";
+import { ActionType } from "@prisma/client";
+import { plainToInstance, Transform } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -11,86 +11,86 @@ import {
   MaxLength,
   validateOrReject,
   ValidationError,
-} from 'class-validator';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import requestIp from 'request-ip';
-import { getProducts } from '../frontend/v0.1/stripe/products';
+} from "class-validator";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import requestIp from "request-ip";
+import { getProducts } from "../frontend/v0.1/stripe/products";
 
 const logger = new Logger(__filename);
 
 class MessagesRequestHeadersDto {
   @IsString()
   @IsDefined()
-  'x-api-key'!: string;
+  "x-api-key"!: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-bundle-id'?: string;
+  "x-onlaunch-bundle-id"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-bundle-version'?: string;
+  "x-onlaunch-bundle-version"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-locale'?: string;
+  "x-onlaunch-locale"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-locale-language-code'?: string;
+  "x-onlaunch-locale-language-code"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-locale-region-code'?: string;
+  "x-onlaunch-locale-region-code"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(150)
-  'x-onlaunch-package-name'?: string;
+  "x-onlaunch-package-name"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-platform-name'?: string;
+  "x-onlaunch-platform-name"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-platform-version'?: string;
+  "x-onlaunch-platform-version"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-release-version'?: string;
+  "x-onlaunch-release-version"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-version-code'?: string;
+  "x-onlaunch-version-code"?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(200)
-  'x-onlaunch-version-name'?: string;
+  "x-onlaunch-version-name"?: string;
 
   @IsBoolean()
   @IsOptional()
   @Transform(({ value }) => {
-    if (value === 'true') return true;
-    else if (value === 'false') return false;
+    if (value === "true") return true;
+    else if (value === "false") return false;
     return value;
   })
-  'x-onlaunch-update-available'?: boolean;
+  "x-onlaunch-update-available"?: boolean;
 }
 
 enum MessageActionDtoType {
-  DISMISS = 'DISMISS',
+  DISMISS = "DISMISS",
 }
 
 interface MessageActionDto {
@@ -265,13 +265,13 @@ export default async function handler(
   res: NextApiResponse<ResponseDto>,
 ) {
   switch (req.method) {
-    case 'GET':
+    case "GET":
       return getHandler(req, res);
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: 'Method not allowed' });
+        .json({ message: "Method not allowed" });
   }
 }
 
@@ -287,7 +287,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     if (error instanceof Array && error[0] instanceof ValidationError) {
       const validationError = error[0] as ValidationError;
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message: 'Validation Error',
+        message: "Validation Error",
         constraints: validationError.constraints,
       });
     }
@@ -298,13 +298,13 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const config = loadServerConfig();
   const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
 
-  const publicKey = req.headers['x-api-key'] as string;
+  const publicKey = req.headers["x-api-key"] as string;
 
   if (!publicKey) {
-    logger.error('No api key provided');
+    logger.error("No api key provided");
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'no api key provided' });
+      .json({ message: "no api key provided" });
   }
 
   // Get app, org, (appIds) and sub information to retrieve product limit
@@ -337,7 +337,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     logger.log(`No app found for api key '${publicKey as string}'`);
     return res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: 'no app found for api key' });
+      .json({ message: "no app found for api key" });
   }
 
   // Start of quota limitation
@@ -405,7 +405,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
             );
             return res
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .json({ message: 'Please try again later' });
+              .json({ message: "Please try again later" });
           }
 
           logger.log(
@@ -425,7 +425,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
             `The limit has been currently reached for org with id '${app?.orgId}'`,
           );
           return res.status(StatusCodes.PAYMENT_REQUIRED).json({
-            message: 'The limit for the current abo has been reached.',
+            message: "The limit for the current abo has been reached.",
           });
         }
       }
@@ -459,7 +459,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       ],
     },
     orderBy: {
-      startDate: 'asc',
+      startDate: "asc",
     },
   });
 
@@ -476,18 +476,18 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       appId: app.id,
       publicKey: publicKey,
 
-      clientBundleId: headers['x-onlaunch-bundle-id'],
-      clientBundleVersion: headers['x-onlaunch-bundle-version'],
-      clientLocale: headers['x-onlaunch-locale'],
-      clientLocaleLanguageCode: headers['x-onlaunch-locale-language-code'],
-      clientLocaleRegionCode: headers['x-onlaunch-locale-region-code'],
-      clientPackageName: headers['x-onlaunch-package-name'],
-      clientPlatformName: headers['x-onlaunch-platform-name'],
-      clientPlatformVersion: headers['x-onlaunch-platform-version'],
-      clientReleaseVersion: headers['x-onlaunch-release-version'],
-      clientVersionCode: headers['x-onlaunch-version-code'],
-      clientVersionName: headers['x-onlaunch-version-name'],
-      clientUpdateAvailable: headers['x-onlaunch-update-available'],
+      clientBundleId: headers["x-onlaunch-bundle-id"],
+      clientBundleVersion: headers["x-onlaunch-bundle-version"],
+      clientLocale: headers["x-onlaunch-locale"],
+      clientLocaleLanguageCode: headers["x-onlaunch-locale-language-code"],
+      clientLocaleRegionCode: headers["x-onlaunch-locale-region-code"],
+      clientPackageName: headers["x-onlaunch-package-name"],
+      clientPlatformName: headers["x-onlaunch-platform-name"],
+      clientPlatformVersion: headers["x-onlaunch-platform-version"],
+      clientReleaseVersion: headers["x-onlaunch-release-version"],
+      clientVersionCode: headers["x-onlaunch-version-code"],
+      clientVersionName: headers["x-onlaunch-version-name"],
+      clientUpdateAvailable: headers["x-onlaunch-update-available"],
     },
   });
 

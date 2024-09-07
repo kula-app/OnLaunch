@@ -1,5 +1,5 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const deleteAppAdminToken = async (
   orgId: number,
@@ -9,7 +9,7 @@ const deleteAppAdminToken = async (
   const response = await fetch(
     ApiRoutes.getAppAdminTokensByOrgIdAndAppIdAndTokenId(orgId, appId, tokenId),
     {
-      method: 'DELETE',
+      method: "DELETE",
     },
   );
 

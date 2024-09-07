@@ -1,6 +1,6 @@
-import { Action, ActionType, ButtonDesign } from '.prisma/client';
-import { IsAfter } from '@/util/validators/isAfterValidator';
-import { Type } from 'class-transformer';
+import { Action, ActionType, ButtonDesign } from ".prisma/client";
+import { IsAfter } from "@/util/validators/isAfterValidator";
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsBoolean,
@@ -10,7 +10,7 @@ import {
   IsString,
   MaxLength,
   ValidateNested,
-} from 'class-validator';
+} from "class-validator";
 
 class ActionDto {
   @IsNotEmpty()
@@ -43,8 +43,8 @@ export class CreateMessageDto {
   startDate!: Date;
 
   @IsDateString()
-  @IsAfter('startDate', {
-    message: 'endDate must be after startDate',
+  @IsAfter("startDate", {
+    message: "endDate must be after startDate",
   })
   endDate!: Date;
 

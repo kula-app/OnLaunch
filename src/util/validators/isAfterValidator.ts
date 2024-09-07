@@ -4,7 +4,7 @@ import {
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-} from 'class-validator';
+} from "class-validator";
 
 @ValidatorConstraint({ async: false })
 export class IsAfterConstraint implements ValidatorConstraintInterface {
@@ -12,8 +12,8 @@ export class IsAfterConstraint implements ValidatorConstraintInterface {
     const [relatedPropertyName] = args.constraints;
     const startDate = (args.object as any)[relatedPropertyName];
     return (
-      typeof startDate === 'string' &&
-      typeof endDate === 'string' &&
+      typeof startDate === "string" &&
+      typeof endDate === "string" &&
       new Date(startDate) < new Date(endDate)
     );
   }

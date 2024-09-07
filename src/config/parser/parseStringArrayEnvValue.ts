@@ -8,8 +8,8 @@
 export function parseStringArrayEnvValue(
   value?: string,
 ): Array<string> | undefined {
-  if (value == undefined || value === '') {
+  if (value == undefined || value === "") {
     return undefined;
   }
-  return value.split(',');
+  return value.split(",");
 }

@@ -1,4 +1,4 @@
-import { Organisation } from '@prisma/client';
+import { Organisation } from "@prisma/client";
 
 export interface Subscription {
   subId?: string;

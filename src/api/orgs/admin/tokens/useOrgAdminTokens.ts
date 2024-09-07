@@ -1,7 +1,7 @@
-import { OrgAdminTokenDto } from '@/models/dtos/response/orgAdminTokenDto';
-import ApiRoutes from '@/routes/apiRoutes';
-import getFetcher from '@/util/fetcher';
-import useSWR, { KeyedMutator } from 'swr';
+import { OrgAdminTokenDto } from "@/models/dtos/response/orgAdminTokenDto";
+import ApiRoutes from "@/routes/apiRoutes";
+import getFetcher from "@/util/fetcher";
+import useSWR, { KeyedMutator } from "swr";
 
 export function useOrgAdminTokens(orgId: number): {
   orgAdminTokens?: OrgAdminTokenDto[];

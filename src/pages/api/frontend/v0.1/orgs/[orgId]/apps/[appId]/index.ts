@@ -1,10 +1,10 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -16,7 +16,7 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       const org = await prisma.organisation.findFirst({
         where: {
@@ -35,19 +35,19 @@ export default async function handler(
       }
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
 
-        case 'DELETE':
+        case "DELETE":
           return deleteHandler(req, res, user);
 
-        case 'PUT':
+        case "PUT":
           return putHandler(req, res, user);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -67,10 +67,10 @@ async function getHandler(
         },
         orderBy: [
           {
-            startDate: 'asc',
+            startDate: "asc",
           },
           {
-            endDate: 'asc',
+            endDate: "asc",
           },
         ],
       },
@@ -85,12 +85,12 @@ async function getHandler(
     logger.error(`No app found with id '${req.query.appId}'`);
     return res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: 'No app found with id ' + req.query.appId });
+      .json({ message: "No app found with id " + req.query.appId });
   }
 
   return res.status(StatusCodes.OK).json({
     role: user.role,
-    publicKey: user.role === 'ADMIN' ? app.publicKey : '',
+    publicKey: user.role === "ADMIN" ? app.publicKey : "",
     name: app.name,
     messages: app.messages,
   });
@@ -102,12 +102,12 @@ async function deleteHandler(
   user: User,
 ) {
   try {
-    if (user.role === 'USER') {
+    if (user.role === "USER") {
       logger.error(
         `You are not allowed to delete app with id '${req.query.appId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
-        message: 'You are not allowed to delete app with id ' + req.query.orgId,
+        message: "You are not allowed to delete app with id " + req.query.orgId,
       });
     }
 
@@ -124,11 +124,11 @@ async function deleteHandler(
       logger.error(`No app found with id '${req.query.appId}'`);
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: 'No app found with id ' + req.query.appId });
+        .json({ message: "No app found with id " + req.query.appId });
     }
     return res
       .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: 'Not implemented: unhandled response path' });
+      .json({ message: "Not implemented: unhandled response path" });
   }
 }
 
@@ -138,12 +138,12 @@ async function putHandler(
   user: User,
 ) {
   try {
-    if (user.role === 'USER') {
+    if (user.role === "USER") {
       logger.error(
         `You are not allowed to update app with id '${req.query.appId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
-        message: 'You are not allowed to update app with id ' + req.query.orgId,
+        message: "You are not allowed to update app with id " + req.query.orgId,
       });
     }
 
@@ -163,12 +163,12 @@ async function putHandler(
       logger.error(`No app found with id '${req.query.appId}'`);
       res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: 'No app found with id ' + req.query.appId });
+        .json({ message: "No app found with id " + req.query.appId });
     }
 
     logger.error(`Error: ${e}`);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json('An internal server error occurred, please try again later');
+      .json("An internal server error occurred, please try again later");
   }
 }

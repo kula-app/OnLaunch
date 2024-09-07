@@ -1,7 +1,7 @@
-import { Org } from '@/models/org';
-import ApiRoutes from '@/routes/apiRoutes';
-import getFetcher from '@/util/fetcher';
-import useSWR, { KeyedMutator } from 'swr';
+import { Org } from "@/models/org";
+import ApiRoutes from "@/routes/apiRoutes";
+import getFetcher from "@/util/fetcher";
+import useSWR, { KeyedMutator } from "swr";
 
 export function useOrgs(): {
   orgs?: Org[];

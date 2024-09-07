@@ -1,13 +1,13 @@
-import { MailType } from '@/models/mailType';
-import prisma from '@/services/db';
+import { MailType } from "@/models/mailType";
+import prisma from "@/services/db";
 import {
   generateToken,
   getUserFromRequest,
   sendTokenPerMail,
-} from '@/util/auth';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+} from "@/util/auth";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -16,15 +16,15 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   switch (req.method) {
-    case 'POST':
+    case "POST":
       return postHandler(req, res);
-    case 'PUT':
+    case "PUT":
       return putHandler(req, res);
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: 'Method not allowed' });
+        .json({ message: "Method not allowed" });
   }
 }
 
@@ -37,11 +37,11 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  if (!emailNew || !emailNew.includes('@')) {
-    logger.error('Email is not valid');
+  if (!emailNew || !emailNew.includes("@")) {
+    logger.error("Email is not valid");
     return res
       .status(StatusCodes.UNPROCESSABLE_ENTITY)
-      .json({ message: 'Invalid data - email not valid' });
+      .json({ message: "Invalid data - email not valid" });
   }
 
   logger.log(`Looking up user with email '${user.email}'`);
@@ -58,7 +58,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
     logger.error(`No user found with email '${user.email}'`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'User not found!' });
+      .json({ message: "User not found!" });
   }
 
   logger.log(`Looking up user with new email '${emailNew}'`);
@@ -75,7 +75,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
     logger.error(`New email '${emailNew}' is already taken`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Email address not available!' });
+      .json({ message: "Email address not available!" });
   }
 
   const generatedToken = generateToken();
@@ -132,7 +132,7 @@ async function putHandler(req: NextApiRequest, res: NextApiResponse) {
     logger.error(`Provided email change token not found`);
     return res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: 'Email change token not found' });
+      .json({ message: "Email change token not found" });
   }
 
   if (
@@ -144,7 +144,7 @@ async function putHandler(req: NextApiRequest, res: NextApiResponse) {
     logger.error(`Email change token is obsolete`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Email change token is obsolete!' });
+      .json({ message: "Email change token is obsolete!" });
   }
 
   logger.log(`Updating email of user with id '${lookupToken.userId}'`);
@@ -159,8 +159,8 @@ async function putHandler(req: NextApiRequest, res: NextApiResponse) {
 
   sendTokenPerMail(
     lookupToken.currentEmail as string,
-    'OnLaunch user',
-    '',
+    "OnLaunch user",
+    "",
     MailType.EmailChanged,
   );
 

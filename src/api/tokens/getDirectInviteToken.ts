@@ -1,11 +1,11 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const getDirectInviteToken = async (token: string) => {
   const response = await fetch(ApiRoutes.getDirectInvitationByToken(token), {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 

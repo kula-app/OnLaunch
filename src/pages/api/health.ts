@@ -1,10 +1,10 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import prisma from '@/services/db';
-import redis from '@/services/redis';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import * as os from 'os';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import prisma from "@/services/db";
+import redis from "@/services/redis";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import * as os from "os";
 
 const logger = new Logger(__filename);
 
@@ -22,18 +22,18 @@ export default async function handler(
   if (req.headers.authorization !== `token ${config.health.apiKey}`) {
     return res.status(StatusCodes.FORBIDDEN).json({
       error: {
-        message: 'Invalid API Key',
+        message: "Invalid API Key",
       },
     });
   }
   const result = await fetchHealthcheck();
   res
     .status(
-      result.status == 'error'
+      result.status == "error"
         ? StatusCodes.SERVICE_UNAVAILABLE
         : StatusCodes.OK,
     )
-    .setHeader('Content-Type', 'application/health+json')
+    .setHeader("Content-Type", "application/health+json")
     .json(result);
 }
 
@@ -45,14 +45,14 @@ interface HealthCheckResult {
    *  - "error": unhealthy
    *  - "warn": healthy, with some concerns.
    */
-  status: 'ok' | 'error' | 'warn';
+  status: "ok" | "error" | "warn";
   /**
    * An object that provides detailed health statuses of additional downstream systems and endpoints which can affect the
    * overall health of the main API.
    */
   checks: {
     [keyof: string]: {
-      status: 'ok' | 'error' | 'warn';
+      status: "ok" | "error" | "warn";
       componentType?: string;
       observedValue?: any;
       observedUnit?: string;
@@ -70,13 +70,13 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
   const timestamp = new Date().toISOString();
 
   // Create the base result
-  let checks: HealthCheckResult['checks'] = {
+  let checks: HealthCheckResult["checks"] = {
     uptime: [
       {
-        componentType: 'system',
+        componentType: "system",
         observedValue: os.uptime(),
-        observedUnit: 's',
-        status: 'ok',
+        observedUnit: "s",
+        status: "ok",
         time: timestamp,
       },
     ],
@@ -85,19 +85,19 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
     // Check the database connection
     await prisma.$connect();
     await prisma.$queryRaw`SELECT 1`;
-    checks['postgres:connected'] = [
+    checks["postgres:connected"] = [
       {
-        status: 'ok',
-        componentType: 'datastore',
+        status: "ok",
+        componentType: "datastore",
         time: timestamp,
       },
     ];
   } catch (error) {
     logger.error(`Failed to connect to database: ${error}`);
-    checks['postgres:connected'] = [
+    checks["postgres:connected"] = [
       {
-        status: 'error',
-        componentType: 'datastore',
+        status: "error",
+        componentType: "datastore",
         time: timestamp,
       },
     ];
@@ -106,20 +106,20 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
     // Check the redis connection
     if (redis.isEnabled) {
       await redis.client.ping();
-      checks['redis:connected'] = [
+      checks["redis:connected"] = [
         {
-          status: 'ok',
-          componentType: 'datastore',
+          status: "ok",
+          componentType: "datastore",
           time: timestamp,
         },
       ];
     }
   } catch (error) {
     logger.error(`Failed to connect to redis: ${error}`);
-    checks['redis:connected'] = [
+    checks["redis:connected"] = [
       {
-        status: 'error',
-        componentType: 'datastore',
+        status: "error",
+        componentType: "datastore",
         time: timestamp,
       },
     ];
@@ -127,25 +127,25 @@ async function fetchHealthcheck(): Promise<HealthCheckResult> {
   return {
     status: Object.values(checks)
       .reduce((previousValue, checks) => previousValue.concat(checks), [])
-      .reduce<'ok' | 'warn' | 'error'>((previousValue, check) => {
+      .reduce<"ok" | "warn" | "error">((previousValue, check) => {
         // If an error was already encountered, stick with it
-        if (previousValue === 'error') {
+        if (previousValue === "error") {
           return previousValue;
         }
         // If an error is found, return it
-        if (check.status === 'error') {
+        if (check.status === "error") {
           return check.status;
         }
         // If a warning was already encountered, stick with it
-        if (previousValue === 'warn') {
+        if (previousValue === "warn") {
           return previousValue;
         }
         // If a warning is found, return it
-        if (check.status === 'warn') {
+        if (check.status === "warn") {
           return check.status;
         }
-        return 'ok';
-      }, 'ok'),
+        return "ok";
+      }, "ok"),
     checks: checks,
   };
 }

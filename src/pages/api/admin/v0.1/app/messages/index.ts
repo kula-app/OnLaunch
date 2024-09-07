@@ -1,16 +1,16 @@
-import { AuthResult } from '@/models/authResult';
-import { ErrorDto, getErrorDto } from '@/models/dtos/error';
-import { CreateMessageDto } from '@/models/dtos/request/createMessageDto';
-import { ActionDto } from '@/models/dtos/response/actionDto';
-import { MessageDto } from '@/models/dtos/response/messageDto';
-import prisma from '@/services/db';
-import { authenticate } from '@/util/adminApi/auth';
-import { Logger } from '@/util/logger';
-import { Action } from '@prisma/client';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { AuthResult } from "@/models/authResult";
+import { ErrorDto, getErrorDto } from "@/models/dtos/error";
+import { CreateMessageDto } from "@/models/dtos/request/createMessageDto";
+import { ActionDto } from "@/models/dtos/response/actionDto";
+import { MessageDto } from "@/models/dtos/response/messageDto";
+import prisma from "@/services/db";
+import { authenticate } from "@/util/adminApi/auth";
+import { Logger } from "@/util/logger";
+import { Action } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -129,7 +129,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MessageDto | MessageDto[] | ErrorDto>,
 ) {
-  const authResult = await authenticate(req, 'app');
+  const authResult = await authenticate(req, "app");
 
   // When authResult was not successful, return error with respective
   // code and message
@@ -140,15 +140,15 @@ export default async function handler(
 
   switch (req.method) {
     // Get all messages for app
-    case 'GET':
+    case "GET":
       return getHandler(req, res, authResult);
     // Create new message
-    case 'POST':
+    case "POST":
       return postHandler(req, res, authResult);
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json(getErrorDto('method not allowed'));
+        .json(getErrorDto("method not allowed"));
   }
 }
 
@@ -200,9 +200,9 @@ async function postHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ['An unknown error occurred'],
+          : ["An unknown error occurred"],
       )
-      .join(', ');
+      .join(", ");
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json(getErrorDto(`Validation failed: ${errors}`));

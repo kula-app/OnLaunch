@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { User } from '../models/user';
-import { getUserFromRequest, getUserWithRoleFromRequest } from './auth';
+import { NextApiRequest, NextApiResponse } from "next";
+import { User } from "../models/user";
+import { getUserFromRequest, getUserWithRoleFromRequest } from "./auth";
 
 // Defines types for the handler to know which authentication method to use
-type AuthMethod = 'withRole' | 'basic';
+type AuthMethod = "withRole" | "basic";
 
 interface AuthenticatedHandlerOptions {
   method: AuthMethod;
@@ -21,7 +21,7 @@ export async function authenticatedHandler(
 ): Promise<void> {
   let user;
 
-  if (options.method === 'withRole') {
+  if (options.method === "withRole") {
     user = await getUserWithRoleFromRequest(req, res);
   } else {
     user = await getUserFromRequest(req, res);

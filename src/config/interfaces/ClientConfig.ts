@@ -1,5 +1,5 @@
-import { SentryConfig } from './SentryConfig';
-import { StripeConfig } from './StripeConfig';
+import { SentryConfig } from "./SentryConfig";
+import { StripeConfig } from "./StripeConfig";
 
 export interface ClientConfig {
   sentryConfig: SentryConfig;

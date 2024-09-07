@@ -1,6 +1,6 @@
-import { Message } from '@/models/message';
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import { Message } from "@/models/message";
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const createMessage = async (
   orgId: number,
@@ -10,10 +10,10 @@ const createMessage = async (
   const response = await fetch(
     ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId),
     {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(message),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     },
   );

@@ -1,13 +1,13 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { Product } from '@/models/product';
-import redis from '@/services/redis';
-import { createStripeClient } from '@/services/stripe';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import Stripe from 'stripe';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { Product } from "@/models/product";
+import redis from "@/services/redis";
+import { createStripeClient } from "@/services/stripe";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 
-const PRODUCTS_REDIS_KEY = 'products';
+const PRODUCTS_REDIS_KEY = "products";
 const logger = new Logger(__filename);
 
 export async function getProducts(): Promise<Product[]> {
@@ -16,11 +16,11 @@ export async function getProducts(): Promise<Product[]> {
   const stripe = createStripeClient();
 
   const freeProduct: Product = {
-    id: 'FREE',
-    description: 'For checking it out',
-    name: 'Free',
-    nameTag: 'free',
-    priceId: '',
+    id: "FREE",
+    description: "For checking it out",
+    name: "Free",
+    nameTag: "free",
+    priceId: "",
     priceAmount: 0,
     requests: config.freeSub.requestLimit,
   };
@@ -35,7 +35,7 @@ export async function getProducts(): Promise<Product[]> {
       // if products are cached, then return them, else retrieve them from stripe
       if (cachedProducts) {
         try {
-          logger.log('Returning cached products');
+          logger.log("Returning cached products");
           return [freeProduct].concat(JSON.parse(cachedProducts));
         } catch (error) {
           logger.error(
@@ -49,19 +49,19 @@ export async function getProducts(): Promise<Product[]> {
   }
 
   try {
-    logger.log('Retrieving products from stripe');
+    logger.log("Retrieving products from stripe");
     // retrieve products from stripe
     const products = await stripe.products.list({
       active: true,
-      expand: ['data.default_price'],
+      expand: ["data.default_price"],
     });
 
     // check if the right metadata is set (to not mix with other
     // products from other services)
     const filteredProductsByMetadata = products.data.filter((product) => {
       product = product as Stripe.Product;
-      if (product.metadata['isActive']) {
-        return product.metadata['isActive'] === 'true';
+      if (product.metadata["isActive"]) {
+        return product.metadata["isActive"] === "true";
       }
       return false;
     });
@@ -72,16 +72,16 @@ export async function getProducts(): Promise<Product[]> {
     // gain unlimited requests by paying for exceeding requests
     // via the add-on product
     const mainProducts = filteredProductsByMetadata.filter(
-      (product) => !product.metadata['mainProductId'],
+      (product) => !product.metadata["mainProductId"],
     );
     const addonProducts = filteredProductsByMetadata.filter(
-      (product) => product.metadata['mainProductId'],
+      (product) => product.metadata["mainProductId"],
     );
 
     // map the data to Product data type
     const result = mainProducts.map((product): Product => {
       const matchingAddonProduct = addonProducts.find(
-        (addonProduct) => addonProduct.metadata['mainProductId'] === product.id,
+        (addonProduct) => addonProduct.metadata["mainProductId"] === product.id,
       );
 
       let matchingProduct: Product | undefined;
@@ -96,7 +96,7 @@ export async function getProducts(): Promise<Product[]> {
           nameTag: matchingPrice.nickname as string,
           description: matchingAddonProduct.description as string,
           priceId: matchingPrice.id,
-          priceAmount: Number(matchingAddonProduct.metadata['pricePerRequest']),
+          priceAmount: Number(matchingAddonProduct.metadata["pricePerRequest"]),
         };
       }
 
@@ -110,7 +110,7 @@ export async function getProducts(): Promise<Product[]> {
         description: prod.description as string,
         priceId: price.id,
         priceAmount: Number(price.unit_amount),
-        requests: Number(prod.metadata['requests']),
+        requests: Number(prod.metadata["requests"]),
         unlimitedOption: matchingProduct,
       };
     });
@@ -127,7 +127,7 @@ export async function getProducts(): Promise<Product[]> {
         const MAX_AGE = 60_000 * config.redisConfig.cacheMaxAge;
         const EXPIRY_MS = `PX`; // milliseconds
         const redisClient = redis.client;
-        logger.log('Saving stripe products to redis cache');
+        logger.log("Saving stripe products to redis cache");
         // save products to redis cache
         await redisClient.set(
           PRODUCTS_REDIS_KEY,
@@ -143,7 +143,7 @@ export async function getProducts(): Promise<Product[]> {
     return [freeProduct].concat(sortedResult);
   } catch (stripeError) {
     logger.error(`Error fetching products from Stripe: ${stripeError}`);
-    throw new Error('Failed to fetch products from Stripe.');
+    throw new Error("Failed to fetch products from Stripe.");
   }
 }
 
@@ -154,27 +154,27 @@ export default async function handler(
   const stripeConfig = loadServerConfig().stripeConfig;
 
   if (!stripeConfig.isEnabled) {
-    logger.error('Stripe is disabled but endpoint has been called');
+    logger.error("Stripe is disabled but endpoint has been called");
     return res
       .status(StatusCodes.SERVICE_UNAVAILABLE)
-      .json({ message: 'Endpoint is disabled' });
+      .json({ message: "Endpoint is disabled" });
   }
 
   switch (req.method) {
-    case 'GET':
+    case "GET":
       try {
         const result = await getProducts();
         return res.status(StatusCodes.OK).json(result);
       } catch (error) {
         logger.error(`Error: ${error}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          message: 'An internal server error occurred, please try again later',
+          message: "An internal server error occurred, please try again later",
         });
       }
 
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json({ message: 'Method not allowed' });
+        .json({ message: "Method not allowed" });
   }
 }

@@ -1,4 +1,4 @@
 export enum AdminTokenType {
-  App = 'app',
-  Org = 'org',
+  App = "app",
+  Org = "org",
 }

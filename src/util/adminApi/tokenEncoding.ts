@@ -1,6 +1,6 @@
-import { AdminTokenType } from '@/models/adminTokenType';
+import { AdminTokenType } from "@/models/adminTokenType";
 
-const delimiter = '_';
+const delimiter = "_";
 
 export function encodeOrgToken(token: string): string {
   return encodeToken(token, AdminTokenType.Org);

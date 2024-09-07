@@ -1,13 +1,13 @@
-import { UserDto } from '@/models/dtos/response/userDto';
-import { MailType } from '@/models/mailType';
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { generateToken, sendTokenPerMail } from '@/util/auth';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { UserDto } from "@/models/dtos/response/userDto";
+import { MailType } from "@/models/mailType";
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { generateToken, sendTokenPerMail } from "@/util/auth";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -18,21 +18,21 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       const orgId = Number(req.query.orgId);
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user, orgId);
-        case 'PUT':
+        case "PUT":
           return putHandler(req, res, user, orgId);
-        case 'POST':
+        case "POST":
           return postHandler(req, res, user, orgId);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -59,14 +59,14 @@ async function getHandler(
       },
     },
     orderBy: {
-      createdAt: 'asc',
+      createdAt: "asc",
     },
   });
 
   if (usersInOrg == null) {
     logger.error(`No users found in organisation with id '${orgId}'`);
     return res.status(StatusCodes.NOT_FOUND).json({
-      message: 'No users found in organisation with id ' + orgId,
+      message: "No users found in organisation with id " + orgId,
     });
   }
 
@@ -80,16 +80,16 @@ async function getHandler(
       isArchived: false,
     },
     orderBy: {
-      createdAt: 'asc',
+      createdAt: "asc",
     },
   });
 
   const users = usersInOrg.map((userInOrg): UserDto => {
     return {
       id: userInOrg.userId,
-      firstName: userInOrg.user.firstName ?? '',
-      lastName: userInOrg.user.lastName ?? '',
-      email: userInOrg.user.email ?? '',
+      firstName: userInOrg.user.firstName ?? "",
+      lastName: userInOrg.user.lastName ?? "",
+      email: userInOrg.user.email ?? "",
       role: userInOrg.role,
     };
   });
@@ -97,8 +97,8 @@ async function getHandler(
   const usersInvited = userInvitationsInOrg.map((invite): UserDto => {
     return {
       id: -1,
-      firstName: '(pending)',
-      lastName: '',
+      firstName: "(pending)",
+      lastName: "",
       email: invite.invitedEmail,
       role: invite.role,
     };
@@ -114,24 +114,24 @@ async function putHandler(
   user: User,
   orgId: number,
 ) {
-  if (user.role === 'USER') {
+  if (user.role === "USER") {
     logger.error(
       `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message:
-        'You are not allowed to update user with id ' +
+        "You are not allowed to update user with id " +
         req.body.userId +
-        ' in organisation with id ' +
+        " in organisation with id " +
         orgId,
     });
   }
 
   if (user.id === req.body.userId) {
-    logger.error('You cannot change your own role');
+    logger.error("You cannot change your own role");
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'You cannot change your own role' });
+      .json({ message: "You cannot change your own role" });
   }
 
   try {
@@ -165,7 +165,7 @@ async function putHandler(
     }
     return res
       .status(StatusCodes.NOT_IMPLEMENTED)
-      .json({ message: 'Not implemented: unhandled response path' });
+      .json({ message: "Not implemented: unhandled response path" });
   }
 }
 
@@ -175,15 +175,15 @@ async function postHandler(
   user: User,
   orgId: number,
 ) {
-  if (user.role === 'USER') {
+  if (user.role === "USER") {
     logger.error(
       `You are not allowed to add user with email '${req.body.email}' to organisation with id '${orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message:
-        'You are not allowed to add user with email ' +
+        "You are not allowed to add user with email " +
         req.body.email +
-        ' to organisation with id ' +
+        " to organisation with id " +
         orgId,
     });
   }
@@ -224,14 +224,14 @@ async function postHandler(
           .json({ message: `No organisation found with id '${orgId}'` });
       }
 
-      logger.error('User already in organisation');
+      logger.error("User already in organisation");
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: 'User already in organisation!' });
+        .json({ message: "User already in organisation!" });
     }
   }
 
-  logger.log('Updating previous user invitation tokens as obsolete');
+  logger.log("Updating previous user invitation tokens as obsolete");
   await prisma.userInvitationToken.updateMany({
     where: {
       invitedEmail: req.body.email,
@@ -261,7 +261,7 @@ async function postHandler(
 
   sendTokenPerMail(
     req.body.email as string,
-    userByEmail ? (userByEmail.firstName as string) : '',
+    userByEmail ? (userByEmail.firstName as string) : "",
     generatedToken,
     userByEmail ? MailType.DirectInvite : MailType.DirectInviteNewUser,
   );

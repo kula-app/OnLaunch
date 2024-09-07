@@ -1,13 +1,13 @@
-import { ServerConfig } from '@/config/interfaces/ServerConfig';
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { User } from '@/models/user';
-import Routes from '@/routes/routes';
-import prisma from '@/services/db';
-import { createStripeClient } from '@/services/stripe';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { ServerConfig } from "@/config/interfaces/ServerConfig";
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { User } from "@/models/user";
+import Routes from "@/routes/routes";
+import prisma from "@/services/db";
+import { createStripeClient } from "@/services/stripe";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -19,25 +19,25 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       const config = loadServerConfig();
 
       if (!config.stripeConfig.isEnabled) {
-        logger.error('stripe is disabled but endpoint has been called');
+        logger.error("stripe is disabled but endpoint has been called");
         return res
           .status(StatusCodes.SERVICE_UNAVAILABLE)
-          .json({ message: 'Endpoint is disabled' });
+          .json({ message: "Endpoint is disabled" });
       }
 
       switch (req.method) {
-        case 'POST':
+        case "POST":
           return postHandler(req, res, user, config);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -52,10 +52,10 @@ async function postHandler(
   const orgId = req.body.orgId;
 
   if (!orgId) {
-    logger.error('No parameter orgId provided');
+    logger.error("No parameter orgId provided");
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'No parameter orgId provided' });
+      .json({ message: "No parameter orgId provided" });
   }
 
   const stripe = createStripeClient();
@@ -85,18 +85,18 @@ async function postHandler(
   }
 
   try {
-    logger.log('Creating customer portal session for organisation');
+    logger.log("Creating customer portal session for organisation");
     const session = await stripe.billingPortal.sessions.create({
       customer: orgFromDb.stripeCustomerId,
       return_url: `${config.nextAuth.url}${Routes.DASHBOARD}`,
     });
 
-    logger.log('Redirecting to Stripe customer portal');
+    logger.log("Redirecting to Stripe customer portal");
     return res.json(session.url);
   } catch (error) {
     logger.error(`Error during Stripe communication: ${error}`);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json('An internal server error occurred, please try again later');
+      .json("An internal server error occurred, please try again later");
   }
 }

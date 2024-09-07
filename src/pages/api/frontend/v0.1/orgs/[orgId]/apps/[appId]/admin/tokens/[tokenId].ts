@@ -1,12 +1,12 @@
-import { AppAdminTokenDto } from '@/models/dtos/response/appAdminTokenDto';
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { encodeAppToken } from '@/util/adminApi/tokenEncoding';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { Prisma } from '@prisma/client';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { AppAdminTokenDto } from "@/models/dtos/response/appAdminTokenDto";
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { encodeAppToken } from "@/util/adminApi/tokenEncoding";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -18,23 +18,23 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
-      if (user.role !== 'ADMIN') {
-        logger.error('User has no admin rights');
+      if (user.role !== "ADMIN") {
+        logger.error("User has no admin rights");
         return res
           .status(StatusCodes.FORBIDDEN)
-          .json({ message: 'You are not an admin' });
+          .json({ message: "You are not an admin" });
       }
 
       switch (req.method) {
-        case 'DELETE':
+        case "DELETE":
           return deleteHandler(req, res, user);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -81,7 +81,7 @@ async function deleteHandler(
 
     logger.error(`Internal server error occurred: ${e}`);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: 'An internal server error occurred - please try again later!',
+      message: "An internal server error occurred - please try again later!",
     });
   }
 }

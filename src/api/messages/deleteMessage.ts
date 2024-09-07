@@ -1,5 +1,5 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const deleteMessage = async (
   orgId: number,
@@ -9,7 +9,7 @@ const deleteMessage = async (
   const response = await fetch(
     ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId),
     {
-      method: 'DELETE',
+      method: "DELETE",
     },
   );
 

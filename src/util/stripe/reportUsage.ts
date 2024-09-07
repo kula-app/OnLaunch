@@ -1,8 +1,8 @@
-import { Product } from '@/models/product';
-import { getProducts } from '@/pages/api/frontend/v0.1/stripe/products';
-import prisma from '@/services/db';
-import { createStripeClient } from '@/services/stripe';
-import { Logger } from '../logger';
+import { Product } from "@/models/product";
+import { getProducts } from "@/pages/api/frontend/v0.1/stripe/products";
+import prisma from "@/services/db";
+import { createStripeClient } from "@/services/stripe";
+import { Logger } from "../logger";
 
 async function findProductDetailsById(id: string, products: any) {
   const product = products.find(
@@ -69,7 +69,7 @@ export async function reportOrgToStripe(
     include: {
       subs: {
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         include: {
           subItems: true,
@@ -135,7 +135,7 @@ export async function reportOrgToStripe(
           },
         },
         orderBy: {
-          id: 'desc',
+          id: "desc",
         },
       });
 
@@ -193,7 +193,7 @@ export async function reportOrgToStripe(
       isReportedAsInvoice: false,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 
@@ -290,7 +290,7 @@ export async function reportOrgToStripe(
         customer: org.stripeCustomerId as string,
         amount: amount,
         description: `Last usage for ${org.subs[0].subName}`,
-        currency: 'eur',
+        currency: "eur",
         period: {
           start: org.subs[0].currentPeriodStart.getTime() / 1000,
           end: org.subs[0].currentPeriodEnd.getTime() / 1000,

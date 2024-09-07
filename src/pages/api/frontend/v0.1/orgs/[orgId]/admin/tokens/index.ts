@@ -1,12 +1,12 @@
-import { OrgAdminTokenDto } from '@/models/dtos/response/orgAdminTokenDto';
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { encodeOrgToken } from '@/util/adminApi/tokenEncoding';
-import { generateToken } from '@/util/auth';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { OrgAdminTokenDto } from "@/models/dtos/response/orgAdminTokenDto";
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { encodeOrgToken } from "@/util/adminApi/tokenEncoding";
+import { generateToken } from "@/util/auth";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -18,26 +18,26 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
-      if (user.role !== 'ADMIN') {
-        logger.error('User has no admin rights');
+      if (user.role !== "ADMIN") {
+        logger.error("User has no admin rights");
         return res
           .status(StatusCodes.FORBIDDEN)
-          .json({ message: 'You are not an admin' });
+          .json({ message: "You are not an admin" });
       }
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
 
-        case 'POST':
+        case "POST":
           return postHandler(req, res, user);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -66,7 +66,7 @@ async function getHandler(
         updatedAt: orgAdminToken.updatedAt,
         token: encodeOrgToken(orgAdminToken.token),
         role: orgAdminToken.role,
-        label: orgAdminToken.label ? orgAdminToken.label : '',
+        label: orgAdminToken.label ? orgAdminToken.label : "",
       };
     }),
   );

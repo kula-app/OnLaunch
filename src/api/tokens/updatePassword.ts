@@ -1,12 +1,12 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const updatePassword = async (password: string, passwordOld: string) => {
   const response = await fetch(ApiRoutes.PASSWORD_CHANGE, {
-    method: 'PUT',
+    method: "PUT",
     body: JSON.stringify({ password: password, passwordOld: passwordOld }),
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 

@@ -1,21 +1,21 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import prisma from '@/services/db';
-import type { NextAuthOptions } from 'next-auth';
-import { User as AuthUser } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GitHubProvider from 'next-auth/providers/github';
-import GoogleProvider from 'next-auth/providers/google';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import prisma from "@/services/db";
+import type { NextAuthOptions } from "next-auth";
+import { User as AuthUser } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
-import type { Provider } from 'next-auth/providers';
-import { verifyPassword } from './auth';
-import { PrismaAdapter } from './custom-prisma-adapter';
-import { Logger } from './logger';
+import type { Provider } from "next-auth/providers";
+import { verifyPassword } from "./auth";
+import { PrismaAdapter } from "./custom-prisma-adapter";
+import { Logger } from "./logger";
 
 const logger = new Logger(__filename);
 
 // augment next-auth session that's used throughout
 // the application to include an 'id' field
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id: number;
@@ -31,10 +31,10 @@ const config = loadServerConfig();
 if (config.nextAuth.provider.credentials.isEnabled) {
   providers.push(
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       authorize: async (credentials): Promise<AuthUser | null> => {
         if (!credentials) {
@@ -52,11 +52,11 @@ if (config.nextAuth.provider.credentials.isEnabled) {
         });
 
         if (!user) {
-          throw new Error('Wrong credentials!');
+          throw new Error("Wrong credentials!");
         }
         if (!user.password || !user.salt) {
           logger.error(`User ${user.id} has no password or salt`);
-          throw new Error('Wrong credentials!');
+          throw new Error("Wrong credentials!");
         }
         const isValid = await verifyPassword(
           credentials.password,
@@ -64,16 +64,16 @@ if (config.nextAuth.provider.credentials.isEnabled) {
           user.password,
         );
         if (!isValid) {
-          throw new Error('Wrong credentials!');
+          throw new Error("Wrong credentials!");
         }
         if (!user.isVerified) {
-          throw new Error('Verify account!');
+          throw new Error("Verify account!");
         }
 
         return {
           id: user.authId,
           email: user.email,
-          name: user.firstName?.concat(' ').concat(user.lastName as string),
+          name: user.firstName?.concat(" ").concat(user.lastName as string),
         };
       },
     }),
@@ -107,11 +107,11 @@ if (
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(),
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/login',
-    signOut: '/logout',
+    signIn: "/login",
+    signOut: "/logout",
   },
   callbacks: {
     async session({ session, token }) {
@@ -125,7 +125,7 @@ export const authOptions: NextAuthOptions = {
         },
       });
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
       return {
         ...session,

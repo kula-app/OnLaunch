@@ -1,20 +1,20 @@
-'use server';
+"use server";
 
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { BadRequestError } from '@/errors/bad-request-error';
-import { EmailConflictError } from '@/errors/email-conflict-error';
-import { UserRegistrationDisabledError } from '@/errors/user-registration-disabled-error';
-import { MailType } from '@/models/mailType';
-import prisma from '@/services/db';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { BadRequestError } from "@/errors/bad-request-error";
+import { EmailConflictError } from "@/errors/email-conflict-error";
+import { UserRegistrationDisabledError } from "@/errors/user-registration-disabled-error";
+import { MailType } from "@/models/mailType";
+import prisma from "@/services/db";
 import {
   generateToken,
   hashAndSaltPassword,
   sendTokenPerMail,
   validatePassword,
-} from '@/util/auth';
-import { createServerAction } from '@/util/create-server-action';
-import { Logger } from '@/util/logger';
-import { v4 as uuid } from 'uuid';
+} from "@/util/auth";
+import { createServerAction } from "@/util/create-server-action";
+import { Logger } from "@/util/logger";
+import { v4 as uuid } from "uuid";
 
 const logger = new Logger(__filename);
 
@@ -33,18 +33,18 @@ export const signUp = createServerAction(
     const config = loadServerConfig();
 
     if (!config.signup.isEnabled) {
-      logger.error('Signups are currently disabled');
+      logger.error("Signups are currently disabled");
       throw new UserRegistrationDisabledError();
     }
 
-    if (!email || !email.includes('@')) {
-      logger.error('Provided email is not valid');
-      throw new BadRequestError('Email is not valid');
+    if (!email || !email.includes("@")) {
+      logger.error("Provided email is not valid");
+      throw new BadRequestError("Email is not valid");
     }
 
     if (!(await validatePassword(password))) {
-      logger.error('Provided password is too short');
-      throw new BadRequestError('Password is too short');
+      logger.error("Provided password is too short");
+      throw new BadRequestError("Password is too short");
     }
 
     const lookupUser = await prisma.user.findFirst({

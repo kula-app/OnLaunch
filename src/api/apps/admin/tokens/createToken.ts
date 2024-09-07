@@ -1,5 +1,5 @@
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const createAppAdminToken = async (
   orgId: number,
@@ -10,13 +10,13 @@ const createAppAdminToken = async (
   const response = await fetch(
     ApiRoutes.getAppAdminTokensByOrgIdAndAppId(orgId, appId),
     {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         label: tokenLabel,
         timeToLive: timeToLive,
       }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     },
   );

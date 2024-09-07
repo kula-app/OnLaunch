@@ -1,4 +1,4 @@
-import { ActionDto } from './actionDto';
+import { ActionDto } from "./actionDto";
 
 export interface MessageDto {
   id: number;

@@ -1,12 +1,12 @@
-import { AuthResult } from '@/models/authResult';
-import { ErrorDto, getErrorDto } from '@/models/dtos/error';
-import { AppDto } from '@/models/dtos/response/appDto';
-import { OrgDto } from '@/models/dtos/response/orgDto';
-import prisma from '@/services/db';
-import { authenticate } from '@/util/adminApi/auth';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { AuthResult } from "@/models/authResult";
+import { ErrorDto, getErrorDto } from "@/models/dtos/error";
+import { AppDto } from "@/models/dtos/response/appDto";
+import { OrgDto } from "@/models/dtos/response/orgDto";
+import prisma from "@/services/db";
+import { authenticate } from "@/util/adminApi/auth";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -75,7 +75,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<OrgDto | ErrorDto>,
 ) {
-  const authResult = await authenticate(req, 'org');
+  const authResult = await authenticate(req, "org");
 
   // When authResult was not successful, return error with respective
   // code and message
@@ -87,12 +87,12 @@ export default async function handler(
   switch (req.method) {
     // Find org (including apps) by token
     // If found, return org data with apps
-    case 'GET':
+    case "GET":
       return getHandler(req, res, authResult);
     default:
       return res
         .status(StatusCodes.METHOD_NOT_ALLOWED)
-        .json(getErrorDto('method not allowed'));
+        .json(getErrorDto("method not allowed"));
   }
 }
 

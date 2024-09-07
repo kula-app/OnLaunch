@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { MailType } from '@/models/mailType';
-import prisma from '@/services/db';
-import { generateToken, sendTokenPerMail } from '@/util/auth';
-import { createServerAction } from '@/util/create-server-action';
-import { Logger } from '@/util/logger';
-import { NotFoundError } from '../../errors/not-found-error';
-import { UserAlreadyVerifiedError } from '../../errors/user-already-verified-error';
+import { MailType } from "@/models/mailType";
+import prisma from "@/services/db";
+import { generateToken, sendTokenPerMail } from "@/util/auth";
+import { createServerAction } from "@/util/create-server-action";
+import { Logger } from "@/util/logger";
+import { NotFoundError } from "../../errors/not-found-error";
+import { UserAlreadyVerifiedError } from "../../errors/user-already-verified-error";
 
 const logger = new Logger(__filename);
 
@@ -24,7 +24,7 @@ export const requestAccountVerificationEmail = createServerAction(
     }
 
     if (user.isVerified) {
-      logger.error('User already verified');
+      logger.error("User already verified");
       throw new UserAlreadyVerifiedError();
     }
 

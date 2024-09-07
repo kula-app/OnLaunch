@@ -1,9 +1,9 @@
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -11,17 +11,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return authenticatedHandler(
     req,
     res,
-    { method: 'basic' },
+    { method: "basic" },
     async (req, res, user) => {
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user);
-        case 'DELETE':
+        case "DELETE":
           return deleteHandler(req, res, user);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );
@@ -46,7 +46,7 @@ async function getHandler(
     logger.error(`No user found with id '${user.id}'`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'User not found!' });
+      .json({ message: "User not found!" });
   }
 
   return res.status(StatusCodes.CREATED).json({
@@ -75,7 +75,7 @@ async function deleteHandler(
     logger.error(`No user found with email '${user.email}'`);
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'User not found!' });
+      .json({ message: "User not found!" });
   }
 
   logger.log(
@@ -87,7 +87,7 @@ async function deleteHandler(
       user: {
         id: userByEmail.id,
       },
-      role: 'ADMIN',
+      role: "ADMIN",
     },
     include: {
       org: true,
@@ -104,7 +104,7 @@ async function deleteHandler(
       const otherAdminsInOrg = await prisma.usersInOrganisations.findMany({
         where: {
           orgId: userInOrg.orgId,
-          role: 'ADMIN',
+          role: "ADMIN",
           NOT: {
             userId: userInOrg.userId,
           },
@@ -127,7 +127,7 @@ async function deleteHandler(
     );
     return res.status(StatusCodes.BAD_REQUEST).json({
       message:
-        'You have to delete these organisations first: ' +
+        "You have to delete these organisations first: " +
         JSON.stringify(orgsToDeleteFirst),
     });
   }

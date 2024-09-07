@@ -1,10 +1,10 @@
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { User } from '@/models/user';
-import prisma from '@/services/db';
-import { authenticatedHandler } from '@/util/authenticatedHandler';
-import { Logger } from '@/util/logger';
-import { StatusCodes } from 'http-status-codes';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { User } from "@/models/user";
+import prisma from "@/services/db";
+import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { Logger } from "@/util/logger";
+import { StatusCodes } from "http-status-codes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const logger = new Logger(__filename);
 
@@ -16,41 +16,41 @@ export default async function handler(
   return authenticatedHandler(
     req,
     res,
-    { method: 'withRole' },
+    { method: "withRole" },
     async (req, res, user) => {
       const stripeConfig = loadServerConfig().stripeConfig;
 
       if (!stripeConfig.isEnabled) {
-        logger.error('stripe is disabled but endpoint has been called');
+        logger.error("stripe is disabled but endpoint has been called");
         return res
           .status(StatusCodes.SERVICE_UNAVAILABLE)
-          .json({ message: 'Endpoint is disabled' });
+          .json({ message: "Endpoint is disabled" });
       }
 
-      if (user.role !== 'ADMIN') {
-        logger.error('User has no admin rights');
+      if (user.role !== "ADMIN") {
+        logger.error("User has no admin rights");
         return res
           .status(StatusCodes.FORBIDDEN)
-          .json({ message: 'You are not an admin' });
+          .json({ message: "You are not an admin" });
       }
 
       const orgId = Number(req.query.orgId);
 
       if (!orgId) {
-        logger.error('No orgId provided');
+        logger.error("No orgId provided");
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: 'No orgId provided' });
+          .json({ message: "No orgId provided" });
       }
 
       switch (req.method) {
-        case 'GET':
+        case "GET":
           return getHandler(req, res, user, orgId);
 
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: 'Method not allowed' });
+            .json({ message: "Method not allowed" });
       }
     },
   );

@@ -1,4 +1,4 @@
-import { AppDto } from './appDto';
+import { AppDto } from "./appDto";
 
 export interface OrgDto {
   id: number;

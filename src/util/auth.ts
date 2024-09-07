@@ -1,28 +1,28 @@
-import prisma from '@/services/db';
-import { compare, genSalt, hash } from 'bcrypt';
-import { StatusCodes } from 'http-status-codes';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
-import { loadServerConfig } from '../config/loadServerConfig';
-import { createChangeEmailTemplate } from '../mailTemplate/changeEmail';
-import { createDirectInviteTemplate } from '../mailTemplate/directInvite';
-import { createDirectInviteNewUserTemplate } from '../mailTemplate/directInviteNewUser';
-import { createEmailChangedTemplate } from '../mailTemplate/emailChanged';
-import { createResetPasswordTemplate } from '../mailTemplate/resetPassword';
-import { createVerificationTemplate } from '../mailTemplate/verification';
-import { MailType } from '../models/mailType';
-import Routes from '../routes/routes';
-import { authOptions } from './auth-options';
-import { ifEmptyThenUndefined } from './ifEmptyThenUndefined';
-import { Logger } from './logger';
-import { generateRandomHex } from './random';
+import prisma from "@/services/db";
+import { compare, genSalt, hash } from "bcrypt";
+import { StatusCodes } from "http-status-codes";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { loadServerConfig } from "../config/loadServerConfig";
+import { createChangeEmailTemplate } from "../mailTemplate/changeEmail";
+import { createDirectInviteTemplate } from "../mailTemplate/directInvite";
+import { createDirectInviteNewUserTemplate } from "../mailTemplate/directInviteNewUser";
+import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
+import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
+import { createVerificationTemplate } from "../mailTemplate/verification";
+import { MailType } from "../models/mailType";
+import Routes from "../routes/routes";
+import { authOptions } from "./auth-options";
+import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
+import { Logger } from "./logger";
+import { generateRandomHex } from "./random";
 
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const logger = new Logger(__filename);
 
 export async function hashAndSaltPassword(password: string) {
-  logger.log('Salting and hashing password');
+  logger.log("Salting and hashing password");
   const saltRounds = 10;
 
   const salt = await genSalt(saltRounds);
@@ -35,7 +35,7 @@ export async function hashAndSaltPassword(password: string) {
 }
 
 export async function validatePassword(password: string) {
-  logger.log('Validating password');
+  logger.log("Validating password");
 
   return password && password.trim().length >= 8;
 }
@@ -45,13 +45,13 @@ export async function verifyPassword(
   salt: string,
   hashedPassword: string,
 ) {
-  logger.log('Verifying password');
+  logger.log("Verifying password");
   const isValid = await compare(password.concat(salt), hashedPassword);
   return isValid;
 }
 
 export function generateToken() {
-  logger.log('Generating token');
+  logger.log("Generating token");
   return generateRandomHex(32);
 }
 
@@ -185,12 +185,12 @@ export async function getUserFromRequest(
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
-    logger.error('User not authorized');
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized!' });
+    logger.error("User not authorized");
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authorized!" });
     return;
   }
 
-  logger.log('Returning user after checking authorization');
+  logger.log("Returning user after checking authorization");
   return session.user;
 }
 export async function getUserWithRoleFromRequest(
@@ -200,9 +200,9 @@ export async function getUserWithRoleFromRequest(
   const user = await getUserFromRequest(req, res);
 
   if (!user) {
-    logger.error('No user provided from session');
+    logger.error("No user provided from session");
     res.status(StatusCodes.UNAUTHORIZED).json({
-      message: 'You are not logged in',
+      message: "You are not logged in",
     });
     return;
   }
@@ -227,7 +227,7 @@ export async function getUserWithRoleFromRequest(
     },
   });
 
-  if (userInOrg?.role !== 'ADMIN' && userInOrg?.role !== 'USER') {
+  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
     logger.error(
       `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`,
     );

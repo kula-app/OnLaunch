@@ -1,7 +1,7 @@
-import { RedisConfig } from '@/config/interfaces/RedisConfig';
-import { loadServerConfig } from '@/config/loadServerConfig';
-import { Logger } from '@/util/logger';
-import Redis, { RedisOptions } from 'ioredis';
+import { RedisConfig } from "@/config/interfaces/RedisConfig";
+import { loadServerConfig } from "@/config/loadServerConfig";
+import { Logger } from "@/util/logger";
+import Redis, { RedisOptions } from "ioredis";
 
 function getRedisConfiguration(): RedisConfig {
   return loadServerConfig().redisConfig;
@@ -63,7 +63,7 @@ function redisClientSingleton(config = getRedisConfiguration()):
 
     const redis = new Redis(options);
 
-    redis.on('error', (error: unknown) => {
+    redis.on("error", (error: unknown) => {
       logger.error(`[Redis] Error connecting: ${error}`);
     });
 

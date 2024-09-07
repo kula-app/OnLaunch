@@ -1,4 +1,4 @@
-import { ServerError } from '../errors/server-error';
+import { ServerError } from "../errors/server-error";
 
 /**
  * Creates a server action that wraps a callback function.

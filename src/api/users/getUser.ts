@@ -1,6 +1,6 @@
-import { User } from '@/models/user';
-import ApiRoutes from '@/routes/apiRoutes';
-import { returnDataOrThrowError } from '@/util/api';
+import { User } from "@/models/user";
+import ApiRoutes from "@/routes/apiRoutes";
+import { returnDataOrThrowError } from "@/util/api";
 
 const getUser = async () => {
   const response = await fetch(ApiRoutes.USERS);

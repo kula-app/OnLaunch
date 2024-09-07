@@ -1,4 +1,4 @@
-import { MessageDto } from './messageDto';
+import { MessageDto } from "./messageDto";
 
 export interface AppDto {
   id: number;

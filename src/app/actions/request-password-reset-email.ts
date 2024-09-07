@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { MailType } from '@/models/mailType';
-import prisma from '@/services/db';
-import { generateToken, sendTokenPerMail } from '@/util/auth';
-import { createServerAction } from '@/util/create-server-action';
-import { Logger } from '@/util/logger';
-import { NotFoundError } from '../../errors/not-found-error';
+import { MailType } from "@/models/mailType";
+import prisma from "@/services/db";
+import { generateToken, sendTokenPerMail } from "@/util/auth";
+import { createServerAction } from "@/util/create-server-action";
+import { Logger } from "@/util/logger";
+import { NotFoundError } from "../../errors/not-found-error";
 
 const logger = new Logger(__filename);
 

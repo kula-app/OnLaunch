@@ -1,10 +1,10 @@
-import { generateRandomHex } from '../util/random';
-import { getEnvironment } from './getEnvironment';
-import { ServerConfig } from './interfaces/ServerConfig';
-import { parseBooleanEnvValue } from './parser/parseBooleanEnvValue';
-import { parseNumberEnvValue } from './parser/parseNumberEnvValue';
-import { parseSentinels } from './parser/parseSentinels';
-import { parseStringArrayEnvValue } from './parser/parseStringArrayEnvValue';
+import { generateRandomHex } from "../util/random";
+import { getEnvironment } from "./getEnvironment";
+import { ServerConfig } from "./interfaces/ServerConfig";
+import { parseBooleanEnvValue } from "./parser/parseBooleanEnvValue";
+import { parseNumberEnvValue } from "./parser/parseNumberEnvValue";
+import { parseSentinels } from "./parser/parseSentinels";
+import { parseStringArrayEnvValue } from "./parser/parseStringArrayEnvValue";
 
 export function loadServerConfig(): ServerConfig {
   let env = getEnvironment();
@@ -16,7 +16,7 @@ export function loadServerConfig(): ServerConfig {
         parseNumberEnvValue(env.ADMIN_API_REQUEST_LIMIT) ?? 1000,
     },
     nextAuth: {
-      url: env.NEXTAUTH_URL ?? 'http://localhost:3000',
+      url: env.NEXTAUTH_URL ?? "http://localhost:3000",
       provider: {
         credentials: {
           isEnabled:
@@ -39,7 +39,7 @@ export function loadServerConfig(): ServerConfig {
     database: {
       url:
         env.DATABASE_URL ??
-        'postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public',
+        "postgresql://onlaunch:password@localhost:5432/onlaunch?schema=public",
     },
     health: {
       apiKey: env.HEALTH_API_KEY ?? generateRandomHex(32),
@@ -48,15 +48,15 @@ export function loadServerConfig(): ServerConfig {
       apiKey: env.CRON_JOB_USAGE_REPORT_API_KEY || generateRandomHex(32),
     },
     emailContent: {
-      senderName: env.SMTP_FROM_NAME ?? 'OnLaunch',
-      senderAddress: env.SMTP_FROM_EMAIL_ADDRESS ?? 'onlaunch@kula.app',
+      senderName: env.SMTP_FROM_NAME ?? "OnLaunch",
+      senderAddress: env.SMTP_FROM_EMAIL_ADDRESS ?? "onlaunch@kula.app",
     },
     redisConfig: {
       isEnabled: parseBooleanEnvValue(env.REDIS_ENABLED) ?? false,
 
       name: env.REDIS_SENTINEL_NAME,
-      host: env.REDIS_HOST ?? 'localhost',
-      password: env.REDIS_PASSWORD ?? 'password',
+      host: env.REDIS_HOST ?? "localhost",
+      password: env.REDIS_PASSWORD ?? "password",
       port: parseNumberEnvValue(env.REDIS_PORT) ?? 6379,
       db: parseNumberEnvValue(env.REDIS_DB),
 
@@ -69,8 +69,8 @@ export function loadServerConfig(): ServerConfig {
     },
     stripeConfig: {
       isEnabled: parseBooleanEnvValue(env.STRIPE_ENABLED) ?? false,
-      webhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
-      secretKey: env.STRIPE_SECRET_KEY || '',
+      webhookSecret: env.STRIPE_WEBHOOK_SECRET || "",
+      secretKey: env.STRIPE_SECRET_KEY || "",
       useAutomaticTax:
         parseBooleanEnvValue(env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
       taxRates: parseStringArrayEnvValue(env.STRIPE_TAX_RATES),
@@ -80,10 +80,10 @@ export function loadServerConfig(): ServerConfig {
       isEnabled: parseBooleanEnvValue(env.SIGNUPS_ENABLED) ?? false,
     },
     smtp: {
-      host: env.SMTP_HOST ?? 'localhost',
+      host: env.SMTP_HOST ?? "localhost",
       port: parseNumberEnvValue(env.SMTP_PORT) ?? 1025,
-      user: env.SMTP_USER ?? '',
-      pass: env.SMTP_PASS ?? '',
+      user: env.SMTP_USER ?? "",
+      pass: env.SMTP_PASS ?? "",
     },
     sentryConfig: {
       debug: parseBooleanEnvValue(env.SENTRY_DEBUG?.toLowerCase()),

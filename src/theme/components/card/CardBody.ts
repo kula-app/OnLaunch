@@ -1,9 +1,9 @@
-import { defineStyleConfig } from '@chakra-ui/react';
+import { defineStyleConfig } from "@chakra-ui/react";
 
 const CardBody = defineStyleConfig({
   baseStyle: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
 });
 
