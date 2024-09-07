@@ -3,7 +3,7 @@ import { Template } from "../models/template";
 export function createResetPasswordTemplate(
   firstName: string | null,
   urlWithToken: string,
-  senderName: string
+  senderName: string,
 ): Template {
   return {
     subject: "Reset your OnLaunch password",

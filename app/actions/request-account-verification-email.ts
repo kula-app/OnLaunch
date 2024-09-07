@@ -35,7 +35,7 @@ export const requestAccountVerificationEmail = createServerAction(
     expiryDate.setDate(expiryDate.getDate() + 7);
 
     logger.log(
-      `Updating previos verification tokens for user with id '${user.id}' as obsolete`
+      `Updating previos verification tokens for user with id '${user.id}' as obsolete`,
     );
     await prisma.verificationToken.updateMany({
       where: {
@@ -62,10 +62,10 @@ export const requestAccountVerificationEmail = createServerAction(
       user.email ?? email,
       user.firstName,
       verificationToken.token,
-      MailType.Verification
+      MailType.Verification,
     );
     logger.log(
-      `Verification email sent for user with id '${user.id}' to email '${user.email}'`
+      `Verification email sent for user with id '${user.id}' to email '${user.email}'`,
     );
-  }
+  },
 );

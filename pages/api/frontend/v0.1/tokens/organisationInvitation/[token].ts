@@ -46,7 +46,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -54,7 +54,7 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  organisation: Organisation
+  organisation: Organisation,
 ) {
   return res.status(StatusCodes.OK).json({
     id: organisation.id,
@@ -67,11 +67,11 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  organisation: Organisation
+  organisation: Organisation,
 ) {
   try {
     logger.log(
-      `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}' (via org token)`
+      `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}' (via org token)`,
     );
     await prisma.usersInOrganisations.create({
       data: {
@@ -96,12 +96,12 @@ async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  organisation: Organisation
+  organisation: Organisation,
 ) {
   const generatedToken = generateToken();
 
   logger.log(
-    `Updating new generated invite token for organisation with id '${organisation.id}'`
+    `Updating new generated invite token for organisation with id '${organisation.id}'`,
   );
   await prisma.organisation.update({
     where: {

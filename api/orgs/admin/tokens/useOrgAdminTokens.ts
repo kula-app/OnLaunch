@@ -11,7 +11,7 @@ export function useOrgAdminTokens(orgId: number): {
 } {
   const { data, isLoading, error, mutate } = useSWR<OrgAdminTokenDto[]>(
     ApiRoutes.getOrgAdminTokensByOrgId(orgId),
-    getFetcher
+    getFetcher,
   );
 
   return {

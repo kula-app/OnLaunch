@@ -6,7 +6,7 @@
  * @returns
  */
 export function parseStringArrayEnvValue(
-  value?: string
+  value?: string,
 ): Array<string> | undefined {
   if (value == undefined || value === "") {
     return undefined;

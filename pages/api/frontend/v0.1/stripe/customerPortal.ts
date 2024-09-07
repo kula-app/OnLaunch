@@ -14,7 +14,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -39,7 +39,7 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -47,7 +47,7 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  config: ServerConfig
+  config: ServerConfig,
 ) {
   const orgId = req.body.orgId;
 
@@ -77,7 +77,7 @@ async function postHandler(
 
   if (!orgFromDb.stripeCustomerId) {
     logger.error(
-      `No stripe customer id found for organisation with id ${orgId}`
+      `No stripe customer id found for organisation with id ${orgId}`,
     );
     return res.status(StatusCodes.NOT_FOUND).json({
       message: `No stripe customer id found for organisation with id ${orgId}`,

@@ -11,7 +11,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -27,7 +27,7 @@ export default async function handler(
 
       if (!org) {
         logger.error(
-          `Organisation with id '${req.query.orgId}' has been deleted or not found`
+          `Organisation with id '${req.query.orgId}' has been deleted or not found`,
         );
         return res.status(StatusCodes.NOT_FOUND).json({
           message: `Organisation with id '${req.query.orgId}' not found`,
@@ -49,14 +49,14 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(`Looking up app with id '${req.query.appId}'`);
   const app = await prisma.app.findFirst({
@@ -99,12 +99,12 @@ async function getHandler(
 async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   try {
     if (user.role === "USER") {
       logger.error(
-        `You are not allowed to delete app with id '${req.query.appId}'`
+        `You are not allowed to delete app with id '${req.query.appId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "You are not allowed to delete app with id " + req.query.orgId,
@@ -135,12 +135,12 @@ async function deleteHandler(
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   try {
     if (user.role === "USER") {
       logger.error(
-        `You are not allowed to update app with id '${req.query.appId}'`
+        `You are not allowed to update app with id '${req.query.appId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "You are not allowed to update app with id " + req.query.orgId,

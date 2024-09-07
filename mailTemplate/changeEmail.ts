@@ -3,7 +3,7 @@ import { Template } from "../models/template";
 export function createChangeEmailTemplate(
   firstName: string | null,
   urlWithToken: string,
-  senderName: string
+  senderName: string,
 ): Template {
   return {
     subject: "Verify your new OnLaunch email address",

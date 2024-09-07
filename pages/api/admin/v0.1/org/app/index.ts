@@ -71,7 +71,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<AppDto | ErrorDto>
+  res: NextApiResponse<AppDto | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "org");
 
@@ -96,7 +96,7 @@ export default async function handler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const createAppDto = plainToInstance(CreateAppDto, req.body);
   const validationErrors = await validate(createAppDto);
@@ -106,7 +106,7 @@ async function postHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ["An unknown error occurred"]
+          : ["An unknown error occurred"],
       )
       .join(", ");
     return res

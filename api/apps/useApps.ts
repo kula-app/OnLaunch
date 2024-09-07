@@ -11,7 +11,7 @@ export function useApps(orgId: number): {
 } {
   const { data, isLoading, error, mutate } = useSWR<App[]>(
     ApiRoutes.getAppsByOrgId(orgId),
-    getFetcher
+    getFetcher,
   );
 
   return {

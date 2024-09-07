@@ -6,5 +6,5 @@ import { layout } from "./layout";
 export const components = unapply(reduce(mergeDeepLeft, {}))(
   button,
   card,
-  layout
+  layout,
 );

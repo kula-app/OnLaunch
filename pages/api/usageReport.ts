@@ -6,7 +6,7 @@ import { reportAllOrgsToStripe } from "../../util/stripe/reportAllUsage";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const logger = new Logger(__filename);
   const usageReportingConfig = loadServerConfig().usageReport;

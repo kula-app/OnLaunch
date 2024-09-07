@@ -11,7 +11,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -30,14 +30,14 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(`Looking up messages with app id '${req.query.appId}'`);
   const allMessages = await prisma.message.findMany({
@@ -59,7 +59,7 @@ async function getHandler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
     logger.log("Start date has to be before end date");

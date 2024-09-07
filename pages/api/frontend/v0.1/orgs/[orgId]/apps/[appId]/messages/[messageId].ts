@@ -12,7 +12,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -34,14 +34,14 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(`Looking up message with id '${req.query.messageId}'`);
   const message = await prisma.message.findUnique({
@@ -66,7 +66,7 @@ async function getHandler(
 async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   try {
     logger.log(`Deleting actions with message id '${req.query.messageId}'`);
@@ -102,7 +102,7 @@ async function deleteHandler(
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   try {
     if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
@@ -140,7 +140,7 @@ async function putHandler(
         action.messageId = Number(req.query.messageId);
       });
       logger.log(
-        `Creating actions for message with id '${req.query.messageId}'`
+        `Creating actions for message with id '${req.query.messageId}'`,
       );
       await prisma.action.createMany({
         data: req.body.actions,

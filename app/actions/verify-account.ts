@@ -75,5 +75,5 @@ export const verifyEmail = createServerAction(
         isArchived: true,
       },
     });
-  }
+  },
 );

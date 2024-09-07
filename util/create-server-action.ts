@@ -15,7 +15,7 @@ import { ServerError } from "../errors/server-error";
  * @returns A new function that executes the callback function and handles any errors.
  */
 export function createServerAction<TArgs extends any[], TResult>(
-  callback: (...args: TArgs) => Promise<TResult>
+  callback: (...args: TArgs) => Promise<TResult>,
 ) {
   return async (...args: TArgs) => {
     try {

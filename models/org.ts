@@ -1,7 +1,7 @@
 export interface Org {
-    id: number;
-    name: string;
-    invitationToken?: string;
-    role?: string;
-    subName?: string;
+  id: number;
+  name: string;
+  invitationToken?: string;
+  role?: string;
+  subName?: string;
 }

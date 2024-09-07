@@ -32,7 +32,7 @@ export const requestPasswordResetEmail = createServerAction(
     const expiryDate = new Date(Date.now() + 60 * 60 * 1000);
 
     logger.log(
-      `Updating previous password reset tokens for user with id '${user.id}' as obsolete`
+      `Updating previous password reset tokens for user with id '${user.id}' as obsolete`,
     );
     await prisma.passwordResetToken.updateMany({
       where: {
@@ -58,8 +58,8 @@ export const requestPasswordResetEmail = createServerAction(
       user.email ?? email,
       user.firstName,
       generatedToken,
-      MailType.ResetPassword
+      MailType.ResetPassword,
     );
     logger.log(`Password reset token sent to user with email '${email}'`);
-  }
+  },
 );

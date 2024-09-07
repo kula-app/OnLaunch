@@ -5,7 +5,7 @@ import { returnDataOrThrowError } from "../../util/api";
 const createMessage = async (
   orgId: number,
   appId: number,
-  message: Message
+  message: Message,
 ) => {
   const response = await fetch(
     ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId),
@@ -15,7 +15,7 @@ const createMessage = async (
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return await returnDataOrThrowError(response);

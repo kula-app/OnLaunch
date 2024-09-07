@@ -5,7 +5,7 @@ import getFetcher from "../../../../util/fetcher";
 
 export function useAppAdminTokens(
   orgId: number,
-  appId: number
+  appId: number,
 ): {
   appAdminTokens?: AppAdminTokenDto[];
   isError?: Error;
@@ -14,7 +14,7 @@ export function useAppAdminTokens(
 } {
   const { data, isLoading, error, mutate } = useSWR<AppAdminTokenDto[]>(
     ApiRoutes.getAppAdminTokensByOrgIdAndAppId(orgId, appId),
-    getFetcher
+    getFetcher,
   );
 
   return {

@@ -6,7 +6,7 @@ const deleteUserFromOrg = async (orgId: number, userEmail: string) => {
     ApiRoutes.getOrgUserByOrgIdAndUserEmail(orgId, userEmail),
     {
       method: "DELETE",
-    }
+    },
   );
 
   return await returnDataOrThrowError(response);

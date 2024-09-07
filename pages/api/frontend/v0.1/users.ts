@@ -23,14 +23,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(`Looking up user with id '${user.id}'`);
   const userFromDb = await prisma.user.findFirst({
@@ -59,7 +59,7 @@ async function getHandler(
 async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(`Looking up user with email '${user.email}'`);
   const userByEmail = await prisma.user.findFirst({
@@ -79,7 +79,7 @@ async function deleteHandler(
   }
 
   logger.log(
-    `Looking up organisations that user with id '${userByEmail.id}' is part of`
+    `Looking up organisations that user with id '${userByEmail.id}' is part of`,
   );
   // check if user is qualified to be deleted
   const userInOrgs = await prisma.usersInOrganisations.findMany({
@@ -97,7 +97,7 @@ async function deleteHandler(
   let orgsToDeleteFirst: Array<string> = [];
 
   logger.log(
-    `Looking up other admins in organisations that user with id '${userByEmail.id}' is part of`
+    `Looking up other admins in organisations that user with id '${userByEmail.id}' is part of`,
   );
   await Promise.all(
     userInOrgs.map(async (userInOrg) => {
@@ -114,7 +114,7 @@ async function deleteHandler(
       if (Array.isArray(otherAdminsInOrg) && !otherAdminsInOrg.length) {
         orgsToDeleteFirst.push(userInOrg.org.name);
       }
-    })
+    }),
   );
 
   if (orgsToDeleteFirst.length) {
@@ -122,8 +122,8 @@ async function deleteHandler(
       `Before deleting user profile of user with id '${
         userByEmail.id
       }', these organisations have to be deleted first: ${JSON.stringify(
-        orgsToDeleteFirst
-      )}`
+        orgsToDeleteFirst,
+      )}`,
     );
     return res.status(StatusCodes.BAD_REQUEST).json({
       message:
@@ -149,7 +149,7 @@ async function deleteHandler(
   });
 
   logger.log(
-    `Deleting relations for all organisations that user with id '${deletedUser.id}' is in`
+    `Deleting relations for all organisations that user with id '${deletedUser.id}' is in`,
   );
   // delete user from organisations
   await prisma.usersInOrganisations.deleteMany({

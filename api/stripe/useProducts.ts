@@ -11,7 +11,7 @@ export function useProducts(): {
 } {
   const { data, isLoading, error, mutate } = useSWR<Product[]>(
     ApiRoutes.PRODUCTS,
-    getFetcher
+    getFetcher,
   );
 
   return {

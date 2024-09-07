@@ -24,18 +24,18 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   if (user.role === "USER" && user.email !== req.query.userEmail) {
     logger.error(
-      `You are not allowed to delete user with email '${req.query.userEmail}' from organisation with id '${req.query.orgId}'`
+      `You are not allowed to delete user with email '${req.query.userEmail}' from organisation with id '${req.query.orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message:
@@ -62,7 +62,7 @@ async function deleteHandler(
     if (otherAdminsInOrg.length >= 1) {
       if (otherAdminsInOrg[0].org.isDeleted) {
         logger.error(
-          `Organisation with id '${req.query.orgId}' has been already deleted`
+          `Organisation with id '${req.query.orgId}' has been already deleted`,
         );
         return res.status(StatusCodes.NOT_FOUND).json({
           message: `Organisation with id '${req.query.orgId}' not found`,
@@ -101,7 +101,7 @@ async function deleteHandler(
 
     if (userInOrg && userInOrg.userId) {
       logger.log(
-        `Deleting user with id '${userInOrg.userId}' from org with id '${req.query.orgId}'`
+        `Deleting user with id '${userInOrg.userId}' from org with id '${req.query.orgId}'`,
       );
       const deletedUserInOrg = await prisma.usersInOrganisations.delete({
         where: {
@@ -119,7 +119,7 @@ async function deleteHandler(
   // if deletion is for a pending invitation
   try {
     logger.log(
-      `Deleting user direct invite for email '${req.query.userEmail}' for org with id '${req.query.orgId}'`
+      `Deleting user direct invite for email '${req.query.userEmail}' for org with id '${req.query.orgId}'`,
     );
     const deletedUserInvite = await prisma.userInvitationToken.deleteMany({
       where: {
@@ -132,7 +132,7 @@ async function deleteHandler(
     return res.status(StatusCodes.OK).json(deletedUserInvite);
   } catch (e) {
     logger.log(
-      `No user invite for email '${req.query.userEmail}' found in organisation with id '${req.query.orgId}'`
+      `No user invite for email '${req.query.userEmail}' found in organisation with id '${req.query.orgId}'`,
     );
     return res.status(StatusCodes.NOT_FOUND).json({
       message:
@@ -147,11 +147,11 @@ async function deleteHandler(
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   if (user.role === "USER") {
     logger.error(
-      `You are not allowed to update user invite with email '${req.query.userEmail}' in organisation with id '${req.query.orgId}'`
+      `You are not allowed to update user invite with email '${req.query.userEmail}' in organisation with id '${req.query.orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message: `You are not allowed to update user invite with email ${req.body.userEmail} in organisation with id ${req.query.orgId}`,
@@ -167,7 +167,7 @@ async function putHandler(
 
   try {
     logger.log(
-      `Updating role of user invite with email '${req.body.userEmail}' in organisation with id '${req.query.orgId}'`
+      `Updating role of user invite with email '${req.body.userEmail}' in organisation with id '${req.query.orgId}'`,
     );
     const updatedInvite = await prisma.userInvitationToken.updateMany({
       where: {
@@ -185,7 +185,7 @@ async function putHandler(
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(
-        `No user invite with email '${req.body.userEmail}' found in organisation with id '${req.query.orgId}'`
+        `No user invite with email '${req.body.userEmail}' found in organisation with id '${req.query.orgId}'`,
       );
       return res.status(StatusCodes.NOT_FOUND).json({
         message:

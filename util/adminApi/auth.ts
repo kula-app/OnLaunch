@@ -9,7 +9,7 @@ import { decodeToken } from "./tokenDecoding";
 
 export async function authenticate(
   req: NextApiRequest,
-  type: string
+  type: string,
 ): Promise<AuthResult> {
   const logger = new Logger(__filename);
   const adminApiConfig = loadServerConfig().adminApi;
@@ -42,7 +42,7 @@ export async function authenticate(
     authToken = authToken.substring(bearerPrefix.length);
   } else {
     logger.error(
-      'Authorization token is invalid - missing the "Bearer " prefix'
+      'Authorization token is invalid - missing the "Bearer " prefix',
     );
 
     if (ip) {
@@ -76,7 +76,7 @@ export async function authenticate(
     // Limit requests for ips within the last hour
     if (requestCount >= adminApiConfig.requestLimit) {
       logger.error(
-        `Ip(=${ip}) had ${requestCount} requests within the last hour and will thus not be processed.`
+        `Ip(=${ip}) had ${requestCount} requests within the last hour and will thus not be processed.`,
       );
 
       if (ip) {
@@ -184,7 +184,7 @@ export async function authenticate(
 async function logAdminApiRequest(
   token: string,
   success: boolean,
-  ip: string | null
+  ip: string | null,
 ): Promise<void> {
   if (!ip) {
     return;

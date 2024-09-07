@@ -73,7 +73,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<OrgDto | ErrorDto>
+  res: NextApiResponse<OrgDto | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "org");
 
@@ -99,7 +99,7 @@ export default async function handler(
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   logger.log(`Looking up organisation with id(='${authResult.id}')`);
 
@@ -127,7 +127,7 @@ async function getHandler(
       updatedAt: app.updatedAt,
       name: app.name,
       publicKey: app.publicKey,
-    })
+    }),
   );
   const dto: OrgDto = {
     id: org.id,

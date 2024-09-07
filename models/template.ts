@@ -1,5 +1,5 @@
 export interface Template {
-    subject: string;
-    text: string;
-    html: string;
+  subject: string;
+  text: string;
+  html: string;
 }
