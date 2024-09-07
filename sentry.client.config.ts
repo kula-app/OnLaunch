@@ -1,5 +1,5 @@
+import { loadClientConfig } from "@/config/loadClientConfig";
 import * as Sentry from "@sentry/nextjs";
-import { loadClientConfig } from "./config/loadClientConfig";
 
 const sentryConfig = loadClientConfig().sentryConfig;
 
