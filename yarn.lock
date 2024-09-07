@@ -7733,9 +7733,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:11.5.2":
-  version: 11.5.2
-  resolution: "framer-motion@npm:11.5.2"
+"framer-motion@npm:11.5.4":
+  version: 11.5.4
+  resolution: "framer-motion@npm:11.5.4"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -7749,7 +7749,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/63dcfd4535236b6d85133e7d3f85386ee463981ef9b35a3e0ba5f6541dd37faf9b3affaecddcb6d60fe290d7b3cd61b7a21f33c525514fe6610aecb43b4adf06
+  checksum: 10c0/2405aad0ed3cbd2ad6ab2dedec5146483feb8e67f6f3d16f38bfea23f0e31a4fad5f1660f307767a5e9c27b40c708b64c0ba65841824a38144e401f3bab31566
   languageName: node
   linkType: hard
 
@@ -11034,7 +11034,7 @@ __metadata:
     dotenv: "npm:16.4.5"
     eslint: "npm:8.57.0"
     eslint-config-next: "npm:13.5.6"
-    framer-motion: "npm:11.5.2"
+    framer-motion: "npm:11.5.4"
     http-status-codes: "npm:2.3.0"
     ioredis: "npm:5.4.1"
     jest: "npm:29.7.0"
