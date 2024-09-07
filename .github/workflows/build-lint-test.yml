@@ -130,3 +130,4 @@ jobs:
           wait-on: "http://localhost:3000"
         env:
           DATABASE_URL: "postgresql://pguser:password@localhost:${{ job.services.postgres.ports[5432] }}/onlaunch?schema=public"
+          NEXTAUTH_SECRET: "ThisIsASecretUsedByCI"
