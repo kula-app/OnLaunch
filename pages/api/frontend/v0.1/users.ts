@@ -61,12 +61,10 @@ async function deleteHandler(
   res: NextApiResponse,
   user: User
 ) {
-  const userEmail = user.email as string;
-
-  logger.log(`Looking up user with email '${userEmail}'`);
+  logger.log(`Looking up user with email '${user.email}'`);
   const userByEmail = await prisma.user.findFirst({
     where: {
-      email: userEmail,
+      email: user.email,
       NOT: {
         isDeleted: true,
       },
@@ -74,7 +72,7 @@ async function deleteHandler(
   });
 
   if (!userByEmail || (userByEmail && !userByEmail.id)) {
-    logger.error(`No user found with email '${userEmail}'`);
+    logger.error(`No user found with email '${user.email}'`);
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "User not found!" });

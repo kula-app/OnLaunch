@@ -1,8 +1,8 @@
+import { Heading } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Routes from "../routes/routes";
-import { Heading } from "@chakra-ui/react";
 
 export default function IndexPage() {
   const router = useRouter();
@@ -30,7 +30,9 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: Routes.login({
+          redirect: context.req.url,
+        }),
         permanent: false,
       },
     };

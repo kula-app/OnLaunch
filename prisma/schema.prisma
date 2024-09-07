@@ -81,7 +81,10 @@ model App {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
+  // authId is the id of the user in the authentication provider (e.g. Auth0)
+  authId String @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -94,13 +97,20 @@ model User {
 
   // only a verified user can use the functionality of OnLaunch
   isVerified Boolean
-  isDeleted  Boolean @default(false)
+  verifiedAt DateTime?
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 
   token               VerificationToken[]
   passwordToken       PasswordResetToken[]
   emailChangeToken    EmailChangeToken[]
   userInvitationToken UserInvitationToken[]
   orgs                UsersInOrganisations[]
+
+  accounts       Account[]
+  sessions       Session[]
+  authenticators Authenticator[]
 }
 
 model Organisation {
@@ -137,6 +147,18 @@ model UsersInOrganisations {
   role   Role
 
   @@id([orgId, userId])
+}
+
+model AuthToken {
+  id        Int      @id @default(autoincrement())
+  identifier String
+  token      String
+  expiresAt    DateTime
+
+  // true indicates that this token has served it purpose successfully (user got verified)
+  isArchived Boolean  @default(false)
+
+  @@unique([identifier, token])
 }
 
 model VerificationToken {
@@ -224,29 +246,29 @@ model LoggedApiRequests {
 
   // -- Additional context sent with the request --
   // Bundle identifier of the app
-  clientBundleId String?
+  clientBundleId           String?
   // Version of the app
-  clientBundleVersion String?
+  clientBundleVersion      String?
   // Locale of the device
-  clientLocale String?
+  clientLocale             String?
   // Language code of the locale
   clientLocaleLanguageCode String?
   // Region code of the locale
-  clientLocaleRegionCode String?
+  clientLocaleRegionCode   String?
   // Name of the package
-  clientPackageName String?
+  clientPackageName        String?
   // Name of the platform
-  clientPlatformName String?
+  clientPlatformName       String?
   // Version of the platform
-  clientPlatformVersion String?
+  clientPlatformVersion    String?
   // Version of the release
-  clientReleaseVersion String?
+  clientReleaseVersion     String?
   // Version code of the package
-  clientVersionCode String?
+  clientVersionCode        String?
   // Version name of the package
-  clientVersionName String?
+  clientVersionName        String?
   // Flag if update was available at the client
-  clientUpdateAvailable Boolean?
+  clientUpdateAvailable    Boolean?
 }
 
 model LoggedUsageReport {
@@ -335,9 +357,57 @@ model LoggedAdminApiRequests {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ip String
-  token   String  @default("")
+  ip        String
+  token     String   @default("")
   // The success flag is used to indicate whether the provided token is an active one
   // this is used to prevent brute force attacks
-  success Boolean @default(false)
+  success   Boolean  @default(false)
+}
+
+// Used by Next-Auth to store authenticator data, used for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Account {
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  expiresIn         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  expires DateTime
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

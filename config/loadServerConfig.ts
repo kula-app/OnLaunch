@@ -17,6 +17,20 @@ export function loadServerConfig(): ServerConfig {
     },
     nextAuth: {
       url: env.NEXTAUTH_URL ?? "http://localhost:3000",
+      provider: {
+        credentials: {
+          isEnabled:
+            parseBooleanEnvValue(env.AUTH_PROVIDER_CREDENTIALS_ENABLED) ?? true,
+        },
+        github: {
+          clientId: env.AUTH_PROVIDER_GITHUB_CLIENT_ID,
+          clientSecret: env.AUTH_PROVIDER_GITHUB_CLIENT_SECRET,
+        },
+        google: {
+          clientId: env.AUTH_PROVIDER_GOOGLE_CLIENT_ID,
+          clientSecret: env.AUTH_PROVIDER_GOOGLE_CLIENT_SECRET,
+        },
+      },
     },
     freeSub: {
       requestLimit:

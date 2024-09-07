@@ -1,7 +1,7 @@
 import { Template } from "../models/template";
 
 export function createEmailChangedTemplate(
-  firstName: string,
+  firstName: string | null,
   senderName: string
 ): Template {
   return {

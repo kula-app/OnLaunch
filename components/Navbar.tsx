@@ -1,31 +1,30 @@
-import React from "react";
 import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  Button,
-  Stack,
-  Collapse,
-  Link,
-  useColorModeValue,
-  useBreakpointValue,
-  useDisclosure,
   Avatar,
+  Box,
+  Button,
   Center,
+  Collapse,
+  Flex,
+  IconButton,
+  Link,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { MdMenu, MdClose } from "react-icons/md";
-import Routes from "../routes/routes";
-import { useRouter } from "next/router";
-import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
-import MobileNav from "./NavbarMobile";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { MdClose, MdMenu } from "react-icons/md";
+import Routes from "../routes/routes";
 import DesktopNav from "./NavbarDesktop";
+import MobileNav from "./NavbarMobile";
 
 interface Props {
   session: Session;
@@ -36,7 +35,7 @@ export default function Header(props: Props) {
   const router = useRouter();
 
   function navigateToAuthPage() {
-    router.push(Routes.AUTH);
+    router.push(Routes.SIGNUP);
   }
 
   return (
@@ -72,8 +71,8 @@ export default function Header(props: Props) {
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
               color={useColorModeValue("gray.800", "white")}
-              as='b'
-              textDecoration='none'
+              as="b"
+              textDecoration="none"
             >
               OnLaunch &#128640;
             </Text>
@@ -111,18 +110,12 @@ export default function Header(props: Props) {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar
-                  size={"sm"}
-                  name={props.session.user.name}
-                />
+                <Avatar size={"sm"} name={props.session.user.name} />
               </MenuButton>
               <MenuList alignItems={"center"}>
                 <br />
                 <Center>
-                  <Avatar
-                    size={"2xl"}
-                    name={props.session.user.name}
-                  />
+                  <Avatar size={"2xl"} name={props.session.user.name} />
                 </Center>
                 <br />
                 <Center>

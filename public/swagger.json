@@ -4,7 +4,972 @@
     "title": "OnLaunch - API Documentation",
     "version": "1.0"
   },
-  "paths": {},
-  "components": {},
-  "tags": []
+  "paths": {
+    "/api/admin/v0.1/app": {
+      "get": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Get app data by token",
+        "description": "Retrieves the app data along with its messages for the authenticated app based on the provided token.",
+        "responses": {
+          "200": {
+            "description": "App data found and returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials."
+          },
+          "404": {
+            "description": "No app found with the provided ID."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Update app data",
+        "description": "Updates the app data for the authenticated app based on the provided token and request body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "App data updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed for the provided app data."
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials."
+          },
+          "404": {
+            "description": "No app found to update with the provided ID."
+          },
+          "500": {
+            "description": "An internal server error occurred."
+          }
+        }
+      }
+    },
+    "/api/admin/v0.1/app/message/{messageId}": {
+      "get": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Retrieve a message by ID",
+        "description": "Retrieves a message along with its actions for a given message ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "messageId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The message ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No message found with the provided ID"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Delete a message by ID",
+        "description": "Deletes a message for a given message ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "messageId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The message ID to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No message found with the provided ID"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Update a message",
+        "description": "Updates an existing message with new information.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "messageId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The message ID to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully updated the message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No message found with the provided ID"
+          }
+        }
+      }
+    },
+    "/api/admin/v0.1/app/messages": {
+      "get": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Get all messages for an app",
+        "description": "Retrieves all messages associated with an app, identified by the app's authentication credentials.",
+        "responses": {
+          "200": {
+            "description": "An array of message objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Create a new message",
+        "description": "Creates a new message for an app, with details provided in the request body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Message created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed for the provided message data"
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials"
+          }
+        }
+      }
+    },
+    "/api/admin/v0.1/org/[appId]/token": {
+      "post": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Create temporary AppAdminToken for app",
+        "description": "Creates a temporary AppAdminToken for the specified app belonging to the authenticated organization.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "description": "The ID of the app for which to create the token.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Temporary AppAdminToken created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppAdminTokenDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No app ID provided or invalid request."
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials."
+          },
+          "404": {
+            "description": "No app found for the provided ID belonging to the authenticated organization."
+          },
+          "405": {
+            "description": "Method not allowed, only POST method is supported for this endpoint."
+          }
+        }
+      }
+    },
+    "/api/admin/v0.1/org/app": {
+      "post": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Create new app",
+        "description": "Creates a new app for the authenticated organization.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "New app created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or invalid request."
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials."
+          },
+          "405": {
+            "description": "Method not allowed, only POST method is supported for this endpoint."
+          }
+        }
+      }
+    },
+    "/api/admin/v0.1/org": {
+      "get": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Get organisation details",
+        "description": "Retrieves details of the authenticated organisation, including its apps.",
+        "responses": {
+          "200": {
+            "description": "Organisation details retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed, invalid or missing credentials."
+          },
+          "404": {
+            "description": "Organisation not found with the provided ID."
+          },
+          "405": {
+            "description": "Method not allowed, only GET method is supported for this endpoint."
+          }
+        }
+      }
+    },
+    "/api/v0.1/messages": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Get messages for an app.",
+        "description": "Retrieves all messages for an app based on the provided API key.",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "The API key for the app, used to authenticate the client and identify the requested app.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-onlaunch-bundle-id",
+            "in": "header",
+            "description": "The bundle ID of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "com.example.app"
+          },
+          {
+            "name": "x-onlaunch-bundle-version",
+            "in": "header",
+            "description": "The bundle version of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "1.0.0"
+          },
+          {
+            "name": "x-onlaunch-locale",
+            "in": "header",
+            "description": "The locale of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "en_US"
+          },
+          {
+            "name": "x-onlaunch-locale-language-code",
+            "in": "header",
+            "description": "The language code of the app's locale, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "en"
+          },
+          {
+            "name": "x-onlaunch-locale-region-code",
+            "in": "header",
+            "description": "The region code of the app's locale, should be provided by all clients",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "US"
+          },
+          {
+            "name": "x-onlaunch-package-name",
+            "in": "header",
+            "description": "The package name of the app, should be provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 150
+            },
+            "example": "com.example.app"
+          },
+          {
+            "name": "x-onlaunch-platform-name",
+            "in": "header",
+            "description": "The platform name of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "android"
+          },
+          {
+            "name": "x-onlaunch-platform-version",
+            "in": "header",
+            "description": "The platform version of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 21
+          },
+          {
+            "name": "x-onlaunch-release-version",
+            "in": "header",
+            "description": "The release version of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 123
+          },
+          {
+            "name": "x-onlaunch-version-code",
+            "in": "header",
+            "description": "The version code of the app, provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 123
+          },
+          {
+            "name": "x-onlaunch-version-name",
+            "in": "header",
+            "description": "The version name of the app, provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "1.0.0"
+          },
+          {
+            "name": "x-onlaunch-update-available",
+            "in": "header",
+            "description": "Indicates if an update is available for the app, should be provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "deprecated": true,
+        "responses": {
+          "200": {
+            "description": "Successful response. Returns an array of messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "blocking": {
+                        "type": "boolean"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "body": {
+                        "type": "string"
+                      },
+                      "actions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "actionType": {
+                              "type": "string",
+                              "enum": [
+                                "DISMISS"
+                              ]
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. See response body for validation errors."
+          },
+          "404": {
+            "description": "App not found. No app found for the provided API key."
+          },
+          "405": {
+            "description": "Method not allowed. Only GET requests are supported."
+          }
+        }
+      }
+    },
+    "/api/v0.2/messages": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Get messages for an app.",
+        "description": "Retrieves all messages for an app based on the provided API key.",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "The API key for the app, used to authenticate the client and identify the requested app.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-onlaunch-bundle-id",
+            "in": "header",
+            "description": "The bundle ID of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "com.example.app"
+          },
+          {
+            "name": "x-onlaunch-bundle-version",
+            "in": "header",
+            "description": "The bundle version of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "1.0.0"
+          },
+          {
+            "name": "x-onlaunch-locale",
+            "in": "header",
+            "description": "The locale of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "en_US"
+          },
+          {
+            "name": "x-onlaunch-locale-language-code",
+            "in": "header",
+            "description": "The language code of the app's locale, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "en"
+          },
+          {
+            "name": "x-onlaunch-locale-region-code",
+            "in": "header",
+            "description": "The region code of the app's locale, should be provided by all clients",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "US"
+          },
+          {
+            "name": "x-onlaunch-package-name",
+            "in": "header",
+            "description": "The package name of the app, should be provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 150
+            },
+            "example": "com.example.app"
+          },
+          {
+            "name": "x-onlaunch-platform-name",
+            "in": "header",
+            "description": "The platform name of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "android"
+          },
+          {
+            "name": "x-onlaunch-platform-version",
+            "in": "header",
+            "description": "The platform version of the app, should be provided by all clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 21
+          },
+          {
+            "name": "x-onlaunch-release-version",
+            "in": "header",
+            "description": "The release version of the app, provided by iOS clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 123
+          },
+          {
+            "name": "x-onlaunch-version-code",
+            "in": "header",
+            "description": "The version code of the app, provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": 123
+          },
+          {
+            "name": "x-onlaunch-version-name",
+            "in": "header",
+            "description": "The version name of the app, provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "example": "1.0.0"
+          },
+          {
+            "name": "x-onlaunch-update-available",
+            "in": "header",
+            "description": "Indicates if an update is available for the app, should be provided by Android clients.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Returns an array of messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "blocking": {
+                        "type": "boolean"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "body": {
+                        "type": "string"
+                      },
+                      "actions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "actionType": {
+                              "type": "string",
+                              "enum": [
+                                "DISMISS"
+                              ]
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. See response body for validation errors."
+          },
+          "404": {
+            "description": "App not found. No app found for the provided API key."
+          },
+          "405": {
+            "description": "Method not allowed. Only GET requests are supported."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "publicKey": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            }
+          }
+        }
+      },
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActionDto"
+            }
+          }
+        }
+      },
+      "CreateAppDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the app to be created."
+          }
+        }
+      },
+      "ActionDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "actionType": {
+            "type": "string",
+            "enum": [
+              "DISMISS"
+            ]
+          },
+          "buttonDesign": {
+            "type": "string",
+            "enum": [
+              "FILLED",
+              "TEXT"
+            ]
+          }
+        }
+      },
+      "CreateMessageDto": {
+        "type": "object",
+        "required": [
+          "blocking",
+          "title",
+          "body",
+          "startDate",
+          "endDate"
+        ],
+        "properties": {
+          "blocking": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActionDto"
+            }
+          }
+        }
+      },
+      "AppAdminTokenDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "token": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "TEMP",
+              "FULL"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "OrgDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "apps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Admin API",
+      "description": "Operations related to the management in the Admin API"
+    },
+    {
+      "name": "Client API",
+      "description": "Operations related to the retrieval of messages for the (mobile) clients"
+    }
+  ]
 }

@@ -5,18 +5,10 @@ const config = loadServerConfig();
 class Routes {
   static readonly INDEX = "/";
   static readonly DASHBOARD = "/dashboard";
-  static readonly AUTH = "/auth";
   static readonly CHANGE_EMAIL = "/changeEmail";
   static readonly PROFILE = "/profile";
-  static readonly RESET = "/reset";
-  static readonly RESET_PASSWORD = "/resetPassword";
-  static readonly VERIFY = "/verify";
-  static readonly VERIFY_AFTER_SIGNUP = "/verify?signup=true";
-  static readonly SUBSCRIPTION = "/subscription";
 
-  static getVerifyWithEmail(email: string): string {
-    return `/verify?email=${email}`;
-  }
+  static readonly SUBSCRIPTION = "/subscription";
 
   static get createNewOrg(): string {
     return "/orgs/new";
@@ -61,6 +53,33 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }
 
+  static login(params?: {
+    email?: string | null;
+    redirect?: string | null;
+    reason?:
+      | "account-recovery-requested"
+      | "account-recovered"
+      | "account-verified"
+      | "logout";
+  }): string {
+    const path = "/login";
+    const searchParams = new URLSearchParams();
+    if (params?.email) {
+      searchParams.set("email", params.email);
+    }
+    if (params?.redirect) {
+      searchParams.set("redirect", params.redirect);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
+  }
+
+  static readonly SIGNUP = "/signup";
+  static readonly ACCOUNT_RECOVERY = "/account/recover";
+  static readonly ACCOUNT_RECOVERY_CONFIRM = "/account/recover/confirm";
+
   // the bellow functions use the full path of website for external usage
 
   static changeEmailWithToken(token: string): string {
@@ -71,12 +90,16 @@ class Routes {
     return `${config.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
   }
 
-  static resetPasswordWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.RESET_PASSWORD}?token=${token}`;
+  static accountRecoverConfirmWithToken(token: string): string {
+    return `${config.nextAuth.url}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
   }
 
-  static verifyWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.VERIFY}?token=${token}`;
+  static accountVerify(params: { token: string; email: string }): string {
+    const url = new URL(config.nextAuth.url);
+    url.pathname = "/account/verify";
+    url.searchParams.set("token", params.token);
+    url.searchParams.set("email", params.email);
+    return url.toString();
   }
 
   static subscriptionPageSuccess(orgId: string): string {

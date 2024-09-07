@@ -118,7 +118,9 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: Routes.login({
+          redirect: context.req.url,
+        }),
         permanent: false,
       },
     };
