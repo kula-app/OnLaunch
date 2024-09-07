@@ -11,7 +11,7 @@ export function useUsers(orgId: number): {
 } {
   const { data, isLoading, error, mutate } = useSWR<User[]>(
     ApiRoutes.getOrgUsersByOrgId(orgId),
-    getFetcher
+    getFetcher,
   );
 
   return {

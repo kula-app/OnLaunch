@@ -16,8 +16,8 @@ export async function authenticatedHandler(
   handler: (
     req: NextApiRequest,
     res: NextApiResponse,
-    user: User
-  ) => Promise<void>
+    user: User,
+  ) => Promise<void>,
 ): Promise<void> {
   let user;
 

@@ -6,5 +6,5 @@ import { PanelContentComponent } from "./PanelContent";
 export const layout = unapply(reduce(mergeDeepLeft, {}))(
   MainPanelComponent,
   PanelContentComponent,
-  PanelContainerComponent
+  PanelContainerComponent,
 );

@@ -4,7 +4,7 @@ import { returnDataOrThrowError } from "../../util/api";
 const updateUserRoleInOrg = async (
   orgId: number,
   userId: number,
-  role: string
+  role: string,
 ) => {
   const response = await fetch(ApiRoutes.getOrgUsersByOrgId(orgId), {
     method: "PUT",

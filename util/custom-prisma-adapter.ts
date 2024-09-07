@@ -20,7 +20,7 @@ function mapUserToAdapterUser(user: User): AdapterUser {
     name:
       user.firstName && user.lastName
         ? `${user.firstName} ${user.lastName}`
-        : user.firstName ?? user.lastName ?? "",
+        : (user.firstName ?? user.lastName ?? ""),
     email: user.email ?? "",
     emailVerified: user.verifiedAt,
 
@@ -34,7 +34,7 @@ function mapAccountToAdapterAccount(
       id: number;
       authId: string | null;
     };
-  }
+  },
 ): AdapterAccount {
   return {
     userId: account.user.authId ?? account.user.id.toString(),
@@ -59,7 +59,7 @@ function mapSessionToAdapterSession(
       id: number;
       authId: string | null;
     };
-  }
+  },
 ): AdapterSession {
   return {
     sessionToken: session.sessionToken,
@@ -69,7 +69,7 @@ function mapSessionToAdapterSession(
 }
 
 function mapAuthTokenToAdapterAuthToken(
-  authToken: AuthToken
+  authToken: AuthToken,
 ): AdapterVerificationToken {
   return {
     identifier: authToken.identifier,
@@ -127,7 +127,7 @@ export function PrismaAdapter(): Required<Adapter> {
     },
     async getUserByAccount(provider_providerAccountId) {
       logger.log(
-        `Getting user by account with provider ${provider_providerAccountId.provider} and account id ${provider_providerAccountId.providerAccountId}`
+        `Getting user by account with provider ${provider_providerAccountId.provider} and account id ${provider_providerAccountId.providerAccountId}`,
       );
       const account = await prisma.account.findUnique({
         where: {
@@ -212,7 +212,7 @@ export function PrismaAdapter(): Required<Adapter> {
     },
     unlinkAccount: async (provider_providerAccountId) => {
       logger.log(
-        `Unlinking account with provider ${provider_providerAccountId.provider} and account id ${provider_providerAccountId.providerAccountId}`
+        `Unlinking account with provider ${provider_providerAccountId.provider} and account id ${provider_providerAccountId.providerAccountId}`,
       );
       const account = await prisma.account.delete({
         where: {
@@ -231,7 +231,7 @@ export function PrismaAdapter(): Required<Adapter> {
     },
     async getSessionAndUser(sessionToken) {
       logger.log(
-        `Getting session and user with session token: ${sessionToken}`
+        `Getting session and user with session token: ${sessionToken}`,
       );
       const userAndSession = await prisma.session.findUnique({
         where: {
@@ -313,7 +313,7 @@ export function PrismaAdapter(): Required<Adapter> {
     // Verification Tokens
     createVerificationToken: async (data) => {
       logger.log(
-        `Creating verification token with data: ${JSON.stringify(data)}`
+        `Creating verification token with data: ${JSON.stringify(data)}`,
       );
       const authToken = await prisma.authToken.create({
         data: {
@@ -326,7 +326,7 @@ export function PrismaAdapter(): Required<Adapter> {
     },
     useVerificationToken: async (identifier_token) => {
       logger.log(
-        `Using verification token with identifier token: ${identifier_token}`
+        `Using verification token with identifier token: ${identifier_token}`,
       );
       const authToken = await prisma.authToken.update({
         where: {

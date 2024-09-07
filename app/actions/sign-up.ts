@@ -83,7 +83,7 @@ export const signUp = createServerAction(
     expiryDate.setDate(expiryDate.getDate() + 7);
 
     logger.log(
-      `Creating verification token for user with id '${createdUser.id}'`
+      `Creating verification token for user with id '${createdUser.id}'`,
     );
     const verificationToken = await prisma.verificationToken.create({
       data: {
@@ -98,7 +98,7 @@ export const signUp = createServerAction(
       createdUser.email ?? email,
       createdUser.firstName,
       verificationToken.token,
-      MailType.Verification
+      MailType.Verification,
     );
-  }
+  },
 );

@@ -16,7 +16,7 @@ type Data = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data | {}>
+  res: NextApiResponse<Data | {}>,
 ) {
   const config = loadServerConfig();
   if (req.headers.authorization !== `token ${config.health.apiKey}`) {
@@ -31,7 +31,7 @@ export default async function handler(
     .status(
       result.status == "error"
         ? StatusCodes.SERVICE_UNAVAILABLE
-        : StatusCodes.OK
+        : StatusCodes.OK,
     )
     .setHeader("Content-Type", "application/health+json")
     .json(result);

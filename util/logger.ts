@@ -17,19 +17,19 @@ export class Logger {
 
   public error(message: string): void {
     console.error(
-      `[${this.getTimeStamp()}] [ERROR] [${this.filename}] ${message}`
+      `[${this.getTimeStamp()}] [ERROR] [${this.filename}] ${message}`,
     );
   }
 
   warn(message: string) {
     console.warn(
-      `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`
+      `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`,
     );
   }
 
   public verbose(message: string): void {
     console.log(
-      `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`
+      `[${this.getTimeStamp()}] [VERBOSE] [${this.filename}] ${message}`,
     );
   }
 }

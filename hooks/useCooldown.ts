@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
  * @param cooldownSeconds The number of seconds to count down from. If an array is provided, the cooldown will use the next value in the array each time it is started.
  */
 export const useCooldown = (
-  cooldownSeconds: number | number[]
+  cooldownSeconds: number | number[],
 ): {
   seconds: number;
   isActive: boolean;

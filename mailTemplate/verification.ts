@@ -3,7 +3,7 @@ import { Template } from "../models/template";
 export function createVerificationTemplate(
   firstName: string | null,
   urlWithToken: string,
-  senderName: string
+  senderName: string,
 ): Template {
   return {
     subject: "Verify your OnLaunch account",

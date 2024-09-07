@@ -262,7 +262,7 @@ type ResponseDto = MessageDto[] | ErrorObjectDto;
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseDto>
+  res: NextApiResponse<ResponseDto>,
 ) {
   switch (req.method) {
     case "GET":
@@ -387,7 +387,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           },
         });
         logger.log(
-          `Request count for org with id '${app.orgId}' is ${requestCount}`
+          `Request count for org with id '${app.orgId}' is ${requestCount}`,
         );
 
         let isLimitReached = false;
@@ -396,12 +396,12 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         if (subFromDb) {
           const targetProduct = products.find(
             (product: { id: string | undefined }) =>
-              product.id === subFromDb?.subItems[0].productId
+              product.id === subFromDb?.subItems[0].productId,
           );
 
           if (!targetProduct) {
             logger.error(
-              `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`
+              `No product found for org with id '${app.orgId}' and active sub with id '${subFromDb.subId}'`,
             );
             return res
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -409,7 +409,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           }
 
           logger.log(
-            `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`
+            `Request limit for org with id '${app.orgId}' is ${targetProduct.requests}`,
           );
           if (requestCount >= Number(targetProduct.requests)) {
             isLimitReached = true;
@@ -422,7 +422,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         // Return error if limit has been reached and the request cannot be served
         if (isLimitReached) {
           logger.log(
-            `The limit has been currently reached for org with id '${app?.orgId}'`
+            `The limit has been currently reached for org with id '${app?.orgId}'`,
           );
           return res.status(StatusCodes.PAYMENT_REQUIRED).json({
             message: "The limit for the current abo has been reached.",
@@ -468,7 +468,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   // logging the api requests after checking if the app exists, so it is only logged when the request could successfully be served so far
   // as logged requests are used for tracking, only for successful requests should be tracked
   logger.log(
-    `Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`
+    `Creating logged API request for ip '${ip}' and app with id ${app.id} and public key ${publicKey}`,
   );
   await prisma.loggedApiRequests.create({
     data: {
@@ -516,6 +516,6 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           ]);
         }, new Array<MessageActionDto>()),
       };
-    })
+    }),
   );
 }

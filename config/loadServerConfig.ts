@@ -91,10 +91,10 @@ export function loadServerConfig(): ServerConfig {
       env: env.SENTRY_ENV,
       release: env.SENTRY_RELEASE,
       replaysOnErrorSampleRate: parseNumberEnvValue(
-        env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE
+        env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
       ),
       replaysSessionSampleRate: parseNumberEnvValue(
-        env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE
+        env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
       ),
       sampleRate: parseNumberEnvValue(env.SENTRY_SAMPLE_RATE),
       tracesSampleRate:

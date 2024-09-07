@@ -15,7 +15,7 @@ async function buffer(req: NextApiRequest) {
     chunks.push(
       typeof chunk === "string"
         ? Buffer.from(chunk as string)
-        : (chunk as Buffer)
+        : (chunk as Buffer),
     );
   }
   return Buffer.concat(chunks);
@@ -23,7 +23,7 @@ async function buffer(req: NextApiRequest) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const logger = new Logger(__filename);
 
@@ -80,12 +80,12 @@ export default async function handler(
               sessionData.id,
               {
                 expand: ["subscription"],
-              }
+              },
             );
 
             if (!session.client_reference_id) {
               logger.error(
-                `Error during checkout.session.completed (checkout id: ${session.id}) event: no client_reference_id in session`
+                `Error during checkout.session.completed (checkout id: ${session.id}) event: no client_reference_id in session`,
               );
               return res.status(StatusCodes.BAD_REQUEST).json({
                 message: `No client_reference_id in session`,
@@ -94,7 +94,7 @@ export default async function handler(
 
             if (!session.subscription) {
               logger.error(
-                `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription was retrieved`
+                `Error during checkout.session.completed (checkout id: ${session.id}) event: no subscription was retrieved`,
               );
               return res
                 .status(StatusCodes.BAD_REQUEST)
@@ -158,7 +158,7 @@ export default async function handler(
             });
           } catch (error) {
             logger.error(
-              `Error during checkout.session.completed event: ${error}`
+              `Error during checkout.session.completed event: ${error}`,
             );
           }
           break;
@@ -179,7 +179,7 @@ export default async function handler(
 
             if (!toDeleteSubFromDb) {
               logger.error(
-                `${event.type} - No subscription found for sub id '${subData.id}'`
+                `${event.type} - No subscription found for sub id '${subData.id}'`,
               );
               return res.status(StatusCodes.BAD_REQUEST).json({
                 message: `${event.type} - No subscription found for sub id '${subData.id}'`,
@@ -216,7 +216,7 @@ export default async function handler(
 
             if (!updatedSubFromDb) {
               logger.error(
-                `${event.type} - No subscription found for sub id '${updatedSub.id}'`
+                `${event.type} - No subscription found for sub id '${updatedSub.id}'`,
               );
               return res.status(StatusCodes.BAD_REQUEST).json({
                 message: `${event.type} - No subscription found for sub id '${updatedSub.id}'`,
@@ -225,10 +225,10 @@ export default async function handler(
 
             // stripe timestamps are in seconds, while node handles them in miliseconds
             const stripeCurrentPeriodStart = new Date(
-              updatedSub.current_period_start * 1000
+              updatedSub.current_period_start * 1000,
             );
             const stripeCurrentPeriodEnd = new Date(
-              updatedSub.current_period_end * 1000
+              updatedSub.current_period_end * 1000,
             );
 
             // Check if new billing period started
@@ -241,7 +241,7 @@ export default async function handler(
             ) {
               // Update new billing period information
               logger.log(
-                `Updating new billing period information for sub with id '${updatedSub.id}`
+                `Updating new billing period information for sub with id '${updatedSub.id}`,
               );
               await prisma.subscription.update({
                 data: {

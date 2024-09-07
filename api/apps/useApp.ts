@@ -5,7 +5,7 @@ import getFetcher from "../../util/fetcher";
 
 export function useApp(
   orgId: number,
-  appId: number
+  appId: number,
 ): {
   app?: App;
   isError?: Error;
@@ -14,7 +14,7 @@ export function useApp(
 } {
   const { data, isLoading, error, mutate } = useSWR<App>(
     ApiRoutes.getAppByOrgIdAndAppId(orgId, appId),
-    getFetcher
+    getFetcher,
   );
 
   return {

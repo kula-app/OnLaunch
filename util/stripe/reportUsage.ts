@@ -7,7 +7,7 @@ import { Logger } from "../logger";
 async function findProductDetailsById(id: string, products: any) {
   const product = products.find(
     (p: Product) =>
-      p.id === id || (p.unlimitedOption && p.unlimitedOption.id === id)
+      p.id === id || (p.unlimitedOption && p.unlimitedOption.id === id),
   );
 
   if (!product) {
@@ -29,7 +29,7 @@ async function findProductDetailsById(id: string, products: any) {
 
 export async function reportOrgToStripe(
   orgId: number,
-  isSubscriptionDeleted: boolean
+  isSubscriptionDeleted: boolean,
 ) {
   const logger = new Logger(__filename);
   logger.log(`Usage reporting called for org with id '${orgId}'`);
@@ -86,10 +86,10 @@ export async function reportOrgToStripe(
 
   if (!org) {
     logger.log(
-      `No organisation found with id '${orgId}' (with metered, active subscription)`
+      `No organisation found with id '${orgId}' (with metered, active subscription)`,
     );
     throw new Error(
-      `No organisation found with id '${orgId}' (with metered, active subscription)`
+      `No organisation found with id '${orgId}' (with metered, active subscription)`,
     );
   }
 
@@ -98,7 +98,7 @@ export async function reportOrgToStripe(
 
   // Looking for the first flatrate (unmetered) SubItem
   const flatrateSubItem = org.subs[0].subItems.find(
-    (subItem) => subItem.metered === false
+    (subItem) => subItem.metered === false,
   );
   if (!flatrateSubItem) {
     logger.log(`No flatrate sub item found for org with id '${org.id}'`);
@@ -107,7 +107,7 @@ export async function reportOrgToStripe(
 
   // Looking for the first metered SubItem
   const meteredSubItem = org.subs[0].subItems.find(
-    (subItem) => subItem.metered === true
+    (subItem) => subItem.metered === true,
   );
   if (!meteredSubItem) {
     logger.log(`No metered sub item found for org with id '${org.id}'`);
@@ -170,7 +170,7 @@ export async function reportOrgToStripe(
       });
     } catch (error) {
       logger.error(
-        `Error while preparing data for org with id '${org.id}': ${error}`
+        `Error while preparing data for org with id '${org.id}': ${error}`,
       );
       throw error;
     }
@@ -203,15 +203,15 @@ export async function reportOrgToStripe(
   if (!report) {
     const flatrateProduct = products.find(
       (product: { id: string | undefined }) =>
-        product.id === flatrateSubItem.productId
+        product.id === flatrateSubItem.productId,
     );
 
     if (!flatrateProduct) {
       logger.error(
-        `Could not find flatrate product with id '${flatrateSubItem.productId}'`
+        `Could not find flatrate product with id '${flatrateSubItem.productId}'`,
       );
       throw new Error(
-        `Could not find flatrate product with id '${flatrateSubItem.productId}'`
+        `Could not find flatrate product with id '${flatrateSubItem.productId}'`,
       );
     }
     const requests = flatrateProduct.requests ?? 0;
@@ -219,13 +219,13 @@ export async function reportOrgToStripe(
     // Check if the requests during this billing period exceed the limit
     if (requests >= sumOfRequests) {
       logger.log(
-        `The request count for org with id '${org.id}' is covered by the flatrate limit`
+        `The request count for org with id '${org.id}' is covered by the flatrate limit`,
       );
       return;
     } else if (requests < sumOfRequests) {
       // Only a part of the request count is covered by the flatrate limit
       logger.log(
-        `The request count for org with id '${org.id}' is partially covered by the flatrate limit`
+        `The request count for org with id '${org.id}' is partially covered by the flatrate limit`,
       );
       // Substract the flatrate limit for the (first) usage report for this billing period
       sumOfRequests = sumOfRequests - requests;
@@ -235,7 +235,7 @@ export async function reportOrgToStripe(
   // If subscription is not deleted, report usage to stripe
   if (!isSubscriptionDeleted) {
     logger.log(
-      `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' to stripe`
+      `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' to stripe`,
     );
     await stripe.subscriptionItems.createUsageRecord(meteredSubItem.subItemId, {
       quantity: sumOfRequests,
@@ -253,12 +253,12 @@ export async function reportOrgToStripe(
       // Search product for pricing data
       const product = await findProductDetailsById(
         meteredSubItem.productId,
-        products
+        products,
       );
 
       if (!product) {
         logger.error(
-          `Could not find procuct with id '${meteredSubItem.productId}`
+          `Could not find procuct with id '${meteredSubItem.productId}`,
         );
         return;
       }
@@ -267,7 +267,7 @@ export async function reportOrgToStripe(
       // Since the priceAmount should be in EUR, multiply it by 100 to
       // get the amount in cents
       const amount = Math.round(
-        sumOfRequests * (Number(product.priceAmount) * 100)
+        sumOfRequests * (Number(product.priceAmount) * 100),
       );
 
       if (amount <= 0) {
@@ -276,12 +276,12 @@ export async function reportOrgToStripe(
             org.id
           }' result in not even 1 cent (${
             sumOfRequests * (Number(product.priceAmount) * 100)
-          }) - no invoice item to create`
+          }) - no invoice item to create`,
         );
         return;
       }
       logger.log(
-        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.stripeCustomerId}) to stripe`
+        `Creating new invoice item to report usage of ${sumOfRequests} requests (${amount} eur-cents) for org with id '${org.id}' (customer id: ${org.stripeCustomerId}) to stripe`,
       );
 
       // Create new invoice item to account for the requests made in the
@@ -306,7 +306,7 @@ export async function reportOrgToStripe(
       });
     } catch (error) {
       logger.error(
-        `Cancelling reporting for org with id '${org.id}' due to error: ${error}`
+        `Cancelling reporting for org with id '${org.id}' due to error: ${error}`,
       );
       throw error;
     }

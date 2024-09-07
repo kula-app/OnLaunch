@@ -2,7 +2,7 @@ import { Template } from "../models/template";
 
 export function createDirectInviteNewUserTemplate(
   urlWithToken: string,
-  senderName: string
+  senderName: string,
 ): Template {
   return {
     subject: "You have a new invitation",

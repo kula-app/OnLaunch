@@ -61,7 +61,7 @@ if (config.nextAuth.provider.credentials.isEnabled) {
         const isValid = await verifyPassword(
           credentials.password,
           user.salt,
-          user.password
+          user.password,
         );
         if (!isValid) {
           throw new Error("Wrong credentials!");
@@ -76,7 +76,7 @@ if (config.nextAuth.provider.credentials.isEnabled) {
           name: user.firstName?.concat(" ").concat(user.lastName as string),
         };
       },
-    })
+    }),
   );
 }
 
@@ -88,7 +88,7 @@ if (
     GitHubProvider({
       clientId: config.nextAuth.provider.github.clientId,
       clientSecret: config.nextAuth.provider.github.clientSecret,
-    })
+    }),
   );
 }
 
@@ -100,7 +100,7 @@ if (
     GoogleProvider({
       clientId: config.nextAuth.provider.google.clientId,
       clientSecret: config.nextAuth.provider.google.clientSecret,
-    })
+    }),
   );
 }
 

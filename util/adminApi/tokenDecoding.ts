@@ -1,7 +1,7 @@
 import { AdminTokenType } from "../../models/adminTokenType";
 
 export function decodeToken(
-  token: string | undefined
+  token: string | undefined,
 ): { type: AdminTokenType; token: string } | null {
   if (!token) {
     return null;

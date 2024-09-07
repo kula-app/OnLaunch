@@ -43,7 +43,7 @@ export async function validatePassword(password: string) {
 export async function verifyPassword(
   password: string,
   salt: string,
-  hashedPassword: string
+  hashedPassword: string,
 ) {
   logger.log("Verifying password");
   const isValid = await compare(password.concat(salt), hashedPassword);
@@ -59,7 +59,7 @@ export function sendTokenPerMail(
   email: string,
   firstName: string | null,
   token: string,
-  mailType: MailType
+  mailType: MailType,
 ) {
   logger.log(`Sending mail of type '${mailType}'`);
 
@@ -82,7 +82,7 @@ export function sendTokenPerMail(
       const verificationTemplate = createVerificationTemplate(
         firstName,
         Routes.accountVerify({ token, email }),
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -98,7 +98,7 @@ export function sendTokenPerMail(
       const resetPasswordTemplate = createResetPasswordTemplate(
         firstName,
         Routes.accountRecoverConfirmWithToken(token),
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -114,7 +114,7 @@ export function sendTokenPerMail(
       const changeEmailTemplate = createChangeEmailTemplate(
         firstName,
         Routes.changeEmailWithToken(token),
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -129,7 +129,7 @@ export function sendTokenPerMail(
     case MailType.EmailChanged:
       const emailChangedTemplate = createEmailChangedTemplate(
         firstName,
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -145,7 +145,7 @@ export function sendTokenPerMail(
       const directInviteTemplate = createDirectInviteTemplate(
         firstName,
         Routes.directInviteWithToken(token),
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -160,7 +160,7 @@ export function sendTokenPerMail(
     case MailType.DirectInviteNewUser:
       const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
         Routes.directInviteWithToken(token),
-        senderName
+        senderName,
       );
 
       transporter.sendMail({
@@ -180,7 +180,7 @@ export function sendTokenPerMail(
 
 export async function getUserFromRequest(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const session = await getServerSession(req, res, authOptions);
 
@@ -195,7 +195,7 @@ export async function getUserFromRequest(
 }
 export async function getUserWithRoleFromRequest(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const user = await getUserFromRequest(req, res);
 
@@ -210,7 +210,7 @@ export async function getUserWithRoleFromRequest(
   logger.log(
     `Looking up user with id '${user.id}' in organisation '${
       req.body.orgId ? req.body.orgId : req.query.orgId
-    }'`
+    }'`,
   );
   const userInOrg = await prisma.usersInOrganisations.findFirst({
     where: {
@@ -229,7 +229,7 @@ export async function getUserWithRoleFromRequest(
 
   if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
     logger.error(
-      `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`
+      `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`,
     );
     // if user has no business here, return a 404
     return res.status(StatusCodes.NOT_FOUND).json({

@@ -117,7 +117,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<AppDto | ErrorDto>
+  res: NextApiResponse<AppDto | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "app");
 
@@ -146,7 +146,7 @@ export default async function handler(
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   logger.log(`Looking up app with id(='${authResult.id})'`);
 
@@ -176,7 +176,7 @@ async function getHandler(
       body: message.body,
       endDate: message.endDate,
       startDate: message.startDate,
-    })
+    }),
   );
   const foundAppDto: AppDto = {
     id: app.id,
@@ -193,7 +193,7 @@ async function getHandler(
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const updateAppDto = plainToInstance(CreateAppDto, req.body);
   const validationErrors = await validate(updateAppDto);
@@ -203,7 +203,7 @@ async function putHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ["An unknown error occurred"]
+          : ["An unknown error occurred"],
       )
       .join(", ");
     return res
@@ -245,8 +245,8 @@ async function putHandler(
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
         getErrorDto(
-          "An internal server error occurred - please try again later!"
-        )
+          "An internal server error occurred - please try again later!",
+        ),
       );
   }
 }

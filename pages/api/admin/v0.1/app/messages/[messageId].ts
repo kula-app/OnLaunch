@@ -137,7 +137,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<MessageDto | ErrorDto>
+  res: NextApiResponse<MessageDto | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "app");
 
@@ -168,12 +168,12 @@ export default async function handler(
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const messageId = Number(req.query.messageId);
 
   logger.log(
-    `Looking up message with id '${messageId}' for app with id(=${authResult.id})`
+    `Looking up message with id '${messageId}' for app with id(=${authResult.id})`,
   );
   const message = await prisma.message.findUnique({
     include: {
@@ -187,7 +187,7 @@ async function getHandler(
 
   if (message == null) {
     logger.log(
-      `No message found with id '${messageId}' for app with id(=${authResult.id})`
+      `No message found with id '${messageId}' for app with id(=${authResult.id})`,
     );
     return res
       .status(StatusCodes.NOT_FOUND)
@@ -199,7 +199,7 @@ async function getHandler(
       title: action.title,
       actionType: action.actionType,
       buttonDesign: action.buttonDesign,
-    })
+    }),
   );
   const dto: MessageDto = {
     id: message.id,
@@ -219,13 +219,13 @@ async function getHandler(
 async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const messageId = Number(req.query.messageId);
 
   try {
     logger.log(
-      `Deleting message with id '${messageId}' for app with id(=${authResult.id})`
+      `Deleting message with id '${messageId}' for app with id(=${authResult.id})`,
     );
     const deletedMessage = await prisma.message.delete({
       where: {
@@ -250,7 +250,7 @@ async function deleteHandler(
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(
-        `No message found with id '${messageId}' for app with id(=${authResult.id})`
+        `No message found with id '${messageId}' for app with id(=${authResult.id})`,
       );
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -262,8 +262,8 @@ async function deleteHandler(
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
         getErrorDto(
-          "An internal server error occurred - please try again later!"
-        )
+          "An internal server error occurred - please try again later!",
+        ),
       );
   }
 }
@@ -271,7 +271,7 @@ async function deleteHandler(
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const messageId = Number(req.query.messageId);
 
@@ -283,7 +283,7 @@ async function putHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ["An unknown error occurred"]
+          : ["An unknown error occurred"],
       )
       .join(", ");
     return res
@@ -293,7 +293,7 @@ async function putHandler(
 
   try {
     logger.log(
-      `Updating message with id '${messageId}' for app with id(=${authResult.id})`
+      `Updating message with id '${messageId}' for app with id(=${authResult.id})`,
     );
     const updatedMessage = await prisma.message.update({
       where: {
@@ -334,7 +334,7 @@ async function putHandler(
           title: action.title,
           actionType: action.actionType,
           buttonDesign: action.buttonDesign,
-        })
+        }),
       );
     }
 
@@ -364,8 +364,8 @@ async function putHandler(
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
         getErrorDto(
-          "An internal server error occurred - please try again later!"
-        )
+          "An internal server error occurred - please try again later!",
+        ),
       );
   }
 }

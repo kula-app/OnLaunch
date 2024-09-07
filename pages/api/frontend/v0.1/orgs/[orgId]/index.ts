@@ -11,7 +11,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -35,7 +35,7 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -43,7 +43,7 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   logger.log(`Looking up organisation with id '${orgId}'`);
   const org = await prisma.organisation.findUnique({
@@ -76,12 +76,12 @@ async function deleteHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   try {
     if (user.role === "USER") {
       logger.error(
-        `You are not allowed to delete organisation with id '${orgId}'`
+        `You are not allowed to delete organisation with id '${orgId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "You are not allowed to delete organisation with id " + orgId,
@@ -110,7 +110,7 @@ async function deleteHandler(
 
     if (orgToDelete && orgToDelete.subs.length > 0) {
       logger.error(
-        "Cannot delete organisation with active subscription! Cancel subscription first"
+        "Cannot delete organisation with active subscription! Cancel subscription first",
       );
       return res.status(StatusCodes.BAD_REQUEST).json({
         message:
@@ -119,7 +119,7 @@ async function deleteHandler(
     }
 
     logger.log(
-      `Setting the isDeleted flag for all active orgAdminTokens for org with id(=${orgId})`
+      `Setting the isDeleted flag for all active orgAdminTokens for org with id(=${orgId})`,
     );
     await prisma.organisationAdminToken.updateMany({
       where: {
@@ -160,12 +160,12 @@ async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   try {
     if (user.role === "USER") {
       logger.error(
-        `You are not allowed to update organisation with id '${orgId}'`
+        `You are not allowed to update organisation with id '${orgId}'`,
       );
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "You are not allowed to update organisation with id " + orgId,

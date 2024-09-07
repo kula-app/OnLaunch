@@ -6,7 +6,7 @@ import swaggerJson from "../../public/swagger.json";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   // Generate Swagger spec from next-swagger-doc
   const generatedSpec = createSwaggerSpec({

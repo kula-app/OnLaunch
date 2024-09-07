@@ -127,7 +127,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<MessageDto | MessageDto[] | ErrorDto>
+  res: NextApiResponse<MessageDto | MessageDto[] | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "app");
 
@@ -155,7 +155,7 @@ export default async function handler(
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   logger.log(`Getting messages for app with id(=${authResult.id})`);
   const messages = await prisma.message.findMany({
@@ -190,7 +190,7 @@ async function getHandler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const createMessageDto = plainToInstance(CreateMessageDto, req.body);
   const validationErrors = await validate(createMessageDto);
@@ -200,7 +200,7 @@ async function postHandler(
       .flatMap((error) =>
         error.constraints
           ? Object.values(error.constraints)
-          : ["An unknown error occurred"]
+          : ["An unknown error occurred"],
       )
       .join(", ");
     return res
@@ -238,7 +238,7 @@ async function postHandler(
         title: action.title,
         actionType: action.actionType,
         buttonDesign: action.buttonDesign,
-      })
+      }),
     );
   }
 

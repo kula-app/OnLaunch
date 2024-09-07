@@ -6,7 +6,7 @@ const updateMessage = async (
   orgId: number,
   appId: number,
   messageId: number,
-  message: Message
+  message: Message,
 ) => {
   const response = await fetch(
     ApiRoutes.getMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId),
@@ -16,7 +16,7 @@ const updateMessage = async (
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return await returnDataOrThrowError(response);

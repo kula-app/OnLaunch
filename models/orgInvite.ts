@@ -1,5 +1,5 @@
 export interface OrgInvite {
-    id: number;
-    name: string;
-    invitationToken: string;
+  id: number;
+  name: string;
+  invitationToken: string;
 }

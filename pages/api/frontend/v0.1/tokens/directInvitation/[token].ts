@@ -44,7 +44,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       logger.log(
-        `Looking up organisation with id '${userInvitationToken.orgId}'`
+        `Looking up organisation with id '${userInvitationToken.orgId}'`,
       );
       const organisation = await prisma.organisation.findFirst({
         where: {
@@ -55,7 +55,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
       if (!organisation) {
         logger.error(
-          `No organisation found with id '${userInvitationToken.orgId}'`
+          `No organisation found with id '${userInvitationToken.orgId}'`,
         );
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: `No organisation found with id ${userInvitationToken.orgId}`,
@@ -69,7 +69,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             res,
             user,
             organisation,
-            userInvitationToken.token
+            userInvitationToken.token,
           );
         case "POST":
           return postHandler(req, res, user, organisation, userInvitationToken);
@@ -78,7 +78,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -87,7 +87,7 @@ async function getHandler(
   res: NextApiResponse,
   user: User,
   organisation: Organisation,
-  token: string
+  token: string,
 ) {
   return res.status(StatusCodes.OK).json({
     id: organisation.id,
@@ -101,11 +101,11 @@ async function postHandler(
   res: NextApiResponse,
   user: User,
   organisation: Organisation,
-  userInvitationToken: UserInvitationToken
+  userInvitationToken: UserInvitationToken,
 ) {
   try {
     logger.log(
-      `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}'`
+      `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}'`,
     );
     await prisma.usersInOrganisations.create({
       data: {

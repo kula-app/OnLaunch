@@ -72,7 +72,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<AppAdminTokenDto | ErrorDto>
+  res: NextApiResponse<AppAdminTokenDto | ErrorDto>,
 ) {
   const authResult = await authenticate(req, "org");
 
@@ -97,7 +97,7 @@ export default async function handler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  authResult: AuthResult
+  authResult: AuthResult,
 ) {
   const appId = Number(req.query.appId);
 
@@ -118,14 +118,14 @@ async function postHandler(
 
   if (!appFromDb) {
     logger.error(
-      `No app with id(=${appId}) found for org with id(=${authResult.id}!`
+      `No app with id(=${appId}) found for org with id(=${authResult.id}!`,
     );
     return res
       .status(StatusCodes.NOT_FOUND)
       .json(
         getErrorDto(
-          `No app with id(=${appId}) found for org with id(=${authResult.id}!`
-        )
+          `No app with id(=${appId}) found for org with id(=${authResult.id}!`,
+        ),
       );
   }
 

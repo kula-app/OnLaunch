@@ -2,7 +2,7 @@ import { Template } from "../models/template";
 
 export function createEmailChangedTemplate(
   firstName: string | null,
-  senderName: string
+  senderName: string,
 ): Template {
   return {
     subject: "Your email address has been changed",

@@ -16,7 +16,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -48,7 +48,7 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -56,7 +56,7 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  stripeConfig: StripeConfig
+  stripeConfig: StripeConfig,
 ) {
   const stripe = createStripeClient();
 

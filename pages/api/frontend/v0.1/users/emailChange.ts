@@ -13,7 +13,7 @@ const logger = new Logger(__filename);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   switch (req.method) {
     case "POST":
@@ -96,7 +96,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   logger.log(
-    `Creating new email change token for user with current email '${user.email}'`
+    `Creating new email change token for user with current email '${user.email}'`,
   );
   const emailToken = await prisma.emailChangeToken.create({
     data: {
@@ -112,7 +112,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
     emailToken.newEmail as string,
     userByEmail.firstName as string,
     generatedToken,
-    MailType.ChangeEmail
+    MailType.ChangeEmail,
   );
 
   return res.status(StatusCodes.CREATED).json(user.email);
@@ -161,7 +161,7 @@ async function putHandler(req: NextApiRequest, res: NextApiResponse) {
     lookupToken.currentEmail as string,
     "OnLaunch user",
     "",
-    MailType.EmailChanged
+    MailType.EmailChanged,
   );
 
   logger.log(`Updating email change token as archived`);

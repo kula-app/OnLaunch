@@ -26,14 +26,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   const { password, passwordOld } = req.body;
 
@@ -67,7 +67,7 @@ async function putHandler(
     !(await verifyPassword(
       passwordOld,
       userById.salt as string,
-      userById.password as string
+      userById.password as string,
     ))
   ) {
     logger.error("Current password is wrong");

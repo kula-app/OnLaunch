@@ -13,14 +13,14 @@ export async function reportAllOrgsToStripe() {
   });
 
   logger.log(
-    `Found this many organisations to report usage for: ${orgs.length}`
+    `Found this many organisations to report usage for: ${orgs.length}`,
   );
   for (const org of orgs) {
     try {
       await reportOrgToStripe(org.id, false);
     } catch (error: any) {
       logger.error(
-        `Failed reporting for organisation(id = ${org.id}), reason: ${error}`
+        `Failed reporting for organisation(id = ${org.id}), reason: ${error}`,
       );
     }
   }

@@ -31,17 +31,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   logger.log(
-    `Looking up organisations that user with id '${user.id}' is part of`
+    `Looking up organisations that user with id '${user.id}' is part of`,
   );
   const orgsForUser = await prisma.usersInOrganisations.findMany({
     where: {
@@ -77,14 +77,14 @@ async function getHandler(
             ? organisation.org.subs[0].subName
             : "free",
       };
-    })
+    }),
   );
 }
 
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   const generatedToken = generateToken();
 

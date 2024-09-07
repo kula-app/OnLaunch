@@ -13,7 +13,7 @@ const logger = new Logger(__filename);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   return authenticatedHandler(
     req,
@@ -34,7 +34,7 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
@@ -42,7 +42,7 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   logger.log(`Looking up users in organisation with id '${orgId}'`);
   const usersInOrg = await prisma.usersInOrganisations.findMany({
@@ -71,7 +71,7 @@ async function getHandler(
   }
 
   logger.log(
-    `Looking up user direct invites for organisation with id '${orgId}'`
+    `Looking up user direct invites for organisation with id '${orgId}'`,
   );
   const userInvitationsInOrg = await prisma.userInvitationToken.findMany({
     where: {
@@ -112,11 +112,11 @@ async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   if (user.role === "USER") {
     logger.error(
-      `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${orgId}'`
+      `You are not allowed to update user with id '${req.body.userId}' in organisation with id '${orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message:
@@ -136,7 +136,7 @@ async function putHandler(
 
   try {
     logger.log(
-      `Updating role of user with id '${req.body.userId}' in organisation with id '${orgId}'`
+      `Updating role of user with id '${req.body.userId}' in organisation with id '${orgId}'`,
     );
     const updatedApp = await prisma.usersInOrganisations.update({
       where: {
@@ -157,7 +157,7 @@ async function putHandler(
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error(
-        `No user with id '${req.body.userId}' found in organisation with id '${orgId}'`
+        `No user with id '${req.body.userId}' found in organisation with id '${orgId}'`,
       );
       return res.status(StatusCodes.NOT_FOUND).json({
         message: `No user with id ${req.body.userId} found in organisation with id ${orgId}`,
@@ -173,11 +173,11 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: User,
-  orgId: number
+  orgId: number,
 ) {
   if (user.role === "USER") {
     logger.error(
-      `You are not allowed to add user with email '${req.body.email}' to organisation with id '${orgId}'`
+      `You are not allowed to add user with email '${req.body.email}' to organisation with id '${orgId}'`,
     );
     return res.status(StatusCodes.FORBIDDEN).json({
       message:
@@ -202,7 +202,7 @@ async function postHandler(
 
   if (userByEmail && userByEmail.id) {
     logger.log(
-      `Looking up user with id '${userByEmail.id}' in organisation with id '${orgId}'`
+      `Looking up user with id '${userByEmail.id}' in organisation with id '${orgId}'`,
     );
     const searchUserAlreadyInOrganisation =
       await prisma.usersInOrganisations.findFirst({
@@ -247,7 +247,7 @@ async function postHandler(
   expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000);
 
   logger.log(
-    `Creating user invitation token for email '${req.body.email}' for organisation with id '${orgId}'`
+    `Creating user invitation token for email '${req.body.email}' for organisation with id '${orgId}'`,
   );
   const uit = await prisma.userInvitationToken.create({
     data: {
@@ -263,7 +263,7 @@ async function postHandler(
     req.body.email as string,
     userByEmail ? (userByEmail.firstName as string) : "",
     generatedToken,
-    userByEmail ? MailType.DirectInvite : MailType.DirectInviteNewUser
+    userByEmail ? MailType.DirectInvite : MailType.DirectInviteNewUser,
   );
 
   return res.status(StatusCodes.CREATED).json(uit);

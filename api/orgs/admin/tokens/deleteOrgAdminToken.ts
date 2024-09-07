@@ -6,7 +6,7 @@ const deleteOrgAdminToken = async (orgId: number, tokenId: number) => {
     ApiRoutes.getOrgAdminTokensByOrgIdAndTokenId(orgId, tokenId),
     {
       method: "DELETE",
-    }
+    },
   );
 
   return await returnDataOrThrowError(response);

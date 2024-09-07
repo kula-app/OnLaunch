@@ -18,7 +18,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -37,14 +37,14 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   const org = await prisma.organisation.findFirst({
     where: {
@@ -55,7 +55,7 @@ async function getHandler(
 
   if (!org) {
     logger.error(
-      `Organisation with id '${req.query.orgId}' has been deleted or not found`
+      `Organisation with id '${req.query.orgId}' has been deleted or not found`,
     );
     return res.status(StatusCodes.NOT_FOUND).json({
       message: `Organisation with id '${req.query.orgId}' not found`,
@@ -98,14 +98,14 @@ async function getHandler(
         role: user.role as string,
         activeMessages: app.messages.length,
       };
-    })
+    }),
   );
 }
 
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   const generatedToken = generateToken();
 

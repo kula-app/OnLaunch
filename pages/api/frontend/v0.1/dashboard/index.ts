@@ -15,7 +15,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -24,7 +24,7 @@ export default async function handler(
     async (req, res, user) => {
       if (user.role !== "ADMIN") {
         logger.log(
-          `User with id '${user.id}' tried to access dashboard data without sufficient rights`
+          `User with id '${user.id}' tried to access dashboard data without sufficient rights`,
         );
         return res.status(StatusCodes.FORBIDDEN).json({
           message: "You do not have the rights to access this information",
@@ -40,14 +40,14 @@ export default async function handler(
             .status(StatusCodes.METHOD_NOT_ALLOWED)
             .json({ message: "Method not allowed" });
       }
-    }
+    },
   );
 }
 
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User
+  user: User,
 ) {
   try {
     const orgId: number = Number(req.query.orgId);

@@ -39,7 +39,7 @@ export async function getProducts(): Promise<Product[]> {
           return [freeProduct].concat(JSON.parse(cachedProducts));
         } catch (error) {
           logger.error(
-            `Failed to parse Redis cached products, reason: ${error}`
+            `Failed to parse Redis cached products, reason: ${error}`,
           );
         }
       }
@@ -72,16 +72,16 @@ export async function getProducts(): Promise<Product[]> {
     // gain unlimited requests by paying for exceeding requests
     // via the add-on product
     const mainProducts = filteredProductsByMetadata.filter(
-      (product) => !product.metadata["mainProductId"]
+      (product) => !product.metadata["mainProductId"],
     );
     const addonProducts = filteredProductsByMetadata.filter(
-      (product) => product.metadata["mainProductId"]
+      (product) => product.metadata["mainProductId"],
     );
 
     // map the data to Product data type
     const result = mainProducts.map((product): Product => {
       const matchingAddonProduct = addonProducts.find(
-        (addonProduct) => addonProduct.metadata["mainProductId"] === product.id
+        (addonProduct) => addonProduct.metadata["mainProductId"] === product.id,
       );
 
       let matchingProduct: Product | undefined;
@@ -133,7 +133,7 @@ export async function getProducts(): Promise<Product[]> {
           PRODUCTS_REDIS_KEY,
           JSON.stringify(sortedResult),
           EXPIRY_MS,
-          MAX_AGE
+          MAX_AGE,
         );
       }
     } catch (redisError) {
@@ -149,7 +149,7 @@ export async function getProducts(): Promise<Product[]> {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const stripeConfig = loadServerConfig().stripeConfig;
 

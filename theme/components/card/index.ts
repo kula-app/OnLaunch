@@ -6,5 +6,5 @@ import { CardHeaderComponent } from "./CardHeader";
 export const card = unapply(reduce(mergeDeepLeft, {}))(
   CardComponent,
   CardBodyComponent,
-  CardHeaderComponent
+  CardHeaderComponent,
 );
