@@ -1,0 +1,3 @@
+yarn generate:docs
+yarn prisma generate
+yarn format
