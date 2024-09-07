@@ -17,8 +17,7 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
 
   async function loginWithGitHub() {
     try {
-      const result = await signIn("github");
-      console.log(result);
+      await signIn("github");
     } catch (error: any) {
       toast({
         title: "An error occurred",
@@ -32,8 +31,7 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
 
   async function loginWithGoogle() {
     try {
-      const result = await signIn("google");
-      console.log(result);
+      await signIn("google");
     } catch (error: any) {
       toast({
         title: "An error occurred",
@@ -70,6 +68,10 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
     ]
   );
 
+  /*
+   * If no social login is enabled, do not render anything.
+   * This will cause the component to show up delayed.
+   */
   if (!isSocialLoginEnabled) {
     return null;
   }

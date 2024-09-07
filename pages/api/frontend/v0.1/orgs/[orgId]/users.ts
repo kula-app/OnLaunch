@@ -87,8 +87,8 @@ async function getHandler(
   const users = usersInOrg.map((userInOrg): UserDto => {
     return {
       id: userInOrg.userId,
-      firstName: userInOrg.user.firstName as string,
-      lastName: userInOrg.user.lastName as string,
+      firstName: userInOrg.user.firstName ?? "",
+      lastName: userInOrg.user.lastName ?? "",
       email: userInOrg.user.email ?? "",
       role: userInOrg.role,
     };
