@@ -18,7 +18,7 @@
     "noEmit": true,
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
     "plugins": [

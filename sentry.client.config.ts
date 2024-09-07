@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/nextjs";
-import { loadClientConfig } from "./config/loadClientConfig";
+import { loadClientConfig } from '@/config/loadClientConfig';
+import * as Sentry from '@sentry/nextjs';
 
 const sentryConfig = loadClientConfig().sentryConfig;
 
@@ -14,7 +14,7 @@ Sentry.init({
 
   tracesSampler: (samplingContext) => {
     // Ignore the health endpoint from trace sampling
-    if (samplingContext.transactionContext.name == "GET /api/health") {
+    if (samplingContext.transactionContext.name == 'GET /api/health') {
       return false;
     }
     return sentryConfig.tracesSampleRate;
