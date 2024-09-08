@@ -9,7 +9,7 @@
     "format": "prettier --write \"**/*.ts\"",
     "generate:docs": "next-swagger-doc-cli next-swagger-doc.json --output ./public/swagger.json",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint '**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
     "test:ci": "jest --ci --coverage",
     "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3000 cypress:ci",

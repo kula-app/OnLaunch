@@ -1,5 +1,3 @@
-// @ts-check
-
 import eslint from "@eslint/js";
 import eslintPluginNext from "@next/eslint-plugin-next";
 import eslintConfigPrettier from "eslint-config-prettier";
@@ -12,11 +10,23 @@ import eslintUnusedImportsPlugin from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
+  {
+    ignores: ["node_modules", ".next"],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+        project: ["./tsconfig.lint.json"],
+      },
+    },
+  },
+  eslintConfigPrettier,
+  {
     files: ["**/*.tsx", "**/*.ts"],
-    ignores: ["**/.next/*"],
+    ignores: [".next"],
     plugins: {
       react: eslintPluginReact,
       "react-hooks": eslintPluginReactHooks,
@@ -60,5 +70,5 @@ export default tseslint.config(
         version: "detect", // You can add this if you get a warning about the React version when you lint
       },
     },
-  }
+  },
 );
