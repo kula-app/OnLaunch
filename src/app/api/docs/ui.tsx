@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const RedocStandalone = dynamic(
   () => import("redoc").then((mod) => mod.RedocStandalone),
-  { ssr: false }
+  { ssr: false },
 );
 
 const UI = () => {
