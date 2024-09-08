@@ -59,8 +59,6 @@
     "request-ip": "3.3.0",
     "stripe": "16.9.0",
     "styled-components": "6.1.13",
-    "swagger-jsdoc": "6.2.8",
-    "swagger-ui-react": "5.17.14",
     "swr": "2.2.5",
     "use-debounce": "10.0.3",
     "uuid": "10.0.0",
