@@ -1,4 +1,4 @@
-import swaggerJson from "@/../public/swagger.json";
+import openapiJson from "@/../public/openapi.json";
 import yaml from "js-yaml";
 import { merge } from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -20,7 +20,7 @@ export default async function handler(
   });
 
   // Merge the two specifications
-  const combinedSpec = merge(generatedSpec, swaggerJson);
+  const combinedSpec = merge(generatedSpec, openapiJson);
 
   // Convert to YAML
   const yamlSpec = yaml.dump(combinedSpec);

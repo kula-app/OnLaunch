@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "yarn generate:docs && next build",
     "format": "prettier --write \"**/*.ts\"",
-    "generate:docs": "next-swagger-doc-cli next-swagger-doc.json --output ./public/swagger.json",
+    "generate:docs": "next-swagger-doc-cli next-swagger-doc.json --output ./public/openapi.json",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
