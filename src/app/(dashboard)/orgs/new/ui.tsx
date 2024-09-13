@@ -55,16 +55,22 @@ export default function NewOrgPage() {
   ];
   const activeStep = 0;
   return (
-    <Flex direction={"column"} justify={"stretch"}>
+    <Flex
+      direction={"column"}
+      align={"stretch"}
+      minH={{ base: 0, sm: "100vh" }}
+    >
       <NavigationBar />
       <Flex
         direction={"column"}
-        justifyContent={"center"}
+        justifyContent={{ base: "start", sm: "center" }}
         alignItems={"center"}
-        minH={"100vh"}
+        flex={1} // Setting flex to 1 to make the flex item grow and take up the remaining space
+        mt={{ base: 12, md: 0 }}
+        px={{ base: 4, md: 0 }}
       >
         <Flex direction={"column"} justifyContent={"center"}>
-          <VStack color="white" spacing={"24px"}>
+          <VStack color="white" spacing={"24px"} textAlign={"center"}>
             <Heading size="lg" as="h1">
               Create Your Organization
             </Heading>
@@ -73,32 +79,42 @@ export default function NewOrgPage() {
               your team to collaborate.
             </Heading>
           </VStack>
-          <Stepper index={activeStep} minW={"750px"} my={"48px"}>
-            {steps.map((step, index) => (
-              <Step key={index}>
-                <StepIndicator
-                  color={index <= activeStep ? "white" : "gray.400"}
-                  borderColor={"gray.400"}
-                >
-                  <StepStatus
-                    complete={<StepIcon />}
-                    incomplete={<StepNumber />}
-                    active={<StepNumber />}
-                  />
-                </StepIndicator>
+          <VStack
+            mt={{ base: 12, sm: "48px" }}
+            display={{ base: "none", sm: "block" }}
+          >
+            <Stepper
+              index={activeStep}
+              minW={{ base: "100%", sm: "750px" }}
+              orientation={"horizontal"}
+              px={12}
+            >
+              {steps.map((step, index) => (
+                <Step key={index}>
+                  <StepIndicator
+                    color={index <= activeStep ? "white" : "gray.400"}
+                    borderColor={"gray.400"}
+                  >
+                    <StepStatus
+                      complete={<StepIcon />}
+                      incomplete={<StepNumber />}
+                      active={<StepNumber />}
+                    />
+                  </StepIndicator>
 
-                <Box
-                  flexShrink="0"
-                  color={index <= activeStep ? "white" : "gray.400"}
-                >
-                  <StepTitle>{step.title}</StepTitle>
-                </Box>
+                  <Box
+                    flexShrink="0"
+                    color={index <= activeStep ? "white" : "gray.400"}
+                  >
+                    <StepTitle>{step.title}</StepTitle>
+                  </Box>
 
-                <StepSeparator />
-              </Step>
-            ))}
-          </Stepper>
-          <Card>
+                  <StepSeparator />
+                </Step>
+              ))}
+            </Stepper>
+          </VStack>
+          <Card mt={{ base: 12, sm: "48px" }}>
             <CardHeader>
               <Heading size="md" color="white">
                 What&apos;s the name of your organization / team?
@@ -110,7 +126,7 @@ export default function NewOrgPage() {
             <CardBody>
               <Formik
                 initialValues={{
-                  name: "Name",
+                  name: "",
                 }}
                 validationSchema={createOrgSchema}
                 onSubmit={async (values, { setStatus }) => {
@@ -150,7 +166,11 @@ export default function NewOrgPage() {
               >
                 {(props) => (
                   <Form>
-                    <VStack w={"full"} spacing={"24px"} align={"end"}>
+                    <VStack
+                      w={"full"}
+                      spacing={{ base: 4, md: "24px" }}
+                      align={"end"}
+                    >
                       <FormControl color="white" w={"full"}>
                         <FormLabel>Name</FormLabel>
                         <Field name="name">

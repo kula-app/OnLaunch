@@ -7,7 +7,10 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const Card = defineMultiStyleConfig({
   baseStyle: definePartsStyle({
     container: {
-      p: "22px",
+      p: {
+        base: 2,
+        md: "22px",
+      },
       display: "flex",
       flexDirection: "column",
       backdropFilter: "blur(120px)",

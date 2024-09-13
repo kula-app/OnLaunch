@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import UI from "./ui";
 
 export const metadata = {
-  title: "Login",
+  title: "New Organization",
 };
 
 export default async function Page() {
