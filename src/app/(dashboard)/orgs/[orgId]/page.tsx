@@ -13,7 +13,9 @@ export default async function Page({ params }: { params: { orgId: number } }) {
   if (!session) {
     redirect(
       Routes.login({
-        redirect: Routes.org(params.orgId),
+        redirect: Routes.org({
+          orgId: params.orgId,
+        }),
       }),
     );
   } else {

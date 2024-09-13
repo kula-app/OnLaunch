@@ -144,7 +144,7 @@ export function sendTokenPerMail(
     case MailType.DirectInvite:
       const directInviteTemplate = createDirectInviteTemplate(
         firstName,
-        Routes.directInviteWithToken(token),
+        Routes.directInvitationUrlWithToken(token),
         senderName,
       );
 
@@ -159,7 +159,7 @@ export function sendTokenPerMail(
 
     case MailType.DirectInviteNewUser:
       const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
-        Routes.directInviteWithToken(token),
+        Routes.directInvitationUrlWithToken(token),
         senderName,
       );
 

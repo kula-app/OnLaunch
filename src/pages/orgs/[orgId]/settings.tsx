@@ -87,14 +87,7 @@ export default function EditOrgPage() {
   const [isCustomer, setIsCustomer] = useState(false);
 
   const roles = ["ADMIN", "USER"];
-  const [baseUrl, setBaseUrl] = useState("");
   const [userEmail, setUserEmail] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setBaseUrl(window.location.origin);
-    }
-  }, []);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -465,9 +458,9 @@ export default function EditOrgPage() {
                   <Input
                     disabled
                     id="invite"
-                    value={
-                      baseUrl + "/dashboard?invite=" + org?.invitationToken
-                    }
+                    value={Routes.invitationUrlWithToken(
+                      org?.invitationToken ?? "",
+                    )}
                   />
                 </FormControl>
                 <Stack>
@@ -476,9 +469,9 @@ export default function EditOrgPage() {
                     className="ml-5 mt-5"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        baseUrl +
-                          "/dashboard?invite=" +
-                          (org?.invitationToken as string),
+                        Routes.invitationUrlWithToken(
+                          org?.invitationToken ?? "",
+                        ),
                       );
                       toast({
                         title: "Success!",

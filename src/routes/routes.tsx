@@ -22,8 +22,13 @@ class Routes {
     return "/orgs/new";
   }
 
-  static org(orgId: number): string {
-    return `/orgs/${orgId}`;
+  static org(params: { orgId: number; reason?: "user-joined" }): string {
+    const url = new URL(config.nextAuth.url);
+    url.pathname = `/orgs/${params.orgId}`;
+    if (params.reason) {
+      url.searchParams.set("reason", params.reason);
+    }
+    return url.toString();
   }
 
   static orgSettingsById(orgId: number): string {
@@ -98,8 +103,12 @@ class Routes {
     return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
   }
 
-  static directInviteWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.dashboard}?directinvite=${token}`;
+  static invitationUrlWithToken(token: string): string {
+    return `${config.nextAuth.url}/orgs/join?invite-token=${token}`;
+  }
+
+  static directInvitationUrlWithToken(token: string): string {
+    return `${config.nextAuth.url}/orgs/join?direct-invite-token=${token}`;
   }
 
   static accountRecoverConfirmWithToken(token: string): string {

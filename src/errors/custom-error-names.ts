@@ -6,6 +6,7 @@ export class CustomErrorNames {
   static TokenExpiredError = "TokenExpiredError";
   static TokenObsoleteError = "VerificationTokenObsoleteError";
   static TokenUsedError = "TokenUsedError";
+  static UserAlreadyJoinedOrgError = "UserAlreadyJoinedOrgError";
   static UserAlreadyVerifiedError = "UserAlreadyVerifiedError";
   static UserRegistrationDisabledError = "UserRegistrationDisabledError";
 }
