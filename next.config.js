@@ -9,15 +9,6 @@ const nextConfig = {
     // Enable the instrumentation hook for Sentry v8.x
     instrumentationHook: true,
   },
-
-  async rewrites() {
-    return [
-      {
-        source: "/api/docs",
-        destination: "/api-doc",
-      },
-    ];
-  },
 };
 
 // Injected content via Sentry wizard below

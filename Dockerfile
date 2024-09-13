@@ -53,7 +53,6 @@ COPY sentry.client.config.ts .
 COPY postcss.config.js .
 COPY tailwind.config.js .
 
-COPY types ./types
 COPY public ./public
 COPY src ./src
 

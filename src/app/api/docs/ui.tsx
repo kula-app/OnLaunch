@@ -1,14 +1,19 @@
 "use client";
 
+import { Box } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 
 const RedocStandalone = dynamic(
   () => import("redoc").then((mod) => mod.RedocStandalone),
-  { ssr: false }
+  { ssr: false },
 );
 
 const UI = () => {
-  return <RedocStandalone specUrl="/api/openapi.yaml" />;
+  return (
+    <Box background="white">
+      <RedocStandalone specUrl="/api/openapi.yaml" />;
+    </Box>
+  );
 };
 
 export default UI;
