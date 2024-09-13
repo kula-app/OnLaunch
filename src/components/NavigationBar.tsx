@@ -30,7 +30,9 @@ import {
   FiUsers,
 } from "react-icons/fi";
 
-export const NavigationBar: React.FC = () => {
+export const NavigationBar: React.FC<{
+  currentPage: string;
+}> = ({ currentPage }) => {
   const session = useSession();
 
   return (
@@ -57,12 +59,12 @@ export const NavigationBar: React.FC = () => {
 
         <Breadcrumb display={{ base: "none", md: "flex" }} px={4}>
           <BreadcrumbItem>
-            <BreadcrumbLink as={NextLink} href={Routes.DASHBOARD}>
+            <BreadcrumbLink as={NextLink} href={Routes.dashboard}>
               <Icon as={FiHome} />
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#">New Organization</BreadcrumbLink>
+            <BreadcrumbLink href="#">{currentPage}</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </Flex>

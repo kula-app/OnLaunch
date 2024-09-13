@@ -110,7 +110,7 @@ const UI: NextPage = () => {
                       });
                       if (result?.ok) {
                         router.push(
-                          searchParams?.get("redirect") ?? Routes.DASHBOARD
+                          searchParams?.get("redirect") ?? Routes.dashboard,
                         );
                       } else if (result?.error) {
                         if (result.error === "Verify account!") {

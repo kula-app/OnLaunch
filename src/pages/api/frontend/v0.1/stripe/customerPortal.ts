@@ -88,7 +88,7 @@ async function postHandler(
     logger.log("Creating customer portal session for organisation");
     const session = await stripe.billingPortal.sessions.create({
       customer: orgFromDb.stripeCustomerId,
-      return_url: `${config.nextAuth.url}${Routes.DASHBOARD}`,
+      return_url: `${config.nextAuth.url}${Routes.dashboard}`,
     });
 
     logger.log("Redirecting to Stripe customer portal");

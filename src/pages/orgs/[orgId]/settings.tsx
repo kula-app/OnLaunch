@@ -210,7 +210,7 @@ export default function EditOrgPage() {
   }
 
   function navigateToDashboardPage() {
-    router.push(Routes.DASHBOARD);
+    router.push(Routes.dashboard);
   }
 
   function fillForm(org: Org) {
@@ -297,7 +297,7 @@ export default function EditOrgPage() {
 
   async function handleRoleChange(
     index: number,
-    event: ChangeEvent<HTMLSelectElement>
+    event: ChangeEvent<HTMLSelectElement>,
   ) {
     if (!users) {
       return;
@@ -310,13 +310,13 @@ export default function EditOrgPage() {
         await updateUserInviteRoleInOrg(
           orgId,
           user.email,
-          event.target.value as string
+          event.target.value as string,
         );
       } else {
         await updateUserRoleInOrg(
           orgId,
           Number(user.id),
-          event.target.value as string
+          event.target.value as string,
         );
       }
 
@@ -478,7 +478,7 @@ export default function EditOrgPage() {
                       navigator.clipboard.writeText(
                         baseUrl +
                           "/dashboard?invite=" +
-                          (org?.invitationToken as string)
+                          (org?.invitationToken as string),
                       );
                       toast({
                         title: "Success!",
@@ -666,7 +666,7 @@ export default function EditOrgPage() {
                                   colorScheme="blue"
                                   onClick={() => {
                                     navigator.clipboard.writeText(
-                                      token.token as string
+                                      token.token as string,
                                     );
                                     toast({
                                       title: "Success!",
@@ -691,7 +691,7 @@ export default function EditOrgPage() {
                                       setSubtextOfTokenToDelete(
                                         token.label
                                           ? `The token for '${token.label}'`
-                                          : `The token '${token.token}'`
+                                          : `The token '${token.token}'`,
                                       );
                                       onTokenDeletionOpen();
                                     }}

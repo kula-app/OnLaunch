@@ -1,13 +1,12 @@
-import React from "react";
 import {
-  Stack,
-  Link,
   Collapse,
-  Icon,
-  useColorModeValue,
-  Text,
   Flex,
-  useDisclosure
+  Icon,
+  Link,
+  Stack,
+  Text,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { MdExpandMore } from "react-icons/md";
 import Routes from "../routes/routes";
@@ -23,7 +22,7 @@ export default function MobileNav() {
   const NAV_ITEMS: Array<NavItem> = [
     {
       label: "Dashboard",
-      href: Routes.DASHBOARD,
+      href: Routes.dashboard,
     },
   ];
 

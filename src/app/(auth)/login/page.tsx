@@ -12,7 +12,7 @@ export default async function Page() {
   const session = await getServerSession(authOptions);
 
   if (session) {
-    redirect(Routes.DASHBOARD);
+    redirect(Routes.dashboard);
   }
 
   return <UI />;

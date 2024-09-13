@@ -19,7 +19,7 @@ export default function ProfilePage() {
     if (!router.isReady) return;
 
     function navigateToDashboardPage() {
-      router.push(Routes.DASHBOARD);
+      router.push(Routes.dashboard);
     }
 
     if (!stripeConfig.isEnabled) {
@@ -28,7 +28,7 @@ export default function ProfilePage() {
   }, [router.isReady, router, stripeConfig.isEnabled]);
 
   function navigateToDashboardPage() {
-    router.push(Routes.DASHBOARD);
+    router.push(Routes.dashboard);
   }
 
   function navigateToNewOrgPage() {

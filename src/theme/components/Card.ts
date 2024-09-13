@@ -7,14 +7,10 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const Card = defineMultiStyleConfig({
   baseStyle: definePartsStyle({
     container: {
-      p: {
-        base: 2,
-        md: "22px",
-      },
       display: "flex",
       flexDirection: "column",
       backdropFilter: "blur(120px)",
-      borderRadius: "20px",
+      borderRadius: 20,
       bg: "linear-gradient(127deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 75%)",
       backgroundClip: "border-box",
     },

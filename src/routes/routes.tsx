@@ -4,7 +4,11 @@ const config = loadServerConfig();
 
 class Routes {
   static readonly INDEX = "/";
-  static readonly DASHBOARD = "/dashboard";
+
+  static get dashboard() {
+    return "/dashboard";
+  }
+
   static readonly CHANGE_EMAIL = "/changeEmail";
   static readonly PROFILE = "/profile";
 
@@ -16,6 +20,10 @@ class Routes {
 
   static get createNewOrg(): string {
     return "/orgs/new";
+  }
+
+  static org(orgId: number): string {
+    return `/orgs/${orgId}`;
   }
 
   static orgSettingsById(orgId: number): string {
@@ -91,7 +99,7 @@ class Routes {
   }
 
   static directInviteWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.DASHBOARD}?directinvite=${token}`;
+    return `${config.nextAuth.url}/${Routes.dashboard}?directinvite=${token}`;
   }
 
   static accountRecoverConfirmWithToken(token: string): string {

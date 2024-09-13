@@ -60,7 +60,7 @@ export default function NewOrgPage() {
       align={"stretch"}
       minH={{ base: 0, sm: "100vh" }}
     >
-      <NavigationBar />
+      <NavigationBar currentPage="New Organization" />
       <Flex
         direction={"column"}
         justifyContent={{ base: "start", sm: "center" }}
@@ -114,7 +114,13 @@ export default function NewOrgPage() {
               ))}
             </Stepper>
           </VStack>
-          <Card mt={{ base: 12, sm: "48px" }}>
+          <Card
+            mt={{ base: 12, sm: "48px" }}
+            p={{
+              base: 2,
+              md: "22px",
+            }}
+          >
             <CardHeader>
               <Heading size="md" color="white">
                 What&apos;s the name of your organization / team?

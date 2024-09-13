@@ -66,7 +66,7 @@ export default function Header(props: Props) {
           )}
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Link href={Routes.DASHBOARD}>
+          <Link href={Routes.dashboard}>
             <Text
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
@@ -123,7 +123,7 @@ export default function Header(props: Props) {
                 </Center>
                 <br />
                 <MenuDivider />
-                <MenuItem as="a" href={Routes.DASHBOARD}>
+                <MenuItem as="a" href={Routes.dashboard}>
                   Your Organisations
                 </MenuItem>
                 <MenuItem as="a" href="/profile">
