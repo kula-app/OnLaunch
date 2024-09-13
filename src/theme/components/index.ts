@@ -1,10 +1,10 @@
 import { mergeDeepLeft, reduce, unapply } from "ramda";
 import { button } from "./button";
-import { card } from "./card";
+import { CardComponent } from "./Card";
 import { layout } from "./layout";
 
 export const components = unapply(reduce(mergeDeepLeft, {}))(
   button,
-  card,
+  CardComponent,
   layout,
 );
