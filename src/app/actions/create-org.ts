@@ -13,7 +13,6 @@ const logger = new Logger(__filename);
 export const createOrg = createServerAction(
   async ({ name }: { name: string }) => {
     const session = await getServerSession(authOptions);
-    console.log(session);
     if (!session) {
       throw new SessionNotFoundError();
     }
