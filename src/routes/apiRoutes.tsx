@@ -7,7 +7,6 @@ class ApiRoutes {
   static readonly STRIPE = `${ApiRoutes.API_BASE_URL}/stripe`;
 
   static readonly ORGS_INVITATION = `${ApiRoutes.API_BASE_URL}/tokens/organisationInvitation`;
-  static readonly DIRECT_INVITATION = `${ApiRoutes.API_BASE_URL}/tokens/directInvitation`;
 
   static readonly PRODUCTS = `${ApiRoutes.STRIPE}/products`;
   static readonly SUBSCRIPTIONS = `${ApiRoutes.STRIPE}/subscriptions`;
@@ -34,7 +33,7 @@ class ApiRoutes {
 
   static getOrgUserByOrgIdAndUserEmail(
     orgId: number,
-    userEmail: string
+    userEmail: string,
   ): string {
     return `${ApiRoutes.getOrgUsersByOrgId(orgId)}/${userEmail}`;
   }
@@ -54,7 +53,7 @@ class ApiRoutes {
   static getMessageByOrgIdAndAppIdAndMessageId(
     orgId: number,
     appId: number,
-    messageId: number
+    messageId: number,
   ): string {
     return `${ApiRoutes.getMessagesByOrgIdAndAppId(orgId, appId)}/${messageId}`;
   }
@@ -63,24 +62,20 @@ class ApiRoutes {
     return `${ApiRoutes.ORGS_INVITATION}/${token}`;
   }
 
-  static getDirectInvitationByToken(token: string): string {
-    return `${ApiRoutes.DIRECT_INVITATION}/${token}`;
-  }
-
   static getOrgAdminTokensByOrgId(orgId: number): string {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/admin/tokens`;
   }
 
   static getOrgAdminTokensByOrgIdAndTokenId(
     orgId: number,
-    tokenId: number
+    tokenId: number,
   ): string {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/admin/tokens/${tokenId}`;
   }
 
   static getAppAdminTokensByOrgIdAndAppId(
     orgId: number,
-    appId: number
+    appId: number,
   ): string {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens`;
   }
@@ -88,7 +83,7 @@ class ApiRoutes {
   static getAppAdminTokensByOrgIdAndAppIdAndTokenId(
     orgId: number,
     appId: number,
-    tokenId: number
+    tokenId: number,
   ): string {
     return `${ApiRoutes.API_BASE_URL}/orgs/${orgId}/apps/${appId}/admin/tokens/${tokenId}`;
   }

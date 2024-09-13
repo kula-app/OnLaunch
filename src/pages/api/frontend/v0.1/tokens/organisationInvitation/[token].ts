@@ -35,10 +35,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       switch (req.method) {
-        case "GET":
-          return getHandler(req, res, user, organisation);
-        case "POST":
-          return postHandler(req, res, user, organisation);
         case "PUT":
           return putHandler(req, res, user, organisation);
         default:
@@ -48,48 +44,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     },
   );
-}
-
-async function getHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-  organisation: Organisation,
-) {
-  return res.status(StatusCodes.OK).json({
-    id: organisation.id,
-    name: organisation.name,
-    invitationToken: organisation.invitationToken,
-  });
-}
-
-async function postHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-  organisation: Organisation,
-) {
-  try {
-    logger.log(
-      `Creating user with id '${user.id}' relation to organisation with id '${organisation.id}' (via org token)`,
-    );
-    await prisma.usersInOrganisations.create({
-      data: {
-        userId: user.id!,
-        orgId: organisation.id,
-        role: "USER",
-      },
-    });
-  } catch (error) {
-    logger.error("User already in organisation");
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: `User already in organisation` });
-  }
-
-  return res
-    .status(StatusCodes.OK)
-    .json({ message: `User joined organisation` });
 }
 
 async function putHandler(

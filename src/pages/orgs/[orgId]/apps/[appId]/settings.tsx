@@ -92,7 +92,7 @@ export default function EditAppPage() {
         setAppKey(app.publicKey);
 
         if (app.role !== "ADMIN") {
-          router.push(Routes.DASHBOARD);
+          router.push(Routes.dashboard);
         } else {
           fillForm(app);
         }
@@ -313,7 +313,7 @@ export default function EditAppPage() {
                         <Td>
                           {token.expiryDate
                             ? Moment(token.expiryDate).format(
-                                "DD.MM.YYYY HH:mm:ss"
+                                "DD.MM.YYYY HH:mm:ss",
                               )
                             : "never"}
                         </Td>
@@ -323,7 +323,7 @@ export default function EditAppPage() {
                             colorScheme="blue"
                             onClick={() => {
                               navigator.clipboard.writeText(
-                                token.token as string
+                                token.token as string,
                               );
                               toast({
                                 title: "Success!",
@@ -346,7 +346,7 @@ export default function EditAppPage() {
                                 setSubtextOfTokenToDelete(
                                   token.label
                                     ? `The token for '${token.label}'`
-                                    : `The token '${token.token}'`
+                                    : `The token '${token.token}'`,
                                 );
                                 onTokenDeletionOpen();
                               }}

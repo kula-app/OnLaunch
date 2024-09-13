@@ -63,14 +63,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       switch (req.method) {
-        case "GET":
-          return getHandler(
-            req,
-            res,
-            user,
-            organisation,
-            userInvitationToken.token,
-          );
         case "POST":
           return postHandler(req, res, user, organisation, userInvitationToken);
         default:
@@ -80,20 +72,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     },
   );
-}
-
-async function getHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-  organisation: Organisation,
-  token: string,
-) {
-  return res.status(StatusCodes.OK).json({
-    id: organisation.id,
-    name: organisation.name,
-    invitationToken: token,
-  });
 }
 
 async function postHandler(
@@ -112,16 +90,6 @@ async function postHandler(
         userId: user.id!,
         orgId: organisation.id,
         role: userInvitationToken.role,
-      },
-    });
-
-    logger.log(`Updating user invitation token as obsolete`);
-    await prisma.userInvitationToken.update({
-      where: {
-        token: userInvitationToken.token,
-      },
-      data: {
-        isArchived: true,
       },
     });
   } catch (error) {

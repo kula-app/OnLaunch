@@ -1,15 +1,14 @@
-import React from "react";
 import {
   Box,
-  Link,
-  Stack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  useColorModeValue,
-  Text,
   Flex,
   Icon,
+  Link,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Stack,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { MdChevronRight } from "react-icons/md";
 import Routes from "../routes/routes";
@@ -24,7 +23,7 @@ interface NavItem {
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Dashboard",
-    href: Routes.DASHBOARD,
+    href: Routes.dashboard,
   },
 ];
 

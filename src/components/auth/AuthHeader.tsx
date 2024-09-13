@@ -10,7 +10,7 @@ export const AuthHeader: React.FC = () => {
       mb={"32px"}
       display={{ base: "solid", lg: "none" }}
     >
-      <Link as={NextLink} href={Routes.DASHBOARD}>
+      <Link as={NextLink} href={Routes.dashboard}>
         <Text
           fontSize="xl"
           color="white"

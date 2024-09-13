@@ -87,14 +87,7 @@ export default function EditOrgPage() {
   const [isCustomer, setIsCustomer] = useState(false);
 
   const roles = ["ADMIN", "USER"];
-  const [baseUrl, setBaseUrl] = useState("");
   const [userEmail, setUserEmail] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setBaseUrl(window.location.origin);
-    }
-  }, []);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -210,7 +203,7 @@ export default function EditOrgPage() {
   }
 
   function navigateToDashboardPage() {
-    router.push(Routes.DASHBOARD);
+    router.push(Routes.dashboard);
   }
 
   function fillForm(org: Org) {
@@ -297,7 +290,7 @@ export default function EditOrgPage() {
 
   async function handleRoleChange(
     index: number,
-    event: ChangeEvent<HTMLSelectElement>
+    event: ChangeEvent<HTMLSelectElement>,
   ) {
     if (!users) {
       return;
@@ -310,13 +303,13 @@ export default function EditOrgPage() {
         await updateUserInviteRoleInOrg(
           orgId,
           user.email,
-          event.target.value as string
+          event.target.value as string,
         );
       } else {
         await updateUserRoleInOrg(
           orgId,
           Number(user.id),
-          event.target.value as string
+          event.target.value as string,
         );
       }
 
@@ -465,9 +458,9 @@ export default function EditOrgPage() {
                   <Input
                     disabled
                     id="invite"
-                    value={
-                      baseUrl + "/dashboard?invite=" + org?.invitationToken
-                    }
+                    value={Routes.invitationUrlWithToken(
+                      org?.invitationToken ?? "",
+                    )}
                   />
                 </FormControl>
                 <Stack>
@@ -476,9 +469,9 @@ export default function EditOrgPage() {
                     className="ml-5 mt-5"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        baseUrl +
-                          "/dashboard?invite=" +
-                          (org?.invitationToken as string)
+                        Routes.invitationUrlWithToken(
+                          org?.invitationToken ?? "",
+                        ),
                       );
                       toast({
                         title: "Success!",
@@ -666,7 +659,7 @@ export default function EditOrgPage() {
                                   colorScheme="blue"
                                   onClick={() => {
                                     navigator.clipboard.writeText(
-                                      token.token as string
+                                      token.token as string,
                                     );
                                     toast({
                                       title: "Success!",
@@ -691,7 +684,7 @@ export default function EditOrgPage() {
                                       setSubtextOfTokenToDelete(
                                         token.label
                                           ? `The token for '${token.label}'`
-                                          : `The token '${token.token}'`
+                                          : `The token '${token.token}'`,
                                       );
                                       onTokenDeletionOpen();
                                     }}
