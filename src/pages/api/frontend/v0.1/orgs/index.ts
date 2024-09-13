@@ -1,6 +1,5 @@
 import { User } from "@/models/user";
 import prisma from "@/services/db";
-import { generateToken } from "@/util/auth";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
 import { Logger } from "@/util/logger";
 import { StatusCodes } from "http-status-codes";
@@ -24,8 +23,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       switch (req.method) {
         case "GET":
           return getHandler(req, res, user);
-        case "POST":
-          return postHandler(req, res, user);
         default:
           return res
             .status(StatusCodes.METHOD_NOT_ALLOWED)
@@ -79,32 +76,4 @@ async function getHandler(
       };
     }),
   );
-}
-
-async function postHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-) {
-  const generatedToken = generateToken();
-
-  logger.log(`Creating new organisation for user with id '${user.id}'`);
-  const userInOrg = await prisma.usersInOrganisations.create({
-    data: {
-      user: {
-        connect: {
-          id: user.id,
-        },
-      },
-      role: "ADMIN",
-      org: {
-        create: {
-          name: req.body.name,
-          invitationToken: generatedToken,
-        },
-      },
-    },
-  });
-
-  return res.status(StatusCodes.CREATED).json(userInOrg);
 }

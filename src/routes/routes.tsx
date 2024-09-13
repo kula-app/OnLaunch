@@ -10,6 +10,10 @@ class Routes {
 
   static readonly SUBSCRIPTION = "/subscription";
 
+  static get orgs(): string {
+    return "/orgs";
+  }
+
   static get createNewOrg(): string {
     return "/orgs/new";
   }
@@ -40,7 +44,7 @@ class Routes {
 
   static createNewMessageForOrgIdAndAppId(
     orgId: number,
-    appId: number
+    appId: number,
   ): string {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
@@ -48,7 +52,7 @@ class Routes {
   static editMessageByOrgIdAndAppIdAndMessageId(
     orgId: number,
     appId: number,
-    messageId: number
+    messageId: number,
   ): string {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }

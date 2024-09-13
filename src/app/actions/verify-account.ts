@@ -63,6 +63,7 @@ export const verifyEmail = createServerAction(
       },
       data: {
         isVerified: true,
+        verifiedAt: new Date(),
       },
     });
 
