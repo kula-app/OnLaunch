@@ -10233,7 +10233,7 @@ __metadata:
     reflect-metadata: "npm:0.2.2"
     request-ip: "npm:3.3.0"
     start-server-and-test: "npm:2.0.7"
-    stripe: "npm:16.10.0"
+    stripe: "npm:16.11.0"
     styled-components: "npm:6.1.13"
     swr: "npm:2.2.5"
     tailwindcss: "npm:3.4.11"
@@ -12261,13 +12261,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:16.10.0":
-  version: 16.10.0
-  resolution: "stripe@npm:16.10.0"
+"stripe@npm:16.11.0":
+  version: 16.11.0
+  resolution: "stripe@npm:16.11.0"
   dependencies:
     "@types/node": "npm:>=8.1.0"
     qs: "npm:^6.11.0"
-  checksum: 10c0/2e66209b796d4f38dceb57e25967409b2cb6cf028921763a3386244c7dbece2ebb988eafa13043a959a438cb167a5171a954357191a816bc553d642b41ec4554
+  checksum: 10c0/f095f1ac3ffc11ec2708099475e3c8dba949e9e6fefde91123f5b1b38b6087aba980a6b461f11567f3667ffdcbbb0fc5ca4d69a13a4e56e9183ff4cfa9196b40
   languageName: node
   linkType: hard
 
