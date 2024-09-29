@@ -9612,10 +9612,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:6.13.2":
-  version: 6.13.2
-  resolution: "mobx@npm:6.13.2"
-  checksum: 10c0/144b408e452e7e4b43a57f0d9b589f614c2549f6440a769ceb90bb4434e7d45915872dee8b8c50775a4b0aa600c89406b4b589f992352cfa58fe3bce68a84711
+"mobx@npm:6.13.3":
+  version: 6.13.3
+  resolution: "mobx@npm:6.13.3"
+  checksum: 10c0/33dade0ceca4ba7291a36147ee4d26880dcd408efd97adbb6d05365bce014fa6d21c1bdd1ca782ac045da470ac632446917d366df9b84911071626db43ed032f
   languageName: node
   linkType: hard
 
@@ -10183,7 +10183,7 @@ __metadata:
     js-yaml: "npm:4.1.0"
     local-cypress: "npm:1.2.6"
     luxon: "npm:3.5.0"
-    mobx: "npm:6.13.2"
+    mobx: "npm:6.13.3"
     moment: "npm:2.30.1"
     next: "npm:14.2.13"
     next-auth: "npm:4.24.7"
