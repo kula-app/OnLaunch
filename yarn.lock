@@ -3865,12 +3865,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.16.9":
-  version: 20.16.9
-  resolution: "@types/node@npm:20.16.9"
+"@types/node@npm:20.16.10":
+  version: 20.16.10
+  resolution: "@types/node@npm:20.16.10"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/52d7cbd6792a26e6757c913d1f6dd0fb0104ac44c93dd87480c011d1211b3a1ba282962996bf6aec03f633b5b39f61576f1bafe8436592ab08ad39464e53e4b0
+  checksum: 10c0/c0c0c7ecb083ec638c2118e54b5242bb4c39a75608cbac9475cf15aaceb64b8bc997a87a0798e700a81d61651c8a7750ae0455be0f0996ada6e8b2bb818d90c5
   languageName: node
   linkType: hard
 
@@ -10154,7 +10154,7 @@ __metadata:
     "@testing-library/user-event": "npm:14.5.2"
     "@types/bcrypt": "npm:5.0.2"
     "@types/js-yaml": "npm:4.0.9"
-    "@types/node": "npm:20.16.9"
+    "@types/node": "npm:20.16.10"
     "@types/ramda": "npm:0.30.2"
     "@types/react": "npm:18.3.9"
     "@types/react-dom": "npm:18.3.0"
