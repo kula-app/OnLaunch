@@ -3553,10 +3553,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:4.5.0":
-  version: 4.5.0
-  resolution: "@stripe/stripe-js@npm:4.5.0"
-  checksum: 10c0/81a69df0c8a06af78e3ca4296a5c6a6d06a70209c83a73f3421ab11ef96ccfb8dd980ae9f526d9651c1d1257d27d0fa9f5301e972e80f42ca8e3b176fda5bb2e
+"@stripe/stripe-js@npm:4.6.0":
+  version: 4.6.0
+  resolution: "@stripe/stripe-js@npm:4.6.0"
+  checksum: 10c0/a6dd8fde98b81b039d7b41f122dd81c5aa6567fcfeef8a84f6a01c3ac53648ec84234bb92cda49b02df31705fb27db73c87658f99d5080f19892d6c0b7a93fc0
   languageName: node
   linkType: hard
 
@@ -10147,7 +10147,7 @@ __metadata:
     "@prisma/client": "npm:5.20.0"
     "@sentry/nextjs": "npm:8.32.0"
     "@stripe/react-stripe-js": "npm:2.8.0"
-    "@stripe/stripe-js": "npm:4.5.0"
+    "@stripe/stripe-js": "npm:4.6.0"
     "@testing-library/dom": "npm:10.4.0"
     "@testing-library/jest-dom": "npm:6.5.0"
     "@testing-library/react": "npm:16.0.1"
