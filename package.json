@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@chakra-ui/icons": "2.2.4",
-    "@chakra-ui/react": "2.10.2",
+    "@chakra-ui/react": "2.10.3",
     "@emotion/react": "11.13.3",
     "@emotion/styled": "11.13.0",
     "@fontsource-variable/plus-jakarta-sans": "5.1.0",
