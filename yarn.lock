@@ -9094,7 +9094,7 @@ __metadata:
     react-chartjs-2: "npm:5.2.0"
     react-dom: "npm:18.3.1"
     react-icons: "npm:5.3.0"
-    redoc: "npm:2.1.5"
+    redoc: "npm:2.2.0"
     reflect-metadata: "npm:0.2.2"
     request-ip: "npm:3.3.0"
     start-server-and-test: "npm:2.0.8"
@@ -10121,9 +10121,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redoc@npm:2.1.5":
-  version: 2.1.5
-  resolution: "redoc@npm:2.1.5"
+"redoc@npm:2.2.0":
+  version: 2.2.0
+  resolution: "redoc@npm:2.2.0"
   dependencies:
     "@cfaester/enzyme-adapter-react-18": "npm:^0.8.0"
     "@redocly/openapi-core": "npm:^1.4.0"
@@ -10153,7 +10153,7 @@ __metadata:
     react: ^16.8.4 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0
     styled-components: ^4.1.1 || ^5.1.1 || ^6.0.5
-  checksum: 10c0/cd67dbb3b4544cda2fe27c1c0845f7f674ceb044dd93222bb400f223355771037a98570d5bea059e03d5c1cf72707d8945de02a338194a7b8b32aab79273bc2c
+  checksum: 10c0/12cdb6328b3f49c5b6531fc6c46c56792c2a6bf2bf5d07bbbfec5d9b04fbac02caf4b475305d2a86e41e5b054417d57adb0033b170d7a4923573ba875935bad0
   languageName: node
   linkType: hard
 
