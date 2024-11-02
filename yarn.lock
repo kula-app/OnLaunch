@@ -2902,10 +2902,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/swagger-jsdoc@npm:6.0.1":
-  version: 6.0.1
-  resolution: "@types/swagger-jsdoc@npm:6.0.1"
-  checksum: 10c0/770b0320c0059d198357b0d6d1f2b9d715c4def5986fcd8b7fd89b12b3e3c874044c5e67815b0850e984cf82f0f25d963d8f6596589f67c2dbaf7918baf8378c
+"@types/swagger-jsdoc@npm:6.0.4":
+  version: 6.0.4
+  resolution: "@types/swagger-jsdoc@npm:6.0.4"
+  checksum: 10c0/fbe17d91a12e1e60a255b02e6def6877c81b356c75ffcd0e5167fbaf1476e2d6600cd7eea79e6b3e0ff7929dec33ade345147509ed3b98026f63c782b74514f6
   languageName: node
   linkType: hard
 
@@ -8624,11 +8624,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-swagger-doc@npm:0.4.0":
-  version: 0.4.0
-  resolution: "next-swagger-doc@npm:0.4.0"
+"next-swagger-doc@npm:0.4.1":
+  version: 0.4.1
+  resolution: "next-swagger-doc@npm:0.4.1"
   dependencies:
-    "@types/swagger-jsdoc": "npm:6.0.1"
+    "@types/swagger-jsdoc": "npm:6.0.4"
     cleye: "npm:1.3.2"
     isarray: "npm:2.0.5"
     swagger-jsdoc: "npm:6.2.8"
@@ -8636,7 +8636,7 @@ __metadata:
     next: ">=9"
   bin:
     next-swagger-doc-cli: dist/cli.js
-  checksum: 10c0/01e124c6926932fbd08d8f06069e50257fb4f3fb460d8f9f7337b416f7ffe7aa49b57207fefc9212bc57a67230a0e630a65c1297e24cb3b70ec09fdacd77315b
+  checksum: 10c0/8ff0d33aad41296eb88f03243a627f9f0db528ea6889e528bbdbf66e38499069bfb9b7c29d2787c49f90f0b2a86a9c3e3475218d5af7a13dd4b0a37bec959703
   languageName: node
   linkType: hard
 
@@ -9096,7 +9096,7 @@ __metadata:
     next: "npm:14.2.16"
     next-auth: "npm:4.24.7"
     next-router-mock: "npm:0.9.13"
-    next-swagger-doc: "npm:0.4.0"
+    next-swagger-doc: "npm:0.4.1"
     nodemailer: "npm:6.9.16"
     pinst: "npm:3.0.0"
     postcss: "npm:8.4.47"
