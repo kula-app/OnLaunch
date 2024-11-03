@@ -23,7 +23,7 @@
     "@emotion/styled": "11.13.0",
     "@fontsource-variable/plus-jakarta-sans": "5.1.0",
     "@prisma/client": "5.21.1",
-    "@sentry/nextjs": "8.35.0",
+    "@sentry/nextjs": "8.36.0",
     "@stripe/react-stripe-js": "2.8.1",
     "@stripe/stripe-js": "4.9.0",
     "@types/bcrypt": "5.0.2",
