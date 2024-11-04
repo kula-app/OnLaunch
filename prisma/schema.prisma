@@ -9,6 +9,7 @@ datasource db {
 
 enum ActionType {
   DISMISS @map("dismiss")
+  OPEN_LINK @map("open_link")
 }
 
 enum ButtonDesign {
@@ -39,6 +40,7 @@ model Action {
   title        String
   actionType   ActionType
   buttonDesign ButtonDesign
+  link         String?
 
   message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
   messageId Int?

@@ -7,6 +7,7 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MaxLength,
   ValidateNested,
@@ -23,6 +24,11 @@ class ActionDto {
 
   @IsEnum(ButtonDesign)
   buttonDesign!: ButtonDesign;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  link?: string;
 }
 
 export class CreateMessageDto {

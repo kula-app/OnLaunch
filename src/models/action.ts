@@ -4,4 +4,5 @@ export interface Action {
   buttonDesign: string;
   title: string;
   messageId?: number;
+  link?: string;
 }
