@@ -24,7 +24,7 @@
     "@fontsource-variable/plus-jakarta-sans": "5.1.0",
     "@prisma/client": "5.22.0",
     "@sentry/nextjs": "8.37.1",
-    "@stripe/react-stripe-js": "2.8.1",
+    "@stripe/react-stripe-js": "2.9.0",
     "@stripe/stripe-js": "4.9.0",
     "@types/bcrypt": "5.0.2",
     "autoprefixer": "10.4.20",
