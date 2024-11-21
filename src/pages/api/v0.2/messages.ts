@@ -3,6 +3,7 @@ import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
 import { evaluateRules } from "@/util/rule-evaluation/evaluateRules";
 import { getMessageRuleTree } from "@/util/rule-evaluation/get-message-rule-tree";
+import { createRuleEvaluationContextFromHeaders } from "@/util/rule-evaluation/rule-evaluation-context";
 import { ActionType } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject, ValidationError } from "class-validator";
@@ -203,6 +204,8 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     throw error;
   }
 
+  const context = createRuleEvaluationContextFromHeaders(headers);
+
   const config = loadServerConfig();
   const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
 
@@ -384,18 +387,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       appId: app.id,
       publicKey: publicKey,
 
-      clientBundleId: headers["x-onlaunch-bundle-id"],
-      clientBundleVersion: headers["x-onlaunch-bundle-version"],
-      clientLocale: headers["x-onlaunch-locale"],
-      clientLocaleLanguageCode: headers["x-onlaunch-locale-language-code"],
-      clientLocaleRegionCode: headers["x-onlaunch-locale-region-code"],
-      clientPackageName: headers["x-onlaunch-package-name"],
-      clientPlatformName: headers["x-onlaunch-platform-name"],
-      clientPlatformVersion: headers["x-onlaunch-platform-version"],
-      clientReleaseVersion: headers["x-onlaunch-release-version"],
-      clientVersionCode: headers["x-onlaunch-version-code"],
-      clientVersionName: headers["x-onlaunch-version-name"],
-      clientUpdateAvailable: headers["x-onlaunch-update-available"],
+      ...context,
     },
   });
 
