@@ -1,6 +1,12 @@
 "use client";
 
+import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
 import { AuthFooter } from "@/components/auth/AuthFooter";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthLegalConsent } from "@/components/auth/AuthLegalConsent";
+import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
+import { AuthTextField } from "@/components/auth/AuthTextField";
+import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import Routes from "@/routes/routes";
 import {
   Box,
@@ -18,12 +24,6 @@ import { signIn } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../../../components/auth/AuthCoverImageColumn";
-import { AuthHeader } from "../../../components/auth/AuthHeader";
-import { AuthLegalConsent } from "../../../components/auth/AuthLegalConsent";
-import { AuthSocialLogin } from "../../../components/auth/AuthSocialLogin";
-import { AuthTextField } from "../../../components/auth/AuthTextField";
-import { AuthVerificationEmailSent } from "../../../components/auth/AuthVerificationEmailSent";
 
 const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),

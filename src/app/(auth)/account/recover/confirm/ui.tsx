@@ -1,7 +1,10 @@
 "use client";
 
 import { resetPassword } from "@/app/actions/reset-password";
+import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
 import { AuthFooter } from "@/components/auth/AuthFooter";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthTextField } from "@/components/auth/AuthTextField";
 import Routes from "@/routes/routes";
 import {
   Box,
@@ -17,9 +20,6 @@ import { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../../../../../components/auth/AuthCoverImageColumn";
-import { AuthHeader } from "../../../../../components/auth/AuthHeader";
-import { AuthTextField } from "../../../../../components/auth/AuthTextField";
 
 const AccountRecoverConfirmFormSchema = Yup.object().shape({
   password: Yup.string()
@@ -59,7 +59,7 @@ const SuspenseBody: React.FC = () => {
             router.push(
               Routes.login({
                 reason: "account-recovered",
-              })
+              }),
             );
           } catch (error: any) {
             toast({
