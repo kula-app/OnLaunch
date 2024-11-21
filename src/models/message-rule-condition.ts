@@ -5,5 +5,5 @@ export interface MessageRuleCondition {
   id: number;
   systemVariable: MessageRuleSystemVariable;
   comparator: MessageRuleComparator;
-  userVariable: string;
+  userVariable?: string;
 }

@@ -245,25 +245,25 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
     let perPlatformRuleGroupAndroid: AdvancedFiltersRuleGroup = {
       id: "platform-android",
       operator: MessageRuleGroupOperator.AND,
-      rules: [],
+      groups: [],
       conditions: [],
     };
     let perPlatformRuleGroupIOS: AdvancedFiltersRuleGroup = {
       id: "platform-ios",
       operator: MessageRuleGroupOperator.AND,
-      rules: [],
+      groups: [],
       conditions: [],
     };
     let perPlatformRuleGroupUnkown: AdvancedFiltersRuleGroup = {
       id: "platform-unknown",
       operator: MessageRuleGroupOperator.AND,
-      rules: [],
+      groups: [],
       conditions: [],
     };
     let perPlatformRulesGroup: AdvancedFiltersRuleGroup = {
       id: "platform-rules",
       operator: MessageRuleGroupOperator.OR,
-      rules: [],
+      groups: [],
       conditions: [],
     };
 
@@ -353,22 +353,22 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
           userVariable: "iOS",
         },
       ];
-      perPlatformRulesGroup.rules = [
+      perPlatformRulesGroup.groups = [
         perPlatformRuleGroupAndroid,
         perPlatformRuleGroupIOS,
         perPlatformRuleGroupUnkown,
       ];
     } else if (isTargetingOnlyAndroid) {
-      perPlatformRulesGroup.rules = [perPlatformRuleGroupAndroid];
+      perPlatformRulesGroup.groups = [perPlatformRuleGroupAndroid];
     } else if (isTargetingOnlyIOS) {
-      perPlatformRulesGroup.rules = [perPlatformRuleGroupIOS];
+      perPlatformRulesGroup.groups = [perPlatformRuleGroupIOS];
     }
 
     // Create the root filter group with the per-platform rules
     const rootFilterGroup: AdvancedFiltersRuleGroup = {
       id: "root",
       operator: MessageRuleGroupOperator.AND,
-      rules: [perPlatformRulesGroup],
+      groups: [perPlatformRulesGroup],
       conditions: [],
     };
 
@@ -377,7 +377,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       const regionFiltersGroup: AdvancedFiltersRuleGroup = {
         id: "region",
         operator: MessageRuleGroupOperator.AND,
-        rules: [],
+        groups: [],
         conditions: [],
       };
       // If the included region contains "ALL", we only need to exclude the excluded regions
@@ -403,7 +403,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       }
 
       // Add the region filter group to the root filter group
-      rootFilterGroup.rules!.push(regionFiltersGroup);
+      rootFilterGroup.groups!.push(regionFiltersGroup);
     }
 
     // -- Language Filter --
@@ -411,7 +411,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       const languageFiltersGroup: AdvancedFiltersRuleGroup = {
         id: "language",
         operator: MessageRuleGroupOperator.AND,
-        rules: [],
+        groups: [],
         conditions: [],
       };
 
@@ -438,7 +438,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       }
 
       // Add the language filter group to the root filter group
-      rootFilterGroup.rules!.push(languageFiltersGroup);
+      rootFilterGroup.groups!.push(languageFiltersGroup);
     }
 
     setFieldValue("advanced.root", rootFilterGroup);

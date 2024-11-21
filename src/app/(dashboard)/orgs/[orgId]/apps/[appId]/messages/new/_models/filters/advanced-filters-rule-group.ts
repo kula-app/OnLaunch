@@ -4,6 +4,6 @@ import type { AdvancedFiltersRuleCondition } from "./advanced-filters-rule-condi
 export interface AdvancedFiltersRuleGroup {
   id: string;
   operator: MessageRuleGroupOperator;
-  rules?: AdvancedFiltersRuleGroup[] | null;
+  groups?: AdvancedFiltersRuleGroup[] | null;
   conditions?: AdvancedFiltersRuleCondition[] | null;
 }

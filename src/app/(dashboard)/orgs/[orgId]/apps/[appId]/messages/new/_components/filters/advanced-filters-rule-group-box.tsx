@@ -151,7 +151,7 @@ const RulesContainerBox: React.FC<{
     <Field name={keypath.concat(["rules"]).join(".")}>
       {({
         field,
-      }: FieldProps<AdvancedFiltersRuleGroup["rules"], FilterFormData>) => (
+      }: FieldProps<AdvancedFiltersRuleGroup["groups"], FilterFormData>) => (
         <Flex
           flexDir={"column"}
           w={"full"}

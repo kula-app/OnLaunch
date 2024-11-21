@@ -81,7 +81,7 @@ function mapDisplayRuleGroup(
 ): ExcludeNestedIds<MessageRuleGroup> {
   return {
     operator: group.operator,
-    rules: group.rules?.map(mapDisplayRuleGroup) ?? [],
+    groups: group.groups?.map(mapDisplayRuleGroup) ?? [],
     conditions: group.conditions?.map(mapDisplayCondition) ?? [],
   };
 }
@@ -207,8 +207,8 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
         // therefore we can just use the advanced filter directly.
         rules = {
           operator: MessageRuleGroupOperator.AND,
-          rules:
-            filterFormRef.current.values.advanced?.root?.rules?.map(
+          groups:
+            filterFormRef.current.values.advanced?.root?.groups?.map(
               mapDisplayRuleGroup,
             ) ?? [],
           conditions:

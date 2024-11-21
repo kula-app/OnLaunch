@@ -1,9 +1,8 @@
 import { loadServerConfig } from "@/config/loadServerConfig";
 import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
-import { evaluateRules } from "@/util/rule-evaluation/evaluateRules";
-import { getMessageRuleTree } from "@/util/rule-evaluation/get-message-rule-tree";
 import { createRuleEvaluationContextFromHeaders } from "@/util/rule-evaluation/rule-evaluation-context";
+import { RuleEvaluator } from "@/util/rule-evaluation/rule-evaluator";
 import { ActionType } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject, ValidationError } from "class-validator";
@@ -351,6 +350,15 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const allMessages = await prisma.message.findMany({
     include: {
       actions: true,
+      filter: {
+        include: {
+          ruleGroup: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
     },
     where: {
       AND: [
@@ -391,31 +399,52 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     },
   });
 
-  return res.status(StatusCodes.OK).json(
-    allMessages.map((message): MessageDto => {
-      return {
-        id: message.id,
-        blocking: message.blocking,
-        title: message.title,
-        body: message.body,
-        actions: message.actions.reduce((prev, action): MessageActionDto[] => {
-          // Filter out actions that are not supported
-          let actionType: MessageActionDtoType;
-          switch (action.actionType) {
-            case ActionType.DISMISS:
-              actionType = MessageActionDtoType.DISMISS;
-              break;
-            default:
-              return prev;
-          }
-          return prev.concat([
-            {
-              actionType: actionType,
-              title: action.title,
-            },
-          ]);
-        }, new Array<MessageActionDto>()),
-      };
-    }),
-  );
+  // Filter messages based on the rule evaluation
+  const filteredMessages = allMessages.filter(async (message) => {
+    // Messages without a filter are always included
+    if (!message.filter?.ruleGroup) {
+      return true;
+    }
+    return RuleEvaluator.isMessageIncluded(
+      message.filter.ruleGroup.id,
+      context,
+    );
+  });
+
+  // Map the messages to the DTO
+  const messageDtos = filteredMessages.map((message): MessageDto => {
+    const actionDtos = message.actions.reduce(
+      (prev, action): MessageActionDto[] => {
+        // Filter out actions that are not supported
+        let actionType: MessageActionDtoType;
+        switch (action.actionType) {
+          case ActionType.DISMISS:
+            actionType = MessageActionDtoType.DISMISS;
+            break;
+          default:
+            logger.warn(
+              `Unsupported action type in message(id = ${message.id}): ${action.actionType}`,
+            );
+            return prev;
+        }
+        return prev.concat([
+          {
+            actionType: actionType,
+            title: action.title,
+          },
+        ]);
+      },
+      new Array<MessageActionDto>(),
+    );
+
+    return {
+      id: message.id,
+      blocking: message.blocking,
+      title: message.title,
+      body: message.body,
+      actions: actionDtos,
+    };
+  });
+
+  return res.status(StatusCodes.OK).json(messageDtos);
 }

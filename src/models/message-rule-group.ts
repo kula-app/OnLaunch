@@ -4,6 +4,6 @@ import type { MessageRuleGroupOperator } from "./message-rule-group-operator";
 export interface MessageRuleGroup {
   id: number;
   operator: MessageRuleGroupOperator;
-  rules: MessageRuleGroup[];
+  groups: MessageRuleGroup[];
   conditions: MessageRuleCondition[];
 }

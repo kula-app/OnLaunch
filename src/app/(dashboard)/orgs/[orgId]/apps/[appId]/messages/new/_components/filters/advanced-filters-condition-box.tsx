@@ -39,7 +39,6 @@ export const AdvancedFiltersConditionBox: React.FC<
       <Field name={keypath.concat(["systemVariable"]).join(".")}>
         {({
           field,
-          form,
         }: FieldProps<AdvancedFiltersRuleCondition["systemVariable"]>) => (
           <FormControl w={"auto"}>
             <Select
@@ -107,6 +106,7 @@ export const AdvancedFiltersConditionBox: React.FC<
             >
               <Input
                 {...field}
+                value={field.value ?? ""}
                 onChange={(e) => {
                   field.onChange(e);
                   setAdvancedFilterDirty();
