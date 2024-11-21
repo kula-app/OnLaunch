@@ -1,4 +1,4 @@
-import { Action } from "@/models/action";
+import { MessageAction } from "@/models/message-action";
 import { User } from "@/models/user";
 import prisma from "@/services/db";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
@@ -82,7 +82,7 @@ async function postHandler(
 
   if (req.body.actions.length > 0) {
     logger.log(`Creating actions for message with id '${message.id}'`);
-    const actions: Action[] = req.body.actions;
+    const actions: MessageAction[] = req.body.actions;
     actions.forEach((action) => {
       action.messageId = message.id;
     });

@@ -56,9 +56,95 @@ model Message {
   endDate   DateTime
   actions   MessageAction[]
 
+  filter MessageFilter?
+
   // A back-reference to the app
   appId Int?
   app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model MessageFilter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Only the root group has a reference to the message rule
+  ruleGroupId Int?
+  ruleGroup   MessageRuleGroup? @relation(fields: [ruleGroupId], references: [id], onDelete: Cascade)
+
+  // Back-reference to the message
+  messageId Int?     @unique
+  message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+enum MessageRuleGroupOperator {
+  AND
+  OR
+}
+
+// Define a new model for RuleBlock to represent AND-BLOCKs and OR-BLOCKs
+model MessageRuleGroup {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  operator   MessageRuleGroupOperator
+  conditions MessageRuleCondition[]
+  groups     MessageRuleGroup[]       @relation("groups")
+
+  // Create a child-to-parent relation for the nested tree structure
+  parentGroupId Int?
+  parentGroup   MessageRuleGroup? @relation("groups", fields: [parentGroupId], references: [id])
+
+  parentMessageFilter MessageFilter[]
+}
+
+enum MessageRuleConditionComparator {
+  // Equality Operators
+  EQUALS
+  IS_NOT_EQUAL
+
+  // Comparison Operators
+  IS_GREATER_THAN
+  IS_GREATER_THAN_OR_EQUAL
+  IS_LESS_THAN
+  IS_LESS_THAN_OR_EQUAL
+
+  // String Operators
+  CONTAINS
+  DOES_NOT_CONTAIN
+  IS_EMPTY
+  IS_NOT_EMPTY
+
+  // Boolean Operators
+  IS_NULL
+  IS_NOT_NULL
+  IS_TRUE
+  IS_FALSE
+
+  // Date Operators
+  IS_AFTER
+  IS_BEFORE
+  IS_AFTER_OR_EQUAL
+  IS_BEFORE_OR_EQUAL
+
+  // Regex Operators
+  MATCHES_REGEX
+  DOES_NOT_MATCH_REGEX
+}
+
+model MessageRuleCondition {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  systemVariable String
+  comparator     MessageRuleConditionComparator
+  userVariable   String?
+
+  // Create a reference to the parent group
+  parentGroupId Int
+  parentGroup   MessageRuleGroup @relation(fields: [parentGroupId], references: [id], onDelete: Cascade)
 }
 
 model App {

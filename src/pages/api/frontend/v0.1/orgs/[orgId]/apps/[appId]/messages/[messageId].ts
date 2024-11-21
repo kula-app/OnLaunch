@@ -1,4 +1,4 @@
-import { Action } from "@/models/action";
+import { MessageAction } from "@/models/message-action";
 import { User } from "@/models/user";
 import prisma from "@/services/db";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
@@ -135,7 +135,7 @@ async function putHandler(
     });
 
     if (req.body.actions.length > 0) {
-      const actions: Action[] = req.body.actions;
+      const actions: MessageAction[] = req.body.actions;
       actions.forEach((action) => {
         action.messageId = Number(req.query.messageId);
       });
