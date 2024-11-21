@@ -1,116 +1,24 @@
 import { loadServerConfig } from "@/config/loadServerConfig";
 import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
+import { evaluateRules } from "@/util/rule-evaluation/evaluateRules";
+import { getMessageRuleTree } from "@/util/rule-evaluation/get-message-rule-tree";
 import { ActionType } from "@prisma/client";
-import { plainToInstance, Transform } from "class-transformer";
-import {
-  IsBoolean,
-  IsDefined,
-  IsOptional,
-  IsString,
-  MaxLength,
-  validateOrReject,
-  ValidationError,
-} from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { validateOrReject, ValidationError } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
+import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
+import {
+  MessageActionDtoType,
+  type MessageActionDto,
+  type MessageDto,
+  type MessagesResponseDto,
+} from "./messages-response-dto";
 
 const logger = new Logger(__filename);
-
-class MessagesRequestHeadersDto {
-  @IsString()
-  @IsDefined()
-  "x-api-key"!: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-bundle-id"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-bundle-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale-language-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale-region-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(150)
-  "x-onlaunch-package-name"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-platform-name"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-platform-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-release-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-version-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-version-name"?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (value === "true") return true;
-    else if (value === "false") return false;
-    return value;
-  })
-  "x-onlaunch-update-available"?: boolean;
-}
-
-enum MessageActionDtoType {
-  DISMISS = "DISMISS",
-}
-
-interface MessageActionDto {
-  actionType: MessageActionDtoType;
-  title: string;
-}
-
-interface MessageDto {
-  id: number;
-  blocking: boolean;
-  title: string;
-  body: string;
-  actions: MessageActionDto[];
-}
-
-interface ErrorObjectDto {
-  message: string;
-}
-
-type ResponseDto = MessageDto[] | ErrorObjectDto;
 
 /**
  * @swagger
@@ -262,7 +170,7 @@ type ResponseDto = MessageDto[] | ErrorObjectDto;
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseDto>,
+  res: NextApiResponse<MessagesResponseDto>,
 ) {
   switch (req.method) {
     case "GET":

@@ -2,111 +2,19 @@ import { loadServerConfig } from "@/config/loadServerConfig";
 import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
 import { $Enums } from "@prisma/client";
-import { plainToInstance, Transform } from "class-transformer";
-import {
-  IsBoolean,
-  IsDefined,
-  IsOptional,
-  IsString,
-  MaxLength,
-  validateOrReject,
-  ValidationError,
-} from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { validateOrReject, ValidationError } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
-
-class MessagesRequestHeadersDto {
-  @IsString()
-  @IsDefined()
-  "x-api-key"!: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-bundle-id"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-bundle-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale-language-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-locale-region-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(150)
-  "x-onlaunch-package-name"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-platform-name"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-platform-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-release-version"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-version-code"?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(200)
-  "x-onlaunch-version-name"?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (value === "true") return true;
-    else if (value === "false") return false;
-    return value;
-  })
-  "x-onlaunch-update-available"?: boolean;
-}
-
-enum ActionType {
-  Dismiss = "DISMISS",
-}
-
-type ActionDto = {
-  actionType: ActionType;
-  title: string;
-};
-
-type ResponseDto = {
-  id: number;
-  blocking: boolean;
-  title: string;
-  body: string;
-  actions: ActionDto[];
-};
-
-interface ErrorObjectDto {
-  message: string;
-}
+import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
+import {
+  ActionType,
+  MessageDto,
+  MessagesResponseDto,
+  type ActionDto,
+} from "./messages-response-dto";
 
 const logger = new Logger(__filename);
 
@@ -261,7 +169,7 @@ const logger = new Logger(__filename);
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseDto[] | ErrorObjectDto>,
+  res: NextApiResponse<MessagesResponseDto>,
 ) {
   switch (req.method) {
     case "GET":
@@ -490,7 +398,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   return res.status(StatusCodes.OK).json(
-    allMessages.map((message): ResponseDto => {
+    allMessages.map((message): MessageDto => {
       return {
         id: message.id,
         blocking: message.blocking,
