@@ -31,7 +31,7 @@ enum OrganisationAccessLevel {
   FULL
 }
 
-model Action {
+model MessageAction {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,10 +54,11 @@ model Message {
   blocking  Boolean
   startDate DateTime
   endDate   DateTime
-  actions   Action[]
+  actions   MessageAction[]
 
-  app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
+  // A back-reference to the app
   appId Int?
+  app   App? @relation(fields: [appId], references: [id], onDelete: Cascade)
 }
 
 model App {
@@ -150,13 +151,13 @@ model UsersInOrganisations {
 }
 
 model AuthToken {
-  id        Int      @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   identifier String
   token      String
-  expiresAt    DateTime
+  expiresAt  DateTime
 
   // true indicates that this token has served it purpose successfully (user got verified)
-  isArchived Boolean  @default(false)
+  isArchived Boolean @default(false)
 
   @@unique([identifier, token])
 }
