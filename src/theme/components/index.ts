@@ -1,12 +1,24 @@
 import { mergeDeepLeft, reduce, unapply } from "ramda";
-import { button } from "./button";
+import { AlertComponent } from "./Alert";
+import { ButtonComponent } from "./Button";
 import { CardComponent } from "./Card";
-import { layout } from "./layout";
+import { FormErrorComponent } from "./FormErrorComponent";
+import { InputComponent } from "./Input";
+import { MainPanelComponent } from "./MainPanel";
 import { MenuComponent } from "./Menu";
+import { PanelContainerComponent } from "./PanelContainer";
+import { PanelContentComponent } from "./PanelContent";
+import { SelectComponent } from "./Select";
 
 export const components = unapply(reduce(mergeDeepLeft, {}))(
-  button,
+  AlertComponent,
+  ButtonComponent,
   CardComponent,
+  FormErrorComponent,
   MenuComponent,
-  layout,
+  SelectComponent,
+  InputComponent,
+  MainPanelComponent,
+  PanelContentComponent,
+  PanelContainerComponent,
 );

@@ -1,7 +1,9 @@
 import getMessage from "@/api/messages/getMessage";
 import updateMessage from "@/api/messages/updateMessage";
-import { Action } from "@/models/action";
+import { ActionButtonDesign } from "@/models/action-button-design";
 import { Message } from "@/models/message";
+import { MessageAction } from "@/models/message-action";
+import { MessageActionType } from "@/models/message-action-type";
 import Routes from "@/routes/routes";
 import styles from "@/styles/Home.module.css";
 import {
@@ -32,13 +34,13 @@ export default function EditMessageOfAppPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const actionTypes = ["DISMISS"];
-  const buttonDesigns = ["FILLED", "TEXT"];
+  const actionTypes = Object.values(MessageActionType);
+  const buttonDesigns = Object.values(ActionButtonDesign);
 
   const orgId = Number(router.query.orgId);
   const appId = Number(router.query.appId);
 
-  const [actions, setActions] = useState<Action[]>([]);
+  const [actions, setActions] = useState<MessageAction[]>([]);
 
   const [blocking, setBlocking] = useState(false);
   const messageId = Number(router.query.messageId);
@@ -76,11 +78,12 @@ export default function EditMessageOfAppPage() {
       id: messageId,
       title: title,
       body: body,
-      blocking: blocking,
-      startDate: String(new Date(startDate)),
-      endDate: String(new Date(endDate)),
+      isBlocking: blocking,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
       appId: appId,
       actions: actions,
+      ruleRootGroup: undefined,
     };
 
     try {
@@ -114,7 +117,7 @@ export default function EditMessageOfAppPage() {
     // fill the form
     setTitle(msg.title);
     setBody(msg.body);
-    setBlocking(msg.blocking);
+    setBlocking(msg.isBlocking);
     setStartDate(Moment(msg.startDate).format("YYYY-MM-DDTHH:mm:ss"));
     setEndDate(Moment(msg.endDate).format("YYYY-MM-DDTHH:mm:ss"));
     if (msg.actions) {
@@ -125,7 +128,11 @@ export default function EditMessageOfAppPage() {
   function addAction() {
     setActions((oldActions) => [
       ...oldActions,
-      { actionType: actionTypes[0], buttonDesign: buttonDesigns[0], title: "" },
+      {
+        actionType: actionTypes[0],
+        buttonDesign: buttonDesigns[0],
+        title: "",
+      },
     ]);
   }
 
@@ -137,7 +144,7 @@ export default function EditMessageOfAppPage() {
 
   function handleActionTitleChange(
     index: number,
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     let data = [...actions];
     data[index]["title"] = event.target.value;
@@ -146,20 +153,20 @@ export default function EditMessageOfAppPage() {
 
   function handleActionTypeChange(
     index: number,
-    event: ChangeEvent<HTMLSelectElement>
+    event: ChangeEvent<HTMLSelectElement>,
   ) {
     let data = [...actions];
-    data[index]["actionType"] = event.target.value as string;
+    data[index]["actionType"] = event.target.value as MessageActionType;
 
     setActions(data);
   }
 
   function handleButtonDesignChange(
     index: number,
-    event: ChangeEvent<HTMLSelectElement>
+    event: ChangeEvent<HTMLSelectElement>,
   ) {
     let data = [...actions];
-    data[index]["buttonDesign"] = event.target.value as string;
+    data[index]["buttonDesign"] = event.target.value as ActionButtonDesign;
 
     setActions(data);
   }
@@ -245,7 +252,7 @@ export default function EditMessageOfAppPage() {
                   </Thead>
                   <Tbody>
                     {actions &&
-                      actions.map((action: Action, index: number) => {
+                      actions.map((action: MessageAction, index: number) => {
                         return (
                           <Tr key={index}>
                             <Td>
@@ -343,7 +350,7 @@ export default function EditMessageOfAppPage() {
                 </div>
                 <div>
                   {actions &&
-                    actions.map((action: Action, index: number) => {
+                    actions.map((action: MessageAction, index: number) => {
                       if (action.buttonDesign === "FILLED") {
                         return (
                           <Button colorScheme="blue" key={index}>

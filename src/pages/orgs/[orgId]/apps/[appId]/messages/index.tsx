@@ -322,7 +322,7 @@ export default function MessagesOfAppPage() {
                         </Td>
                         <Td>
                           <div className="flex justify-center">
-                            {String(message.blocking)}
+                            {String(message.isBlocking)}
                           </div>
                         </Td>
                         <Td>

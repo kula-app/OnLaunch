@@ -31,8 +31,13 @@ import {
 } from "react-icons/fi";
 
 export const NavigationBar: React.FC<{
-  currentPage?: string;
-}> = ({ currentPage }) => {
+  isLoading?: boolean;
+  pages?: {
+    name: string;
+    href: string;
+    isActive?: boolean;
+  }[];
+}> = ({ isLoading, pages }) => {
   const session = useSession();
 
   return (
@@ -56,16 +61,28 @@ export const NavigationBar: React.FC<{
             OnLaunch
           </Text>
         </Link>
-        {currentPage && (
-          <Breadcrumb display={{ base: "none", md: "flex" }} px={4}>
+        {pages && pages.length > 0 && (
+          <Breadcrumb
+            display={{ base: "none", md: "flex" }}
+            px={4}
+            alignContent={"center"}
+          >
             <BreadcrumbItem>
               <BreadcrumbLink as={NextLink} href={Routes.dashboard}>
                 <Icon as={FiHome} />
               </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href="#">{currentPage}</BreadcrumbLink>
-            </BreadcrumbItem>
+            {isLoading ? (
+              <BreadcrumbItem>
+                <BreadcrumbLink>Loading...</BreadcrumbLink>
+              </BreadcrumbItem>
+            ) : (
+              pages?.map((page, index) => (
+                <BreadcrumbItem key={index} isCurrentPage={page.isActive}>
+                  <BreadcrumbLink href={page.href}>{page.name}</BreadcrumbLink>
+                </BreadcrumbItem>
+              ))
+            )}
           </Breadcrumb>
         )}
       </Flex>

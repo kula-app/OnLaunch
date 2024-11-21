@@ -1,7 +1,7 @@
 "use client";
 
 import { getOrgs } from "@/app/actions/get-orgs";
-import { NavigationBar } from "@/components/NavigationBar";
+import { NavigationBar } from "@/components/navigation-bar";
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Logger } from "@/util/logger";
@@ -60,7 +60,14 @@ export const UI: React.FC = () => {
 
   return (
     <Flex direction={"column"} minH={"100vh"}>
-      <NavigationBar currentPage={"Organizations"} />
+      <NavigationBar
+        pages={[
+          {
+            name: "Organizations",
+            href: "/orgs",
+          },
+        ]}
+      />
       <Box p={4}>
         <Flex justify="space-between" align="center" mb={6}>
           <Heading size={"lg"} as={"h1"} color={"white"}>

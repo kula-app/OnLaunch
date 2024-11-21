@@ -1,7 +1,7 @@
 "use client";
 
 import { createOrg } from "@/app/actions/create-org";
-import { NavigationBar } from "@/components/NavigationBar";
+import { NavigationBar } from "@/components/navigation-bar";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import { ServerError } from "@/errors/server-error";
 import Routes from "@/routes/routes";
@@ -60,7 +60,14 @@ export default function NewOrgPage() {
       align={"stretch"}
       minH={{ base: 0, sm: "100vh" }}
     >
-      <NavigationBar currentPage="New Organization" />
+      <NavigationBar
+        pages={[
+          {
+            name: "New Organization",
+            href: "#",
+          },
+        ]}
+      />
       <Flex
         direction={"column"}
         justifyContent={{ base: "start", sm: "center" }}
