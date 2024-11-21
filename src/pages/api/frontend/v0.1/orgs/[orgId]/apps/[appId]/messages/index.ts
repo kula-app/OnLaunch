@@ -86,7 +86,7 @@ async function postHandler(
     actions.forEach((action) => {
       action.messageId = message.id;
     });
-    await prisma.action.createMany({
+    await prisma.messageAction.createMany({
       data: req.body.actions,
     });
   }

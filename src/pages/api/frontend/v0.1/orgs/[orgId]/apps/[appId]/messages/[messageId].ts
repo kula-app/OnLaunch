@@ -70,7 +70,7 @@ async function deleteHandler(
 ) {
   try {
     logger.log(`Deleting actions with message id '${req.query.messageId}'`);
-    await prisma.action.deleteMany({
+    await prisma.messageAction.deleteMany({
       where: {
         messageId: Number(req.query.messageId),
       },
@@ -128,7 +128,7 @@ async function putHandler(
     });
 
     logger.log(`Deleting actions of message with id '${req.query.messageId}'`);
-    await prisma.action.deleteMany({
+    await prisma.messageAction.deleteMany({
       where: {
         messageId: Number(req.query.messageId),
       },
@@ -142,7 +142,7 @@ async function putHandler(
       logger.log(
         `Creating actions for message with id '${req.query.messageId}'`,
       );
-      await prisma.action.createMany({
+      await prisma.messageAction.createMany({
         data: req.body.actions,
       });
     }

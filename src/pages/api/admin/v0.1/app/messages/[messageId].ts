@@ -6,7 +6,7 @@ import { MessageDto } from "@/models/dtos/response/messageDto";
 import prisma from "@/services/db";
 import { authenticate } from "@/util/adminApi/auth";
 import { Logger } from "@/util/logger";
-import { Action, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
@@ -310,7 +310,7 @@ async function putHandler(
     });
 
     logger.log(`Deleting actions of message with id '${messageId}'`);
-    await prisma.action.deleteMany({
+    await prisma.messageAction.deleteMany({
       where: {
         messageId: messageId,
       },
@@ -318,14 +318,14 @@ async function putHandler(
 
     let convertedActions: ActionDto[] = [];
     if (updateMessageDto.actions && updateMessageDto.actions.length > 0) {
-      const actions: Action[] = updateMessageDto.actions;
+      const actions = updateMessageDto.actions;
 
       actions.forEach((action) => {
         action.messageId = messageId;
       });
 
       logger.log(`Creating actions for message with id '${messageId}'`);
-      await prisma.action.createMany({
+      await prisma.messageAction.createMany({
         data: updateMessageDto.actions,
       });
 

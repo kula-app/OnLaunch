@@ -6,7 +6,6 @@ import { MessageDto } from "@/models/dtos/response/messageDto";
 import prisma from "@/services/db";
 import { authenticate } from "@/util/adminApi/auth";
 import { Logger } from "@/util/logger";
-import { Action } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
@@ -223,13 +222,13 @@ async function postHandler(
   let convertedActions: ActionDto[] = [];
   if (createMessageDto.actions && createMessageDto.actions.length > 0) {
     logger.log(`Creating actions for message with id '${message.id}'`);
-    const actions: Action[] = createMessageDto.actions;
+    const actions = createMessageDto.actions;
 
     actions.forEach((action) => {
       action.messageId = message.id;
     });
 
-    await prisma.action.createMany({
+    await prisma.messageAction.createMany({
       data: createMessageDto.actions,
     });
 
