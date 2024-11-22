@@ -207,15 +207,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
 
   const config = loadServerConfig();
   const FREE_SUB_REQUEST_LIMIT = config.freeSub.requestLimit;
-
-  const publicKey = req.headers["x-api-key"] as string;
-
-  if (!publicKey) {
-    logger.error("No api key provided");
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "no api key provided" });
-  }
+  const publicKey = headers["x-api-key"];
 
   // Get app, org, (appIds) and sub information to retrieve product limit
   logger.log(`Looking up api key '${publicKey as string}'`);
@@ -400,19 +392,20 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   // Filter messages based on the rule evaluation
-  const filteredMessages = allMessages.filter(async (message) => {
-    // Messages without a filter are always included
-    if (!message.filter?.ruleGroup) {
-      return true;
+  let messageDtos: MessageDto[] = [];
+  for (const message of allMessages) {
+    // Skip messages not matching the filter
+    if (message.filter?.ruleGroup) {
+      const isIncluded = await RuleEvaluator.isMessageIncluded(
+        message.filter.ruleGroup.id,
+        context,
+      );
+      if (!isIncluded) {
+        continue;
+      }
     }
-    return RuleEvaluator.isMessageIncluded(
-      message.filter.ruleGroup.id,
-      context,
-    );
-  });
 
-  // Map the messages to the DTO
-  const messageDtos = filteredMessages.map((message): MessageDto => {
+    // Map the messages to the DTO
     const actionDtos = message.actions.reduce(
       (prev, action): MessageActionDto[] => {
         // Filter out actions that are not supported
@@ -437,14 +430,14 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       new Array<MessageActionDto>(),
     );
 
-    return {
+    messageDtos.push({
       id: message.id,
       blocking: message.blocking,
       title: message.title,
       body: message.body,
       actions: actionDtos,
-    };
-  });
+    });
+  }
 
   return res.status(StatusCodes.OK).json(messageDtos);
 }
