@@ -226,7 +226,7 @@ const advancedFilterRuleGroupSchema: Yup.ObjectSchema<AdvancedFiltersRuleGroup> 
     operator: Yup.string()
       .oneOf(Object.values(MessageRuleGroupOperator))
       .required(),
-    rules: Yup.array()
+    groups: Yup.array()
       .of(Yup.lazy(() => advancedFilterRuleGroupSchema))
       .notRequired(),
     conditions: Yup.array().of(advancedFilterRuleConditionSchema).notRequired(),
