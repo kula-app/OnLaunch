@@ -1,6 +1,4 @@
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
-import type { MessageRuleCondition } from "@/models/message-rule-condition";
-import type { MessageRuleGroup } from "@/models/message-rule-group";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import { MessageRuleSystemVariable } from "@/models/message-rule-system-variable";
 import prisma from "@/services/db";
@@ -13,20 +11,24 @@ export class RuleEvaluator {
     rootRuleGroupId: PrismaClient.MessageRuleGroup["id"],
     context: RuleEvaluationContext,
   ): Promise<boolean> {
-    const tree = await this.findRuleGroupById(rootRuleGroupId);
-    return this.evaluateGroup(tree, context);
+    return this.evaluateGroup(rootRuleGroupId, context);
   }
 
-  static async findRuleGroupById(
+  private static async evaluateGroup(
     ruleGroupId: PrismaClient.MessageRuleGroup["id"],
-  ): Promise<MessageRuleGroup> {
+    context: RuleEvaluationContext,
+  ): Promise<boolean> {
     const group = await prisma.messageRuleGroup.findUnique({
       where: {
         id: ruleGroupId,
       },
       include: {
         conditions: true,
-        groups: true,
+        groups: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (!group) {
@@ -38,81 +40,63 @@ export class RuleEvaluator {
       throw new Error(`Failed to map operator from prisma: ${group.operator}`);
     }
 
-    return {
-      id: group.id,
-      operator: operator,
-      conditions: group.conditions.map((condition): MessageRuleCondition => {
-        const systemVariable = PrismaDataUtils.mapSystemVariableFromPrisma(
-          condition.systemVariable,
-        );
-        if (!systemVariable) {
-          throw new Error(
-            `Failed to map system variable from prisma: ${condition.systemVariable}`,
-          );
-        }
-        const comparator = PrismaDataUtils.mapConditionComparatorFromPrisma(
-          condition.comparator,
-        );
-        if (!comparator) {
-          throw new Error(
-            `Failed to map comparator from prisma: ${condition.comparator}`,
-          );
-        }
-
-        return {
-          id: condition.id,
-          systemVariable: systemVariable,
-          comparator: comparator,
-          userVariable: condition.userVariable ?? undefined,
-        };
-      }),
-      groups: await Promise.all(
-        group.groups.map((group) => this.findRuleGroupById(group.id)),
-      ),
-    };
-  }
-
-  static evaluateGroup(
-    group: MessageRuleGroup,
-    context: RuleEvaluationContext,
-  ): boolean {
-    switch (group.operator) {
+    switch (operator) {
       case MessageRuleGroupOperator.AND: {
-        // If the group comparator is an AND, it can stop evaluating as soon as the first false sub-group or condition is found
-        for (const subGroup of group.groups) {
-          if (!this.evaluateGroup(subGroup, context)) {
-            return false;
-          }
-        }
+        // Evaluate the conditions first, as they are included in the fetched data, and we can avoid extra queries
+        // if they evaluate to false
         for (const condition of group.conditions) {
           if (!this.evaluateCondition(condition, context)) {
             return false;
           }
         }
-        return true;
-      }
-      case MessageRuleGroupOperator.OR:
-        // If the group comparator is an OR, it can stop evaluating as soon as the first true sub-group or condition is found
         for (const subGroup of group.groups) {
-          if (this.evaluateGroup(subGroup, context)) {
-            return true;
+          if (!(await this.evaluateGroup(subGroup.id, context))) {
+            return false;
           }
         }
+        return true;
+      }
+      case MessageRuleGroupOperator.OR: {
+        // Evaluate the conditions first, as they are included in the fetched data, and we can avoid extra queries
+        // if they evaluate to true
         for (const condition of group.conditions) {
           if (this.evaluateCondition(condition, context)) {
             return true;
           }
         }
+        for (const subGroup of group.groups) {
+          if (await this.evaluateGroup(subGroup.id, context)) {
+            return true;
+          }
+        }
         return false;
+      }
     }
   }
 
   static evaluateCondition(
-    condition: MessageRuleCondition,
+    condition: PrismaClient.MessageRuleCondition,
     context: RuleEvaluationContext,
   ): boolean {
+    const systemVariable = PrismaDataUtils.mapSystemVariableFromPrisma(
+      condition.systemVariable,
+    );
+    if (!systemVariable) {
+      throw new Error(
+        `Failed to map system variable from prisma: ${condition.systemVariable}`,
+      );
+    }
+    const comparator = PrismaDataUtils.mapConditionComparatorFromPrisma(
+      condition.comparator,
+    );
+    if (!comparator) {
+      throw new Error(
+        `Failed to map comparator from prisma: ${condition.comparator}`,
+      );
+    }
+
     let contextValue: string | null = null;
-    switch (condition.systemVariable) {
+    switch (systemVariable) {
       case MessageRuleSystemVariable.BUNDLE_ID:
         contextValue = context.clientBundleId ?? null;
         break;
@@ -146,58 +130,65 @@ export class RuleEvaluator {
       case MessageRuleSystemVariable.VERSION_NAME:
         contextValue = context.clientVersionName ?? null;
         break;
-      default:
-        throw new Error(`Invalid system variable: ${condition.systemVariable}`);
     }
 
-    switch (condition.comparator) {
+    const userVariable = condition.userVariable ?? "";
+    switch (comparator) {
       // Equality Comparators
       case MessageRuleComparator.EQUALS:
-        return contextValue === condition.userVariable;
+        return contextValue === userVariable;
       case MessageRuleComparator.IS_NOT_EQUAL:
-        return contextValue !== condition.userVariable;
+        return contextValue !== userVariable;
 
       // Comparison Comparators
       case MessageRuleComparator.IS_GREATER_THAN:
-        return (
-          contextValue !== null && contextValue > (condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return contextValue > userVariable;
       case MessageRuleComparator.IS_GREATER_THAN_OR_EQUAL:
-        return (
-          contextValue !== null &&
-          contextValue >= (condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return contextValue >= userVariable;
       case MessageRuleComparator.IS_LESS_THAN:
-        return (
-          contextValue !== null && contextValue < (condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return contextValue < userVariable;
       case MessageRuleComparator.IS_LESS_THAN_OR_EQUAL:
-        return (
-          contextValue !== null &&
-          contextValue <= (condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return contextValue <= userVariable;
 
       // String Comparators
       case MessageRuleComparator.CONTAINS:
-        return (
-          contextValue !== null &&
-          contextValue.includes(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return contextValue.includes(userVariable);
       case MessageRuleComparator.DOES_NOT_CONTAIN:
-        return (
-          contextValue !== null &&
-          !contextValue.includes(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return !contextValue.includes(userVariable);
       case MessageRuleComparator.IS_EMPTY:
+        if (contextValue == null) {
+          return false;
+        }
         return contextValue === "";
       case MessageRuleComparator.IS_NOT_EMPTY:
+        if (contextValue == null) {
+          return false;
+        }
         return contextValue !== "";
 
       // Boolean Comparators
       case MessageRuleComparator.IS_NULL:
-        return contextValue === null;
+        return contextValue == null;
       case MessageRuleComparator.IS_NOT_NULL:
-        return contextValue !== null;
+        return contextValue != null;
       case MessageRuleComparator.IS_TRUE:
         return contextValue === "true";
       case MessageRuleComparator.IS_FALSE:
@@ -205,37 +196,48 @@ export class RuleEvaluator {
 
       // Date Comparators
       case MessageRuleComparator.IS_AFTER:
-        return (
-          contextValue !== null &&
-          new Date(contextValue) > new Date(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return new Date(contextValue) > new Date(userVariable);
       case MessageRuleComparator.IS_BEFORE:
-        return (
-          contextValue !== null &&
-          new Date(contextValue) < new Date(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return new Date(contextValue) < new Date(userVariable);
       case MessageRuleComparator.IS_AFTER_OR_EQUAL:
-        return (
-          contextValue !== null &&
-          new Date(contextValue) >= new Date(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return new Date(contextValue) >= new Date(userVariable);
       case MessageRuleComparator.IS_BEFORE_OR_EQUAL:
-        return (
-          contextValue !== null &&
-          new Date(contextValue) <= new Date(condition.userVariable ?? "")
-        );
+        if (contextValue == null) {
+          return false;
+        }
+        return new Date(contextValue) <= new Date(userVariable);
       // Regex Comparators
       case MessageRuleComparator.MATCHES_REGEX: {
-        const regex = new RegExp(condition.userVariable ?? "");
-        return contextValue !== null && regex.test(contextValue);
+        if (contextValue == null) {
+          return false;
+        }
+        try {
+          const regex = new RegExp(userVariable);
+          return regex.test(contextValue);
+        } catch (e) {
+          return false;
+        }
       }
       case MessageRuleComparator.DOES_NOT_MATCH_REGEX: {
-        const regex = new RegExp(condition.userVariable ?? "");
-        return contextValue !== null && !regex.test(contextValue);
+        if (contextValue == null) {
+          return false;
+        }
+        try {
+          const regex = new RegExp(userVariable);
+          return !regex.test(contextValue);
+        } catch (e) {
+          return false;
+        }
       }
-
-      default:
-        return false;
     }
   }
 }

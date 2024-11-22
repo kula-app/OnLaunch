@@ -189,14 +189,12 @@ export class PrismaDataUtils {
         return PrismaClient.ButtonDesign.FILLED;
       case ActionButtonDesign.OUTLINE:
         return PrismaClient.ButtonDesign.TEXT;
-      default:
-        return undefined;
     }
   }
 
   static mapActionTypeFromPrisma(
     type: PrismaClient.ActionType,
-  ): string | undefined {
+  ): MessageActionType | undefined {
     switch (type) {
       case PrismaClient.ActionType.DISMISS:
         return MessageActionType.DISMISS;
@@ -206,13 +204,11 @@ export class PrismaDataUtils {
   }
 
   static mapActionTypeToPrisma(
-    type: string,
+    type: MessageActionType,
   ): PrismaClient.ActionType | undefined {
     switch (type) {
       case MessageActionType.DISMISS:
         return PrismaClient.ActionType.DISMISS;
-      default:
-        return undefined;
     }
   }
 }
