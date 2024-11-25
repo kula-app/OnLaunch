@@ -40,6 +40,11 @@ export const getOrgs = createServerAction(async () => {
         },
       },
     },
+    orderBy: {
+      org: {
+        name: "asc",
+      },
+    },
   });
 
   return orgs.map(

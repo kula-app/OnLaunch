@@ -20,7 +20,7 @@ export const OrgCard: React.FC<{
       cursor={"pointer"}
       onClick={() => {
         if (type === "create") {
-          router.push(Routes.createNewOrg);
+          router.push(Routes.createOrg);
         } else {
           router.push(
             Routes.org({
