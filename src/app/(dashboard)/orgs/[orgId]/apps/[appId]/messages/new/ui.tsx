@@ -1,6 +1,7 @@
 "use client";
 
 import { createMessage } from "@/app/actions/create-message";
+import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { ServerError } from "@/errors/server-error";
 import { ActionButtonDesign } from "@/models/action-button-design";
 import type { MessageAction } from "@/models/message-action";
@@ -41,7 +42,6 @@ import { useRouter } from "next/navigation";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { FaQuestion } from "react-icons/fa6";
-import { ConfiguredNavigationBar } from "./_components/configured-navigation-bar";
 import { ConclusionFormStep } from "./_components/form-step-conclusion";
 import { FormStepDraft } from "./_components/form-step-draft";
 import { FormStepFilters } from "./_components/form-step-filters";
@@ -255,8 +255,7 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [toast, draftFormRef, timeframeFormRef, filterFormRef, appId]);
-
+  }, [toast, draftFormRef, timeframeFormRef, filterFormRef, appId, goToNext]);
   return (
     <>
       <Flex
@@ -264,7 +263,15 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
         align={"stretch"}
         minH={{ base: 0, sm: "100vh" }}
       >
-        <ConfiguredNavigationBar appId={appId} orgId={orgId} />
+        <ConfiguredNavigationBar
+          items={[
+            { kind: "orgs" },
+            { kind: "org", orgId },
+            { kind: "app", orgId, appId },
+            { kind: "messages", orgId, appId },
+            { kind: "create-message", orgId, appId },
+          ]}
+        />
         <Flex
           direction={"column"}
           justifyContent={{ base: "start", sm: "center" }}
