@@ -153,7 +153,7 @@ export const UI: React.FC = () => {
       align={"stretch"}
       minH={{ base: 0, sm: "100vh" }}
     >
-      <NavigationBar />
+      <ConfiguredNavigationBar items={[]} />
       <Flex
         direction={"column"}
         justifyContent={{ base: "start", sm: "center" }}

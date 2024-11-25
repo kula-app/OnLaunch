@@ -1,3 +1,5 @@
+"use client";
+
 import Routes from "@/routes/routes";
 import {
   Avatar,
@@ -6,6 +8,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  CircularProgress,
   Flex,
   HStack,
   Icon,
@@ -30,14 +33,16 @@ import {
   FiUsers,
 } from "react-icons/fi";
 
-export const NavigationBar: React.FC<{
+export interface NavigationBarItem {
+  name: string;
+  href: string;
+  isActive?: boolean;
   isLoading?: boolean;
-  pages?: {
-    name: string;
-    href: string;
-    isActive?: boolean;
-  }[];
-}> = ({ isLoading, pages }) => {
+}
+
+export const NavigationBar: React.FC<{
+  items?: NavigationBarItem[];
+}> = ({ items }) => {
   const session = useSession();
 
   return (
@@ -61,7 +66,7 @@ export const NavigationBar: React.FC<{
             OnLaunch
           </Text>
         </Link>
-        {pages && pages.length > 0 && (
+        {items && items.length > 0 && (
           <Breadcrumb
             display={{ base: "none", md: "flex" }}
             px={4}
@@ -72,17 +77,17 @@ export const NavigationBar: React.FC<{
                 <Icon as={FiHome} />
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {isLoading ? (
-              <BreadcrumbItem>
-                <BreadcrumbLink>Loading...</BreadcrumbLink>
+            {items.map((item, index) => (
+              <BreadcrumbItem key={index} isCurrentPage={item.isActive}>
+                {item.isLoading ? (
+                  <BreadcrumbLink>
+                    <CircularProgress size={4} isIndeterminate />
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbLink href={item.href}>{item.name}</BreadcrumbLink>
+                )}
               </BreadcrumbItem>
-            ) : (
-              pages?.map((page, index) => (
-                <BreadcrumbItem key={index} isCurrentPage={page.isActive}>
-                  <BreadcrumbLink href={page.href}>{page.name}</BreadcrumbLink>
-                </BreadcrumbItem>
-              ))
-            )}
+            ))}
           </Breadcrumb>
         )}
       </Flex>
