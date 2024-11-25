@@ -30,6 +30,10 @@ export type ConfiguredNavigationBarItem =
       kind: "create-org";
     }
   | {
+      kind: "upgrade-org";
+      orgId: Org["id"];
+    }
+  | {
       kind: "apps";
       orgId: Org["id"];
     }

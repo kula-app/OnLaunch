@@ -1,6 +1,6 @@
 "use client";
 
-import { NavigationBar } from "@/components/navigation-bar";
+import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
