@@ -1,12 +1,18 @@
-import { Action } from "./action";
+import { MessageAction } from "./message-action";
+import type { MessageRuleGroup } from "./message-rule-group";
 
 export interface Message {
-  endDate: string;
-  startDate: string;
-  blocking: boolean;
-  body: string;
-  title: string;
-  id?: number;
+  id: number;
   appId: number;
-  actions?: Action[];
+
+  title: string;
+  body: string;
+  actions?: MessageAction[];
+
+  isBlocking: boolean;
+
+  startDate: Date;
+  endDate: Date;
+
+  ruleRootGroup: MessageRuleGroup | undefined;
 }

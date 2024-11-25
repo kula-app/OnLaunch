@@ -8,7 +8,7 @@ import type {
   VerificationToken as AdapterVerificationToken,
 } from "next-auth/adapters";
 import type { ProviderType } from "next-auth/providers";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { Logger } from "./logger";
 
 const logger = new Logger(__filename);
@@ -90,7 +90,7 @@ export function PrismaAdapter(): Required<Adapter> {
       logger.log(`Creating user with data: ${JSON.stringify(data)}`);
       const user = await prisma.user.create({
         data: {
-          authId: uuid(),
+          authId: uuidv4(),
           firstName: data.name,
           lastName: undefined,
 

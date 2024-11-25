@@ -1,4 +1,4 @@
-import { Action } from "@/models/action";
+import { MessageAction } from "@/models/message-action";
 import { User } from "@/models/user";
 import prisma from "@/services/db";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
@@ -11,7 +11,6 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
 ) {
   return authenticatedHandler(
     req,
@@ -37,7 +36,7 @@ export default async function handler(
 async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  _user: User,
 ) {
   logger.log(`Looking up messages with app id '${req.query.appId}'`);
   const allMessages = await prisma.message.findMany({
@@ -59,7 +58,7 @@ async function getHandler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  _user: User,
 ) {
   if (new Date(req.body.startDate) >= new Date(req.body.endDate)) {
     logger.log("Start date has to be before end date");
@@ -82,11 +81,11 @@ async function postHandler(
 
   if (req.body.actions.length > 0) {
     logger.log(`Creating actions for message with id '${message.id}'`);
-    const actions: Action[] = req.body.actions;
+    const actions: MessageAction[] = req.body.actions;
     actions.forEach((action) => {
       action.messageId = message.id;
     });
-    await prisma.action.createMany({
+    await prisma.messageAction.createMany({
       data: req.body.actions,
     });
   }

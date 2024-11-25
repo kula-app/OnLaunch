@@ -1,7 +1,10 @@
 "use client";
 
 import { requestPasswordResetEmail } from "@/app/actions/request-password-reset-email";
+import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
 import { AuthFooter } from "@/components/auth/AuthFooter";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthTextField } from "@/components/auth/AuthTextField";
 import Routes from "@/routes/routes";
 import {
   Box,
@@ -16,9 +19,6 @@ import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
-import { AuthCoverImageColumn } from "../../../../components/auth/AuthCoverImageColumn";
-import { AuthHeader } from "../../../../components/auth/AuthHeader";
-import { AuthTextField } from "../../../../components/auth/AuthTextField";
 
 const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),
@@ -149,7 +149,7 @@ const UI: NextPage = () => {
                                 router.push(
                                   Routes.login({
                                     reason: "account-recovery-requested",
-                                  })
+                                  }),
                                 )
                               }
                             >

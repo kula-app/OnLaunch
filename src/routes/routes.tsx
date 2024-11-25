@@ -31,6 +31,28 @@ class Routes {
     return url.toString();
   }
 
+  static apps({ orgId }: { orgId: number }): string {
+    return `/orgs/${orgId}/apps`;
+  }
+
+  static app({ orgId, appId }: { appId: number; orgId: number }): string {
+    return `/orgs/${orgId}/apps/${appId}`;
+  }
+
+  static messages({ orgId, appId }: { appId: number; orgId: number }): string {
+    return `/orgs/${orgId}/apps/${appId}/messages`;
+  }
+
+  static createMessage({
+    orgId,
+    appId,
+  }: {
+    appId: number;
+    orgId: number;
+  }): string {
+    return `/orgs/${orgId}/apps/${appId}/messages/new`;
+  }
+
   static orgSettingsById(orgId: number): string {
     return `/orgs/${orgId}/settings`;
   }

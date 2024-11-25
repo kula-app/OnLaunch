@@ -109,7 +109,7 @@ export default function MessagesOfAppPage() {
     // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
     return [
       ...dashboardData.filter(
-        (entry) => new Date(entry.date) > new Date(currentPeriodStart)
+        (entry) => new Date(entry.date) > new Date(currentPeriodStart),
       ),
       {
         date: new Date(currentPeriodStart).toISOString().split("T")[0], // Convert date to string in YYYY-MM-DD format
@@ -121,7 +121,7 @@ export default function MessagesOfAppPage() {
   const derivedData = getFilteredData();
   const totalSum = derivedData.reduce(
     (sum, entry) => sum + Number(entry.count),
-    0
+    0,
   );
 
   function handleDelete(messageId: number) {
@@ -166,7 +166,7 @@ export default function MessagesOfAppPage() {
 
   function navigateToEditMessagePage(messageId: number) {
     router.push(
-      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId)
+      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId),
     );
   }
 
@@ -322,17 +322,17 @@ export default function MessagesOfAppPage() {
                         </Td>
                         <Td>
                           <div className="flex justify-center">
-                            {String(message.blocking)}
+                            {String(message.isBlocking)}
                           </div>
                         </Td>
                         <Td>
                           {Moment(message.startDate).format(
-                            "DD.MM.YYYY HH:mm:ss"
+                            "DD.MM.YYYY HH:mm:ss",
                           )}
                         </Td>
                         <Td>
                           {Moment(message.endDate).format(
-                            "DD.MM.YYYY HH:mm:ss"
+                            "DD.MM.YYYY HH:mm:ss",
                           )}
                         </Td>
                         <Td>

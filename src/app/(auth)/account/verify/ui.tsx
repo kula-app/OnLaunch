@@ -2,6 +2,9 @@
 
 import { requestAccountVerificationEmail } from "@/app/actions/request-account-verification-email";
 import { verifyEmail } from "@/app/actions/verify-account";
+import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
+import { AuthFooter } from "@/components/auth/AuthFooter";
+import { AuthHeader } from "@/components/auth/AuthHeader";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import { useCooldown } from "@/hooks/useCooldown";
@@ -18,9 +21,6 @@ import {
 } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { AuthCoverImageColumn } from "../../../../components/auth/AuthCoverImageColumn";
-import { AuthFooter } from "../../../../components/auth/AuthFooter";
-import { AuthHeader } from "../../../../components/auth/AuthHeader";
 
 const logger = new Logger(__filename);
 
@@ -81,7 +81,7 @@ const SuspenseBody: React.FC = () => {
       }
       setIsLoading(false);
     },
-    [toast, verifyCooldown]
+    [toast, verifyCooldown],
   );
 
   useEffect(() => {
@@ -213,7 +213,7 @@ const SuspenseBody: React.FC = () => {
                             Routes.login({
                               email: email,
                               reason: "account-verified",
-                            })
+                            }),
                           )
                         }
                       >

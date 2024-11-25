@@ -3,7 +3,7 @@ import { Providers } from "../providers";
 export const metadata = {
   title: {
     default: "OnLaunch",
-    template: "OnLaunch | %s",
+    template: "%s | OnLaunch",
   },
 };
 

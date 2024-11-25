@@ -11,6 +11,7 @@ export const styles = {
         bg: "linear-gradient(160deg, rgba(59,65,152,1) 15%, rgba(21,29,91,1) 65%, rgba(4,9,40,1) 85%)",
         bgSize: "cover",
         bgPosition: "center center",
+        overscrollBehavior: "none",
       },
       "*::placeholder": {
         color: "gray.400",

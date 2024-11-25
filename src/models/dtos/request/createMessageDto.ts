@@ -1,4 +1,4 @@
-import { Action, ActionType, ButtonDesign } from ".prisma/client";
+import { ActionType, ButtonDesign, type MessageAction } from ".prisma/client";
 import { IsAfter } from "@/util/validators/isAfterValidator";
 import { Type } from "class-transformer";
 import {
@@ -57,5 +57,5 @@ export class CreateMessageDto {
   @ValidateNested({ each: true })
   @Type(() => ActionDto)
   @IsArray()
-  actions!: Action[];
+  actions!: MessageAction[];
 }
