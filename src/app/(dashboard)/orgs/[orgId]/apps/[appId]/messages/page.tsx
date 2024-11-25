@@ -4,6 +4,7 @@ import { authOptions } from "@/util/auth-options";
 import type { NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { UI } from "./ui";
 
 export async function generateMetadata({
   params: { orgId, appId },
@@ -16,7 +17,7 @@ export async function generateMetadata({
   const session = await getServerSession(authOptions);
   if (!session) {
     return {
-      title: "App",
+      title: "Messages",
     };
   }
 
@@ -31,6 +32,9 @@ export async function generateMetadata({
       org: {
         include: {
           apps: {
+            select: {
+              name: true,
+            },
             where: {
               id: +appId,
             },
@@ -41,31 +45,27 @@ export async function generateMetadata({
   });
 
   return {
-    title: user?.org.apps?.[0]?.name || "App",
+    title: user?.org.apps[0].name ?? "Messages",
   };
 }
 
-const page: NextPage<{
+const Page: NextPage<{
   params: {
     orgId: string;
     appId: string;
   };
-}> = async ({ params }) => {
+}> = async ({ params: { orgId, appId } }) => {
   const session = await getServerSession(authOptions);
+
   if (!session) {
     return redirect(
       Routes.login({
-        redirect: Routes.app({
-          orgId: +params.orgId,
-          appId: +params.appId,
-        }),
+        redirect: Routes.app({ orgId: +orgId, appId: +appId }),
       }),
     );
   }
 
-  return redirect(
-    Routes.messages({ orgId: +params.orgId, appId: +params.appId }),
-  );
+  return <UI orgId={+orgId} appId={+appId} />;
 };
 
-export default page;
+export default Page;

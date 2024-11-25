@@ -167,6 +167,7 @@ export const ConfiguredNavigationBar: React.FC<{
           }
           updatedNavigationItems.push({
             name: app?.name ?? "App",
+            isLoading: isLoadingApp,
             href: Routes.app({
               orgId: item.orgId,
               appId: item.appId,

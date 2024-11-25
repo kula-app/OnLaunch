@@ -1,9 +1,15 @@
+"use client";
+
 import { useApp } from "@/api/apps/useApp";
-import getDashboardData from "@/api/dashboard/getDashboardData";
 import deleteMessage from "@/api/messages/deleteMessage";
 import { useOrg } from "@/api/orgs/useOrg";
-import RequestsChart from "@/components/RequestsChart";
+import { getAuthenticatedUserRoleInOrg } from "@/app/actions/get-authenticated-user-role-in-org";
+import { getRequestHistoryOfApp } from "@/app/actions/get-request-history-of-app";
+import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
+import RequestsChart from "@/components/request-chart";
+import { ServerError } from "@/errors/server-error";
 import { Message } from "@/models/message";
+import type { RequestHistoryItem } from "@/models/request-history-item";
 import Routes from "@/routes/routes";
 import styles from "@/styles/Home.module.css";
 import {
@@ -15,6 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  Container,
+  Flex,
   Heading,
   IconButton,
   Skeleton,
@@ -33,19 +41,19 @@ import {
 } from "@chakra-ui/react";
 import Moment from "moment";
 import { getSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 
-export default function MessagesOfAppPage() {
+export const UI: React.FC<{
+  orgId: number;
+  appId: number;
+}> = ({ orgId, appId }) => {
   const router = useRouter();
   const toast = useToast();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
-
-  const orgId = Number(router.query.orgId);
-  const appId = Number(router.query.appId);
 
   const [messageId, setMessageId] = useState(-1);
 
@@ -61,20 +69,17 @@ export default function MessagesOfAppPage() {
     mutate,
   } = useApp(orgId, appId);
 
-  const [dashboardData, setData] = useState<DashboardRequestData[]>([]);
-  const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
-  const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
+  const [dashboardData, setData] = useState<RequestHistoryItem[]>([]);
 
   useEffect(() => {
     // Use the abstracted function
     const fetchData = async () => {
       try {
-        const data = await getDashboardData(orgId, appId);
-        setData(data.dailyCounts);
-        if (data.billingDay?.date) {
-          setCurrentPeriodStart(data.billingDay.date);
-          setPeriodStartDayCount(data.billingDay.countAfterBillingStart);
+        const response = await getRequestHistoryOfApp({ orgId, appId });
+        if (response.error) {
+          throw new ServerError(response.error.name, response.error.message);
         }
+        setData(response.value.items);
       } catch (error) {
         toast({
           title: "Failed to fetch dashboard data!",
@@ -89,6 +94,30 @@ export default function MessagesOfAppPage() {
     fetchData();
   }, [orgId, appId, toast]);
 
+  const [authenticatedUserRole, setAuthenticatedUserRole] = useState<string>();
+  const fetchAuthenticatedUserRole = useCallback(async () => {
+    try {
+      const response = await getAuthenticatedUserRoleInOrg(orgId);
+      if (response.error) {
+        throw new ServerError(response.error.name, response.error.message);
+      }
+      setAuthenticatedUserRole(response.value);
+    } catch (error) {
+      toast({
+        title: "Failed to fetch role!",
+        description: "Please try again later",
+        status: "error",
+        isClosable: true,
+        duration: 6000,
+      });
+    }
+  }, [orgId, toast]);
+  useEffect(() => {
+    if (!authenticatedUserRole) {
+      fetchAuthenticatedUserRole();
+    }
+  }, [fetchAuthenticatedUserRole, authenticatedUserRole]);
+
   if (isOrgError || isAppError) return <div>Failed to load</div>;
 
   const messages = data?.messages?.filter((message) => {
@@ -99,27 +128,7 @@ export default function MessagesOfAppPage() {
     }
   });
 
-  // Either show whole last 31 days or filter to only show request data
-  // during the current billing period
-  const getFilteredData = (): DashboardRequestData[] => {
-    if (!currentPeriodStart || periodStartDayCount === undefined) {
-      return dashboardData; // Return original data if not showing current billing period
-    }
-
-    // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
-    return [
-      ...dashboardData.filter(
-        (entry) => new Date(entry.date) > new Date(currentPeriodStart),
-      ),
-      {
-        date: new Date(currentPeriodStart).toISOString().split("T")[0], // Convert date to string in YYYY-MM-DD format
-        count: periodStartDayCount,
-      },
-    ];
-  };
-
-  const derivedData = getFilteredData();
-  const totalSum = derivedData.reduce(
+  const totalSum = dashboardData.reduce(
     (sum, entry) => sum + Number(entry.count),
     0,
   );
@@ -179,8 +188,17 @@ export default function MessagesOfAppPage() {
   }
 
   return (
-    <>
-      <div>
+    <Flex direction={"column"} minH={"100vh"}>
+      <ConfiguredNavigationBar
+        items={[
+          { kind: "orgs" },
+          { kind: "org", orgId: orgId },
+          { kind: "apps", orgId: orgId },
+          { kind: "app", orgId: orgId, appId: appId },
+          { kind: "messages", orgId: orgId, appId: appId },
+        ]}
+      />
+      <Container maxW={"6xl"}>
         <main className={styles.main}>
           <Heading className="text-center">{data?.name}</Heading>
           {data?.role === "ADMIN" && (
@@ -192,12 +210,12 @@ export default function MessagesOfAppPage() {
               App Settings
             </Button>
           )}
-          {org?.role === "ADMIN" && dashboardData.length > 0 && (
+          {authenticatedUserRole === "ADMIN" && dashboardData.length > 0 && (
             <>
               <Heading className="text-center my-12">
                 App requests in the past days
               </Heading>
-              <RequestsChart requestData={derivedData} />
+              <RequestsChart requestData={dashboardData} />
               <Heading size="lg">Total requests: {totalSum}</Heading>
               <Text>in the last 31 days</Text>
             </>
@@ -417,10 +435,10 @@ export default function MessagesOfAppPage() {
             </AlertDialogContent>
           </AlertDialog>
         </main>
-      </div>
-    </>
+      </Container>
+    </Flex>
   );
-}
+};
 
 export async function getServerSideProps(context: any) {
   const session = await getSession({ req: context.req });
