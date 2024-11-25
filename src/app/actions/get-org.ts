@@ -33,7 +33,15 @@ export const getOrg = createServerAction(
         },
       },
       include: {
-        org: true,
+        org: {
+          include: {
+            subs: {
+              where: {
+                isDeleted: false,
+              },
+            },
+          },
+        },
       },
     });
     if (!org) {
@@ -43,6 +51,7 @@ export const getOrg = createServerAction(
     return {
       id: org.org.id,
       name: org.org.name,
+      subName: org.org.subs?.[0]?.subName,
     };
   },
 );

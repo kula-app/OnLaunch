@@ -32,7 +32,7 @@ export default function ProfilePage() {
   }
 
   function navigateToNewOrgPage() {
-    router.push(Routes.createNewOrg);
+    router.push(Routes.createOrg);
   }
 
   useEffect(() => {

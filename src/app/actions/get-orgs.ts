@@ -51,7 +51,6 @@ export const getOrgs = createServerAction(async () => {
     (org): Org => ({
       id: org.org.id,
       name: org.org.name,
-      role: org.role,
       subName: org.org.subs[0]?.subName ?? "free",
     }),
   );
