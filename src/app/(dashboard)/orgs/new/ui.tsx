@@ -6,54 +6,48 @@ import { loadClientConfig } from "@/config/loadClientConfig";
 import { ServerError } from "@/errors/server-error";
 import Routes from "@/routes/routes";
 import {
-  Box,
   Button,
   Card,
   CardBody,
   CardHeader,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
+  HStack,
   Input,
-  Step,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  Stepper,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
+  Spacer,
   Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { Field, Form, Formik, type FieldProps } from "formik";
+import {
+  ErrorMessage,
+  Field,
+  Form,
+  Formik,
+  type FieldProps,
+  type FormikProps,
+} from "formik";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 
-const createOrgSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+interface CreateOrgFormValues {
+  name: string;
+}
+
+const createOrgSchema = Yup.object<CreateOrgFormValues>().shape({
+  name: Yup.string().required("Please enter a name for your organization."),
 });
 
 export default function NewOrgPage() {
   const router = useRouter();
   const toast = useToast();
 
-  function navigateToUpgradePage(orgId: number) {
-    router.push(Routes.getOrgUpgradeByOrgId(orgId));
-  }
-
-  function navigateToOrgAppsPage(orgId: number) {
-    router.push(Routes.getOrgAppsByOrgId(orgId));
-  }
-
-  const steps = [
-    { title: "Create Organization" },
-    { title: "Create App" },
-    { title: "Invite Team" },
-  ];
-  const activeStep = 0;
+  const initialValues: CreateOrgFormValues = {
+    name: "",
+  };
   return (
     <Flex
       direction={"column"}
@@ -81,43 +75,8 @@ export default function NewOrgPage() {
               your team to collaborate.
             </Heading>
           </VStack>
-          <VStack
-            mt={{ base: 12, sm: "48px" }}
-            display={{ base: "none", sm: "block" }}
-          >
-            <Stepper
-              index={activeStep}
-              minW={{ base: "100%", sm: "750px" }}
-              orientation={"horizontal"}
-              px={12}
-            >
-              {steps.map((step, index) => (
-                <Step key={index}>
-                  <StepIndicator
-                    color={index <= activeStep ? "white" : "gray.400"}
-                    borderColor={"gray.400"}
-                  >
-                    <StepStatus
-                      complete={<StepIcon />}
-                      incomplete={<StepNumber />}
-                      active={<StepNumber />}
-                    />
-                  </StepIndicator>
-
-                  <Box
-                    flexShrink="0"
-                    color={index <= activeStep ? "white" : "gray.400"}
-                  >
-                    <StepTitle>{step.title}</StepTitle>
-                  </Box>
-
-                  <StepSeparator />
-                </Step>
-              ))}
-            </Stepper>
-          </VStack>
           <Card
-            mt={{ base: 12, sm: "48px" }}
+            mt={{ base: 8 }}
             p={{
               base: 2,
               md: "22px",
@@ -133,9 +92,7 @@ export default function NewOrgPage() {
             </CardHeader>
             <CardBody>
               <Formik
-                initialValues={{
-                  name: "",
-                }}
+                initialValues={initialValues}
                 validationSchema={createOrgSchema}
                 onSubmit={async (values, { setStatus }) => {
                   try {
@@ -146,7 +103,6 @@ export default function NewOrgPage() {
                         result.error.message,
                       );
                     }
-
                     toast({
                       title: "Success!",
                       description: "New organisation created.",
@@ -155,11 +111,12 @@ export default function NewOrgPage() {
                       duration: 6000,
                     });
 
+                    // If stripe is configured, redirect to the plan selection page
                     const stripeConfig = loadClientConfig().stripeConfig;
                     if (stripeConfig.isEnabled) {
-                      navigateToUpgradePage(result.value);
+                      router.push(Routes.getOrgUpgradeByOrgId(result.value));
                     } else {
-                      navigateToOrgAppsPage(result.value);
+                      router.push(Routes.getOrgAppsByOrgId(result.value));
                     }
                   } catch (error) {
                     toast({
@@ -172,38 +129,65 @@ export default function NewOrgPage() {
                   }
                 }}
               >
-                {(props) => (
+                {(props: FormikProps<CreateOrgFormValues>) => (
                   <Form>
                     <VStack
                       w={"full"}
                       spacing={{ base: 4, md: "24px" }}
-                      align={"end"}
+                      align={"center"}
                     >
-                      <FormControl color="white" w={"full"}>
-                        <FormLabel>Name</FormLabel>
-                        <Field name="name">
-                          {({ field }: FieldProps) => (
-                            <Input
-                              {...field}
-                              id="name"
-                              placeholder="Organization Name"
+                      <Field name="name">
+                        {({
+                          field,
+                          form,
+                        }: FieldProps<string, CreateOrgFormValues>) => {
+                          const isFieldInvalid =
+                            !!form.errors?.name && !!form.touched?.name;
+
+                          return (
+                            <FormControl
+                              color="white"
                               w={"full"}
-                              color={"white"}
-                              bg={"rgb(19,21,54)"}
-                              borderRadius="20px"
-                              border="0.0625rem solid rgb(86, 87, 122)"
-                              minH={"50px"}
-                            />
-                          )}
-                        </Field>
-                      </FormControl>
-                      <Button
-                        colorScheme="blue"
-                        type="submit"
-                        isLoading={props.isSubmitting}
-                      >
-                        NEXT
-                      </Button>
+                              isInvalid={isFieldInvalid}
+                            >
+                              <FormLabel htmlFor={field.name}>Name</FormLabel>
+                              <Input
+                                {...field}
+                                id={field.name}
+                                placeholder="e.g. kula app GmbH"
+                                w={"full"}
+                                variant={"brand-on-card"}
+                                minH={"50px"}
+                              />
+                              <ErrorMessage
+                                name={field.name}
+                                render={(errorMessage) => (
+                                  <FormErrorMessage>
+                                    {errorMessage}
+                                  </FormErrorMessage>
+                                )}
+                              />
+                            </FormControl>
+                          );
+                        }}
+                      </Field>
+                      <HStack w={"full"}>
+                        <Button
+                          colorScheme={"gray"}
+                          variant={"solid"}
+                          onClick={() => router.push(Routes.orgs)}
+                        >
+                          Cancel
+                        </Button>
+                        <Spacer />
+                        <Button
+                          colorScheme="brand"
+                          type="submit"
+                          isLoading={props.isSubmitting}
+                        >
+                          CREATE
+                        </Button>
+                      </HStack>
                     </VStack>
                   </Form>
                 )}
