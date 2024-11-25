@@ -1,6 +1,7 @@
 export class CustomErrorNames {
   static BadRequestError = "BadRequestError";
   static EmailConflictError = "EmailConflictError";
+  static ForbiddenError = "ForbiddenError";
   static NotFoundError = "NotFoundError";
   static SessionNotFoundError = "SessionNotFoundError";
   static TokenExpiredError = "TokenExpiredError";
@@ -9,4 +10,5 @@ export class CustomErrorNames {
   static UserAlreadyJoinedOrgError = "UserAlreadyJoinedOrgError";
   static UserAlreadyVerifiedError = "UserAlreadyVerifiedError";
   static UserRegistrationDisabledError = "UserRegistrationDisabledError";
+  static UnauthorizedError = "UnauthorizedError";
 }
