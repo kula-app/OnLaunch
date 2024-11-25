@@ -1,6 +1,5 @@
 import { User } from "@/models/user";
 import prisma from "@/services/db";
-import { generateToken } from "@/util/auth";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
 import { Logger } from "@/util/logger";
 import { StatusCodes } from "http-status-codes";
@@ -28,9 +27,6 @@ export default async function handler(
       switch (req.method) {
         case "GET":
           return getHandler(req, res, user);
-
-        case "POST":
-          return postHandler(req, res, user);
 
         default:
           return res
@@ -100,23 +96,4 @@ async function getHandler(
       };
     }),
   );
-}
-
-async function postHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-) {
-  const generatedToken = generateToken();
-
-  logger.log(`Creating app '${req.body.name}' for org id '${req.query.orgId}'`);
-  const app = await prisma.app.create({
-    data: {
-      name: req.body.name,
-      orgId: req.body.orgId,
-      publicKey: generatedToken,
-    },
-  });
-
-  return res.status(StatusCodes.CREATED).json(app);
 }
