@@ -18,7 +18,7 @@ class Routes {
     return "/orgs";
   }
 
-  static get createNewOrg(): string {
+  static get createOrg(): string {
     return "/orgs/new";
   }
 
@@ -57,7 +57,7 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
 
-  static orgSettingsById(orgId: number): string {
+  static orgSettings({ orgId }: { orgId: number }): string {
     return `/orgs/${orgId}/settings`;
   }
 

@@ -23,6 +23,10 @@ export type ConfiguredNavigationBarItem =
       orgId: Org["id"];
     }
   | {
+      kind: "org-settings";
+      orgId: Org["id"];
+    }
+  | {
       kind: "create-org";
     }
   | {
@@ -132,10 +136,19 @@ export const ConfiguredNavigationBar: React.FC<{
           });
           break;
         }
+        case "org-settings": {
+          updatedNavigationItems.push({
+            name: "Settings",
+            href: Routes.orgSettings({
+              orgId: item.orgId,
+            }),
+          });
+          break;
+        }
         case "create-org": {
           updatedNavigationItems.push({
             name: "Create",
-            href: "#",
+            href: Routes.createOrg,
           });
           break;
         }

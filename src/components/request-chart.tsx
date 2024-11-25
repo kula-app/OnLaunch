@@ -1,19 +1,21 @@
-import React from "react";
+import type { RequestHistoryItem } from "@/models/request-history-item";
 import {
-  Chart as ChartJS,
   CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
+  Chart as ChartJS,
   Filler,
   Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  type ChartData,
+  type ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
 interface RequestChartProps {
-  requestData: DashboardRequestData[];
+  requestData: RequestHistoryItem[];
 }
 
 ChartJS.register(
@@ -24,18 +26,19 @@ ChartJS.register(
   Title,
   Tooltip,
   Filler,
-  Legend
+  Legend,
 );
 
-export const options = {
+export const options: ChartOptions<"line"> = {
   responsive: true,
   plugins: {
     legend: {
-      position: "top" as const,
+      position: "top",
     },
     title: {
       display: true,
       text: "Depicting how many requests have been made from your app clients to your OnLaunch space",
+      color: "white",
     },
   },
   scales: {
@@ -75,7 +78,7 @@ export default function RequestChart({ requestData }: RequestChartProps) {
   });
   const dataSet = sortedRequestData.map((item) => Number(item.count));
 
-  const chartData = {
+  const chartData: ChartData<"line", number[], string> = {
     labels,
     datasets: [
       {
