@@ -57,6 +57,18 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
 
+  static message({
+    orgId,
+    appId,
+    messageId,
+  }: {
+    appId: number;
+    messageId: number;
+    orgId: number;
+  }): string {
+    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
+  }
+
   static orgSettings({ orgId }: { orgId: number }): string {
     return `/orgs/${orgId}/settings`;
   }
