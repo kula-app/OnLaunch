@@ -35,6 +35,10 @@ class Routes {
     return `/orgs/${orgId}/apps`;
   }
 
+  static createApp({ orgId }: { orgId: number }): string {
+    return `/orgs/${orgId}/apps/new`;
+  }
+
   static app({ orgId, appId }: { appId: number; orgId: number }): string {
     return `/orgs/${orgId}/apps/${appId}`;
   }
@@ -67,10 +71,6 @@ class Routes {
 
   static getOrgUpgradeByOrgId(orgId: number): string {
     return `/orgs/${orgId}/upgrade`;
-  }
-
-  static createNewAppForOrgId(orgId: number): string {
-    return `/orgs/${orgId}/apps/new`;
   }
 
   static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {
