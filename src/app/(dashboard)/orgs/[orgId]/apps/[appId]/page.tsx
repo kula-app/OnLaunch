@@ -4,6 +4,7 @@ import { authOptions } from "@/util/auth-options";
 import type { NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { UI } from "./ui";
 
 export async function generateMetadata({
   params: { orgId, appId },
@@ -63,9 +64,7 @@ const page: NextPage<{
     );
   }
 
-  return redirect(
-    Routes.messages({ orgId: +params.orgId, appId: +params.appId }),
-  );
+  return <UI orgId={+params.orgId} appId={+params.appId} />;
 };
 
 export default page;
