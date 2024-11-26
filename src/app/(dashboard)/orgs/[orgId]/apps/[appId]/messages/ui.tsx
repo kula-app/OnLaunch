@@ -1,17 +1,13 @@
 "use client";
 
-import { useApp } from "@/api/apps/useApp";
-import deleteMessage from "@/api/messages/deleteMessage";
-import { useOrg } from "@/api/orgs/useOrg";
-import { getAuthenticatedUserRoleInOrg } from "@/app/actions/get-authenticated-user-role-in-org";
-import { getRequestHistoryOfApp } from "@/app/actions/get-request-history-of-app";
+import { deleteMessage } from "@/app/actions/delete-message";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import RequestsChart from "@/components/request-chart";
-import { ServerError } from "@/errors/server-error";
+import { MessageList } from "@/components/message-list";
+import { useMessages } from "@/hooks/use-messages";
+import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import { Message } from "@/models/message";
-import type { RequestHistoryItem } from "@/models/request-history-item";
 import Routes from "@/routes/routes";
-import styles from "@/styles/Home.module.css";
+import { truncateString } from "@/util/truncate-string";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -20,30 +16,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
   Button,
   Container,
   Flex,
   Heading,
-  IconButton,
-  Skeleton,
-  Stack,
-  Table,
-  Tag,
-  Tbody,
-  Td,
+  HStack,
+  Spacer,
   Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useDisclosure,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
-import Moment from "moment";
-import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FaPlus } from "react-icons/fa6";
 
 export const UI: React.FC<{
   orgId: number;
@@ -52,409 +38,285 @@ export const UI: React.FC<{
   const router = useRouter();
   const toast = useToast();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef(null);
-
-  const [messageId, setMessageId] = useState(-1);
-
-  const [showHistory, setShowHistory] = useState(false);
-
-  const now = Moment.now();
-
-  const { org, isError: isOrgError } = useOrg(orgId);
   const {
-    app: data,
-    isLoading,
-    isError: isAppError,
-    mutate,
-  } = useApp(orgId, appId);
+    isLoading: isLoadingActiveMessages,
+    messages: activeMessages,
+    refresh: refreshActiveMessages,
+  } = useMessages({
+    appId,
+    filter: "active",
+  });
+  const {
+    isLoading: isLoadingPlannedMessages,
+    messages: plannedMessages,
+    refresh: refreshPlannedMessages,
+  } = useMessages({
+    appId,
+    filter: "planned",
+  });
+  const {
+    isLoading: isLoadingPastMessages,
+    messages: pastMessages,
+    refresh: refreshPastMessages,
+  } = useMessages({
+    appId,
+    filter: "past",
+  });
 
-  const [dashboardData, setData] = useState<RequestHistoryItem[]>([]);
-
+  // Schedule a refresh of the messages when the list is expected to change based on the timestamps
+  const [refreshTimestamp, setRefreshTimestamp] = useState<Date | null>();
   useEffect(() => {
-    // Use the abstracted function
-    const fetchData = async () => {
-      try {
-        const response = await getRequestHistoryOfApp({ orgId, appId });
-        if (response.error) {
-          throw new ServerError(response.error.name, response.error.message);
+    // Find the closest timestamp that will be in the past soon
+    // For active messages this is the closes end date
+    // For planned messages this is the closest start date
+
+    // Note: Active messages are expected to have future end dates.
+    const closestActiveMessageEndDate = activeMessages?.reduce(
+      (prev: Date | undefined, message) => {
+        if (!prev) {
+          return message.endDate;
         }
-        setData(response.value.items);
-      } catch (error) {
-        toast({
-          title: "Failed to fetch dashboard data!",
-          description: "Please try again later",
-          status: "error",
-          isClosable: true,
-          duration: 6000,
-        });
-      }
-    };
+        if (message.endDate.getTime() < prev.getTime()) {
+          return message.endDate;
+        }
+        return prev;
+      },
+      undefined,
+    );
+    // Note: Planned messages are expected to have future start dates.
+    const closestPlannedMessageStartDate = plannedMessages?.reduce(
+      (prev: Date | undefined, message) => {
+        if (!prev) {
+          return message.startDate;
+        }
+        if (message.startDate.getTime() < prev.getTime()) {
+          return message.startDate;
+        }
+        return prev;
+      },
+      undefined,
+    );
 
-    fetchData();
-  }, [orgId, appId, toast]);
+    let timestamp: Date;
+    if (closestActiveMessageEndDate && closestPlannedMessageStartDate) {
+      timestamp =
+        closestActiveMessageEndDate.getTime() <
+        closestPlannedMessageStartDate.getTime()
+          ? closestActiveMessageEndDate
+          : closestPlannedMessageStartDate;
+    } else if (closestActiveMessageEndDate) {
+      timestamp = closestActiveMessageEndDate;
+    } else if (closestPlannedMessageStartDate) {
+      timestamp = closestPlannedMessageStartDate;
+    } else {
+      return;
+    }
 
-  const [authenticatedUserRole, setAuthenticatedUserRole] = useState<string>();
-  const fetchAuthenticatedUserRole = useCallback(async () => {
-    try {
-      const response = await getAuthenticatedUserRoleInOrg(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setAuthenticatedUserRole(response.value);
-    } catch (error) {
+    setRefreshTimestamp(timestamp);
+
+    // Create a timeout to refresh the messages at the closest timestamp
+    const timeout = setTimeout(() => {
+      refreshActiveMessages();
+      refreshPlannedMessages();
+      refreshPastMessages();
+
       toast({
-        title: "Failed to fetch role!",
-        description: "Please try again later",
-        status: "error",
+        title: "Messages refreshed!",
+        description: `Messages have been refreshed.`,
+        status: "info",
         isClosable: true,
         duration: 6000,
       });
+    }, timestamp.getTime() - Date.now());
+
+    // Clear the timeout when the component is unmounted
+    return () => clearTimeout(timeout);
+  }, [
+    activeMessages,
+    plannedMessages,
+    refreshActiveMessages,
+    refreshPastMessages,
+    refreshPlannedMessages,
+    toast,
+  ]);
+
+  const {
+    isOpen,
+    onClose,
+    value: messageToDelete,
+    setValue: setMessageToDelete,
+  } = useValueDisclosure<Message>();
+  const cancelRef = useRef(null);
+
+  const callDeleteMessage = useCallback(async () => {
+    if (!messageToDelete) {
+      return;
     }
-  }, [orgId, toast]);
-  useEffect(() => {
-    if (!authenticatedUserRole) {
-      fetchAuthenticatedUserRole();
-    }
-  }, [fetchAuthenticatedUserRole, authenticatedUserRole]);
-
-  if (isOrgError || isAppError) return <div>Failed to load</div>;
-
-  const messages = data?.messages?.filter((message) => {
-    if (showHistory) {
-      return new Date(message.endDate).getTime() < now;
-    } else {
-      return new Date(message.endDate).getTime() >= now;
-    }
-  });
-
-  const totalSum = dashboardData.reduce(
-    (sum, entry) => sum + Number(entry.count),
-    0,
-  );
-
-  function handleDelete(messageId: number) {
-    setMessageId(messageId);
-    if (data && data.messages) {
-      const message = data?.messages.find((x) => x.id == messageId);
-      if (
-        message &&
-        Moment(message.startDate).isBefore(now) &&
-        Moment(message.endDate).isAfter(now)
-      ) {
-        onOpen();
-      } else {
-        callDeleteMessage(messageId);
-      }
-    }
-  }
-
-  async function callDeleteMessage(messageId: number) {
     try {
-      await deleteMessage(orgId, appId, messageId);
-
-      mutate();
+      await deleteMessage(messageToDelete.id);
+      refreshActiveMessages();
+      refreshPlannedMessages();
+      refreshPastMessages();
 
       toast({
         title: "Success!",
-        description: `Message with id '${messageId}' successfully deleted.`,
+        description: `Message with id '${messageToDelete}' successfully deleted.`,
         status: "success",
         isClosable: true,
         duration: 6000,
       });
     } catch (error) {
       toast({
-        title: `Error while deleting message with id ${messageId}!`,
+        title: `Error while deleting message with id ${messageToDelete}!`,
         description: `${error}`,
         status: "error",
         isClosable: true,
         duration: 6000,
       });
     }
-  }
-
-  function navigateToEditMessagePage(messageId: number) {
-    router.push(
-      Routes.editMessageByOrgIdAndAppIdAndMessageId(orgId, appId, messageId),
-    );
-  }
-
-  function navigateToNewMessagePage() {
-    router.push(Routes.createNewMessageForOrgIdAndAppId(orgId, appId));
-  }
-
-  function navigateToAppSettingsPage() {
-    router.push(Routes.appSettingsByOrgIdAndAppId(orgId, appId));
-  }
+  }, [orgId, appId, messageToDelete, toast]);
 
   return (
-    <Flex direction={"column"} minH={"100vh"}>
-      <ConfiguredNavigationBar
-        items={[
-          { kind: "orgs" },
-          { kind: "org", orgId: orgId },
-          { kind: "apps", orgId: orgId },
-          { kind: "app", orgId: orgId, appId: appId },
-          { kind: "messages", orgId: orgId, appId: appId },
-        ]}
-      />
-      <Container maxW={"6xl"}>
-        <main className={styles.main}>
-          <Heading className="text-center">{data?.name}</Heading>
-          {data?.role === "ADMIN" && (
-            <Button
-              colorScheme="blue"
-              className="mt-8"
-              onClick={navigateToAppSettingsPage}
-            >
-              App Settings
-            </Button>
-          )}
-          {authenticatedUserRole === "ADMIN" && dashboardData.length > 0 && (
-            <>
-              <Heading className="text-center my-12">
-                App requests in the past days
-              </Heading>
-              <RequestsChart requestData={dashboardData} />
-              <Heading size="lg">Total requests: {totalSum}</Heading>
-              <Text>in the last 31 days</Text>
-            </>
-          )}
-          <div>
-            <Button
-              colorScheme="blue"
-              className="mt-8"
-              onClick={navigateToNewMessagePage}
-            >
-              New Message
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant="ghost"
-              colorScheme="blue"
-              className="mt-8"
-              onClick={() => {
-                setShowHistory(!showHistory);
-              }}
-            >
-              {showHistory
-                ? `show current messages (${
-                    Number(data?.messages?.length) -
-                    (messages ? messages.length : 0)
-                  })`
-                : `show history (${
-                    Number(data?.messages?.length) -
-                    (messages ? messages.length : 0)
-                  })`}
-            </Button>
-          </div>
-          <div>
-            <Table
-              sx={{ minWidth: 650, maxWidth: 1300 }}
-              aria-label="simple table"
-            >
-              <Thead>
-                <Tr>
-                  <Th>
-                    <strong>ID</strong>
-                  </Th>
-                  <Th></Th>
-                  <Th>
-                    <strong>Title</strong>
-                  </Th>
-                  <Th>
-                    <strong>Body</strong>
-                  </Th>
-                  <Th>
-                    <strong>Blocking</strong>
-                  </Th>
-                  <Th>
-                    <strong>Start Date</strong>
-                  </Th>
-                  <Th>
-                    <strong>End Date</strong>
-                  </Th>
-                  <Th>
-                    <strong># Actions</strong>
-                  </Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {data?.messages &&
-                  messages &&
-                  messages.map((message: Message, index: number) => {
-                    return (
-                      <Tr key={index}>
-                        <Td>{message.id}</Td>
-                        <Td>
-                          <div className="flex justify-center">
-                            {Moment(message.startDate).isBefore(now) &&
-                              Moment(message.endDate).isAfter(now) && (
-                                <Tooltip label="this message is currently displayed in apps">
-                                  <Tag
-                                    size={"md"}
-                                    key={index}
-                                    borderRadius="full"
-                                    variant="solid"
-                                    colorScheme="green"
-                                  >
-                                    live
-                                  </Tag>
-                                </Tooltip>
-                              )}
-                            {Moment(message.endDate).isBefore(now) && (
-                              <Tooltip label="this message will not be displayed again in apps">
-                                <Tag
-                                  size={"md"}
-                                  key={index}
-                                  borderRadius="full"
-                                  variant="outline"
-                                  colorScheme="blackAlpha"
-                                >
-                                  over
-                                </Tag>
-                              </Tooltip>
-                            )}
-                            {Moment(message.startDate).isAfter(now) && (
-                              <Tooltip label="this message will be displayed in apps in the future">
-                                <Tag
-                                  size={"md"}
-                                  key={index}
-                                  borderRadius="full"
-                                  variant="outline"
-                                  colorScheme="green"
-                                >
-                                  upcoming
-                                </Tag>
-                              </Tooltip>
-                            )}
-                          </div>
-                        </Td>
-                        <Td>{message.title}</Td>
-                        <Td>
-                          {message.body.length >= 70
-                            ? message.body.slice(0, 50) + "..."
-                            : message.body}
-                        </Td>
-                        <Td>
-                          <div className="flex justify-center">
-                            {String(message.isBlocking)}
-                          </div>
-                        </Td>
-                        <Td>
-                          {Moment(message.startDate).format(
-                            "DD.MM.YYYY HH:mm:ss",
-                          )}
-                        </Td>
-                        <Td>
-                          {Moment(message.endDate).format(
-                            "DD.MM.YYYY HH:mm:ss",
-                          )}
-                        </Td>
-                        <Td>
-                          <div className="flex justify-center">
-                            {!!message.actions ? message.actions.length : 0}
-                          </div>
-                        </Td>
-                        <Td>
-                          <div className="flex flex-row">
-                            <Tooltip label="edit">
-                              <IconButton
-                                className="mr-2"
-                                aria-label={"view message details"}
-                                onClick={() =>
-                                  navigateToEditMessagePage(Number(message.id))
-                                }
-                              >
-                                <MdEdit />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip label="delete">
-                              <IconButton
-                                aria-label={"delete message"}
-                                onClick={() => handleDelete(Number(message.id))}
-                              >
-                                <MdDeleteForever />
-                              </IconButton>
-                            </Tooltip>
-                          </div>
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-              </Tbody>
-            </Table>
-            {isLoading && (
-              <div className="w-full">
-                <Stack>
-                  <Skeleton height="60px" />
-                  <Skeleton height="60px" />
-                  <Skeleton height="60px" />
-                </Stack>
-              </div>
-            )}
-          </div>
-          {data?.messages && messages && messages.length == 0 && (
-            <p className="mt-4">no data to show</p>
-          )}
-          <AlertDialog
-            isOpen={isOpen}
-            motionPreset="slideInBottom"
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-            isCentered
-          >
-            <AlertDialogOverlay />
-
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                {`Delete message with id '${messageId}'?`}
-              </AlertDialogHeader>
-              <AlertDialogCloseButton />
-              <AlertDialogBody>
-                This message is currently displayed in apps. Deletion cannot be
-                undone.
-              </AlertDialogBody>
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
+    <>
+      <Flex direction={"column"} minH={"100vh"}>
+        <ConfiguredNavigationBar
+          items={[
+            { kind: "orgs" },
+            { kind: "org", orgId: orgId },
+            { kind: "apps", orgId: orgId },
+            { kind: "app", orgId: orgId, appId: appId },
+            { kind: "messages", orgId: orgId, appId: appId },
+          ]}
+        />
+        <Container maxW={"6xl"}>
+          <VStack p={4} w={"full"} gap={8}>
+            <Heading size={"lg"} as={"h1"} color={"white"} w={"full"}>
+              Messages
+            </Heading>
+            <Box w={"full"}>
+              <HStack w={"full"} mb={4}>
+                <Heading size={"md"} as={"h2"} color={"white"}>
+                  Active Messages
+                </Heading>
+                <Spacer />
                 <Button
-                  colorScheme="red"
-                  ml={3}
-                  onClick={() => {
-                    callDeleteMessage(messageId);
-                    onClose();
-                  }}
+                  leftIcon={<FaPlus />}
+                  variant={"solid"}
+                  colorScheme={"brand"}
+                  onClick={() =>
+                    router.push(
+                      Routes.createNewMessageForOrgIdAndAppId(orgId, appId),
+                    )
+                  }
                 >
-                  Confirm
+                  Create Message
                 </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </main>
-      </Container>
-    </Flex>
+              </HStack>
+              <MessageList
+                isLoading={isLoadingActiveMessages}
+                messages={activeMessages ?? []}
+                editMessage={(message) =>
+                  router.push(
+                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
+                      orgId,
+                      appId,
+                      message.id,
+                    ),
+                  )
+                }
+                deleteMessage={(message) => {
+                  setMessageToDelete(message);
+                }}
+              />
+            </Box>
+            <Box w={"full"}>
+              <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
+                Planned Messages
+              </Heading>
+              <MessageList
+                isLoading={isLoadingPlannedMessages}
+                messages={plannedMessages ?? []}
+                editMessage={(message) =>
+                  router.push(
+                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
+                      orgId,
+                      appId,
+                      message.id,
+                    ),
+                  )
+                }
+                deleteMessage={(messageId) => {
+                  setMessageToDelete(messageId);
+                }}
+              />
+            </Box>
+            <Box w={"full"}>
+              <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
+                Past Messages
+              </Heading>
+              <MessageList
+                isLoading={isLoadingPastMessages}
+                messages={pastMessages ?? []}
+                editMessage={(message) =>
+                  router.push(
+                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
+                      orgId,
+                      appId,
+                      message.id,
+                    ),
+                  )
+                }
+                deleteMessage={(messageId) => {
+                  setMessageToDelete(messageId);
+                }}
+              />
+            </Box>
+            <Text color={"white"} fontSize={12}>
+              Automatic refreshing messages at{" "}
+              {refreshTimestamp?.toLocaleString()}.
+            </Text>
+          </VStack>
+        </Container>
+      </Flex>
+
+      <AlertDialog
+        isOpen={isOpen}
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>Delete Message?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>
+            <Text>Are you sure you want to delete this message:</Text>
+            <Text my={4}>
+              <strong>{messageToDelete?.title}</strong>
+              <br />
+              {truncateString(messageToDelete?.body ?? "", 70)}
+            </Text>
+            <Text>This action can not be undone.</Text>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <HStack>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  callDeleteMessage();
+                  onClose();
+                }}
+              >
+                Delete
+              </Button>
+            </HStack>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
-
-export async function getServerSideProps(context: any) {
-  const session = await getSession({ req: context.req });
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: Routes.login({
-          redirect: context.req.url,
-        }),
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session },
-  };
-}
