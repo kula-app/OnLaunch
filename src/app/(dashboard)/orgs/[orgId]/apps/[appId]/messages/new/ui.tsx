@@ -35,9 +35,11 @@ import {
   useDisclosure,
   useSteps,
   useToast,
+  type ButtonProps,
 } from "@chakra-ui/react";
 import type { FormikProps } from "formik";
 import { useRouter } from "next/navigation";
+import * as R from "ramda";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { FaQuestion } from "react-icons/fa6";
@@ -248,6 +250,23 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
       setIsSubmitting(false);
     }
   }, [toast, draftFormRef, timeframeFormRef, filterFormRef, appId, goToNext]);
+
+  const [messagePreviewData, setMessagePreviewData] = useState<{
+    isCloseButtonVisible: boolean;
+    title: string;
+    content: string;
+    actions: {
+      id: string;
+      label: string;
+      variant: ButtonProps["variant"];
+    }[];
+  }>({
+    isCloseButtonVisible: false,
+    title: "",
+    content: "",
+    actions: [],
+  });
+
   return (
     <>
       <Flex
@@ -320,6 +339,41 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
                   overflowY="auto"
                   flex={1}
                   hidden={activeStep?.id !== FormDataStepId.DRAFT}
+                  onValuesChange={(values) => {
+                    const updatedMessagePreviewData = {
+                      isCloseButtonVisible: !values.isBlocking,
+                      title: values.title ?? "",
+                      content: values.body ?? "",
+                      actions:
+                        values.actions.map((action) => {
+                          switch (action.buttonDesign) {
+                            case ActionButtonDesign.FILLED:
+                              return {
+                                id: action.id,
+                                label: action.title,
+                                variant: "solid",
+                              };
+                            case ActionButtonDesign.OUTLINE:
+                              return {
+                                id: action.id,
+                                label: action.title,
+                                variant: "outline",
+                              };
+                            default:
+                              return {
+                                id: action.id,
+                                label: action.title,
+                                variant: "solid",
+                              };
+                          }
+                        }) ?? [],
+                    };
+                    if (
+                      !R.equals(updatedMessagePreviewData, messagePreviewData)
+                    ) {
+                      setMessagePreviewData(updatedMessagePreviewData);
+                    }
+                  }}
                 />
                 <FormStepTimeframe
                   formRef={timeframeFormRef}
@@ -335,34 +389,19 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
                   flex={1}
                   hidden={activeStep?.id !== FormDataStepId.FILTERS}
                 />
-                {activeStepIdx >= steps.length && <ConclusionFormStep />}
+                <ConclusionFormStep
+                  appId={appId}
+                  orgId={orgId}
+                  hidden={activeStepIdx < steps.length}
+                />
                 <Flex justifyContent={"center"}>
                   <MessagePreview
-                    isCloseButtonVisible={!initialFormValues.draft?.isBlocking}
-                    title={initialFormValues.draft?.title}
-                    content={initialFormValues.draft?.body}
-                    actions={initialFormValues.draft?.actions.map((action) => {
-                      switch (action.buttonDesign) {
-                        case ActionButtonDesign.FILLED:
-                          return {
-                            id: action.id,
-                            label: action.title,
-                            variant: "solid",
-                          };
-                        case ActionButtonDesign.OUTLINE:
-                          return {
-                            id: action.id,
-                            label: action.title,
-                            variant: "outline",
-                          };
-                        default:
-                          return {
-                            id: action.id,
-                            label: action.title,
-                            variant: "solid",
-                          };
-                      }
-                    })}
+                    isCloseButtonVisible={
+                      messagePreviewData.isCloseButtonVisible
+                    }
+                    title={messagePreviewData.title}
+                    content={messagePreviewData.content}
+                    actions={messagePreviewData.actions}
                   />
                 </Flex>
               </Flex>
