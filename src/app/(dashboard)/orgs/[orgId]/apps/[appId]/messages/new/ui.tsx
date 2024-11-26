@@ -5,7 +5,6 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { ServerError } from "@/errors/server-error";
 import { ActionButtonDesign } from "@/models/action-button-design";
 import type { MessageAction } from "@/models/message-action";
-import { MessageActionType } from "@/models/message-action-type";
 import type { MessageRuleCondition } from "@/models/message-rule-condition";
 import type { MessageRuleGroup } from "@/models/message-rule-group";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -108,7 +107,7 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
     goToNext,
     goToPrevious,
   } = useSteps({
-    index: 2,
+    index: 0,
     count: steps.length,
   });
   const activeStep: FormDataStep | undefined = steps[activeStepIdx];
@@ -121,24 +120,17 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
 
   const initialFormValues: FormData = {
     draft: {
-      title: "asdf",
-      body: "asdf",
-      isBlocking: true,
-      actions: [
-        {
-          id: "1",
-          title: "X1",
-          buttonDesign: ActionButtonDesign.FILLED,
-          actionType: MessageActionType.DISMISS,
-        },
-      ],
+      title: "",
+      body: "",
+      isBlocking: false,
+      actions: [],
     },
     timeframe: {
       startDate: new Date(),
       endDate: new Date(new Date().getTime() + 1000 * 60 * 60 * 24),
     },
     filter: {
-      isAll: false,
+      isAll: true,
       kind: FilterKind.SIMPLE,
       // The default values of the simple filter are defined to be the most inclusive, so users can reduce the
       // target audience rather than having to include build up the target audience from scratch.
@@ -267,6 +259,7 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
           items={[
             { kind: "orgs" },
             { kind: "org", orgId },
+            { kind: "apps", orgId },
             { kind: "app", orgId, appId },
             { kind: "messages", orgId, appId },
             { kind: "create-message", orgId, appId },
