@@ -178,7 +178,6 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                   >
                     <Button
                       onClick={() => router.push(Routes.apps({ orgId }))}
-                      colorScheme={"gray"}
                       variant={"ghost"}
                       rightIcon={<FaArrowRight />}
                       color={"white"}

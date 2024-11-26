@@ -1,4 +1,45 @@
-import { ServerError } from "../errors/server-error";
+import { ServerError } from "@/errors/server-error";
+
+/**
+ * The response object returned by a server action.
+ *
+ * @template TResult - The type of the result returned by the server action.
+ */
+export type ServerActionResponse<TResult> =
+  | {
+      success: true;
+      value: TResult;
+    }
+  | {
+      success: false;
+      error: {
+        name: string;
+        message: string;
+      };
+    };
+
+/**
+ * The type of a server action function.
+ *
+ * @template TArgs - The type of the arguments accepted by the server action.
+ * @template TResult - The type of the result returned by the server action.
+ */
+export type ServerActionFunction<TArgs extends unknown[], TResult> = (
+  ...args: TArgs
+) => Promise<TResult>;
+
+/**
+ * The type of a wrapped server action function.
+ * This function will return an object with a success flag and either the value returned by the server action or an error object.
+ * The error object will contain the name and message of the error.
+ *
+ * @template TArgs - The type of the arguments accepted by the server action.
+ * @template TResult - The type of the result returned by the server action.
+ */
+export type WrappedServerActionFunction<
+  TArgs extends unknown[],
+  TResult,
+> = ServerActionFunction<TArgs, ServerActionResponse<TResult>>;
 
 /**
  * Creates a server action that wraps a callback function.
@@ -11,15 +52,15 @@ import { ServerError } from "../errors/server-error";
  * @template TArgs - The type of the arguments accepted by the callback function.
  * @template TResult - The type of the result returned by the callback function.
  *
- * @param callback - The callback function to be wrapped.
+ * @param action - The action function to be wrapped.
  * @returns A new function that executes the callback function and handles any errors.
  */
-export function createServerAction<TArgs extends any[], TResult>(
-  callback: (...args: TArgs) => Promise<TResult>,
-) {
-  return async (...args: TArgs) => {
+export function createServerAction<TResult, TArgs extends unknown[]>(
+  action: ServerActionFunction<TArgs, TResult>,
+): WrappedServerActionFunction<TArgs, TResult> {
+  return async (...args: TArgs): Promise<ServerActionResponse<TResult>> => {
     try {
-      const value = await callback(...args);
+      const value = await action(...args);
       return {
         success: true,
         value: value,

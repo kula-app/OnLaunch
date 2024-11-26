@@ -23,9 +23,6 @@ export default async function handler(
         case "GET":
           return getHandler(req, res, user);
 
-        case "DELETE":
-          return deleteHandler(req, res, user);
-
         case "PUT":
           return putHandler(req, res, user);
 
@@ -61,42 +58,6 @@ async function getHandler(
   }
 
   return res.status(StatusCodes.OK).json(message);
-}
-
-async function deleteHandler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: User,
-) {
-  try {
-    logger.log(`Deleting actions with message id '${req.query.messageId}'`);
-    await prisma.messageAction.deleteMany({
-      where: {
-        messageId: Number(req.query.messageId),
-      },
-    });
-
-    logger.log(`Deleting message with id '${req.query.messageId}'`);
-    const deletedMessage = await prisma.message.delete({
-      where: {
-        id: Number(req.query.messageId),
-      },
-    });
-
-    return res.status(StatusCodes.OK).json(deletedMessage);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      logger.error(`No message found with id '${req.query.messageId}'`);
-      return res.status(StatusCodes.NOT_FOUND).json({
-        message: "No message found with id " + req.query.messageId,
-      });
-    }
-
-    logger.error(`Internal server error occurred: ${e}`);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "An internal server error occurred - please try again later!",
-    });
-  }
 }
 
 async function putHandler(

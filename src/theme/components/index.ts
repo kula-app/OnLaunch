@@ -9,6 +9,7 @@ import { MenuComponent } from "./Menu";
 import { PanelContainerComponent } from "./PanelContainer";
 import { PanelContentComponent } from "./PanelContent";
 import { SelectComponent } from "./Select";
+import { TableComponent } from "./Table";
 
 export const components = unapply(reduce(mergeDeepLeft, {}))(
   AlertComponent,
@@ -21,4 +22,5 @@ export const components = unapply(reduce(mergeDeepLeft, {}))(
   MainPanelComponent,
   PanelContentComponent,
   PanelContainerComponent,
+  TableComponent,
 );

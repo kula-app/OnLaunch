@@ -75,11 +75,10 @@ export const ConfiguredNavigationBar: React.FC<{
       setIsLoadingOrg(true);
       try {
         const response = await getOrg(orgId);
-        if (response.error) {
+        if (!response.success) {
           throw new ServerError(response.error.name, response.error.message);
         }
         setOrg(response.value ?? null);
-        console.log(response.value);
       } catch (error: any) {
         toast({
           title: "Failed to fetch organization",
@@ -98,11 +97,10 @@ export const ConfiguredNavigationBar: React.FC<{
       setIsLoadingApp(true);
       try {
         const response = await getApp(appId);
-        if (response.error) {
+        if (!response.success) {
           throw new ServerError(response.error.name, response.error.message);
         }
         setApp(response.value ?? null);
-        console.log(response.value);
       } catch (error: any) {
         toast({
           title: "Failed to fetch app",

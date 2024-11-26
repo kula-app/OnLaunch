@@ -42,7 +42,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Apps '${user.org.name}'`,
+    title: `Apps of '${user.org.name}'`,
   };
 }
 
