@@ -1,13 +1,15 @@
 "use client";
 
-import { getOrgs } from "@/app/actions/get-orgs";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import { ServerError } from "@/errors/server-error";
+import { useOrgs } from "@/hooks/use-orgs";
 import type { Org } from "@/models/org";
 import Routes from "@/routes/routes";
-import { Logger } from "@/util/logger";
+import { rainbowColors } from "@/theme/rainbow-colors";
 import {
-  Box,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   CircularProgress,
   Container,
   Flex,
@@ -19,47 +21,22 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
 import { OrgCard } from "./_components/org-card";
 
-const logger = new Logger(__filename);
-
 export const UI: React.FC = () => {
   const router = useRouter();
-  const toast = useToast();
 
-  const [isLoadingOrgs, setIsLoadingOrgs] = useState(true);
-  const [orgs, setOrgs] = useState<Org[] | null>(null);
-  const fetchOrgs = useCallback(async () => {
-    setIsLoadingOrgs(true);
-    try {
-      logger.verbose("Fetching organizations");
-      const response = await getOrgs();
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setOrgs(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch organizations",
-        description: error.message,
-        status: "error",
-      });
-    }
-    setIsLoadingOrgs(false);
-  }, [toast]);
-
+  const { isLoading: isLoadingOrgs, orgs, error } = useOrgs();
   useEffect(() => {
-    if (!orgs) {
-      fetchOrgs();
-    } else if (orgs.length === 0) {
+    if (orgs && orgs.length === 0) {
       router.push(Routes.createOrg);
     }
-  }, [fetchOrgs, orgs, router]);
+  }, [orgs, router]);
 
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [filteredOrgs, setFilteredOrgs] = useState<Org[]>([]);
@@ -75,19 +52,12 @@ export const UI: React.FC = () => {
     }
   }, [orgs, searchFilter]);
 
-  const colors = [
-    "purple.500",
-    "blue.300",
-    "cyan.400",
-    "teal.400",
-    "orange.300",
-  ];
   return (
     <Flex direction={"column"} minH={"100vh"}>
       <ConfiguredNavigationBar items={[{ kind: "orgs" }]} />
       <Container maxW={"6xl"}>
-        <Box p={4}>
-          <Flex justify="space-between" align="center" mb={6}>
+        <VStack w={"full"} align={"start"}>
+          <Flex justify="space-between" align="center" mb={6} w={"full"}>
             <Heading size={"lg"} as={"h1"} color={"white"}>
               Organizations
             </Heading>
@@ -117,6 +87,13 @@ export const UI: React.FC = () => {
             Organizations allow you to manage multiple app projects and invite
             your team to collaborate.
           </Text>
+          {error && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Failed to fetch organizations!</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
           <Grid templateColumns="repeat(4, 1fr)" gap={6}>
             <GridItem key={"create"}>
               <OrgCard
@@ -139,13 +116,13 @@ export const UI: React.FC = () => {
                 <OrgCard
                   id={org.id}
                   name={org.name}
-                  bg={colors[index % colors.length]}
+                  bg={rainbowColors[index % rainbowColors.length]}
                   color={"white"}
                 />
               </GridItem>
             ))}
           </Grid>
-        </Box>
+        </VStack>
       </Container>
     </Flex>
   );
