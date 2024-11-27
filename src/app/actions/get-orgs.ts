@@ -1,21 +1,13 @@
 "use server";
 
-import { SessionNotFoundError } from "@/errors/session-not-found-error";
 import type { Org } from "@/models/org";
 import prisma from "@/services/db";
-import { authOptions } from "@/util/auth-options";
-import { createServerAction } from "@/util/create-server-action";
+import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
-import { getServerSession } from "next-auth";
 
 const logger = new Logger(__filename);
 
-export const getOrgs = createServerAction(async () => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    throw new SessionNotFoundError();
-  }
-
+export const getOrgs = createAuthenticatedServerAction(async (session) => {
   logger.verbose(
     `Fetching organisations for user with id '${session.user.id}'`,
   );
