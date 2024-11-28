@@ -1,22 +1,15 @@
 "use server";
 
-import { SessionNotFoundError } from "@/errors/session-not-found-error";
+import { OrgRole } from "@/models/org-role";
 import prisma from "@/services/db";
 import { generateToken } from "@/util/auth";
-import { authOptions } from "@/util/auth-options";
-import { createServerAction } from "@/util/create-server-action";
+import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
-import { getServerSession } from "next-auth";
 
-const logger = new Logger(__filename);
+const logger = new Logger("actions/create-org");
 
-export const createOrg = createServerAction(
-  async ({ name }: { name: string }) => {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      throw new SessionNotFoundError();
-    }
-
+export const createOrg = createAuthenticatedServerAction(
+  async (session, { name }: { name: string }) => {
     logger.log(
       `Creating new organisation for user with id '${session.user.id}'`,
     );
@@ -27,7 +20,7 @@ export const createOrg = createServerAction(
             id: session.user.id,
           },
         },
-        role: "ADMIN",
+        role: OrgRole.ADMIN,
         org: {
           create: {
             name: name,

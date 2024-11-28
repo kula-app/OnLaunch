@@ -1,3 +1,4 @@
+import { loadServerConfig } from "@/config/loadServerConfig";
 import Routes from "@/routes/routes";
 import prisma from "@/services/db";
 import { authOptions } from "@/util/auth-options";
@@ -51,6 +52,8 @@ const Page: NextPage<{
     orgId: string;
   };
 }> = async ({ params }) => {
+  const config = loadServerConfig();
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return redirect(
@@ -62,7 +65,12 @@ const Page: NextPage<{
     );
   }
 
-  return <UI orgId={+params.orgId} />;
+  return (
+    <UI
+      orgId={+params.orgId}
+      isBillingAvailable={config.stripeConfig.isEnabled}
+    />
+  );
 };
 
 export default Page;

@@ -1,4 +1,4 @@
-import { User } from "@/models/user";
+import { OrgUser } from "@/models/org-user";
 import ApiRoutes from "@/routes/apiRoutes";
 import { returnDataOrThrowError } from "@/util/api";
 
@@ -7,7 +7,7 @@ const getUser = async () => {
 
   const data = await returnDataOrThrowError(response);
 
-  const userData: Partial<User> = {
+  const userData: Partial<OrgUser> = {
     email: data.email,
     firstName: data.firstName,
     lastName: data.lastName,

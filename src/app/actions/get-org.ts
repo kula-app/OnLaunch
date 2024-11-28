@@ -1,22 +1,15 @@
 "use server";
 
-import { SessionNotFoundError } from "@/errors/session-not-found-error";
+import { NotFoundError } from "@/errors/not-found-error";
 import type { Org } from "@/models/org";
 import prisma from "@/services/db";
-import { authOptions } from "@/util/auth-options";
-import { createServerAction } from "@/util/create-server-action";
+import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
-import { getServerSession } from "next-auth";
 
 const logger = new Logger(__filename);
 
-export const getOrg = createServerAction(
-  async (orgId: number): Promise<Org | undefined> => {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      throw new SessionNotFoundError();
-    }
-
+export const getOrg = createAuthenticatedServerAction(
+  async (session, orgId: number): Promise<Org> => {
     logger.verbose(
       `Fetching organization(id = ${orgId}) for user(id = ${session.user.id})`,
     );
@@ -45,13 +38,14 @@ export const getOrg = createServerAction(
       },
     });
     if (!org) {
-      return undefined;
+      throw new NotFoundError(`Organization with id ${orgId} not found`);
     }
 
     return {
       id: org.org.id,
       name: org.org.name,
       subName: org.org.subs?.[0]?.subName,
+      invitationToken: org.org.invitationToken,
     };
   },
 );

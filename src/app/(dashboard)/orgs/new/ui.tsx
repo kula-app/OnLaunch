@@ -97,7 +97,7 @@ export default function NewOrgPage() {
                 onSubmit={async (values, { setStatus }) => {
                   try {
                     const result = await createOrg({ name: values.name });
-                    if (result.error) {
+                    if (!result.success) {
                       throw new ServerError(
                         result.error.name,
                         result.error.message,
