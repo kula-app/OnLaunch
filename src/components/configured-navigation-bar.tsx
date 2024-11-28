@@ -70,6 +70,7 @@ export const ConfiguredNavigationBar: React.FC<{
 
   const [isLoadingOrg, setIsLoadingOrg] = useState(false);
   const [org, setOrg] = useState<Org | null>(null);
+  const [orgError, setOrgError] = useState<Error | null>(null);
   const fetchOrg = useCallback(
     async (orgId: number) => {
       setIsLoadingOrg(true);
@@ -78,8 +79,10 @@ export const ConfiguredNavigationBar: React.FC<{
         if (!response.success) {
           throw new ServerError(response.error.name, response.error.message);
         }
-        setOrg(response.value ?? null);
+        setOrg(response.value);
+        setOrgError(null);
       } catch (error: any) {
+        setOrgError(error);
         toast({
           title: "Failed to fetch organization",
           description: error.message,
@@ -90,8 +93,10 @@ export const ConfiguredNavigationBar: React.FC<{
     },
     [toast, setOrg],
   );
+
   const [isLoadingApp, setIsLoadingApp] = useState(false);
   const [app, setApp] = useState<App | null>(null);
+  const [appError, setAppError] = useState<Error | null>(null);
   const fetchApp = useCallback(
     async (appId: number) => {
       setIsLoadingApp(true);
@@ -100,8 +105,10 @@ export const ConfiguredNavigationBar: React.FC<{
         if (!response.success) {
           throw new ServerError(response.error.name, response.error.message);
         }
-        setApp(response.value ?? null);
+        setApp(response.value);
+        setAppError(null);
       } catch (error: any) {
+        setAppError(error);
         toast({
           title: "Failed to fetch app",
           description: error.message,
@@ -126,7 +133,7 @@ export const ConfiguredNavigationBar: React.FC<{
           break;
         }
         case "org": {
-          if (!org) {
+          if (!org && !orgError) {
             fetchOrg(item.orgId);
           }
           updatedNavigationItems.push({
@@ -164,7 +171,7 @@ export const ConfiguredNavigationBar: React.FC<{
           break;
         }
         case "app": {
-          if (!app) {
+          if (!app && !appError) {
             fetchApp(item.appId);
           }
           updatedNavigationItems.push({
@@ -229,6 +236,8 @@ export const ConfiguredNavigationBar: React.FC<{
     isLoadingApp,
     items,
     setNavigationItems,
+    orgError,
+    appError,
   ]);
 
   return <NavigationBar items={navigationItems} />;

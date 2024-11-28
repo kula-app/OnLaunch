@@ -4,6 +4,7 @@ export class CustomErrorNames {
   static ForbiddenError = "ForbiddenError";
   static NotFoundError = "NotFoundError";
   static SessionNotFoundError = "SessionNotFoundError";
+  static ServiceUnavailableError = "ServiceUnavailableError";
   static TokenExpiredError = "TokenExpiredError";
   static TokenObsoleteError = "VerificationTokenObsoleteError";
   static TokenUsedError = "TokenUsedError";

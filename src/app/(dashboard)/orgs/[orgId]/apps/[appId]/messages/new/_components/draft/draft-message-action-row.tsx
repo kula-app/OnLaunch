@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  displayNameForActionButtonDesign,
+  displayNameForActionType,
+} from "@/components/display-mapper";
 import { ActionButtonDesign } from "@/models/action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import {
@@ -17,10 +21,6 @@ import {
   type FormikErrors,
 } from "formik";
 import { FiTrash } from "react-icons/fi";
-import {
-  displayNameForActionButtonDesign,
-  displayNameForActionType,
-} from "../../_models/display-mapper";
 import type {
   DraftFormActionData,
   DraftFormData,

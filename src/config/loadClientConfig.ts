@@ -8,6 +8,12 @@ export function loadClientConfig(): ClientConfig {
   let env = getEnvironment();
 
   const adaptedConfig: ClientConfig = {
+    docsConfig: {
+      url:
+        env.DOCS_ENDPOINT_URL ??
+        env.NEXT_PUBLIC_DOCS_ENDPOINT_URL ??
+        "https://onlaunch.kula.app/api/docs",
+    },
     sentryConfig: {
       debug: parseBooleanEnvValue(
         env.SENTRY_DEBUG ?? env.NEXT_PUBLIC_SENTRY_DEBUG,
