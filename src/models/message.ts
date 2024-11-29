@@ -7,7 +7,7 @@ export interface Message {
 
   title: string;
   body: string;
-  actions?: MessageAction[];
+  actions: MessageAction[];
 
   isBlocking: boolean;
 

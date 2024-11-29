@@ -1,9 +1,8 @@
 "use client";
 
-import { getApps } from "@/app/actions/get-apps";
-import { getAuthenticatedUserRoleInOrg } from "@/app/actions/get-authenticated-user-role-in-org";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import { ServerError } from "@/errors/server-error";
+import { useApps } from "@/hooks/use-apps";
+import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
 import type { App } from "@/models/app";
 import { OrgRole } from "@/models/org-role";
 import Routes from "@/routes/routes";
@@ -20,67 +19,24 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
 import { AppCard } from "./_components/app-card";
 
 export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
 
-  const [authenticatedUserRole, setAuthenticatedUserRole] =
-    useState<OrgRole | null>(null);
-  const fetchAuthenticatedUserRole = useCallback(async () => {
-    try {
-      const response = await getAuthenticatedUserRoleInOrg(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setAuthenticatedUserRole(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch authenticated user role",
-        description: error.message,
-        status: "error",
-      });
-    }
-  }, [orgId, toast]);
-  useEffect(() => {
-    if (!authenticatedUserRole) {
-      fetchAuthenticatedUserRole();
-    }
-  }, [authenticatedUserRole, fetchAuthenticatedUserRole]);
+  const { role: authenticatedUserRole } = useAuthenticatedUserRole({ orgId });
+  const { isLoading: isLoadingApps, apps } = useApps({ orgId });
 
-  const [isLoadingApps, setIsLoadingApps] = useState(false);
-  const [apps, setApps] = useState<App[] | null>(null);
-  const fetchApps = useCallback(async () => {
-    setIsLoadingApps(true);
-    try {
-      const response = await getApps(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setApps(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch apps",
-        description: error.message,
-        status: "error",
-      });
-    }
-    setIsLoadingApps(false);
-  }, [orgId, toast]);
   useEffect(() => {
-    if (!apps) {
-      fetchApps();
-    } else if (apps.length === 0) {
+    if (apps && apps.length === 0) {
       router.push(Routes.createApp({ orgId }));
     }
-  }, [fetchApps, apps, orgId, router]);
+  }, [apps, orgId, router]);
 
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [filteredApps, setFilteredApps] = useState<App[]>([]);
