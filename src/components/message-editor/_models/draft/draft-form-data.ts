@@ -9,7 +9,7 @@ export interface DraftFormData {
 }
 
 export interface DraftFormActionData {
-  id: string;
+  id: number;
   actionType: MessageActionType;
   buttonDesign: ActionButtonDesign;
   title: string;

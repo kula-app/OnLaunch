@@ -8,12 +8,12 @@ import Routes from "@/routes/routes";
 import {
   Box,
   Button,
-  CircularProgress,
   Container,
   Flex,
   Heading,
   HStack,
   IconButton,
+  Skeleton,
   Spacer,
   VStack,
 } from "@chakra-ui/react";
@@ -46,72 +46,77 @@ export const UI: React.FC<{
         />
         <Container maxW={"6xl"}>
           <VStack p={4} w={"full"} gap={8}>
-            {isLoadingApp ? (
-              <CircularProgress isIndeterminate />
-            ) : (
-              <>
-                <HStack w={"full"}>
-                  <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
-                    App &lsquo;{app?.name}&rsquo;
-                  </Heading>
-                  <Spacer />
-                  <IconButton
-                    icon={<FaGear />}
-                    onClick={() =>
-                      router.push(Routes.appSettings({ orgId, appId }))
-                    }
-                    aria-label={"Settings"}
-                  />
-                </HStack>
-                <Box w={"full"}>
-                  <HStack w={"full"} mb={4}>
-                    <Heading size={"md"} as={"h2"} color={"white"}>
-                      Active Messages
-                    </Heading>
-                    <Spacer />
-                    <Button
-                      variant={"solid"}
-                      colorScheme={"gray"}
-                      onClick={() => {
-                        router.push(
-                          Routes.messages({
-                            orgId,
-                            appId,
-                          }),
-                        );
-                      }}
-                    >
-                      View All
-                    </Button>
-                    <Button
-                      colorScheme={"brand"}
-                      variant={"solid"}
-                      leftIcon={<FaPlus />}
-                      onClick={() =>
-                        router.push(
-                          Routes.createMessage({
-                            orgId,
-                            appId,
-                          }),
-                        )
-                      }
-                    >
-                      Create Message
-                    </Button>
-                  </HStack>
-                  <MessageList
-                    isLoading={isLoadingMessages}
-                    messages={messages ?? []}
-                  />
-                </Box>
-                <Box w={"full"}>
-                  <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
-                    App requests in the past days
-                  </Heading>
-                  <AppMetrics appId={appId} orgId={orgId} />
-                </Box>
-              </>
-            )}
+            <HStack w={"full"}>
+              <Skeleton isLoaded={!isLoadingApp}>
+                <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
+                  App &lsquo;{app?.name}&rsquo;
+                </Heading>
+              </Skeleton>
+              <Spacer />
+              <IconButton
+                icon={<FaGear />}
+                onClick={() =>
+                  router.push(Routes.appSettings({ orgId, appId }))
+                }
+                aria-label={"Settings"}
+              />
+            </HStack>
+            <Box w={"full"}>
+              <HStack w={"full"} mb={4}>
+                <Heading size={"md"} as={"h2"} color={"white"}>
+                  Active Messages
+                </Heading>
+                <Spacer />
+                <Button
+                  variant={"solid"}
+                  colorScheme={"gray"}
+                  onClick={() => {
+                    router.push(
+                      Routes.messages({
+                        orgId,
+                        appId,
+                      }),
+                    );
+                  }}
+                >
+                  View All
+                </Button>
+                <Button
+                  colorScheme={"brand"}
+                  variant={"solid"}
+                  leftIcon={<FaPlus />}
+                  onClick={() =>
+                    router.push(
+                      Routes.createMessage({
+                        orgId,
+                        appId,
+                      }),
+                    )
+                  }
+                >
+                  Create Message
+                </Button>
+              </HStack>
+              <MessageList
+                isLoading={isLoadingMessages}
+                messages={messages ?? []}
+                editMessage={(message) => {
+                  router.push(
+                    Routes.message({
+                      orgId,
+                      appId,
+                      messageId: message.id,
+                    }),
+                  );
+                }}
+              />
+            </Box>
+            <Box w={"full"}>
+              <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
+                App requests in the past days
+              </Heading>
+              <AppMetrics appId={appId} orgId={orgId} />
+            </Box>
           </VStack>
         </Container>
       </Flex>

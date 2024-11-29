@@ -29,12 +29,12 @@ import {
   Field,
   FieldArray,
   Formik,
+  type ArrayHelpers,
   type FieldProps,
   type FormikProps,
 } from "formik";
 import { type Ref } from "react";
 import { FiPlusCircle } from "react-icons/fi";
-import { v4 as uuidv4 } from "uuid";
 import type { DraftFormData } from "../_models/draft/draft-form-data";
 import { draftFormSchema } from "../_models/draft/draft-form-schema";
 import { DraftMessageActionRow } from "./draft/draft-message-action-row";
@@ -196,7 +196,11 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                         return (
                           <FieldArray
                             name={field.name}
-                            render={(arrayHelpers) => {
+                            render={(
+                              arrayHelpers: ArrayHelpers<
+                                DraftFormData["actions"]
+                              >,
+                            ) => {
                               return (
                                 <>
                                   {field.value.map((action, actionIdx) => (
@@ -219,8 +223,15 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                                       rounded={"full"}
                                       leftIcon={<FiPlusCircle />}
                                       onClick={() => {
+                                        const generatedId =
+                                          Math.max(
+                                            0,
+                                            ...field.value.map(
+                                              (action) => action.id,
+                                            ),
+                                          ) + 1;
                                         arrayHelpers.push({
-                                          id: uuidv4(),
+                                          id: generatedId,
                                           actionType: MessageActionType.DISMISS,
                                           buttonDesign:
                                             ActionButtonDesign.FILLED,

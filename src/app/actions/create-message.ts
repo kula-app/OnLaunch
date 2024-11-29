@@ -1,11 +1,13 @@
 "use server";
 
 import { BadRequestError } from "@/errors/bad-request-error";
+import { ForbiddenError } from "@/errors/forbidden-error";
+import { UnauthorizedError } from "@/errors/unauthorized-error";
 import type { Message } from "@/models/message";
 import type { MessageRuleCondition } from "@/models/message-rule-condition";
 import type { MessageRuleGroup } from "@/models/message-rule-group";
 import prisma from "@/services/db";
-import { createServerAction } from "@/util/create-server-action";
+import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
 import { PrismaDataUtils } from "@/util/prisma-data-utils";
 import * as PrismaClient from "@prisma/client";
@@ -13,9 +15,47 @@ import type { ExcludeNestedIds } from "../../util/rule-evaluation/exclude-nested
 
 const logger = new Logger(__filename);
 
-export const createMessage = createServerAction(
-  async (createMessageDto: ExcludeNestedIds<Message>) => {
-    logger.log("Creating new message");
+export const createMessage = createAuthenticatedServerAction(
+  async (session, dto: ExcludeNestedIds<Message>) => {
+    logger.log(`Creating message for app with id ${dto.appId}`);
+
+    logger.verbose(
+      `Verifying authenticated user has access to app with id ${dto.appId}`,
+    );
+    const app = await prisma.app.findUnique({
+      where: {
+        id: dto.appId,
+      },
+      include: {
+        organisation: {
+          where: {
+            isDeleted: {
+              not: true,
+            },
+          },
+          include: {
+            users: {
+              where: {
+                userId: session.user.id,
+                user: {
+                  isDeleted: {
+                    not: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!app) {
+      throw new UnauthorizedError(`No app with id ${dto.appId}`);
+    }
+    if (!app.organisation?.users?.[0]) {
+      throw new ForbiddenError(
+        `User does not have access to app with id ${dto.appId}`,
+      );
+    }
 
     // Use a transaction to ensure that all data is written or none
     const result = await prisma.$transaction(async () => {
@@ -23,7 +63,7 @@ export const createMessage = createServerAction(
         {
           createMany: {
             data:
-              createMessageDto.actions?.map((action) => {
+              dto.actions?.map((action) => {
                 const actionType = PrismaDataUtils.mapActionTypeToPrisma(
                   action.actionType,
                 );
@@ -51,28 +91,28 @@ export const createMessage = createServerAction(
         };
 
       const data: PrismaClient.Prisma.MessageCreateInput = {
-        title: createMessageDto.title,
-        body: createMessageDto.body,
+        title: dto.title,
+        body: dto.body,
         actions: actions,
 
-        startDate: createMessageDto.startDate,
-        endDate: createMessageDto.endDate,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
 
-        blocking: createMessageDto.isBlocking,
+        blocking: dto.isBlocking,
 
         app: {
           connect: {
-            id: createMessageDto.appId,
+            id: dto.appId,
           },
         },
       };
 
-      if (createMessageDto.ruleRootGroup) {
+      if (dto.ruleRootGroup) {
         // Prisma does not support nested/recursive writes yet, therefore we need to manually create the nested structure
         // Reference: https://github.com/prisma/prisma/issues/5455
 
         const messageFilterRuleGroupId = await createRuleGroup(
-          createMessageDto.ruleRootGroup,
+          dto.ruleRootGroup,
         );
         // Create a message root rule group with the previously created rule groups
         data.filter = {

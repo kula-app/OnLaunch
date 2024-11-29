@@ -7,17 +7,18 @@ import { redirect } from "next/navigation";
 import { UI } from "./ui";
 
 export async function generateMetadata({
-  params: { orgId, appId },
+  params: { orgId, appId, messageId },
 }: {
   params: {
     orgId: string;
     appId: string;
+    messageId: string;
   };
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return {
-      title: "App",
+      title: "Message",
     };
   }
 
@@ -35,41 +36,51 @@ export async function generateMetadata({
             where: {
               id: +appId,
             },
+            include: {
+              messages: {
+                where: {
+                  id: +messageId,
+                },
+              },
+            },
           },
         },
       },
     },
   });
-  if (!user?.org.apps?.[0].name) {
+  if (!user?.org?.apps?.[0]?.messages?.[0]?.title) {
     return {
-      title: "App",
+      title: "Message",
     };
   }
 
   return {
-    title: user.org.apps[0].name,
+    title: `Message '${user.org.apps[0].messages[0].title}'`,
   };
 }
 
-const page: NextPage<{
+const Page: NextPage<{
   params: {
     orgId: string;
     appId: string;
+    messageId: string;
   };
-}> = async ({ params }) => {
+}> = async ({ params: { orgId, appId, messageId } }) => {
   const session = await getServerSession(authOptions);
+
   if (!session) {
     return redirect(
       Routes.login({
-        redirect: Routes.app({
-          orgId: +params.orgId,
-          appId: +params.appId,
+        redirect: Routes.message({
+          orgId: +orgId,
+          appId: +appId,
+          messageId: +messageId,
         }),
       }),
     );
   }
 
-  return <UI orgId={+params.orgId} appId={+params.appId} />;
+  return <UI orgId={+orgId} appId={+appId} messageId={+messageId} />;
 };
 
-export default page;
+export default Page;

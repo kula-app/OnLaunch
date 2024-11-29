@@ -1,5 +1,3 @@
-"use server";
-
 export type ExcludeNestedIds<T> = T extends Date
   ? T
   : T extends Array<infer U>

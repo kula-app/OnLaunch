@@ -2,15 +2,16 @@
 
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { MessageEditor } from "@/components/message-editor/message-editor";
+import type { App } from "@/models/app";
+import { Message } from "@/models/message";
+import type { Org } from "@/models/org";
 import { Flex } from "@chakra-ui/react";
-import type React from "react";
 
-interface Props {
-  orgId: number;
-  appId: number;
-}
-
-export const UI: React.FC<Props> = ({ orgId, appId }) => {
+export const UI: React.FC<{
+  orgId: Org["id"];
+  appId: App["id"];
+  messageId: Message["id"];
+}> = ({ orgId, appId, messageId }) => {
   return (
     <>
       <Flex
@@ -25,10 +26,10 @@ export const UI: React.FC<Props> = ({ orgId, appId }) => {
             { kind: "apps", orgId },
             { kind: "app", orgId, appId },
             { kind: "messages", orgId, appId },
-            { kind: "create-message", orgId, appId },
+            { kind: "message", orgId, appId, messageId },
           ]}
         />
-        <MessageEditor appId={appId} orgId={orgId} messageId={undefined} />
+        <MessageEditor appId={appId} orgId={orgId} messageId={messageId} />
       </Flex>
     </>
   );
