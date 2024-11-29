@@ -8,7 +8,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
-  CircularProgress,
   Flex,
   HStack,
   Icon,
@@ -19,6 +18,7 @@ import {
   MenuGroup,
   MenuItem,
   MenuList,
+  SkeletonText,
   Text,
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
@@ -79,13 +79,13 @@ export const NavigationBar: React.FC<{
             </BreadcrumbItem>
             {items.map((item, index) => (
               <BreadcrumbItem key={index} isCurrentPage={item.isActive}>
-                {item.isLoading ? (
-                  <BreadcrumbLink>
-                    <CircularProgress size={4} isIndeterminate />
-                  </BreadcrumbLink>
-                ) : (
-                  <BreadcrumbLink href={item.href}>{item.name}</BreadcrumbLink>
-                )}
+                <BreadcrumbLink href={item.href}>
+                  {item.isLoading ? (
+                    <SkeletonText noOfLines={1} w={20} skeletonHeight={4} />
+                  ) : (
+                    item.name
+                  )}
+                </BreadcrumbLink>
               </BreadcrumbItem>
             ))}
           </Breadcrumb>
