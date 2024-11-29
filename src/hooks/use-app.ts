@@ -1,15 +1,22 @@
 import { getApp } from "@/app/actions/get-app";
 import { ServerError } from "@/errors/server-error";
 import type { App } from "@/models/app";
-import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
-export const useApp = ({ appId }: { appId: App["id"] }) => {
-  const toast = useToast();
-
-  const [isLoadingApp, setIsLoadingApp] = useState(false);
+export const useApp = ({
+  appId,
+}: {
+  appId: App["id"];
+}): {
+  isLoading: boolean;
+  app: App | null;
+  error: Error | null;
+  refresh: () => void;
+} => {
+  const [isLoading, setIsLoadingApp] = useState(false);
   const [app, setApp] = useState<App | null>(null);
-  const fetchApp = useCallback(async () => {
+  const [error, setError] = useState<Error | null>(null);
+  const fetchData = useCallback(async () => {
     setIsLoadingApp(true);
     try {
       const response = await getApp(appId);
@@ -17,26 +24,24 @@ export const useApp = ({ appId }: { appId: App["id"] }) => {
         throw new ServerError(response.error.name, response.error.message);
       }
       setApp(response.value);
+      setError(null);
     } catch (error: any) {
-      toast({
-        title: "Failed to fetch app",
-        description: error.message,
-        status: "error",
-      });
+      setError(error);
     }
     setIsLoadingApp(false);
-  }, [appId, toast, setApp, setIsLoadingApp]);
+  }, [appId, setApp, setIsLoadingApp]);
   useEffect(() => {
-    if (!app) {
-      fetchApp();
+    if (!app && !error) {
+      fetchData();
     }
-  }, [fetchApp, app]);
+  }, [fetchData, app, error]);
 
   return {
-    isLoading: isLoadingApp,
+    isLoading: isLoading,
     app: app,
+    error: error,
     refresh: () => {
-      void fetchApp();
+      void fetchData();
     },
   };
 };

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { User } from "../models/user";
+import { OrgUser } from "../models/org-user";
 import { getUserFromRequest, getUserWithRoleFromRequest } from "./auth";
 
 // Defines types for the handler to know which authentication method to use
@@ -16,7 +16,7 @@ export async function authenticatedHandler(
   handler: (
     req: NextApiRequest,
     res: NextApiResponse,
-    user: User,
+    user: OrgUser,
   ) => Promise<void>,
 ): Promise<void> {
   let user;

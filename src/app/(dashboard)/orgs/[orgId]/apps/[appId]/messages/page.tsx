@@ -43,9 +43,14 @@ export async function generateMetadata({
       },
     },
   });
+  if (!user?.org.apps[0].name) {
+    return {
+      title: "Messages",
+    };
+  }
 
   return {
-    title: user?.org.apps[0].name ?? "Messages",
+    title: `Messages for ${user.org.apps[0].name}`,
   };
 }
 
@@ -60,7 +65,10 @@ const Page: NextPage<{
   if (!session) {
     return redirect(
       Routes.login({
-        redirect: Routes.app({ orgId: +orgId, appId: +appId }),
+        redirect: Routes.app({
+          orgId: +orgId,
+          appId: +appId,
+        }),
       }),
     );
   }

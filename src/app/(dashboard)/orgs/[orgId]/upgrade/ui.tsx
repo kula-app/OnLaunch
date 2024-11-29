@@ -2,12 +2,11 @@
 
 import { useProducts } from "@/api/stripe/useProducts";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/product-card";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import type { Org } from "@/models/org";
 import Routes from "@/routes/routes";
 import { Container, Flex, Heading, Skeleton, useToast } from "@chakra-ui/react";
-import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -76,22 +75,3 @@ export const UI: React.FC<{
     </>
   );
 };
-
-export async function getServerSideProps(context: any) {
-  const session = await getSession({ req: context.req });
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: Routes.login({
-          redirect: context.req.url,
-        }),
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session },
-  };
-}

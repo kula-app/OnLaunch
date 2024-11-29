@@ -174,7 +174,13 @@ export const UI: React.FC<{
         duration: 6000,
       });
     }
-  }, [orgId, appId, messageToDelete, toast]);
+  }, [
+    messageToDelete,
+    refreshActiveMessages,
+    refreshPlannedMessages,
+    refreshPastMessages,
+    toast,
+  ]);
 
   return (
     <>

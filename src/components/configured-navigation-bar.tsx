@@ -205,7 +205,7 @@ export const ConfiguredNavigationBar: React.FC<{
         }
         case "message": {
           updatedNavigationItems.push({
-            name: "Message",
+            name: "Edit",
             href: Routes.message({
               orgId: item.orgId,
               appId: item.appId,
