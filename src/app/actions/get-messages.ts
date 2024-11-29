@@ -14,7 +14,7 @@ export const getMessages = createAuthenticatedServerAction(
     session: Session,
     appId: number,
     filter: "active" | "planned" | "past",
-  ): Promise<Message[] | undefined> => {
+  ): Promise<Message[]> => {
     logger.verbose(`Fetching messages of app(id = ${appId})`);
     let whereFilter: {} | undefined;
     switch (filter) {
@@ -84,6 +84,7 @@ export const getMessages = createAuthenticatedServerAction(
         isBlocking: message.blocking,
         startDate: message.startDate,
         endDate: message.endDate,
+        actions: [],
         ruleRootGroup: undefined,
       };
     });

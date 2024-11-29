@@ -2,6 +2,7 @@
 
 import { PhoneBezel } from "@/components/phone-bezel";
 import { PhoneModalSheet } from "@/components/phone-modal-sheet";
+import type { MessageAction } from "@/models/message-action";
 import {
   Button,
   Heading,
@@ -19,7 +20,7 @@ interface Props {
   title: string;
   content: string;
   actions: Array<{
-    id: string;
+    id: MessageAction["id"];
     label: string;
     variant: ButtonProps["variant"];
   }>;

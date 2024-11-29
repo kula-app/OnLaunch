@@ -2,6 +2,7 @@
 
 import { ForbiddenError } from "@/errors/forbidden-error";
 import { NotFoundError } from "@/errors/not-found-error";
+import type { MessageAction } from "@/models/message-action";
 import prisma from "@/services/db";
 import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
@@ -9,7 +10,7 @@ import { Logger } from "@/util/logger";
 const logger = new Logger("actions:delete-message");
 
 export const deleteMessage = createAuthenticatedServerAction(
-  async (session, messageId: number) => {
+  async (session, messageId: MessageAction["id"]) => {
     try {
       logger.log(`Deleting message(id = ${messageId})`);
       logger.verbose(

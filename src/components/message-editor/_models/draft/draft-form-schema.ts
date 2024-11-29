@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import type { DraftFormActionData, DraftFormData } from "./draft-form-data";
 
 const actionSchema: Yup.ObjectSchema<DraftFormActionData> = Yup.object({
-  id: Yup.string().required(),
+  id: Yup.number().required(),
   title: Yup.string().required("Title is required"),
   actionType: Yup.string()
     .required("Action type is required")
