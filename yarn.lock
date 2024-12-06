@@ -9254,7 +9254,7 @@ __metadata:
     typescript: "npm:5.7.2"
     use-debounce: "npm:10.0.4"
     uuid: "npm:11.0.3"
-    yup: "npm:1.4.0"
+    yup: "npm:1.5.0"
   languageName: unknown
   linkType: soft
 
@@ -12655,15 +12655,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:1.4.0":
-  version: 1.4.0
-  resolution: "yup@npm:1.4.0"
+"yup@npm:1.5.0":
+  version: 1.5.0
+  resolution: "yup@npm:1.5.0"
   dependencies:
     property-expr: "npm:^2.0.5"
     tiny-case: "npm:^1.0.3"
     toposort: "npm:^2.0.2"
     type-fest: "npm:^2.19.0"
-  checksum: 10c0/fe142141365eed0f78fb2e18bdd2f10bf101385dae12a5f9de14884448067bdca16a54b547fc0bffec04a098dd70b4519ff366422f3da006fd11a0717a7863ac
+  checksum: 10c0/bbbfe078b987e49b826c222b654512161860d3488409e76d29baa937d71e5be64e0933b572997894e31527b6a3b3a95aa997945c00885f68fda04f4ca5522206
   languageName: node
   linkType: hard
 
