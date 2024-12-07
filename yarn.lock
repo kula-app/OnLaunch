@@ -2847,13 +2847,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.3.12":
-  version: 18.3.12
-  resolution: "@types/react@npm:18.3.12"
+"@types/react@npm:18.3.13":
+  version: 18.3.13
+  resolution: "@types/react@npm:18.3.13"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/8bae8d9a41619804561574792e29112b413044eb0d53746dde2b9720c1f9a59f71c895bbd7987cd8ce9500b00786e53bc032dced38cddf42910458e145675290
+  checksum: 10c0/91815e00157deb179fa670aa2dfc491952698b7743ffddca0e3e0f16e7a18454f3f5ef72321a07386c49e721563b9d280dbbdfae039face764e2fdd8ad949d4b
   languageName: node
   linkType: hard
 
@@ -9198,7 +9198,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/node": "npm:22.10.1"
     "@types/ramda": "npm:0.30.2"
-    "@types/react": "npm:18.3.12"
+    "@types/react": "npm:18.3.13"
     "@types/react-dom": "npm:18.3.1"
     "@types/request-ip": "npm:0.0.41"
     "@types/testing-library__jest-dom": "npm:5.14.9"
