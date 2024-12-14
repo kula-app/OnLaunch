@@ -2857,22 +2857,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.3.4":
-  version: 18.3.4
-  resolution: "@types/react-dom@npm:18.3.4"
+"@types/react-dom@npm:18.3.5":
+  version: 18.3.5
+  resolution: "@types/react-dom@npm:18.3.5"
   peerDependencies:
     "@types/react": ^18.0.0
-  checksum: 10c0/b5f534df2afe3640a7396b15a9585ca86049ca4133a747a738b37c60f8e26cad95dc17e844348fe4f16c05da0927f9f26d1287e3511fb62cd40d07ba9cc7735e
+  checksum: 10c0/b163d35a6b32a79f5782574a7aeb12a31a647e248792bf437e6d596e2676961c394c5e3c6e91d1ce44ae90441dbaf93158efb4f051c0d61e2612f1cb04ce4faa
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.3.15":
-  version: 18.3.15
-  resolution: "@types/react@npm:18.3.15"
+"@types/react@npm:18.3.16":
+  version: 18.3.16
+  resolution: "@types/react@npm:18.3.16"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/985ebc303e98e1530762ef4e0651384a8b947e3095e84cb2f2f63bcd2e2c4e0730ec425f540f860b1961355847cd5be406ef3fd856b70d9e92d084662274e754
+  checksum: 10c0/9113d3003865eda07be0fb596f5bd8d7784b8900675090c56e75bdee45499f0b0de2481cbbeb5980c3b4ad18f234a49f39c9e62fd7b89a4e8530c74789f739bd
   languageName: node
   linkType: hard
 
@@ -9224,8 +9224,8 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/node": "npm:22.10.1"
     "@types/ramda": "npm:0.30.2"
-    "@types/react": "npm:18.3.15"
-    "@types/react-dom": "npm:18.3.4"
+    "@types/react": "npm:18.3.16"
+    "@types/react-dom": "npm:18.3.5"
     "@types/request-ip": "npm:0.0.41"
     "@types/testing-library__jest-dom": "npm:5.14.9"
     autoprefixer: "npm:10.4.20"
