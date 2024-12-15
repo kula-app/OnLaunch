@@ -6011,12 +6011,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:11.14.0":
-  version: 11.14.0
-  resolution: "framer-motion@npm:11.14.0"
+"framer-motion@npm:11.14.1":
+  version: 11.14.1
+  resolution: "framer-motion@npm:11.14.1"
   dependencies:
-    motion-dom: "npm:^11.14.0"
-    motion-utils: "npm:^11.13.0"
+    motion-dom: "npm:^11.14.1"
+    motion-utils: "npm:^11.14.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -6029,7 +6029,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/d75c141833ab4fec225219b84e2596ab8f35370b09e6c051c5ead3351c1e20d79b3e5805352f35b7358a3e0da7da941e2fec18126391ca4ce7dd9c2aa861feec
+  checksum: 10c0/f5bb824a6655924a954caec1fb29fa58f28a837fea36904146cf4a2c081b55033d3aa7f8aa58d7ed040dbcda8dd3eb0a35ea37b1ec41deb2ddafc75dab10c9e4
   languageName: node
   linkType: hard
 
@@ -8661,17 +8661,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^11.14.0":
+"motion-dom@npm:^11.14.1":
   version: 11.14.3
   resolution: "motion-dom@npm:11.14.3"
   checksum: 10c0/14989aba2981dcf618dc77d202ac35325366e645fd9e57c6942d88d0696263bbe7d0680da2e5f84e93339a67255bdbfebb8a4994a46584a661dd9a1e136fa7a1
   languageName: node
   linkType: hard
 
-"motion-utils@npm:^11.13.0":
-  version: 11.13.0
-  resolution: "motion-utils@npm:11.13.0"
-  checksum: 10c0/db65509cf7abc7819ec40aae4c50a29f5c07619ee0ff4df04ea3950e85ba5ec68d00cf0f2ef3072bd41787306335eab364de9d199c145631fafd9de39df1eef9
+"motion-utils@npm:^11.14.1":
+  version: 11.14.3
+  resolution: "motion-utils@npm:11.14.3"
+  checksum: 10c0/7459bcb27311b72b416b2618cbfd56bad7d0fbec27736529e3f45a561fa78c43bf82e05338d9d9b765649b57d1c693821e83b30c6ba449d6f7f66c5245f072fb
   languageName: node
   linkType: hard
 
@@ -9241,7 +9241,7 @@ __metadata:
     eslint: "npm:8.57.1"
     eslint-config-next: "npm:14.2.20"
     formik: "npm:2.4.6"
-    framer-motion: "npm:11.14.0"
+    framer-motion: "npm:11.14.1"
     http-status-codes: "npm:2.3.0"
     husky: "npm:9.1.7"
     ioredis: "npm:5.4.1"
