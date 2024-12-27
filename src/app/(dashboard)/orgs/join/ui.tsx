@@ -18,28 +18,27 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { getDirectInviteByToken } from "./actions/get-direct-invite-by-token";
 import { getInviteByToken } from "./actions/get-invite-by-token";
 import { joinOrgWithDirectInvite } from "./actions/join-org-with-direct-invite";
 import { joinOrgWithInvite } from "./actions/join-org-with-invite";
 
-export const UI: React.FC = () => {
+export const UI: React.FC<{
+  directInviteToken: string | undefined;
+  inviteToken: string | undefined;
+}> = ({ directInviteToken, inviteToken }) => {
   const router = useRouter();
   const toast = useToast();
-  const searchParams = useSearchParams();
 
   const [isAccepting, setIsAccepting] = useState(false);
   const [org, setOrg] = useState<Pick<Org, "id" | "name"> | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const inviteToken = searchParams?.get("invite-token");
-  const directInviteToken = searchParams?.get("direct-invite-token");
-
   async function acceptUserInvitation(token: string) {
     const result = await joinOrgWithDirectInvite(token);
-    if (result.error) {
+    if (!result.success) {
       throw new ServerError(result.error.name, result.error.message);
     }
     return result.value.id;
@@ -47,7 +46,7 @@ export const UI: React.FC = () => {
 
   async function acceptOrgInvitation(token: string) {
     const result = await joinOrgWithInvite(token);
-    if (result.error) {
+    if (!result.success) {
       throw new ServerError(result.error.name, result.error.message);
     }
     return result.value.id;
@@ -101,11 +100,11 @@ export const UI: React.FC = () => {
     setIsAccepting(false);
   }
 
-  useEffect(() => {
-    async function fetchInviteByToken(token: string) {
+  const fetchInviteByToken = useCallback(
+    async (token: string) => {
       try {
         const result = await getInviteByToken(token);
-        if (result.error) {
+        if (!result.success) {
           throw new ServerError(result.error.name, result.error.message);
         }
         setOrg(result.value);
@@ -119,12 +118,15 @@ export const UI: React.FC = () => {
           status: "error",
         });
       }
-    }
+    },
+    [toast],
+  );
 
-    async function fetchDirectInviteByToken(token: string) {
+  const fetchDirectInviteByToken = useCallback(
+    async (token: string) => {
       try {
         const result = await getDirectInviteByToken(token);
-        if (result.error) {
+        if (!result.success) {
           throw new ServerError(result.error.name, result.error.message);
         }
         setOrg(result.value);
@@ -138,14 +140,26 @@ export const UI: React.FC = () => {
           status: "error",
         });
       }
-    }
+    },
+    [toast],
+  );
 
-    if (inviteToken) {
-      fetchInviteByToken(inviteToken);
-    } else if (directInviteToken) {
-      fetchDirectInviteByToken(directInviteToken);
+  useEffect(() => {
+    if (!org && !fetchError) {
+      if (inviteToken) {
+        fetchInviteByToken(inviteToken);
+      } else if (directInviteToken) {
+        fetchDirectInviteByToken(directInviteToken);
+      }
     }
-  }, [inviteToken, directInviteToken, toast]);
+  }, [
+    fetchInviteByToken,
+    fetchDirectInviteByToken,
+    org,
+    fetchError,
+    inviteToken,
+    directInviteToken,
+  ]);
 
   return (
     <Flex

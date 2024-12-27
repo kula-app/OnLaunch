@@ -33,8 +33,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { FaCopy, FaEye, FaEyeSlash, FaPlus, FaTrash } from "react-icons/fa6";
-import { CreateAdminAuthorizationTokenModal } from "./create-admin-authorization-token-modal";
-import { DeleteAdminAuthorizationTokenDialog } from "./delete-admin-authorization-token-dialog";
+import { CreateOrgAdminAuthorizationTokenModal } from "./create-org-admin-authorization-token-modal";
+import { DeleteOrgAdminAuthorizationTokenDialog } from "./delete-org-admin-authorization-token-dialog";
 
 export const OrgSettingsAdminAPI: React.FC<{
   orgId: Org["id"];
@@ -102,7 +102,8 @@ export const OrgSettingsAdminAPI: React.FC<{
               <AlertIcon />
               <AlertTitle>No tokens found!</AlertTitle>
               <AlertDescription>
-                You can create a new token by clicking the "Create Token" button
+                You can create a new token by clicking the &quot;Create
+                Token&quot; button
               </AlertDescription>
             </Alert>
           )}
@@ -177,7 +178,7 @@ export const OrgSettingsAdminAPI: React.FC<{
         </VStack>
       </Box>
 
-      <DeleteAdminAuthorizationTokenDialog
+      <DeleteOrgAdminAuthorizationTokenDialog
         isOpen={isTokenDeletionOpen}
         onClose={onTokenDeletionClose}
         onSubmit={async () => {
@@ -211,7 +212,7 @@ export const OrgSettingsAdminAPI: React.FC<{
         token={tokenToDelete}
       />
 
-      <CreateAdminAuthorizationTokenModal
+      <CreateOrgAdminAuthorizationTokenModal
         isOpen={isCreateTokenOpen}
         onClose={onCreateTokenClose}
         onSubmit={async (label) => {

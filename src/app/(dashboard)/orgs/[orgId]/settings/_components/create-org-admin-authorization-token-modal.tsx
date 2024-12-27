@@ -29,7 +29,7 @@ const createTokenFormValuesSchema = Yup.object().shape({
   label: Yup.string().required("Label is required"),
 });
 
-export const CreateAdminAuthorizationTokenModal: React.FC<{
+export const CreateOrgAdminAuthorizationTokenModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (label: string) => Promise<void>;

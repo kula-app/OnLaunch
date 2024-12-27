@@ -1,4 +1,4 @@
-import { User } from "@/models/user";
+import { OrgUser } from "@/models/org-user";
 import prisma from "@/services/db";
 import { authenticatedHandler } from "@/util/authenticatedHandler";
 import { Logger } from "@/util/logger";
@@ -77,7 +77,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  user: OrgUser,
   organisation: Organisation,
   userInvitationToken: UserInvitationToken,
 ) {

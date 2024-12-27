@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-export const DeleteAdminAuthorizationTokenDialog: React.FC<{
+export const DeleteOrgAdminAuthorizationTokenDialog: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;

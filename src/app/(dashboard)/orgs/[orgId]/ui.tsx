@@ -1,19 +1,19 @@
 "use client";
 
-import { getApps } from "@/app/actions/get-apps";
-import { getAuthenticatedUserRoleInOrg } from "@/app/actions/get-authenticated-user-role-in-org";
-import { getOrg } from "@/app/actions/get-org";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import { ServerError } from "@/errors/server-error";
-import type { App } from "@/models/app";
-import type { Org } from "@/models/org";
+import { useApps } from "@/hooks/use-apps";
+import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
+import { useOrg } from "@/hooks/use-org";
 import { OrgRole } from "@/models/org-role";
 import Routes from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
-  CircularProgress,
   Container,
   Flex,
   Grid,
@@ -21,12 +21,11 @@ import {
   Heading,
   HStack,
   IconButton,
+  Skeleton,
   Spacer,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
-import { notFound, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaArrowRight, FaGear } from "react-icons/fa6";
 import { OrgCard } from "../_components/org-card";
 import { OrgMetrics } from "./_components/org-metrics";
@@ -34,83 +33,18 @@ import { AppCard } from "./apps/_components/app-card";
 
 export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
 
-  const [isLoadingOrg, setIsLoadingOrg] = useState(false);
-  const [org, setOrg] = useState<Org | null>(null);
-  const fetchOrg = useCallback(async () => {
-    setIsLoadingOrg(true);
-    try {
-      const response = await getOrg(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setOrg(response.value ?? null);
-      if (!response.value) {
-        notFound();
-      }
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch organization",
-        description: error.message,
-        status: "error",
-      });
-    }
-    setIsLoadingOrg(false);
-  }, [orgId, toast, setOrg]);
-  useEffect(() => {
-    if (!org) {
-      fetchOrg();
-    }
-  }, [fetchOrg, org]);
-
-  const [authenticatedUserRole, setAuthenticatedUserRole] =
-    useState<OrgRole | null>(null);
-  const fetchAuthenticatedUserRole = useCallback(async () => {
-    try {
-      const response = await getAuthenticatedUserRoleInOrg(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setAuthenticatedUserRole(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch authenticated user role",
-        description: error.message,
-        status: "error",
-      });
-    }
-  }, [orgId, toast]);
-  useEffect(() => {
-    if (!authenticatedUserRole) {
-      fetchAuthenticatedUserRole();
-    }
-  }, [fetchAuthenticatedUserRole, authenticatedUserRole]);
-
-  const [isLoadingApps, setIsLoadingApps] = useState(false);
-  const [apps, setApps] = useState<App[] | null>(null);
-  const fetchApps = useCallback(async () => {
-    setIsLoadingApps(true);
-    try {
-      const response = await getApps(orgId);
-      if (response.error) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setApps(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch apps",
-        description: error.message,
-        status: "error",
-      });
-    }
-    setIsLoadingApps(false);
-  }, [orgId, toast]);
-  useEffect(() => {
-    if (!apps) {
-      fetchApps();
-    }
-  }, [fetchApps, apps]);
+  const { org, isLoading: isLoadingOrg, error: orgError } = useOrg({ orgId });
+  const {
+    role: authenticatedUserRole,
+    error: authenticatedUserRoleError,
+    isLoading: isLoadingAuthenticatedUserRole,
+  } = useAuthenticatedUserRole({ orgId });
+  const {
+    apps,
+    isLoading: isLoadingApps,
+    error: appsError,
+  } = useApps({ orgId });
 
   const visibleAppsCount = authenticatedUserRole === OrgRole.ADMIN ? 2 : 3;
   return (
@@ -121,82 +55,111 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
 
       <Container maxW={"6xl"}>
         <VStack p={4} w={"full"} gap={8}>
-          {isLoadingOrg ? (
-            <CircularProgress isIndeterminate color={"blue.300"} />
-          ) : (
+          <HStack w={"full"}>
+            <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
+              <Skeleton
+                isLoaded={!isLoadingOrg && !isLoadingAuthenticatedUserRole}
+              >
+                Organization &lsquo;{org?.name}&rsquo;
+              </Skeleton>
+            </Heading>
+            <Spacer />
+            {org?.subName == "free" && (
+              <Button
+                onClick={() => router.push(Routes.upgradeOrg({ orgId }))}
+                colorScheme={"orange"}
+                leftIcon={<>✨</>}
+              >
+                Upgrade Plan
+              </Button>
+            )}
+            <IconButton
+              icon={<FaGear />}
+              onClick={() => router.push(Routes.orgSettings({ orgId }))}
+              aria-label={"Settings"}
+            />
+          </HStack>
+          {(orgError || authenticatedUserRoleError) && (
+            <Alert status={"error"} w={"full"}>
+              <AlertIcon />
+              <AlertTitle>Failed to load organisation!</AlertTitle>
+              <AlertDescription>
+                {(orgError ?? authenticatedUserRoleError)?.message}
+              </AlertDescription>
+            </Alert>
+          )}
+          <Box w={"full"}>
+            <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
+              Recently used apps
+            </Heading>
+            {appsError && (
+              <Alert status={"error"} w={"full"}>
+                <AlertIcon />
+                <AlertTitle>Failed to load apps!</AlertTitle>
+                <AlertDescription>{appsError.message}</AlertDescription>
+              </Alert>
+            )}
+            <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+              {authenticatedUserRole === OrgRole.ADMIN && (
+                <GridItem key={"create"}>
+                  <OrgCard
+                    id={-1}
+                    name="Create App"
+                    type="create"
+                    bg="gray.200"
+                    color={"gray.600"}
+                  />
+                </GridItem>
+              )}
+              {(apps ?? []).slice(0, visibleAppsCount).map((app, index) => (
+                <GridItem key={app.id}>
+                  <AppCard
+                    orgId={orgId}
+                    appId={app.id}
+                    name={app.name}
+                    bg={rainbowColors[index % rainbowColors.length]}
+                    color={"white"}
+                  />
+                </GridItem>
+              ))}
+              {isLoadingApps && (
+                <GridItem key={"loading"}>
+                  <Skeleton h={"full"} w={"full"}>
+                    <AppCard
+                      orgId={-1}
+                      appId={-1}
+                      name={""}
+                      bg={"gray.200"}
+                      color={"white"}
+                    />
+                  </Skeleton>
+                </GridItem>
+              )}
+              <GridItem
+                key={"more"}
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"start"}
+              >
+                <Button
+                  onClick={() => router.push(Routes.apps({ orgId }))}
+                  variant={"ghost"}
+                  rightIcon={<FaArrowRight />}
+                  color={"white"}
+                >
+                  View all apps
+                </Button>
+              </GridItem>
+            </Grid>
+          </Box>
+          {authenticatedUserRole === OrgRole.ADMIN && (
             <>
-              <HStack w={"full"}>
-                <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
-                  Organization &lsquo;{org?.name}&rsquo;
-                </Heading>
-                <Spacer />
-                <IconButton
-                  icon={<FaGear />}
-                  onClick={() => router.push(Routes.orgSettings({ orgId }))}
-                  aria-label={"Settings"}
-                />
-              </HStack>
               <Box w={"full"}>
                 <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
-                  Recently used apps
+                  App request in the past days
                 </Heading>
-                <Grid templateColumns="repeat(4, 1fr)" gap={6}>
-                  {authenticatedUserRole === OrgRole.ADMIN && (
-                    <GridItem key={"create"}>
-                      <OrgCard
-                        id={-1}
-                        name="Create App"
-                        type="create"
-                        bg="gray.200"
-                        color={"gray.600"}
-                      />
-                    </GridItem>
-                  )}
-                  {(apps ?? []).slice(0, visibleAppsCount).map((app, index) => (
-                    <GridItem key={app.id}>
-                      <AppCard
-                        orgId={orgId}
-                        appId={app.id}
-                        name={app.name}
-                        bg={rainbowColors[index % rainbowColors.length]}
-                        color={"white"}
-                      />
-                    </GridItem>
-                  ))}
-                  {isLoadingApps && (
-                    <GridItem key={"loading"}>
-                      <Flex h={"full"} align={"center"}>
-                        <CircularProgress isIndeterminate size={8} />
-                      </Flex>
-                    </GridItem>
-                  )}
-                  <GridItem
-                    key={"more"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"start"}
-                  >
-                    <Button
-                      onClick={() => router.push(Routes.apps({ orgId }))}
-                      variant={"ghost"}
-                      rightIcon={<FaArrowRight />}
-                      color={"white"}
-                    >
-                      View all apps
-                    </Button>
-                  </GridItem>
-                </Grid>
+                <OrgMetrics orgId={orgId} />
               </Box>
-              {authenticatedUserRole === OrgRole.ADMIN && (
-                <>
-                  <Box w={"full"}>
-                    <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
-                      App request in the past days
-                    </Heading>
-                    <OrgMetrics orgId={orgId} />
-                  </Box>
-                </>
-              )}
             </>
           )}
         </VStack>
