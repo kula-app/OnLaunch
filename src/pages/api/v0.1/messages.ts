@@ -226,7 +226,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         not: true,
       },
       organisation: {
-        isDeleted: false,
+        isDeleted: {
+          not: true,
+        },
       },
     },
     include: {
@@ -234,7 +236,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         include: {
           subs: {
             where: {
-              isDeleted: false,
+              isDeleted: {
+                not: true,
+              },
             },
             include: {
               subItems: true,

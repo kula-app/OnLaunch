@@ -34,7 +34,9 @@ export const getDirectInviteByToken = createServerAction(
     const organisation = await prisma.organisation.findFirst({
       where: {
         id: userInvitationToken.orgId,
-        isDeleted: false,
+        isDeleted: {
+          not: true,
+        },
       },
     });
 
