@@ -23,6 +23,9 @@ export const getApp = createAuthenticatedServerAction(
             },
           },
         },
+        isDeleted: {
+          not: true,
+        },
       },
     });
     if (!app) {
