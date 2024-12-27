@@ -60,6 +60,7 @@ export const deleteAppAdminToken = createAuthenticatedServerAction(
       },
       data: {
         isDeleted: true,
+        deletedAt: new Date(),
       },
     });
     logger.verbose(`Token with id '${tokenId}' has been soft-deleted`);

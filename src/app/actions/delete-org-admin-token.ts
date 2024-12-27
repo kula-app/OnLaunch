@@ -62,6 +62,7 @@ export const deleteOrgAdminToken = createAuthenticatedServerAction(
         },
         data: {
           isDeleted: true,
+          deletedAt: new Date(),
         },
       });
 
