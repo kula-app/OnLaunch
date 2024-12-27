@@ -1,3 +1,4 @@
+import type { Org } from "@/models/org";
 import { loadServerConfig } from "../config/loadServerConfig";
 
 const config = loadServerConfig();
@@ -22,11 +23,33 @@ class Routes {
     return "/orgs/new";
   }
 
+  static upgradeOrg({ orgId }: { orgId: Org["id"] }): string {
+    return `/orgs/${orgId}/upgrade`;
+  }
+
   static org(params: { orgId: number; reason?: "user-joined" }): string {
     const url = new URL(config.nextAuth.url);
     url.pathname = `/orgs/${params.orgId}`;
     if (params.reason) {
       url.searchParams.set("reason", params.reason);
+    }
+    return url.toString();
+  }
+
+  static orgJoin({
+    directInviteToken,
+    inviteToken,
+  }: {
+    directInviteToken?: string;
+    inviteToken?: string;
+  }): string {
+    const url = new URL(config.nextAuth.url);
+    url.pathname = "/orgs/join";
+    if (directInviteToken) {
+      url.searchParams.set("direct-invite-token", directInviteToken);
+    }
+    if (inviteToken) {
+      url.searchParams.set("invite-token", inviteToken);
     }
     return url.toString();
   }
@@ -41,6 +64,26 @@ class Routes {
 
   static app({ orgId, appId }: { appId: number; orgId: number }): string {
     return `/orgs/${orgId}/apps/${appId}`;
+  }
+
+  static appSettings({
+    orgId,
+    appId,
+    tab,
+  }: {
+    appId: number;
+    orgId: number;
+    tab?: string;
+  }): string {
+    let path = `/orgs/${orgId}/apps/${appId}/settings`;
+    let searchParams = new URLSearchParams();
+    if (tab) {
+      searchParams.set("tab", tab);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
   }
 
   static messages({ orgId, appId }: { appId: number; orgId: number }): string {
@@ -69,8 +112,16 @@ class Routes {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
   }
 
-  static orgSettings({ orgId }: { orgId: number }): string {
-    return `/orgs/${orgId}/settings`;
+  static orgSettings({ orgId, tab }: { orgId: number; tab?: string }): string {
+    let path = `/orgs/${orgId}/settings`;
+    let searchParams = new URLSearchParams();
+    if (tab) {
+      searchParams.set("tab", tab);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
   }
 
   static appSettingsByOrgIdAndAppId(orgId: number, appId: number): string {

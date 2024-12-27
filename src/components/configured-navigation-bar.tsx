@@ -43,6 +43,11 @@ export type ConfiguredNavigationBarItem =
       appId: App["id"];
     }
   | {
+      kind: "app-settings";
+      orgId: Org["id"];
+      appId: App["id"];
+    }
+  | {
       kind: "create-app";
       orgId: Org["id"];
     }
@@ -178,6 +183,16 @@ export const ConfiguredNavigationBar: React.FC<{
             name: app?.name ?? "App",
             isLoading: isLoadingApp,
             href: Routes.app({
+              orgId: item.orgId,
+              appId: item.appId,
+            }),
+          });
+          break;
+        }
+        case "app-settings": {
+          updatedNavigationItems.push({
+            name: "Settings",
+            href: Routes.appSettings({
               orgId: item.orgId,
               appId: item.appId,
             }),

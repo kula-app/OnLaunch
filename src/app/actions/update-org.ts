@@ -2,21 +2,22 @@
 
 import { ForbiddenError } from "@/errors/forbidden-error";
 import { UnauthorizedError } from "@/errors/unauthorized-error";
+import type { Org } from "@/models/org";
 import prisma from "@/services/db";
 import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
 import { $Enums } from "@prisma/client";
 
-const logger = new Logger("actions:update-org");
+const logger = new Logger("actions/update-org");
 
 export const updateOrg = createAuthenticatedServerAction(
   async (
     session,
-    orgId: number,
+    orgId: Org["id"],
     data: {
       name: string;
     },
-  ): Promise<void> => {
+  ) => {
     logger.log(
       `Updating organization(id = ${orgId}) for user(id = ${session.user.id})`,
     );

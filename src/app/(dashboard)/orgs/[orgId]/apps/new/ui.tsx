@@ -157,7 +157,7 @@ export const UI: React.FC<{
                               <Input
                                 {...field}
                                 id={field.name}
-                                placeholder="e.g. kula app GmbH"
+                                placeholder="e.g. My First App"
                                 w={"full"}
                                 variant={"brand-on-card"}
                                 minH={"50px"}
