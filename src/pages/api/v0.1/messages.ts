@@ -222,6 +222,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const app = await prisma.app.findFirst({
     where: {
       publicKey: publicKey,
+      isDeleted: {
+        not: true,
+      },
       organisation: {
         isDeleted: false,
       },
