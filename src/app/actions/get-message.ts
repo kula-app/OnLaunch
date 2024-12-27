@@ -3,9 +3,11 @@
 import { NotFoundError } from "@/errors/not-found-error";
 import { UnauthorizedError } from "@/errors/unauthorized-error";
 import type { Message } from "@/models/message";
+import type { MessageAction } from "@/models/message-action";
 import prisma from "@/services/db";
 import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
+import { PrismaDataUtils } from "@/util/prisma-data-utils";
 
 const logger = new Logger("actions/get-message");
 
@@ -45,6 +47,26 @@ export const getMessage = createAuthenticatedServerAction(
       );
     }
 
+    const mappedActions = message.actions.map((action): MessageAction => {
+      const actionType = PrismaDataUtils.mapActionTypeFromPrisma(
+        action.actionType,
+      );
+      if (!actionType) {
+        throw new Error(`Unknown action type: ${action.actionType}`);
+      }
+      const buttonDesign = PrismaDataUtils.mapButtonDesignFromPrisma(
+        action.buttonDesign,
+      );
+      if (!buttonDesign) {
+        throw new Error(`Unknown button design: ${action.buttonDesign}`);
+      }
+      return {
+        id: action.id,
+        title: action.title,
+        actionType: actionType,
+        buttonDesign,
+      };
+    });
     return {
       id: message.id,
       appId: message.app.id,
@@ -54,6 +76,7 @@ export const getMessage = createAuthenticatedServerAction(
       startDate: message.startDate,
       endDate: message.endDate,
       ruleRootGroup: undefined,
+      actions: mappedActions,
     };
   },
 );
