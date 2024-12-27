@@ -1,4 +1,4 @@
-import { OrgUser } from "@/models/org-user";
+import type { User } from "@/models/user";
 import prisma from "@/services/db";
 import {
   hashAndSaltPassword,
@@ -13,27 +13,22 @@ import type { NextApiRequest, NextApiResponse } from "next";
 const logger = new Logger(__filename);
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  return authenticatedHandler(
-    req,
-    res,
-    { method: "basic" },
-    async (req, res, user) => {
-      switch (req.method) {
-        case "PUT":
-          return putHandler(req, res, user);
-        default:
-          return res
-            .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: "Method not allowed" });
-      }
-    },
-  );
+  return authenticatedHandler(req, res, async (req, res, user) => {
+    switch (req.method) {
+      case "PUT":
+        return putHandler(req, res, user);
+      default:
+        return res
+          .status(StatusCodes.METHOD_NOT_ALLOWED)
+          .json({ message: "Method not allowed" });
+    }
+  });
 }
 
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: OrgUser,
+  user: User,
 ) {
   const { password, passwordOld } = req.body;
 

@@ -98,6 +98,11 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
   logger.log(
     `Creating new email change token for user with current email '${user.email}'`,
   );
+  if (!user.email) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User does not have an email address!" });
+  }
   const emailToken = await prisma.emailChangeToken.create({
     data: {
       userId: user.id,
@@ -109,8 +114,8 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   sendTokenPerMail(
-    emailToken.newEmail as string,
-    userByEmail.firstName as string,
+    emailToken.newEmail,
+    userByEmail.firstName,
     generatedToken,
     MailType.ChangeEmail,
   );

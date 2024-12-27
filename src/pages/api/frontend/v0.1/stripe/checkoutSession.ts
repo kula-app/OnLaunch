@@ -1,11 +1,12 @@
 import { StripeConfig } from "@/config/interfaces/StripeConfig";
 import { loadServerConfig } from "@/config/loadServerConfig";
+import type { Org } from "@/models/org";
 import { OrgUser } from "@/models/org-user";
 import { ProductType } from "@/models/productType";
 import Routes from "@/routes/routes";
 import prisma from "@/services/db";
 import { createStripeClient } from "@/services/stripe";
-import { authenticatedHandler } from "@/util/authenticatedHandler";
+import { authenticatedUserWithRoleHandler } from "@/util/authenticatedHandler";
 import { Logger } from "@/util/logger";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -16,46 +17,42 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: OrgUser,
 ) {
-  return authenticatedHandler(
-    req,
-    res,
-    { method: "withRole" },
-    async (req, res, user) => {
-      const stripeConfig = loadServerConfig().stripeConfig;
+  return authenticatedUserWithRoleHandler(req, res, async (req, res, user) => {
+    const stripeConfig = loadServerConfig().stripeConfig;
 
-      if (!stripeConfig.isEnabled) {
-        logger.error("Stripe is disabled but endpoint has been called");
+    if (!stripeConfig.isEnabled) {
+      logger.error("Stripe is disabled but endpoint has been called");
+      return res
+        .status(StatusCodes.SERVICE_UNAVAILABLE)
+        .json({ message: "Endpoint is disabled" });
+    }
+
+    if (user.role !== "ADMIN") {
+      logger.error("User has no admin rights");
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "You are not an admin" });
+    }
+
+    switch (req.method) {
+      case "POST":
+        return postHandler(req, res, user, stripeConfig);
+
+      default:
         return res
-          .status(StatusCodes.SERVICE_UNAVAILABLE)
-          .json({ message: "Endpoint is disabled" });
-      }
-
-      if (user.role !== "ADMIN") {
-        logger.error("User has no admin rights");
-        return res
-          .status(StatusCodes.FORBIDDEN)
-          .json({ message: "You are not an admin" });
-      }
-
-      switch (req.method) {
-        case "POST":
-          return postHandler(req, res, user, stripeConfig);
-
-        default:
-          return res
-            .status(StatusCodes.METHOD_NOT_ALLOWED)
-            .json({ message: "Method not allowed" });
-      }
-    },
-  );
+          .status(StatusCodes.METHOD_NOT_ALLOWED)
+          .json({ message: "Method not allowed" });
+    }
+  });
 }
 
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: OrgUser,
+  user: OrgUser & {
+    orgId: Org["id"];
+  },
   stripeConfig: StripeConfig,
 ) {
   const stripe = createStripeClient();
