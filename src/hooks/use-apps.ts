@@ -10,12 +10,12 @@ export const useApps = ({
   orgId: Org["id"];
 }): {
   isLoading: boolean;
-  apps: App[] | null;
+  apps: Pick<App, "id" | "name">[] | null;
   error: Error | null;
   refresh: () => void;
 } => {
   const [isLoading, setIsLoading] = useState(false);
-  const [apps, setApps] = useState<App[] | null>(null);
+  const [apps, setApps] = useState<Pick<App, "id" | "name">[] | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const fetchData = useCallback(async () => {
     setIsLoading(true);

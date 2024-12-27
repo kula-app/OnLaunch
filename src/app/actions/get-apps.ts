@@ -13,7 +13,7 @@ import { getServerSession } from "next-auth";
 const logger = new Logger(__filename);
 
 export const getApps = createServerAction(
-  async (orgId: Org["id"]): Promise<App[]> => {
+  async (orgId: Org["id"]): Promise<Pick<App, "id" | "name">[]> => {
     const session = await getServerSession(authOptions);
     if (!session) {
       throw new SessionNotFoundError();
@@ -50,12 +50,10 @@ export const getApps = createServerAction(
     }
 
     return (
-      orgWithApps.org.apps?.map(
-        (app): App => ({
-          id: app.id,
-          name: app.name,
-        }),
-      ) ?? []
+      orgWithApps.org.apps?.map((app) => ({
+        id: app.id,
+        name: app.name,
+      })) ?? []
     );
   },
 );
