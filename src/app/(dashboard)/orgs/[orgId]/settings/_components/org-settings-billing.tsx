@@ -132,7 +132,7 @@ export const OrgSettingsBilling: React.FC<{
           mt={8}
         >
           {products.map((product) => (
-            <Box flexGrow={1}>
+            <Box key={product.id} flexGrow={1}>
               <ProductCard product={product} orgId={orgId} key={product.id} />
             </Box>
           ))}
