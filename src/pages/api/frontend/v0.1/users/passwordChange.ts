@@ -1,4 +1,4 @@
-import { User } from "@/models/user";
+import { OrgUser } from "@/models/org-user";
 import prisma from "@/services/db";
 import {
   hashAndSaltPassword,
@@ -33,7 +33,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  user: OrgUser,
 ) {
   const { password, passwordOld } = req.body;
 

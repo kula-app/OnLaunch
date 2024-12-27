@@ -2,20 +2,26 @@
 
 import { NotFoundError } from "@/errors/not-found-error";
 import { TokenExpiredError } from "@/errors/token-expired-error";
+import { TokenObsoleteError } from "@/errors/token-obsolete-error";
 import { UserAlreadyJoinedOrgError } from "@/errors/user-already-joined-org-error";
 import type { Org } from "@/models/org";
 import prisma from "@/services/db";
-import { createServerAction } from "@/util/create-server-action";
+import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
 
-const logger = new Logger(__filename);
+const logger = new Logger("actions/join-org-with-direct-invite");
 
-export const joinOrgWithDirectInvite = createServerAction(
-  async (token: string): Promise<Pick<Org, "id">> => {
+export const joinOrgWithDirectInvite = createAuthenticatedServerAction(
+  async (session, token: string): Promise<Pick<Org, "id">> => {
     logger.log(`Fetching organization with token '${token}'`);
+
+    const userId = session.user.id;
     const userInvitationToken = await prisma.userInvitationToken.findFirst({
       where: {
-        token: token as string,
+        token: token,
+      },
+      include: {
+        organisation: true,
       },
     });
     if (!userInvitationToken) {
@@ -28,43 +34,41 @@ export const joinOrgWithDirectInvite = createServerAction(
     }
     if (userInvitationToken.isArchived || userInvitationToken.isObsolete) {
       logger.error(`Provided user invitation token is obsolete`);
-      throw new TokenExpiredError("Invite is obsolete");
+      throw new TokenObsoleteError("Invite is obsolete");
     }
 
     logger.log(
       `Looking up organisation with id '${userInvitationToken.orgId}'`,
     );
-    const org = await prisma.organisation.findFirst({
-      where: {
-        id: userInvitationToken.orgId,
-        isDeleted: false,
-      },
-    });
-    if (!org) {
+    if (!userInvitationToken.organisation) {
       logger.error(
         `No organisation found with id '${userInvitationToken.orgId}'`,
       );
       throw new NotFoundError("Organisation not found");
     }
 
-    logger.log(`Creating relation between user ${org.id} and org ${org.id}`);
+    logger.log(
+      `Creating relation between user ${userId} and org ${userInvitationToken.orgId}`,
+    );
     try {
       await prisma.usersInOrganisations.create({
         data: {
-          userId: org.id,
-          orgId: org.id,
-          role: "USER",
+          userId: userId,
+          orgId: userInvitationToken.orgId,
+          role: userInvitationToken.role,
         },
       });
     } catch (e: any) {
       if (e.code === "P2002") {
-        logger.warn(`User ${org.id} already joined org ${org.id}`);
-        throw new UserAlreadyJoinedOrgError(org.id);
+        logger.warn(
+          `User ${session.user.id} already joined org ${userInvitationToken.orgId}`,
+        );
+        throw new UserAlreadyJoinedOrgError(userInvitationToken.orgId);
       }
     }
-    logger.log(`User ${org.id} joined org ${org.id}`);
+    logger.log(`User ${userId} joined org ${userInvitationToken.orgId}`);
 
-    logger.log(`Updating user invitation token as obsolete`);
+    logger.log(`Updating user invitation token as archived`);
     await prisma.userInvitationToken.update({
       where: {
         token: userInvitationToken.token,
@@ -73,10 +77,10 @@ export const joinOrgWithDirectInvite = createServerAction(
         isArchived: true,
       },
     });
-    logger.log(`User invitation token updated as obsolete`);
+    logger.log(`User invitation token updated as archived`);
 
     return {
-      id: org.id,
+      id: userInvitationToken.orgId,
     };
   },
 );

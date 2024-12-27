@@ -1,7 +1,7 @@
 import { StripeConfig } from "@/config/interfaces/StripeConfig";
 import { loadServerConfig } from "@/config/loadServerConfig";
+import { OrgUser } from "@/models/org-user";
 import { ProductType } from "@/models/productType";
-import { User } from "@/models/user";
 import Routes from "@/routes/routes";
 import prisma from "@/services/db";
 import { createStripeClient } from "@/services/stripe";
@@ -16,7 +16,7 @@ const logger = new Logger(__filename);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  user: OrgUser,
 ) {
   return authenticatedHandler(
     req,
@@ -55,7 +55,7 @@ export default async function handler(
 async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: User,
+  user: OrgUser,
   stripeConfig: StripeConfig,
 ) {
   const stripe = createStripeClient();

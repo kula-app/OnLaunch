@@ -92,6 +92,7 @@ export const deleteUser = createAuthenticatedServerAction(
         password: null,
         salt: null,
         isDeleted: true,
+        deletedAt: new Date(),
       },
     });
 

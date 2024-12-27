@@ -16,7 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { OrgSettingsAdminAPI } from "./_components/org-settings-admin-api";
 import { OrgSettingsBilling } from "./_components/org-settings-billing";
 import { OrgSettingsGeneral } from "./_components/org-settings-general";
@@ -38,39 +38,45 @@ export const UI: React.FC<{
   const orderedTabs: {
     id: SettingTab;
     name: string;
-  }[] = [
-    {
-      id: SettingTab.GENERAL,
-      name: "General",
-    },
-    ...(isBillingAvailable
-      ? [
-          {
-            id: SettingTab.BILLING,
-            name: "Billing",
-          },
-        ]
-      : []),
-    {
-      id: SettingTab.USERS,
-      name: "Users",
-    },
-    {
-      id: SettingTab.ADMIN_API,
-      name: "Admin API",
-    },
-  ];
+  }[] = useMemo(
+    () => [
+      {
+        id: SettingTab.GENERAL,
+        name: "General",
+      },
+      ...(isBillingAvailable
+        ? [
+            {
+              id: SettingTab.BILLING,
+              name: "Billing",
+            },
+          ]
+        : []),
+      {
+        id: SettingTab.USERS,
+        name: "Users",
+      },
+      {
+        id: SettingTab.ADMIN_API,
+        name: "Admin API",
+      },
+    ],
+    [isBillingAvailable],
+  );
 
   const [tabIndex, setTabIndex] = useState(0);
-  const handleTabIndexChange = (index: number) => {
-    setTabIndex(index);
-    router.replace(
-      Routes.orgSettings({
-        orgId,
-        tab: orderedTabs[index].id,
-      }),
-    );
-  };
+  const handleTabIndexChange = useCallback(
+    (index: number) => {
+      setTabIndex(index);
+      router.replace(
+        Routes.orgSettings({
+          orgId,
+          tab: orderedTabs[index].id,
+        }),
+      );
+    },
+    [orgId, orderedTabs, router],
+  );
 
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -82,7 +88,7 @@ export const UI: React.FC<{
       // If the tab is not found, default to the first tab
       handleTabIndexChange(0);
     }
-  }, [searchParams]);
+  }, [handleTabIndexChange, orderedTabs, searchParams]);
 
   return (
     <Flex direction={"column"} minH={"100vh"}>

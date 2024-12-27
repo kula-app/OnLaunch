@@ -11,7 +11,6 @@ const logger = new Logger(__filename);
 export const getDirectInviteByToken = createServerAction(
   async (token: string): Promise<Pick<Org, "id" | "name">> => {
     logger.log(`Finding direct invitation with token '${token}'`);
-
     const userInvitationToken = await prisma.userInvitationToken.findFirst({
       where: {
         token,
