@@ -1,3 +1,7 @@
+import type { Org } from "@/models/org";
+import { OrgRole } from "@/models/org-role";
+import type { OrgUser } from "@/models/org-user";
+import type { User } from "@/models/user";
 import prisma from "@/services/db";
 import { compare, genSalt, hash } from "bcrypt";
 import { StatusCodes } from "http-status-codes";
@@ -15,6 +19,7 @@ import Routes from "../routes/routes";
 import { authOptions } from "./auth-options";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 import { Logger } from "./logger";
+import { PrismaDataUtils } from "./prisma-data-utils";
 import { generateRandomHex } from "./random";
 
 const nodemailer = require("nodemailer");
@@ -181,7 +186,7 @@ export function sendTokenPerMail(
 export async function getUserFromRequest(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<User | undefined> {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -191,12 +196,27 @@ export async function getUserFromRequest(
   }
 
   logger.log("Returning user after checking authorization");
-  return session.user;
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      id: session.user.id,
+    },
+  });
+  return {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
 }
 export async function getUserWithRoleFromRequest(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<
+  | (OrgUser & {
+      orgId: Org["id"];
+    })
+  | undefined
+> {
   const user = await getUserFromRequest(req, res);
 
   if (!user) {
@@ -224,23 +244,29 @@ export async function getUserWithRoleFromRequest(
     select: {
       role: true,
       orgId: true,
+      user: true,
     },
   });
 
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
+  if (!userInOrg) {
     logger.error(
       `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`,
     );
     // if user has no business here, return a 404
-    return res.status(StatusCodes.NOT_FOUND).json({
+    res.status(StatusCodes.NOT_FOUND).json({
       message: `no user with id '${user.id}' found in organisation with id '${req.query.orgId}'`,
     });
+    return;
   }
 
   return {
-    role: userInOrg?.role,
     id: user.id,
+    firstName: userInOrg?.user.firstName,
+    lastName: userInOrg?.user.lastName,
     email: user.email,
+
     orgId: userInOrg?.orgId,
+    role:
+      PrismaDataUtils.mapUserRoleFromPrisma(userInOrg?.role) ?? OrgRole.USER,
   };
 }
