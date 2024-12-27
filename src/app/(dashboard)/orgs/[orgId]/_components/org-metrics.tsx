@@ -22,7 +22,7 @@ export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
       const response = await getRequestHistoryOfOrg({
         orgId: orgId,
       });
-      if (response.error) {
+      if (!response.success) {
         throw new ServerError(response.error.name, response.error.message);
       }
       setHistory(response.value);
@@ -59,10 +59,12 @@ export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
       // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
       items = items
         .filter((entry) => new Date(entry.date) > new Date(currentPeriodStart))
-        .concat({
-          date: new Date(currentPeriodStart).toISOString().split("T")[0], // Convert date to string in YYYY-MM-DD format
-          count: periodStartDayCount,
-        });
+        .concat([
+          {
+            date: currentPeriodStart,
+            count: BigInt(periodStartDayCount),
+          },
+        ]);
     }
     setFilteredHistoryItems(items);
   }, [

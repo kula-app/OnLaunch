@@ -101,7 +101,7 @@ export const UI: React.FC<{
                       orgId: orgId,
                       name: values.name,
                     });
-                    if (result.error) {
+                    if (!result.success) {
                       throw new ServerError(
                         result.error.name,
                         result.error.message,
