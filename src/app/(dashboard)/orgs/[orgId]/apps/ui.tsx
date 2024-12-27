@@ -3,7 +3,6 @@
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { useApps } from "@/hooks/use-apps";
 import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
-import type { App } from "@/models/app";
 import { OrgRole } from "@/models/org-role";
 import Routes from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
@@ -39,7 +38,7 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
   }, [apps, orgId, router]);
 
   const [searchFilter, setSearchFilter] = useState<string>("");
-  const [filteredApps, setFilteredApps] = useState<App[]>([]);
+  const [filteredApps, setFilteredApps] = useState<typeof apps>([]);
   useEffect(() => {
     if (searchFilter.length > 0) {
       setFilteredApps(
@@ -110,7 +109,7 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                   </Flex>
                 </GridItem>
               )}
-              {filteredApps.map((app, index) => (
+              {filteredApps?.map((app, index) => (
                 <GridItem key={app.id}>
                   <AppCard
                     orgId={orgId}
