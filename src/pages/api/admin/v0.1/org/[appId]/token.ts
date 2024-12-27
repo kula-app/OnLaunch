@@ -113,6 +113,9 @@ async function postHandler(
     where: {
       id: appId,
       orgId: authResult.id,
+      isDeleted: {
+        not: true,
+      },
     },
   });
 

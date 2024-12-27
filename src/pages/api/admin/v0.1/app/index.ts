@@ -153,6 +153,9 @@ async function getHandler(
   const app = await prisma.app.findUnique({
     where: {
       id: authResult.id,
+      isDeleted: {
+        not: true,
+      },
     },
     include: {
       messages: true,
