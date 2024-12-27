@@ -49,6 +49,7 @@ export const deleteOrg = createAuthenticatedServerAction(
         },
         data: {
           isDeleted: true,
+          deletedAt: new Date(),
         },
       });
       logger.verbose(`Deleted org(id = ${orgId})`);
