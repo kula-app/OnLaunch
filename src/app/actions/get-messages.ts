@@ -47,6 +47,9 @@ export const getMessages = createAuthenticatedServerAction(
     const app = await prisma.app.findFirst({
       where: {
         id: appId,
+        isDeleted: {
+          not: true,
+        },
       },
       include: {
         organisation: {

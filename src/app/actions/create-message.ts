@@ -25,6 +25,9 @@ export const createMessage = createAuthenticatedServerAction(
     const app = await prisma.app.findUnique({
       where: {
         id: dto.appId,
+        isDeleted: {
+          not: true,
+        },
       },
       include: {
         organisation: {
