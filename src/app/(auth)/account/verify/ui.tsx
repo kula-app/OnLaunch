@@ -95,7 +95,7 @@ const SuspenseBody: React.FC = () => {
   async function resendLink(email: string) {
     try {
       const result = await requestAccountVerificationEmail(email);
-      if (result.error) {
+      if (!result.success) {
         throw new ServerError(result.error.name, result.error.message);
       }
       resendLinkCooldown.start();
