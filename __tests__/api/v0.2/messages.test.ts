@@ -49,6 +49,8 @@ describe("/api/v0.2/messages", () => {
           name: "Example App",
           orgId: null,
           idOfLastReportedApiRequest: null,
+          isDeleted: false,
+          deletedAt: null,
         });
         prismaMock.message.findMany.mockResolvedValue([]);
       });
@@ -603,29 +605,21 @@ describe("/api/v0.2/messages", () => {
         expect(res._getJSONData()).toStrictEqual({
           message: "no app found for api key",
         });
-        expect(prismaMock.app.findFirst).toHaveBeenCalledWith({
-          where: {
-            publicKey: "client-key",
-            organisation: {
-              isDeleted: false,
-            },
-          },
-          include: {
-            organisation: {
-              include: {
-                subs: {
-                  where: {
-                    isDeleted: false,
-                  },
-                  include: {
-                    subItems: true,
-                  },
+        expect(prismaMock.app.findFirst).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              publicKey: "client-key",
+              isDeleted: {
+                not: true,
+              },
+              organisation: {
+                isDeleted: {
+                  not: true,
                 },
-                apps: true,
               },
             },
-          },
-        });
+          }),
+        );
         expect(prismaMock.message.findMany).not.toHaveBeenCalled();
         expect(prismaMock.loggedApiRequests.create).not.toHaveBeenCalled();
       });
@@ -651,8 +645,13 @@ describe("/api/v0.2/messages", () => {
           expect.objectContaining({
             where: {
               publicKey: "client-key",
+              isDeleted: {
+                not: true,
+              },
               organisation: {
-                isDeleted: false,
+                isDeleted: {
+                  not: true,
+                },
               },
             },
           }),
@@ -672,6 +671,8 @@ describe("/api/v0.2/messages", () => {
           name: "Example App",
           orgId: null,
           idOfLastReportedApiRequest: null,
+          isDeleted: false,
+          deletedAt: null,
         });
       });
 
@@ -695,8 +696,13 @@ describe("/api/v0.2/messages", () => {
             expect.objectContaining({
               where: {
                 publicKey: "client-key",
+                isDeleted: {
+                  not: true,
+                },
                 organisation: {
-                  isDeleted: false,
+                  isDeleted: {
+                    not: true,
+                  },
                 },
               },
             }),
@@ -741,8 +747,13 @@ describe("/api/v0.2/messages", () => {
             expect.objectContaining({
               where: {
                 publicKey: "client-key",
+                isDeleted: {
+                  not: true,
+                },
                 organisation: {
-                  isDeleted: false,
+                  isDeleted: {
+                    not: true,
+                  },
                 },
               },
             }),
