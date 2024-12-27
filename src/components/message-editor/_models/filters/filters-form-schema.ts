@@ -210,7 +210,7 @@ const simpleFilterSchema: Yup.ObjectSchema<SimpleFilterFormData> = Yup.object({
 
 const advancedFilterRuleConditionSchema: Yup.ObjectSchema<AdvancedFiltersRuleCondition> =
   Yup.object({
-    id: Yup.string().required(),
+    id: Yup.number().required(),
     systemVariable: Yup.string()
       .oneOf(Object.values(MessageRuleSystemVariable))
       .required(),
@@ -222,7 +222,7 @@ const advancedFilterRuleConditionSchema: Yup.ObjectSchema<AdvancedFiltersRuleCon
 
 const advancedFilterRuleGroupSchema: Yup.ObjectSchema<AdvancedFiltersRuleGroup> =
   Yup.object({
-    id: Yup.string().required(),
+    id: Yup.number().required(),
     operator: Yup.string()
       .oneOf(Object.values(MessageRuleGroupOperator))
       .required(),

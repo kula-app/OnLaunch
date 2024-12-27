@@ -233,6 +233,51 @@ export const FormStepFilters: React.FC<
   );
 };
 
+class SimpleFilterGroupIds {
+  static ROOT = 0x1_000_000;
+
+  static PLATFORM = 0x2_000_000;
+  static PLATFORM_ANDROID = 0x2_001_000;
+  static PLATFORM_IOS = 0x2_002_000;
+  static PLATFORM_UNKNOWN = 0x2_999_000;
+
+  static PLATFORM_RULES = 0x3_000_000;
+  static PLATFORM_VERSION_ANDROID = 0x3_001_001;
+  static APP_VERSION_ANDROID = 0x3_001_002;
+
+  static PLATFORM_VERSION_IOS = 0x3_002_001;
+  static APP_VERSION_IOS = 0x3_002_001;
+
+  static PLATFORM_UNKNOWN_NOT_ANDROID = 0x3_999_001;
+  static PLATFORM_UNKNOWN_NOT_IOS = 0x3_999_002;
+
+  static REGION = 0x5_000_000;
+  private static REGION_INCLUDED = SimpleFilterGroupIds.REGION | 0x0_002_000;
+  private static REGION_EXCLUDED = SimpleFilterGroupIds.REGION | 0x0_001_000;
+  static regionIncluded(region: SimpleFiltersRegion) {
+    const idx = Object.values(SimpleFiltersRegion).indexOf(region);
+    return SimpleFilterGroupIds.REGION_INCLUDED | idx;
+  }
+  static regionExcluded(region: SimpleFiltersRegion) {
+    const idx = Object.values(SimpleFiltersRegion).indexOf(region);
+    return SimpleFilterGroupIds.REGION_EXCLUDED | idx;
+  }
+
+  static LANGUAGE = 0x6_000_000;
+  private static LANGUAGE_INCLUDED =
+    SimpleFilterGroupIds.LANGUAGE | 0x0_002_000;
+  private static LANGUAGE_EXCLUDED =
+    SimpleFilterGroupIds.LANGUAGE | 0x0_001_000;
+  static languageIncluded(language: SimpleFiltersLanguage) {
+    const idx = Object.values(SimpleFiltersLanguage).indexOf(language);
+    return SimpleFilterGroupIds.LANGUAGE_INCLUDED | idx;
+  }
+  static languageExcluded(language: SimpleFiltersLanguage) {
+    const idx = Object.values(SimpleFiltersLanguage).indexOf(language);
+    return SimpleFilterGroupIds.LANGUAGE_EXCLUDED | idx;
+  }
+}
+
 const FilterFormSyncSimpleToAdvancedRules: React.FC<
   FormikProps<FilterFormData>
 > = ({ values, setFieldValue }) => {
@@ -243,25 +288,25 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     // Create a rule group for each known platform, and one rule group for unknown platforms
     let perPlatformRuleGroupAndroid: AdvancedFiltersRuleGroup = {
-      id: "platform-android",
+      id: SimpleFilterGroupIds.PLATFORM_ANDROID,
       operator: MessageRuleGroupOperator.AND,
       groups: [],
       conditions: [],
     };
     let perPlatformRuleGroupIOS: AdvancedFiltersRuleGroup = {
-      id: "platform-ios",
+      id: SimpleFilterGroupIds.PLATFORM_IOS,
       operator: MessageRuleGroupOperator.AND,
       groups: [],
       conditions: [],
     };
     let perPlatformRuleGroupUnkown: AdvancedFiltersRuleGroup = {
-      id: "platform-unknown",
+      id: SimpleFilterGroupIds.PLATFORM_UNKNOWN,
       operator: MessageRuleGroupOperator.AND,
       groups: [],
       conditions: [],
     };
     let perPlatformRulesGroup: AdvancedFiltersRuleGroup = {
-      id: "platform-rules",
+      id: SimpleFilterGroupIds.PLATFORM_RULES,
       operator: MessageRuleGroupOperator.OR,
       groups: [],
       conditions: [],
@@ -270,7 +315,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
     // Per Platform - Android
     // If targeting only Android, apply only Android filters
     perPlatformRuleGroupAndroid.conditions!.push({
-      id: "platform",
+      id: SimpleFilterGroupIds.PLATFORM,
       systemVariable: MessageRuleSystemVariable.PLATFORM_NAME,
       comparator: MessageRuleComparator.EQUALS,
       userVariable: "Android",
@@ -278,7 +323,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     if (values.simple?.platformVersionFilter?.isEnabled) {
       perPlatformRuleGroupAndroid.conditions!.push({
-        id: "platform-version-android",
+        id: SimpleFilterGroupIds.PLATFORM_VERSION_ANDROID,
         systemVariable: MessageRuleSystemVariable.PLATFORM_VERSION,
         comparator: mapSimpleVersionFilterComparatorToRuleOperator(
           values.simple.platformVersionFilter.android?.comparator,
@@ -290,7 +335,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     if (values.simple?.appVersionFilter?.isEnabled) {
       perPlatformRuleGroupAndroid.conditions!.push({
-        id: "app-version-android",
+        id: SimpleFilterGroupIds.APP_VERSION_ANDROID,
         systemVariable: MessageRuleSystemVariable.RELEASE_VERSION,
         comparator: mapSimpleVersionFilterComparatorToRuleOperator(
           values.simple.appVersionFilter.android?.comparator,
@@ -301,7 +346,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     // Per Platform - IOS
     perPlatformRuleGroupIOS.conditions!.push({
-      id: "platform",
+      id: SimpleFilterGroupIds.PLATFORM,
       systemVariable: MessageRuleSystemVariable.PLATFORM_NAME,
       comparator: MessageRuleComparator.EQUALS,
       userVariable: "iOS",
@@ -309,7 +354,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     if (values.simple?.platformVersionFilter?.isEnabled) {
       perPlatformRuleGroupIOS.conditions!.push({
-        id: "platform-version-ios",
+        id: SimpleFilterGroupIds.PLATFORM_VERSION_IOS,
         systemVariable: MessageRuleSystemVariable.PLATFORM_VERSION,
         comparator: mapSimpleVersionFilterComparatorToRuleOperator(
           values.simple.platformVersionFilter.ios?.comparator,
@@ -320,7 +365,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     if (values.simple?.appVersionFilter?.isEnabled) {
       perPlatformRuleGroupIOS.conditions!.push({
-        id: "app-version-ios",
+        id: SimpleFilterGroupIds.APP_VERSION_IOS,
         systemVariable: MessageRuleSystemVariable.RELEASE_VERSION,
         comparator: mapSimpleVersionFilterComparatorToRuleOperator(
           values.simple.appVersionFilter.ios?.comparator,
@@ -341,13 +386,13 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       // If targeting all platforms, apply a catch-all rule group
       perPlatformRuleGroupUnkown.conditions = [
         {
-          id: "platform-unkown-not-android",
+          id: SimpleFilterGroupIds.PLATFORM_UNKNOWN_NOT_ANDROID,
           comparator: MessageRuleComparator.IS_NOT_EQUAL,
           systemVariable: MessageRuleSystemVariable.PLATFORM_NAME,
           userVariable: "Android",
         },
         {
-          id: "platform-unknown-not-ios",
+          id: SimpleFilterGroupIds.PLATFORM_UNKNOWN_NOT_IOS,
           comparator: MessageRuleComparator.IS_NOT_EQUAL,
           systemVariable: MessageRuleSystemVariable.PLATFORM_NAME,
           userVariable: "iOS",
@@ -366,7 +411,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
 
     // Create the root filter group with the per-platform rules
     const rootFilterGroup: AdvancedFiltersRuleGroup = {
-      id: "root",
+      id: SimpleFilterGroupIds.ROOT,
       operator: MessageRuleGroupOperator.AND,
       groups: [perPlatformRulesGroup],
       conditions: [],
@@ -375,7 +420,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
     // -- Region Filter --
     if (values.simple?.regionFilter?.isEnabled) {
       const regionFiltersGroup: AdvancedFiltersRuleGroup = {
-        id: "region",
+        id: SimpleFilterGroupIds.REGION,
         operator: MessageRuleGroupOperator.AND,
         groups: [],
         conditions: [],
@@ -386,7 +431,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       if (!includedRegions.includes(SimpleFiltersRegion.ALL)) {
         for (const includedRegion of includedRegions) {
           regionFiltersGroup.conditions!.push({
-            id: `region-included-${includedRegion}`,
+            id: SimpleFilterGroupIds.regionIncluded(includedRegion),
             systemVariable: MessageRuleSystemVariable.LOCALE_REGION_CODE,
             comparator: MessageRuleComparator.EQUALS,
             userVariable: includedRegion,
@@ -395,7 +440,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       }
       for (const excludedRegion of excludedRegions) {
         regionFiltersGroup.conditions!.push({
-          id: `region-excluded-${excludedRegion}`,
+          id: SimpleFilterGroupIds.regionExcluded(excludedRegion),
           systemVariable: MessageRuleSystemVariable.LOCALE_REGION_CODE,
           comparator: MessageRuleComparator.IS_NOT_EQUAL,
           userVariable: excludedRegion,
@@ -409,7 +454,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
     // -- Language Filter --
     if (values.simple?.languageFilter?.isEnabled) {
       const languageFiltersGroup: AdvancedFiltersRuleGroup = {
-        id: "language",
+        id: SimpleFilterGroupIds.LANGUAGE,
         operator: MessageRuleGroupOperator.AND,
         groups: [],
         conditions: [],
@@ -421,7 +466,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       if (!includedLanguages.includes(SimpleFiltersLanguage.ALL)) {
         for (const includedLanguage of includedLanguages) {
           languageFiltersGroup.conditions!.push({
-            id: `language-included-${includedLanguage}`,
+            id: SimpleFilterGroupIds.languageIncluded(includedLanguage),
             systemVariable: MessageRuleSystemVariable.LOCALE_LANGUAGE_CODE,
             comparator: MessageRuleComparator.EQUALS,
             userVariable: includedLanguage,
@@ -430,7 +475,7 @@ const FilterFormSyncSimpleToAdvancedRules: React.FC<
       }
       for (const excludedLanguage of excludedLanguages) {
         languageFiltersGroup.conditions!.push({
-          id: `language-excluded-${excludedLanguage}`,
+          id: SimpleFilterGroupIds.languageExcluded(excludedLanguage),
           systemVariable: MessageRuleSystemVariable.LOCALE_LANGUAGE_CODE,
           comparator: MessageRuleComparator.IS_NOT_EQUAL,
           userVariable: excludedLanguage,
