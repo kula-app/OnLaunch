@@ -13,8 +13,6 @@ class ApiRoutes {
   static readonly CHECKOUT_SESSION = `${ApiRoutes.STRIPE}/checkoutSession`;
   static readonly SAVE_SUBSCRIPTION = `${ApiRoutes.STRIPE}/saveSubscription`;
   static readonly CUSTOMER_PORTAL = `${ApiRoutes.STRIPE}/customerPortal`;
-
-  static readonly PASSWORD_CHANGE = `${ApiRoutes.API_BASE_URL}/users/passwordChange`;
 }
 
 export default ApiRoutes;
