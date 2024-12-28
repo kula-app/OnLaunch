@@ -1,7 +1,8 @@
+import { CustomErrorNames } from "./custom-error-names";
 import { ServerError } from "./server-error";
 
 export class ValidationError extends ServerError {
   constructor(message: string) {
-    super("ValidationError", message);
+    super(CustomErrorNames.ValidationError, message);
   }
 }

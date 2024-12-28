@@ -1,17 +1,18 @@
-import validateEmailChange from '@/api/tokens/validateEmailChange';
-import { Button, Center, Heading, Spinner, useToast } from '@chakra-ui/react';
-import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import Routes from '../routes/routes';
-import styles from '../styles/Home.module.css';
+import { validateEmailChange } from "@/app/actions/validate-email-change";
+import { ServerError } from "@/errors/server-error";
+import { Button, Center, Heading, Spinner, useToast } from "@chakra-ui/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Routes from "../routes/routes";
+import styles from "../styles/Home.module.css";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const toast = useToast();
 
   const { data: session, status } = useSession();
-  const loading = status === 'loading';
+  const loading = status === "loading";
 
   const { token } = router.query;
 
@@ -22,7 +23,12 @@ export default function ResetPasswordPage() {
     if (!!token && !loading) {
       const changeEmail = async () => {
         try {
-          await validateEmailChange(token as string);
+          const response = await validateEmailChange({
+            token: token as string,
+          });
+          if (!response.success) {
+            throw new ServerError(response.error.name, response.error.message);
+          }
           if (!!session) {
             signOut({
               redirect: false,
@@ -31,9 +37,9 @@ export default function ResetPasswordPage() {
           setEmailChanged(true);
         } catch (error) {
           toast({
-            title: 'Error while request!',
+            title: "Error while request!",
             description: `${error}`,
-            status: 'error',
+            status: "error",
             isClosable: true,
             duration: 6000,
           });

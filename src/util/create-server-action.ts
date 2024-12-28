@@ -1,4 +1,6 @@
 import { ServerError } from "@/errors/server-error";
+import { ValidationError } from "@/errors/validation-error";
+import * as Yup from "yup";
 
 /**
  * The response object returned by a server action.
@@ -72,6 +74,16 @@ export function createServerAction<TResult, TArgs extends unknown[]>(
           error: {
             name: error.name,
             message: error.message,
+          },
+        };
+      }
+      if (error instanceof Yup.ValidationError) {
+        const mappedError = new ValidationError(error.message);
+        return {
+          success: false,
+          error: {
+            name: mappedError.name,
+            message: mappedError.message,
           },
         };
       }

@@ -1,8 +1,12 @@
-import createEmailChangeToken from '@/api/tokens/createEmailChangeToken';
-import updatePassword from '@/api/tokens/updatePassword';
-import deleteUser from '@/api/users/deleteUser';
-import getUser from '@/api/users/getUser';
-import Routes from '@/routes/routes';
+"use client";
+
+import updatePassword from "@/api/tokens/updatePassword";
+import deleteUser from "@/api/users/deleteUser";
+import getUser from "@/api/users/getUser";
+import { createEmailChangeToken } from "@/app/actions/create-email-change-token";
+import { ServerError } from "@/errors/server-error";
+import { User } from "@/models/user";
+import Routes from "@/routes/routes";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -20,12 +24,11 @@ import {
   Text,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react';
-import { getSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { User } from '../models/user';
-import styles from '../styles/Home.module.css';
+} from "@chakra-ui/react";
+import { getSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -36,11 +39,11 @@ export default function ProfilePage() {
 
   const [user, setUser] = useState<Partial<User>>();
 
-  const [passwordOld, setPasswordOld] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [passwordOld, setPasswordOld] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const [emailNew, setEmailNew] = useState('');
+  const [emailNew, setEmailNew] = useState("");
   const [displayEmailMessage, setDisplayEmailMessage] = useState(false);
 
   useEffect(() => {
@@ -51,9 +54,9 @@ export default function ProfilePage() {
         setUser(await getUser());
       } catch (error) {
         toast({
-          title: 'Error while fetching user data!',
+          title: "Error while fetching user data!",
           description: `${error}`,
-          status: 'error',
+          status: "error",
           isClosable: true,
           duration: 6000,
         });
@@ -68,22 +71,22 @@ export default function ProfilePage() {
       try {
         await updatePassword(password, passwordOld);
 
-        setPasswordOld('');
-        setPassword('');
-        setPasswordConfirmation('');
+        setPasswordOld("");
+        setPassword("");
+        setPasswordConfirmation("");
 
         toast({
-          title: 'Success!',
-          description: 'Password changed.',
-          status: 'success',
+          title: "Success!",
+          description: "Password changed.",
+          status: "success",
           isClosable: true,
           duration: 6000,
         });
       } catch (error) {
         toast({
-          title: 'Error!',
-          description: 'The passwords do not match.',
-          status: 'error',
+          title: "Error!",
+          description: "The passwords do not match.",
+          status: "error",
           isClosable: true,
           duration: 6000,
         });
@@ -94,31 +97,36 @@ export default function ProfilePage() {
   async function sendNewEmail() {
     if (user?.email === emailNew) {
       toast({
-        title: 'Error!',
-        description: 'This is the same as your current email address.',
-        status: 'error',
+        title: "Error!",
+        description: "This is the same as your current email address.",
+        status: "error",
         isClosable: true,
         duration: 6000,
       });
     } else {
       try {
-        await createEmailChangeToken(emailNew);
+        const response = await createEmailChangeToken({
+          email: emailNew,
+        });
+        if (!response.success) {
+          throw new ServerError(response.error.name, response.error.message);
+        }
 
-        setEmailNew('');
+        setEmailNew("");
         setDisplayEmailMessage(true);
 
         toast({
-          title: 'Success!',
-          description: 'Please check your mails.',
-          status: 'success',
+          title: "Success!",
+          description: "Please check your mails.",
+          status: "success",
           isClosable: true,
           duration: 6000,
         });
       } catch (error) {
         toast({
-          title: 'Error while sending request!',
+          title: "Error while sending request!",
           description: `${error}`,
-          status: 'error',
+          status: "error",
           isClosable: true,
           duration: 6000,
         });
@@ -137,9 +145,9 @@ export default function ProfilePage() {
       signOut();
     } catch (error) {
       toast({
-        title: 'Error while sending request!',
+        title: "Error while sending request!",
         description: `${error}`,
-        status: 'error',
+        status: "error",
         isClosable: true,
         duration: 6000,
       });
@@ -245,7 +253,7 @@ export default function ProfilePage() {
         <AlertDialogOverlay />
 
         <AlertDialogContent>
-          <AlertDialogHeader>{'Deletion of your profile'}</AlertDialogHeader>
+          <AlertDialogHeader>{"Deletion of your profile"}</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>Deletion cannot be undone.</AlertDialogBody>
           <AlertDialogFooter>
