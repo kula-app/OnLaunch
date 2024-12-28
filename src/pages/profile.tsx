@@ -1,9 +1,9 @@
 "use client";
 
-import updatePassword from "@/api/tokens/updatePassword";
 import deleteUser from "@/api/users/deleteUser";
 import getUser from "@/api/users/getUser";
 import { createEmailChangeToken } from "@/app/actions/create-email-change-token";
+import { updatePassword } from "@/app/actions/update-password";
 import { ServerError } from "@/errors/server-error";
 import { User } from "@/models/user";
 import Routes from "@/routes/routes";
@@ -69,7 +69,13 @@ export default function ProfilePage() {
   async function sendNewPassword() {
     if (password === passwordConfirmation) {
       try {
-        await updatePassword(password, passwordOld);
+        const response = await updatePassword({
+          password,
+          passwordOld,
+        });
+        if (!response.success) {
+          throw new ServerError(response.error.name, response.error.message);
+        }
 
         setPasswordOld("");
         setPassword("");
