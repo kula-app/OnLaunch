@@ -99,7 +99,12 @@ export const NavigationBar: React.FC<{
             variant={"link"}
             cursor={"pointer"}
           >
-            <Avatar bg={"white"} size={"sm"} name={session?.data?.user?.name} />
+            <Avatar
+              bg={"white"}
+              color={"black"}
+              size={"sm"}
+              name={session?.data?.user?.name}
+            />
           </MenuButton>
           <MenuList alignItems={"center"} maxW={64}>
             <Box px={3} py={1.5}>
@@ -123,7 +128,7 @@ export const NavigationBar: React.FC<{
             <MenuGroup title={"Profile"}>
               <MenuItem
                 as={NextLink}
-                href={Routes.PROFILE}
+                href={Routes.profile}
                 icon={<Icon as={FiUser} boxSize={4} />}
               >
                 Your Profile
