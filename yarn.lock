@@ -945,10 +945,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource-variable/plus-jakarta-sans@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@fontsource-variable/plus-jakarta-sans@npm:5.1.0"
-  checksum: 10c0/0dc38dfc90e7c25466b3419f61ff1633a0bc444a4c96e7ddff5af2a2e1916a4f32a9b67e67d21e6f728a75e9d2b7817dccf1a509cb17f006f7caf0acff14c389
+"@fontsource-variable/plus-jakarta-sans@npm:5.1.1":
+  version: 5.1.1
+  resolution: "@fontsource-variable/plus-jakarta-sans@npm:5.1.1"
+  checksum: 10c0/3dc74c62247cb616db6d9203933576acb98bc55f6b420b13f1f18255123b1e9b066dfcd745e71fb0005c3dbaf4009a12b298e45bd0568399d6dbcef2d4aabfc0
   languageName: node
   linkType: hard
 
@@ -9211,7 +9211,7 @@ __metadata:
     "@chakra-ui/react": "npm:2.10.4"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
-    "@fontsource-variable/plus-jakarta-sans": "npm:5.1.0"
+    "@fontsource-variable/plus-jakarta-sans": "npm:5.1.1"
     "@prisma/client": "npm:6.1.0"
     "@sentry/nextjs": "npm:8.47.0"
     "@stripe/react-stripe-js": "npm:3.1.1"
