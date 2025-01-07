@@ -19,7 +19,7 @@ const createEmailChangeTokenSchema = Yup.object({
 export const createEmailChangeToken = createAuthenticatedServerAction(
   async (session, args: Yup.InferType<typeof createEmailChangeTokenSchema>) => {
     logger.log(
-      `Creating email change token for user with id '${session.user.id}'`,
+      `Creating email confirmation token for user with id '${session.user.id}'`,
     );
     logger.verbose(`Validating arguments`);
     const { email } = await createEmailChangeTokenSchema.validate(args);
@@ -55,12 +55,11 @@ export const createEmailChangeToken = createAuthenticatedServerAction(
       throw new UserEmailTakenError("Email address not available!");
     }
 
+    // Generate a confirmation token with an expiry date
     const generatedToken = generateToken();
-
-    // set expiryDate one hour from now
     const expiryDate = new Date(Date.now() + 60 * 60 * 1000);
 
-    logger.log(`Updating previous email change tokens obsolete`);
+    logger.log(`Updating previous email confirmation tokens obsolete`);
     await prisma.emailChangeToken.updateMany({
       where: {
         userId: user.id,
@@ -72,7 +71,7 @@ export const createEmailChangeToken = createAuthenticatedServerAction(
     });
 
     logger.log(
-      `Creating new email change token for user with current email '${user.email}'`,
+      `Creating new email confirmation token for user with current email '${user.email}'`,
     );
     const emailToken = await prisma.emailChangeToken.create({
       data: {
@@ -84,12 +83,12 @@ export const createEmailChangeToken = createAuthenticatedServerAction(
       },
     });
 
-    sendTokenPerMail(
-      emailToken.newEmail,
-      user.firstName,
-      generatedToken,
-      MailType.ChangeEmail,
-    );
+    sendTokenPerMail({
+      email: emailToken.newEmail,
+      firstName: user.firstName,
+      token: generatedToken,
+      mailType: MailType.ChangeEmail,
+    });
 
     return {
       email: user.email,

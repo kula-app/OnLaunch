@@ -113,11 +113,13 @@ export const createOrgUserInvite = createAuthenticatedServerAction(
       },
     });
 
-    sendTokenPerMail(
-      uit.invitedEmail,
-      userByEmail?.firstName ?? "",
-      generatedToken,
-      userByEmail ? MailType.DirectInvite : MailType.DirectInviteNewUser,
-    );
+    sendTokenPerMail({
+      email: uit.invitedEmail,
+      firstName: userByEmail?.firstName ?? "",
+      token: generatedToken,
+      mailType: userByEmail
+        ? MailType.DirectInvite
+        : MailType.DirectInviteNewUser,
+    });
   },
 );

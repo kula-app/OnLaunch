@@ -10,8 +10,7 @@ class Routes {
     return "/dashboard";
   }
 
-  static readonly CHANGE_EMAIL = "/changeEmail";
-  static readonly PROFILE = "/profile";
+  static readonly profile = "/profile";
 
   static readonly SUBSCRIPTION = "/subscription";
 
@@ -162,6 +161,7 @@ class Routes {
       | "account-recovery-requested"
       | "account-recovered"
       | "account-verified"
+      | "email-confirmation"
       | "logout";
   }): string {
     const path = "/login";
@@ -171,6 +171,9 @@ class Routes {
     }
     if (params?.redirect) {
       searchParams.set("redirect", params.redirect);
+    }
+    if (params?.reason) {
+      searchParams.set("reason", params.reason);
     }
     if (searchParams.size > 0) {
       return `${path}?${searchParams.toString()}`;
@@ -184,8 +187,12 @@ class Routes {
 
   // the bellow functions use the full path of website for external usage
 
-  static changeEmailWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
+  static readonly changeEmail = "/account/confirm-email";
+  static confirmEmailWithToken(token: string): string {
+    const url = new URL(config.nextAuth.url);
+    url.pathname = Routes.changeEmail;
+    url.searchParams.set("token", token);
+    return url.toString();
   }
 
   static invitationUrlWithToken(token: string): string {

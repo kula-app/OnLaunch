@@ -14,7 +14,7 @@ export const deleteUser = createAuthenticatedServerAction(
     logger.log(`Looking up user with id '${session.user.id}'`);
     const userByEmail = await prisma.user.findFirst({
       where: {
-        email: session.user.email,
+        id: session.user.id,
         NOT: {
           isDeleted: true,
         },

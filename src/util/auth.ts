@@ -60,12 +60,17 @@ export function generateToken() {
   return generateRandomHex(32);
 }
 
-export function sendTokenPerMail(
-  email: string,
-  firstName: string | null,
-  token: string,
-  mailType: MailType,
-) {
+export function sendTokenPerMail({
+  email,
+  firstName,
+  token,
+  mailType,
+}: {
+  email: string;
+  firstName: string | null;
+  token: string;
+  mailType: MailType;
+}) {
   logger.log(`Sending mail of type '${mailType}'`);
 
   const config = loadServerConfig();
@@ -118,7 +123,7 @@ export function sendTokenPerMail(
     case MailType.ChangeEmail:
       const changeEmailTemplate = createChangeEmailTemplate(
         firstName,
-        Routes.changeEmailWithToken(token),
+        Routes.confirmEmailWithToken(token),
         senderName,
       );
 

@@ -94,11 +94,11 @@ export const signUp = createServerAction(
       },
     });
 
-    sendTokenPerMail(
-      createdUser.email ?? email,
-      createdUser.firstName,
-      verificationToken.token,
-      MailType.Verification,
-    );
+    sendTokenPerMail({
+      email: createdUser.email ?? email,
+      firstName: createdUser.firstName,
+      token: verificationToken.token,
+      mailType: MailType.Verification,
+    });
   },
 );
