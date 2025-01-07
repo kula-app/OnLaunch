@@ -66,6 +66,9 @@ export type ConfiguredNavigationBarItem =
       kind: "create-message";
       orgId: Org["id"];
       appId: App["id"];
+    }
+  | {
+      kind: "profile";
     };
 
 export const ConfiguredNavigationBar: React.FC<{
@@ -236,6 +239,13 @@ export const ConfiguredNavigationBar: React.FC<{
               orgId: item.orgId,
               appId: item.appId,
             }),
+          });
+          break;
+        }
+        case "profile": {
+          updatedNavigationItems.push({
+            name: "Profile",
+            href: Routes.profile,
           });
           break;
         }
