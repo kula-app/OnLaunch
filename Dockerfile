@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:22.13.0 AS base
+FROM node:22.13.1 AS base
 
 # Set Working Directory
 WORKDIR /home/node/app
@@ -66,7 +66,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:22.13.0-slim AS release
+FROM node:22.13.1-slim AS release
 LABEL maintainer="opensource@kula.app"
 
 LABEL org.label-schema.schema-version="1.0"
