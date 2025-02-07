@@ -91,7 +91,11 @@ export function sendTokenPerMail({
     case MailType.Verification:
       const verificationTemplate = createVerificationTemplate(
         firstName,
-        Routes.accountVerify({ token, email }),
+        Routes.accountVerify({
+          baseUrl: config.baseConfig.url,
+          token,
+          email,
+        }),
         senderName,
       );
 
@@ -107,7 +111,10 @@ export function sendTokenPerMail({
     case MailType.ResetPassword:
       const resetPasswordTemplate = createResetPasswordTemplate(
         firstName,
-        Routes.accountRecoverConfirmWithToken(token),
+        Routes.accountRecoverConfirmWithToken({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -123,7 +130,10 @@ export function sendTokenPerMail({
     case MailType.ChangeEmail:
       const changeEmailTemplate = createChangeEmailTemplate(
         firstName,
-        Routes.confirmEmailWithToken(token),
+        Routes.confirmEmailWithToken({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -154,7 +164,10 @@ export function sendTokenPerMail({
     case MailType.DirectInvite:
       const directInviteTemplate = createDirectInviteTemplate(
         firstName,
-        Routes.directInvitationUrlWithToken(token),
+        Routes.directInvitationUrlWithToken({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -169,7 +182,10 @@ export function sendTokenPerMail({
 
     case MailType.DirectInviteNewUser:
       const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
-        Routes.directInvitationUrlWithToken(token),
+        Routes.directInvitationUrlWithToken({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 

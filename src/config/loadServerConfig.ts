@@ -12,11 +12,14 @@ import { parseStringArrayEnvValue } from "./parser/parseStringArrayEnvValue";
 export function loadServerConfig(): ServerConfig {
   let env = getEnvironment();
 
-  return {
+  const config = {
     adminApi: {
       requestLimit:
         // request limit per hour
         parseNumberEnvValue(env.ADMIN_API_REQUEST_LIMIT) ?? 1000,
+    },
+    baseConfig: {
+      url: env.BASE_URL ?? "http://localhost:3000",
     },
     nextAuth: {
       url: env.NEXTAUTH_URL ?? "http://localhost:3000",
@@ -109,4 +112,5 @@ export function loadServerConfig(): ServerConfig {
       tracesSampleRate: parseNumberEnvValue(env.SENTRY_TRACES_SAMPLE_RATE),
     },
   };
+  return config;
 }

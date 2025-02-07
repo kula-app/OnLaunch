@@ -11,6 +11,9 @@ export function loadClientConfig(): ClientConfig {
   let env = getEnvironment();
 
   const adaptedConfig: ClientConfig = {
+    baseConfig: {
+      url: env.BASE_URL ?? env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000",
+    },
     docsConfig: {
       url:
         env.DOCS_ENDPOINT_URL ??
