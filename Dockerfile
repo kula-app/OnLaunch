@@ -49,6 +49,8 @@ FROM base AS build
 # Order the layers from least-to-change to frequent-to-change.
 
 COPY sentry.client.config.ts .
+COPY sentry.edge.config.ts .
+COPY sentry.server.config.ts .
 
 COPY postcss.config.js .
 COPY tailwind.config.js .
@@ -102,10 +104,14 @@ RUN chmod +x env.sh
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules ./node_modules
 
 # copy remaining build output
-COPY --from=build /home/node/app/next.config.js ./next.config.js
-COPY --from=build /home/node/app/prisma ./prisma
+COPY --from=build --chown=node:node /home/node/app/next.config.js ./next.config.js
+COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
 COPY --from=build --chown=node:node /home/node/app/public ./public
 COPY --from=build --chown=node:node /home/node/app/.next  ./.next
+
+# Custom boot script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # select user
 USER node
@@ -124,5 +130,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 # Smoke Tests
 RUN ./node_modules/.bin/next info
 
-# Run application
-CMD ["/bin/bash", "-c", "./env.sh && ./node_modules/.bin/prisma migrate deploy && ./node_modules/.bin/next start"]
+# Set the default command to run the entrypoint script
+CMD ["/usr/local/bin/entrypoint.sh"]
