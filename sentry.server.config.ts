@@ -16,7 +16,6 @@ Sentry.init({
     Sentry.anrIntegration({
       captureStackTrace: true,
     }),
-    Sentry.captureConsoleIntegration(),
     Sentry.extraErrorDataIntegration(),
     Sentry.prismaIntegration({
       prismaInstrumentation: new PrismaInstrumentation(),
