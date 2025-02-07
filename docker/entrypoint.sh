@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ex
+set -e
 
 if [ ! -z "$SENTRY_RELEASE" ]; then
   echo "Creating Sentry release '$SENTRY_RELEASE' ..."
@@ -22,16 +22,16 @@ if [ ! -z "$SENTRY_RELEASE" ]; then
     exit 1
   fi
 
-  yarn sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
-  yarn sentry-cli releases new $SENTRY_RELEASE
-  yarn sentry-cli sourcemaps upload apps packages
-  yarn sentry-cli releases finalize $SENTRY_RELEASE
+  ./node_modules/.bin/sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
+  ./node_modules/.bin/sentry-cli releases new $SENTRY_RELEASE
+  ./node_modules/.bin/sentry-cli sourcemaps upload .next
+  ./node_modules/.bin/sentry-cli releases finalize $SENTRY_RELEASE
 
   echo "Sentry release '$SENTRY_RELEASE' created"
 fi
 
 echo "Setup environment variables..."
-./env.sh
+. ./env.sh
 
 echo "Deploying Prisma migrations..."
 ./node_modules/.bin/prisma migrate deploy

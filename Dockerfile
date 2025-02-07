@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Base ----
-FROM node:22.13.1 AS base
+FROM node:22.13.1-alpine AS base
 
 # Set Working Directory
 WORKDIR /home/node/app
@@ -68,7 +68,7 @@ RUN yarn build
 
 # # ---- Release ----
 # build production ready image
-FROM node:22.13.1-slim AS release
+FROM node:22.13.1-alpine AS release
 LABEL maintainer="opensource@kula.app"
 
 LABEL org.label-schema.schema-version="1.0"
@@ -78,16 +78,9 @@ LABEL org.label-schema.url="http://kula.app/onlaunch"
 LABEL org.label-schema.vcs-url="https://github.com/kula/OnLaunch"
 LABEL org.label-schema.vendor="kula app GmbH"
 
-# install additional dependencies
-# - openssl: required for prisma
-# - tini: required for signal handling
-RUN apt-get update -qq > /dev/null  \
-  && apt-get install -qq --no-install-recommends \
-  openssl \
-  tini \
-  && rm -rf /var/lib/apt/lists/*
 # Set tini as entrypoint
-ENTRYPOINT ["/usr/bin/tini", "--"]
+RUN apk add --no-cache tini
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # Change runtime working directory
 WORKDIR /home/node/app/
@@ -100,18 +93,20 @@ COPY .yarn/releases .yarn/releases
 COPY --chown=node:node docker/env.sh ./
 RUN chmod +x env.sh
 
+# Custom boot script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # copy production node_modules
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules ./node_modules
+COPY --from=dependencies_production /home/node/app/package.json ./package.json
+COPY --from=dependencies_production /home/node/app/yarn.lock ./yarn.lock
 
 # copy remaining build output
 COPY --from=build --chown=node:node /home/node/app/next.config.js ./next.config.js
 COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
 COPY --from=build --chown=node:node /home/node/app/public ./public
 COPY --from=build --chown=node:node /home/node/app/.next  ./.next
-
-# Custom boot script
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # select user
 USER node
