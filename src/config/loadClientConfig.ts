@@ -15,7 +15,7 @@ export function loadClientConfig(): ClientConfig {
       url:
         env.DOCS_ENDPOINT_URL ??
         env.NEXT_PUBLIC_DOCS_ENDPOINT_URL ??
-        "https://onlaunch.kula.app/api/docs",
+        "https://control.onlaunch.app/api/docs",
     },
     sentryConfig: {
       enabled: parseBooleanEnvValueWithDefault(
