@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Summary:
 #   Client-side environment variables starting with `NEXT_PUBLIC_` are replaced with the value set in the environment at
@@ -21,46 +21,47 @@
 #   https://github.com/sparanoid/env.sh
 
 ENVSH_SED="sed"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "macOS detected, switching to gsed"
+if [ "$(uname)" = "Darwin" ]; then
+  echo "macOS detected, switching to gsed"
 
-    if command -v gsed >/dev/null 2>&1; then
-        echo "Found: $(gsed --version | head -n 1)"
+  if command -v gsed >/dev/null 2>&1; then
+    echo "Found: $(gsed --version | head -n 1)"
+  else
+    echo "gsed not found, trying to install..."
+
+    if command -v brew >/dev/null 2>&1; then
+      echo "Found: $(brew --version | head -n 1)"
+      brew install gnu-sed
     else
-        echo "gsed not found, trying to install..."
-
-        if command -v brew >/dev/null 2>&1; then
-            echo "Found: $(brew --version | head -n 1)"
-            brew install gnu-sed
-        else
-            echo "Homebrew not found, install it first: https://brew.sh/"
-            exit 1
-        fi
-
+      echo "Homebrew not found, install it first: https://brew.sh/"
+      exit 1
     fi
 
-    ENVSH_SED="gsed"
+  fi
+
+  ENVSH_SED="gsed"
 fi
 
 # Filter all keys starting with "NEXT_PUBLIC_" from the current environment
-env_vars=$(printenv | grep -o '^NEXT_PUBLIC_[A-Za-z0-9_]*')
+env_vars=$(env | grep '^NEXT_PUBLIC_[A-Za-z0-9_]*=' | cut -d= -f1)
 
 # Build the JavaScript object string
 js_object="{"
 for var_name in $env_vars; do
-    echo "Found variable in env: $var_name"
+  echo "Found variable in env: $var_name"
 
-    # Trim the "NEXT_PUBLIC_" prefix from the variable name
-    key=$(echo $var_name | $ENVSH_SED 's/^NEXT_PUBLIC_//')
+  # Trim the "NEXT_PUBLIC_" prefix from the variable name
+  key=$(echo "$var_name" | $ENVSH_SED 's/^NEXT_PUBLIC_//')
 
-    # Escape any quotes or backslashes in the variable value
-    value=$(echo ${!var_name} | $ENVSH_SED 's/"/\\"/g' | sed 's/\\/\\\\/g')
+  # Get the value and escape any quotes or backslashes
+  eval "value=\$$var_name"
+  value=$(echo "$value" | $ENVSH_SED 's/"/\\"/g' | $ENVSH_SED 's/\\/\\\\/g')
 
-    # Add the key-value pair to the object string
-    js_object+="\"NEXT_PUBLIC_$key\":\"$value\","
+  # Add the key-value pair to the object string
+  js_object="${js_object}\"NEXT_PUBLIC_$key\":\"$value\","
 done
 js_object="${js_object%,}" # Remove the trailing comma
-js_object+="}"
+js_object="$js_object}"
 
 # Write the JavaScript object to a file
 echo "window.__env = $js_object;" >public/__env.js

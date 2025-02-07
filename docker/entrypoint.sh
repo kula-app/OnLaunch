@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ex
+set -e
 
 if [ ! -z "$SENTRY_RELEASE" ]; then
   echo "Creating Sentry release '$SENTRY_RELEASE' ..."
@@ -22,7 +22,7 @@ if [ ! -z "$SENTRY_RELEASE" ]; then
     exit 1
   fi
 
-  ./node_modules/.bin/sentry-cli login --auth-token $SENTRY_AUTH_TOKEN --log-level debug
+  ./node_modules/.bin/sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
   ./node_modules/.bin/sentry-cli releases new $SENTRY_RELEASE
   ./node_modules/.bin/sentry-cli sourcemaps upload apps packages
   ./node_modules/.bin/sentry-cli releases finalize $SENTRY_RELEASE
@@ -31,7 +31,7 @@ if [ ! -z "$SENTRY_RELEASE" ]; then
 fi
 
 echo "Setup environment variables..."
-./env.sh
+. ./env.sh
 
 echo "Deploying Prisma migrations..."
 ./node_modules/.bin/prisma migrate deploy
