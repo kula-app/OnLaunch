@@ -1,7 +1,10 @@
 import { generateRandomHex } from "../util/random";
 import { getEnvironment } from "./getEnvironment";
 import { ServerConfig } from "./interfaces/ServerConfig";
-import { parseBooleanEnvValue } from "./parser/parseBooleanEnvValue";
+import {
+  parseBooleanEnvValue,
+  parseBooleanEnvValueWithDefault,
+} from "./parser/parseBooleanEnvValue";
 import { parseNumberEnvValue } from "./parser/parseNumberEnvValue";
 import { parseSentinels } from "./parser/parseSentinels";
 import { parseStringArrayEnvValue } from "./parser/parseStringArrayEnvValue";
@@ -86,10 +89,15 @@ export function loadServerConfig(): ServerConfig {
       pass: env.SMTP_PASS ?? "",
     },
     sentryConfig: {
-      debug: parseBooleanEnvValue(env.SENTRY_DEBUG?.toLowerCase()),
+      enabled: parseBooleanEnvValue(env.SENTRY_ENABLED?.toLowerCase()) ?? true,
+      debug: parseBooleanEnvValue(env.SENTRY_DEBUG?.toLowerCase()) ?? false,
       dsn: env.SENTRY_DSN,
       env: env.SENTRY_ENV,
       release: env.SENTRY_RELEASE,
+      attachStacktrace: parseBooleanEnvValueWithDefault(
+        env.SENTRY_ATTACH_STACKTRACE?.toLowerCase(),
+        true,
+      ),
       replaysOnErrorSampleRate: parseNumberEnvValue(
         env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
       ),
@@ -97,8 +105,8 @@ export function loadServerConfig(): ServerConfig {
         env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
       ),
       sampleRate: parseNumberEnvValue(env.SENTRY_SAMPLE_RATE),
-      tracesSampleRate:
-        parseNumberEnvValue(env.SENTRY_TRACES_SAMPLE_RATE) ?? 0.2,
+      profilesSampleRate: parseNumberEnvValue(env.SENTRY_PROFILES_SAMPLE_RATE),
+      tracesSampleRate: parseNumberEnvValue(env.SENTRY_TRACES_SAMPLE_RATE),
     },
   };
 }

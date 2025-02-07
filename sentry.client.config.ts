@@ -1,23 +1,36 @@
 import { loadClientConfig } from "@/config/loadClientConfig";
 import * as Sentry from "@sentry/nextjs";
 
-const sentryConfig = loadClientConfig().sentryConfig;
+async function initSentry() {
+  const config = loadClientConfig();
+  const sentryConfig = config.sentryConfig;
 
-Sentry.init({
-  dsn: sentryConfig.dsn,
-  debug: sentryConfig.debug,
+  console.log("Initializing Sentry on client, using DSN:", sentryConfig.dsn);
+  if (!sentryConfig.enabled) {
+    console.warn("⚠️ WARNING: SENTRY IS NOT ENABLED! ⚠️");
+  }
 
-  release: sentryConfig.release,
+  Sentry.init({
+    enabled: sentryConfig.enabled,
+    dsn: sentryConfig.dsn,
+    debug: sentryConfig.debug,
 
-  replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate,
-  replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate,
+    release: sentryConfig.release,
 
-  tracesSampler: (samplingContext) => {
-    // Ignore the health endpoint from trace sampling
-    if (samplingContext.transactionContext.name == "GET /api/health") {
-      return false;
-    }
-    return sentryConfig.tracesSampleRate;
-  },
-  sampleRate: sentryConfig.sampleRate,
-});
+    replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate,
+    replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate,
+
+    integrations: [Sentry.replayIntegration()],
+
+    tracesSampler: (samplingContext) => {
+      // Ignore the health endpoint from trace sampling
+      if (samplingContext.transactionContext.name == "GET /api/health") {
+        return false;
+      }
+      return sentryConfig.tracesSampleRate ?? 0.2;
+    },
+    sampleRate: sentryConfig.sampleRate,
+  });
+}
+
+void initSentry();
