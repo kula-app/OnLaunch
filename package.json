@@ -60,7 +60,7 @@
     "reflect-metadata": "0.2.2",
     "request-ip": "3.3.0",
     "stripe": "16.12.0",
-    "styled-components": "6.1.14",
+    "styled-components": "6.1.15",
     "swr": "2.3.0",
     "use-debounce": "10.0.4",
     "uuid": "11.0.5",
