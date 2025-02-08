@@ -24,8 +24,7 @@ if [ ! -z "$SENTRY_RELEASE" ]; then
 
   ./node_modules/.bin/sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
   ./node_modules/.bin/sentry-cli releases new $SENTRY_RELEASE
-  ./node_modules/.bin/sentry-cli sourcemaps inject .next
-  ./node_modules/.bin/sentry-cli sourcemaps upload --release $SENTRY_RELEASE .next
+  ./node_modules/.bin/sentry-cli sourcemaps upload --release $SENTRY_RELEASE .
   ./node_modules/.bin/sentry-cli releases finalize $SENTRY_RELEASE
 
   echo "Sentry release '$SENTRY_RELEASE' created"

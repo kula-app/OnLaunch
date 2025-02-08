@@ -108,6 +108,9 @@ COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
 COPY --from=build --chown=node:node /home/node/app/public ./public
 COPY --from=build --chown=node:node /home/node/app/.next  ./.next
 
+# Inject Sentry Source Maps
+RUN ./node_modules/.bin/sentry-cli sourcemaps inject .
+
 # select user
 USER node
 
