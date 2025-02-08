@@ -1,7 +1,4 @@
 import type { Org } from "@/models/org";
-import { loadServerConfig } from "../config/loadServerConfig";
-
-const config = loadServerConfig();
 
 class Routes {
   static readonly INDEX = "/";
@@ -26,23 +23,33 @@ class Routes {
     return `/orgs/${orgId}/upgrade`;
   }
 
-  static org(params: { orgId: number; reason?: "user-joined" }): string {
-    const url = new URL(config.nextAuth.url);
-    url.pathname = `/orgs/${params.orgId}`;
-    if (params.reason) {
-      url.searchParams.set("reason", params.reason);
+  static org({
+    baseUrl,
+    orgId,
+    reason,
+  }: {
+    baseUrl?: string;
+    orgId: number;
+    reason?: "user-joined";
+  }): string {
+    const url = new URL(baseUrl ?? "");
+    url.pathname = `/orgs/${orgId}`;
+    if (reason) {
+      url.searchParams.set("reason", reason);
     }
     return url.toString();
   }
 
   static orgJoin({
+    baseUrl,
     directInviteToken,
     inviteToken,
   }: {
+    baseUrl?: string;
     directInviteToken?: string;
     inviteToken?: string;
   }): string {
-    const url = new URL(config.nextAuth.url);
+    const url = new URL(baseUrl ?? "");
     url.pathname = "/orgs/join";
     if (directInviteToken) {
       url.searchParams.set("direct-invite-token", directInviteToken);
@@ -188,39 +195,77 @@ class Routes {
   // the bellow functions use the full path of website for external usage
 
   static readonly changeEmail = "/account/confirm-email";
-  static confirmEmailWithToken(token: string): string {
-    const url = new URL(config.nextAuth.url);
+  static confirmEmailWithToken({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    const url = new URL(baseUrl);
     url.pathname = Routes.changeEmail;
     url.searchParams.set("token", token);
     return url.toString();
   }
 
-  static invitationUrlWithToken(token: string): string {
-    return `${config.nextAuth.url}/orgs/join?invite-token=${token}`;
+  static invitationUrlWithToken({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    return `${baseUrl}/orgs/join?invite-token=${token}`;
   }
 
-  static directInvitationUrlWithToken(token: string): string {
-    return `${config.nextAuth.url}/orgs/join?direct-invite-token=${token}`;
+  static directInvitationUrlWithToken({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    return `${baseUrl}/orgs/join?direct-invite-token=${token}`;
   }
 
-  static accountRecoverConfirmWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
+  static accountRecoverConfirmWithToken({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    return `${baseUrl}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
   }
 
-  static accountVerify(params: { token: string; email: string }): string {
-    const url = new URL(config.nextAuth.url);
+  static accountVerify({
+    baseUrl,
+    token,
+    email,
+  }: {
+    baseUrl: string;
+    token: string;
+    email: string;
+  }): string {
+    const url = new URL(baseUrl);
     url.pathname = "/account/verify";
-    url.searchParams.set("token", params.token);
-    url.searchParams.set("email", params.email);
+    url.searchParams.set("token", token);
+    url.searchParams.set("email", email);
     return url.toString();
   }
 
-  static subscriptionPageSuccess(orgId: string): string {
-    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
+  static subscriptionPageSuccess({
+    baseUrl,
+    orgId,
+  }: {
+    baseUrl: string;
+    orgId: string;
+  }): string {
+    return `${baseUrl}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
   }
 
-  static subscriptionPageCancelled(): string {
-    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`;
+  static subscriptionPageCancelled({ baseUrl }: { baseUrl: string }): string {
+    return `${baseUrl}${Routes.SUBSCRIPTION}?canceled=true`;
   }
 }
 

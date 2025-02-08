@@ -6,6 +6,7 @@ import { removeUserFromOrg } from "@/app/actions/remove-user-from-org";
 import { resetOrgInvitationToken } from "@/app/actions/reset-org-invitation-token";
 import { updateUserInviteRoleInOrg } from "@/app/actions/update-user-invite-role-in-org";
 import { updateUserRoleInOrg } from "@/app/actions/update-user-role-in-org";
+import { loadClientConfig } from "@/config/loadClientConfig";
 import { SessionNotFoundError } from "@/errors/session-not-found-error";
 import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
 import { useOrg } from "@/hooks/use-org";
@@ -556,6 +557,7 @@ const InvitationLinkForm: React.FC<{
   orgId: Org["id"];
   invitationToken: string;
 }> = ({ orgId, invitationToken }) => {
+  const config = loadClientConfig();
   const toast = useToast();
 
   async function onResetInvitationToken() {
@@ -582,7 +584,10 @@ const InvitationLinkForm: React.FC<{
     }
   }
 
-  const invitationUrl = Routes.invitationUrlWithToken(invitationToken);
+  const invitationUrl = Routes.invitationUrlWithToken({
+    baseUrl: config.baseConfig.url,
+    token: invitationToken,
+  });
   return (
     <VStack direction={"column"} w={"full"} align={"end"}>
       <FormControl color="white" w={"full"}>

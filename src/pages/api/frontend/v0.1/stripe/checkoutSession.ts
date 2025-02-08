@@ -55,6 +55,7 @@ async function postHandler(
   },
   stripeConfig: StripeConfig,
 ) {
+  const config = loadServerConfig();
   const stripe = createStripeClient();
 
   // check whether organisation has a stripe customer id with prisma
@@ -124,7 +125,9 @@ async function postHandler(
       line_items: lineItems,
       mode: "subscription",
       success_url: Routes.subscriptionPageSuccess(req.body.orgId),
-      cancel_url: Routes.subscriptionPageCancelled(),
+      cancel_url: Routes.subscriptionPageCancelled({
+        baseUrl: config.baseConfig.url,
+      }),
       tax_id_collection: { enabled: true },
     };
 
