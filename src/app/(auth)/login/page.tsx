@@ -1,14 +1,17 @@
 import Routes from "@/routes/routes";
 import { authOptions } from "@/util/auth-options";
+import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import UI from "./ui";
 
-export const metadata = {
+type Props = {};
+
+export const metadata: Metadata = {
   title: "Login",
 };
 
-export default async function Page() {
+const Page: NextPage<Props> = async () => {
   const session = await getServerSession(authOptions);
 
   if (session) {
@@ -16,4 +19,6 @@ export default async function Page() {
   }
 
   return <UI />;
-}
+};
+
+export default Page;

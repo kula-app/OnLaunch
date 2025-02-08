@@ -1,19 +1,22 @@
 import Routes from "@/routes/routes";
 import { authOptions } from "@/util/auth-options";
-import type { NextPage } from "next";
+import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { UI } from "./ui";
 
-export const metadata = {
+type Props = {
+  params: Promise<{
+    orgId: string;
+  }>;
+};
+
+export const metadata: Metadata = {
   title: "New App",
 };
 
-const Page: NextPage<{
-  params: {
-    orgId: string;
-  };
-}> = async ({ params: { orgId } }) => {
+const Page: NextPage<Props> = async ({ params }) => {
+  const { orgId } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {

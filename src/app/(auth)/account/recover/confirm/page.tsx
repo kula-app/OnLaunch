@@ -1,9 +1,14 @@
+import type { Metadata, NextPage } from "next";
 import UI from "./ui";
 
-export const metadata = {
+type Props = {};
+
+export const metadata: Metadata = {
   title: "Recover Account",
 };
 
-export default async function Page() {
+const Page: NextPage<Props> = async () => {
   return <UI />;
-}
+};
+
+export default Page;

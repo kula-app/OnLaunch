@@ -1,26 +1,27 @@
 import Routes from "@/routes/routes";
 import prisma from "@/services/db";
 import { authOptions } from "@/util/auth-options";
-import type { NextPage } from "next";
+import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { UI } from "./ui";
 
-export async function generateMetadata({
-  params: { orgId, appId, messageId },
-}: {
-  params: {
+type Props = {
+  params: Promise<{
     orgId: string;
     appId: string;
     messageId: string;
-  };
-}) {
+  }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const session = await getServerSession(authOptions);
   if (!session) {
     return {
       title: "Message",
     };
   }
+  const { orgId, appId, messageId } = await params;
 
   const user = await prisma.usersInOrganisations.findUnique({
     where: {
@@ -59,13 +60,8 @@ export async function generateMetadata({
   };
 }
 
-const Page: NextPage<{
-  params: {
-    orgId: string;
-    appId: string;
-    messageId: string;
-  };
-}> = async ({ params: { orgId, appId, messageId } }) => {
+const Page: NextPage<Props> = async ({ params }) => {
+  const { orgId, appId, messageId } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
