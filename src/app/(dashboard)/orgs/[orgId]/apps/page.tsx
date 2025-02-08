@@ -1,18 +1,20 @@
 import Routes from "@/routes/routes";
 import prisma from "@/services/db";
 import { authOptions } from "@/util/auth-options";
-import type { NextPage } from "next";
+import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { UI } from "./ui";
 
-export async function generateMetadata({
-  params: { orgId },
-}: {
-  params: {
+type Props = {
+  params: Promise<{
     orgId: string;
-  };
-}) {
+  }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { orgId } = await params;
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return {
@@ -46,23 +48,21 @@ export async function generateMetadata({
   };
 }
 
-const page: NextPage<{
-  params: {
-    orgId: string;
-  };
-}> = async ({ params }) => {
+const page: NextPage<Props> = async ({ params }) => {
+  const { orgId } = await params;
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return redirect(
       Routes.login({
         redirect: Routes.apps({
-          orgId: +params.orgId,
+          orgId: +orgId,
         }),
       }),
     );
   }
 
-  return <UI orgId={+params.orgId} />;
+  return <UI orgId={+orgId} />;
 };
 
 export default page;

@@ -4,11 +4,6 @@ const nextConfig = {
   // time in seconds of no pages generating during static
   // generation before timing out
   staticPageGenerationTimeout: 600,
-
-  experimental: {
-    // Enable the instrumentation hook for Sentry v8.x
-    instrumentationHook: true,
-  },
 };
 
 // Injected content via Sentry wizard below
