@@ -86,7 +86,7 @@ function mapAuthTokenToAdapterAuthToken(
 export function PrismaAdapter(): Required<Adapter> {
   return {
     // User
-    createUser: async (data) => {
+    createUser: async (data: Omit<AdapterUser, "id">) => {
       logger.log(`Creating user with data: ${JSON.stringify(data)}`);
       const user = await prisma.user.create({
         data: {
@@ -178,7 +178,7 @@ export function PrismaAdapter(): Required<Adapter> {
       return mapUserToAdapterUser(deletedUser);
     },
     // Account
-    linkAccount: async (data) => {
+    linkAccount: async (data: AdapterAccount) => {
       logger.log(`Linking account with data: ${JSON.stringify(data)}`);
       const user = await prisma.user.findFirstOrThrow({
         where: {
@@ -210,7 +210,12 @@ export function PrismaAdapter(): Required<Adapter> {
       });
       return mapAccountToAdapterAccount(account);
     },
-    unlinkAccount: async (provider_providerAccountId) => {
+    unlinkAccount: async (
+      provider_providerAccountId: Pick<
+        AdapterAccount,
+        "provider" | "providerAccountId"
+      >,
+    ) => {
       logger.log(
         `Unlinking account with provider ${provider_providerAccountId.provider} and account id ${provider_providerAccountId.providerAccountId}`,
       );
