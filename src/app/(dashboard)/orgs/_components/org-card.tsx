@@ -1,6 +1,6 @@
 "use client";
 
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { Box, Card, CardBody, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -20,10 +20,10 @@ export const OrgCard: React.FC<{
       cursor={"pointer"}
       onClick={() => {
         if (type === "create") {
-          router.push(Routes.createOrg);
+          router.push(Routes.createOrganization);
         } else {
           router.push(
-            Routes.org({
+            Routes.organization({
               orgId: id,
             }),
           );

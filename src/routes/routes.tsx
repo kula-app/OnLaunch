@@ -1,74 +1,85 @@
+import type { App } from "@/models/app";
+import type { Message } from "@/models/message";
 import type { Org } from "@/models/org";
 
-class Routes {
-  static readonly INDEX = "/";
+export class Routes {
+  static get index(): string {
+    return "/";
+  }
 
-  static get dashboard() {
+  static get dashboard(): string {
     return "/dashboard";
   }
 
-  static readonly profile = "/profile";
+  static get profile(): string {
+    return "/profile";
+  }
 
-  static readonly SUBSCRIPTION = "/subscription";
+  static get subscription(): string {
+    return "/subscription";
+  }
 
-  static get orgs(): string {
+  // --- Organizations ---
+
+  static get organizations(): string {
     return "/orgs";
   }
 
-  static get createOrg(): string {
+  static get createOrganization(): string {
     return "/orgs/new";
   }
 
-  static upgradeOrg({ orgId }: { orgId: Org["id"] }): string {
-    return `/orgs/${orgId}/upgrade`;
-  }
-
-  static org({
-    baseUrl,
+  static organization({
     orgId,
     reason,
   }: {
-    baseUrl?: string;
-    orgId: number;
+    orgId: Org["id"];
     reason?: "user-joined";
   }): string {
-    const url = new URL(baseUrl ?? "");
-    url.pathname = `/orgs/${orgId}`;
+    let path = `/orgs/${orgId}`;
+    let searchParams = new URLSearchParams();
     if (reason) {
-      url.searchParams.set("reason", reason);
+      searchParams.set("reason", reason);
     }
-    return url.toString();
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
   }
 
-  static orgJoin({
-    baseUrl,
-    directInviteToken,
-    inviteToken,
+  static upgradeOrganization({ orgId }: { orgId: Org["id"] }): string {
+    return `/orgs/${orgId}/upgrade`;
+  }
+
+  static organizationSettings({
+    orgId,
+    tab,
   }: {
-    baseUrl?: string;
-    directInviteToken?: string;
-    inviteToken?: string;
+    orgId: Org["id"];
+    tab?: string;
   }): string {
-    const url = new URL(baseUrl ?? "");
-    url.pathname = "/orgs/join";
-    if (directInviteToken) {
-      url.searchParams.set("direct-invite-token", directInviteToken);
+    let path = `/orgs/${orgId}/settings`;
+    let searchParams = new URLSearchParams();
+    if (tab) {
+      searchParams.set("tab", tab);
     }
-    if (inviteToken) {
-      url.searchParams.set("invite-token", inviteToken);
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
     }
-    return url.toString();
+    return path;
   }
 
-  static apps({ orgId }: { orgId: number }): string {
+  // --- Apps ---
+
+  static apps({ orgId }: { orgId: Org["id"] }): string {
     return `/orgs/${orgId}/apps`;
   }
 
-  static createApp({ orgId }: { orgId: number }): string {
+  static createApp({ orgId }: { orgId: Org["id"] }): string {
     return `/orgs/${orgId}/apps/new`;
   }
 
-  static app({ orgId, appId }: { appId: number; orgId: number }): string {
+  static app({ orgId, appId }: { appId: App["id"]; orgId: Org["id"] }): string {
     return `/orgs/${orgId}/apps/${appId}`;
   }
 
@@ -77,8 +88,8 @@ class Routes {
     appId,
     tab,
   }: {
-    appId: number;
-    orgId: number;
+    appId: App["id"];
+    orgId: Org["id"];
     tab?: string;
   }): string {
     let path = `/orgs/${orgId}/apps/${appId}/settings`;
@@ -92,7 +103,15 @@ class Routes {
     return path;
   }
 
-  static messages({ orgId, appId }: { appId: number; orgId: number }): string {
+  // --- Messages ---
+
+  static messages({
+    orgId,
+    appId,
+  }: {
+    appId: App["id"];
+    orgId: Org["id"];
+  }): string {
     return `/orgs/${orgId}/apps/${appId}/messages`;
   }
 
@@ -100,8 +119,8 @@ class Routes {
     orgId,
     appId,
   }: {
-    appId: number;
-    orgId: number;
+    appId: App["id"];
+    orgId: Org["id"];
   }): string {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
@@ -111,55 +130,26 @@ class Routes {
     appId,
     messageId,
   }: {
-    appId: number;
-    messageId: number;
-    orgId: number;
+    appId: App["id"];
+    messageId: Message["id"];
+    orgId: Org["id"];
   }): string {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
   }
 
-  static orgSettings({ orgId, tab }: { orgId: number; tab?: string }): string {
-    let path = `/orgs/${orgId}/settings`;
-    let searchParams = new URLSearchParams();
-    if (tab) {
-      searchParams.set("tab", tab);
-    }
-    if (searchParams.size > 0) {
-      return `${path}?${searchParams.toString()}`;
-    }
-    return path;
-  }
-
-  static appSettingsByOrgIdAndAppId(orgId: number, appId: number): string {
-    return `${Routes.getOrgAppsByOrgId(orgId)}/${appId}/settings`;
-  }
-
-  static getOrgAppsByOrgId(orgId: number): string {
-    return `/orgs/${orgId}/apps`;
-  }
-
-  static getOrgUpgradeByOrgId(orgId: number): string {
-    return `/orgs/${orgId}/upgrade`;
-  }
-
-  static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {
-    return `/orgs/${orgId}/apps/${appId}/messages`;
-  }
-
-  static createNewMessageForOrgIdAndAppId(
-    orgId: number,
-    appId: number,
-  ): string {
-    return `/orgs/${orgId}/apps/${appId}/messages/new`;
-  }
-
-  static editMessageByOrgIdAndAppIdAndMessageId(
-    orgId: number,
-    appId: number,
-    messageId: number,
-  ): string {
+  static editMessage({
+    orgId,
+    appId,
+    messageId,
+  }: {
+    appId: App["id"];
+    messageId: Message["id"];
+    orgId: Org["id"];
+  }): string {
     return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
   }
+
+  // --- Authentication ---
 
   static login(params?: {
     email?: string | null;
@@ -188,14 +178,15 @@ class Routes {
     return path;
   }
 
-  static readonly SIGNUP = "/signup";
-  static readonly ACCOUNT_RECOVERY = "/account/recover";
-  static readonly ACCOUNT_RECOVERY_CONFIRM = "/account/recover/confirm";
+  static get signup(): string {
+    return "/signup";
+  }
 
-  // the bellow functions use the full path of website for external usage
+  static get accountRecovery(): string {
+    return "/account/recover";
+  }
 
-  static readonly changeEmail = "/account/confirm-email";
-  static confirmEmailWithToken({
+  static getAccountConfirmEmailUrl({
     baseUrl,
     token,
   }: {
@@ -203,42 +194,51 @@ class Routes {
     token: string;
   }): string {
     const url = new URL(baseUrl);
-    url.pathname = Routes.changeEmail;
+    url.pathname = "/account/confirm-email";
     url.searchParams.set("token", token);
     return url.toString();
   }
 
-  static invitationUrlWithToken({
+  static getOrganizationInvitationUrl({
     baseUrl,
     token,
   }: {
     baseUrl: string;
     token: string;
   }): string {
-    return `${baseUrl}/orgs/join?invite-token=${token}`;
+    let url = new URL(baseUrl);
+    url.pathname = "/orgs/join";
+    url.searchParams.set("invite-token", token);
+    return url.toString();
   }
 
-  static directInvitationUrlWithToken({
+  static getOrganizationDirectInvitationUrl({
     baseUrl,
     token,
   }: {
     baseUrl: string;
     token: string;
   }): string {
-    return `${baseUrl}/orgs/join?direct-invite-token=${token}`;
+    let url = new URL(baseUrl);
+    url.pathname = "/orgs/join";
+    url.searchParams.set("direct-invite-token", token);
+    return url.toString();
   }
 
-  static accountRecoverConfirmWithToken({
+  static getAccountConfirmationUrl({
     baseUrl,
     token,
   }: {
     baseUrl: string;
     token: string;
   }): string {
-    return `${baseUrl}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
+    let url = new URL(baseUrl);
+    url.pathname = "/account/recover/confirm";
+    url.searchParams.set("token", token);
+    return url.toString();
   }
 
-  static accountVerify({
+  static getAccountVerificationUrl({
     baseUrl,
     token,
     email,
@@ -254,19 +254,28 @@ class Routes {
     return url.toString();
   }
 
-  static subscriptionPageSuccess({
+  static getSubscriptionPageSuccessUrl({
     baseUrl,
     orgId,
   }: {
     baseUrl: string;
     orgId: string;
   }): string {
-    return `${baseUrl}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
+    let url = new URL(baseUrl);
+    url.pathname = Routes.subscription;
+    url.searchParams.set("success", "true");
+    url.searchParams.set("orgId", orgId);
+    return url.toString();
   }
 
-  static subscriptionPageCancelled({ baseUrl }: { baseUrl: string }): string {
-    return `${baseUrl}${Routes.SUBSCRIPTION}?canceled=true`;
+  static getSubscriptionPageCancelledUrl({
+    baseUrl,
+  }: {
+    baseUrl: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = Routes.subscription;
+    url.searchParams.set("canceled", "true");
+    return url.toString();
   }
 }
-
-export default Routes;

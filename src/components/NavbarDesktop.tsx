@@ -11,7 +11,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { MdChevronRight } from "react-icons/md";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 
 interface NavItem {
   label: string;

@@ -16,7 +16,7 @@ import type { Org } from "@/models/org";
 import { OrgRole } from "@/models/org-role";
 import type { OrgUser } from "@/models/org-user";
 import type { OrgUserInvitation } from "@/models/org-user-invitation";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Alert,
   AlertDescription,
@@ -584,7 +584,7 @@ const InvitationLinkForm: React.FC<{
     }
   }
 
-  const invitationUrl = Routes.invitationUrlWithToken({
+  const invitationUrl = Routes.getOrganizationInvitationUrl({
     baseUrl: config.baseConfig.url,
     token: invitationToken,
   });

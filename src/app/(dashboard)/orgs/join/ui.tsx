@@ -4,7 +4,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Button,
   ButtonGroup,
@@ -72,7 +72,7 @@ export const UI: React.FC<{
         duration: 6000,
       });
       router.push(
-        Routes.org({
+        Routes.organization({
           orgId: joinedOrgId,
           reason: "user-joined",
         }),
@@ -85,7 +85,7 @@ export const UI: React.FC<{
           status: "info",
         });
         router.push(
-          Routes.org({
+          Routes.organization({
             orgId: orgId,
           }),
         );

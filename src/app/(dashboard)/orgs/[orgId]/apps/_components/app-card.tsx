@@ -2,7 +2,7 @@
 
 import type { App } from "@/models/app";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { Box, Card, CardBody, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React from "react";

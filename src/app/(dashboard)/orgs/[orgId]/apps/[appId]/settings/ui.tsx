@@ -3,7 +3,7 @@
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { App } from "@/models/app";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Card,
   CardBody,

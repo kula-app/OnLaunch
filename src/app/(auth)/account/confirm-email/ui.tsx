@@ -6,7 +6,7 @@ import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Alert,
   AlertDescription,

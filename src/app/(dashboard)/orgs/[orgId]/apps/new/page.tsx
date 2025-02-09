@@ -1,4 +1,4 @@
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { authOptions } from "@/util/auth-options";
 import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";

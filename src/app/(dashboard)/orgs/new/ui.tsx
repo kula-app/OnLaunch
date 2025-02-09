@@ -4,7 +4,7 @@ import { createOrg } from "@/app/actions/create-org";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import { ServerError } from "@/errors/server-error";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Button,
   Card,
@@ -114,9 +114,13 @@ export default function NewOrgPage() {
                     // If stripe is configured, redirect to the plan selection page
                     const stripeConfig = loadClientConfig().stripeConfig;
                     if (stripeConfig.isEnabled) {
-                      router.push(Routes.getOrgUpgradeByOrgId(result.value));
+                      router.push(
+                        Routes.upgradeOrganization({
+                          orgId: result.value,
+                        }),
+                      );
                     } else {
-                      router.push(Routes.getOrgAppsByOrgId(result.value));
+                      router.push(Routes.apps({ orgId: result.value }));
                     }
                   } catch (error) {
                     toast({
@@ -175,7 +179,7 @@ export default function NewOrgPage() {
                         <Button
                           colorScheme={"gray"}
                           variant={"solid"}
-                          onClick={() => router.push(Routes.orgs)}
+                          onClick={() => router.push(Routes.organizations)}
                         >
                           Cancel
                         </Button>

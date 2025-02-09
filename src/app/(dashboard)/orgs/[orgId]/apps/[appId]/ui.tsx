@@ -4,7 +4,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { MessageList } from "@/components/message-list";
 import { useApp } from "@/hooks/use-app";
 import { useMessages } from "@/hooks/use-messages";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,

@@ -4,7 +4,7 @@ import { loadServerConfig } from "@/config/loadServerConfig";
 import { ForbiddenError } from "@/errors/forbidden-error";
 import { NotFoundError } from "@/errors/not-found-error";
 import { UnauthorizedError } from "@/errors/unauthorized-error";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import prisma from "@/services/db";
 import { createStripeClient } from "@/services/stripe";
 import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
