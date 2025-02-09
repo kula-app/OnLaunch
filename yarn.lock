@@ -1301,7 +1301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/globals@npm:^29.7.0":
+"@jest/globals@npm:29.7.0, @jest/globals@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/globals@npm:29.7.0"
   dependencies:
@@ -2989,16 +2989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*":
-  version: 29.5.12
-  resolution: "@types/jest@npm:29.5.12"
-  dependencies:
-    expect: "npm:^29.0.0"
-    pretty-format: "npm:^29.0.0"
-  checksum: 10c0/25fc8e4c611fa6c4421e631432e9f0a6865a8cb07c9815ec9ac90d630271cad773b2ee5fe08066f7b95bebd18bb967f8ce05d018ee9ab0430f9dfd1d84665b6f
-  languageName: node
-  linkType: hard
-
 "@types/js-yaml@npm:4.0.9":
   version: 4.0.9
   resolution: "@types/js-yaml@npm:4.0.9"
@@ -3204,15 +3194,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/d2914f8e9b5b998e4275ec5f0130cba1c2fb47e75616b5c125a65ef6c1db2f1dc3f978c7900693856a15d72bbb4f4e94f805537a4ecb6dc126c64415d31c0590
-  languageName: node
-  linkType: hard
-
-"@types/testing-library__jest-dom@npm:5.14.9":
-  version: 5.14.9
-  resolution: "@types/testing-library__jest-dom@npm:5.14.9"
-  dependencies:
-    "@types/jest": "npm:*"
-  checksum: 10c0/91f7b15e8813b515912c54da44464fb60ecf21162b7cae2272fcb3918074f4e1387dc2beca1f5041667e77b76b34253c39675ea4e0b3f28f102d8cc87fdba9fa
   languageName: node
   linkType: hard
 
@@ -6158,7 +6139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expect@npm:^29.0.0, expect@npm:^29.7.0":
+"expect@npm:^29.7.0":
   version: 29.7.0
   resolution: "expect@npm:29.7.0"
   dependencies:
@@ -8159,7 +8140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-mock-extended@npm:^4.0.0-beta1":
+"jest-mock-extended@npm:4.0.0-beta1":
   version: 4.0.0-beta1
   resolution: "jest-mock-extended@npm:4.0.0-beta1"
   dependencies:
@@ -9564,9 +9545,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-mocks-http@npm:^1.16.1":
-  version: 1.16.2
-  resolution: "node-mocks-http@npm:1.16.2"
+"node-mocks-http@npm:1.16.1":
+  version: 1.16.1
+  resolution: "node-mocks-http@npm:1.16.1"
   dependencies:
     accepts: "npm:^1.3.7"
     content-disposition: "npm:^0.5.3"
@@ -9586,7 +9567,7 @@ __metadata:
       optional: true
     "@types/node":
       optional: true
-  checksum: 10c0/0d94f2c179a2a9b42c042d554faaed348083213400e9da0b0b25ce4498eb4f4d9467550402f53b2e5d1f1bbf5444c7d6c232ca377b56e5af9fbde9c9d85ad8fa
+  checksum: 10c0/08bc7512e63d5ea6efbf8b9f56f1f5c4304395529360ed78b91d7408830973f4032d6bfca4e9442a4ef77b83c2a7ce28c344f6c46ebd2118a1b57b9bf39d931b
   languageName: node
   linkType: hard
 
@@ -9908,6 +9889,7 @@ __metadata:
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
     "@fontsource-variable/plus-jakarta-sans": "npm:5.1.1"
+    "@jest/globals": "npm:29.7.0"
     "@prisma/client": "npm:6.3.1"
     "@prisma/instrumentation": "npm:6.3.1"
     "@sentry/cli": "npm:2.41.1"
@@ -9925,7 +9907,6 @@ __metadata:
     "@types/react": "npm:18.3.18"
     "@types/react-dom": "npm:18.3.5"
     "@types/request-ip": "npm:0.0.41"
-    "@types/testing-library__jest-dom": "npm:5.14.9"
     autoprefixer: "npm:10.4.20"
     base64url: "npm:3.0.1"
     bcrypt: "npm:5.1.1"
@@ -9945,7 +9926,7 @@ __metadata:
     ioredis: "npm:5.4.2"
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
-    jest-mock-extended: "npm:^4.0.0-beta1"
+    jest-mock-extended: "npm:4.0.0-beta1"
     js-yaml: "npm:4.1.0"
     local-cypress: "npm:1.2.6"
     luxon: "npm:3.5.0"
@@ -9955,7 +9936,7 @@ __metadata:
     next-auth: "npm:4.24.11"
     next-router-mock: "npm:0.9.13"
     next-swagger-doc: "npm:0.4.1"
-    node-mocks-http: "npm:^1.16.1"
+    node-mocks-http: "npm:1.16.1"
     nodemailer: "npm:6.10.0"
     pinst: "npm:3.0.0"
     postcss: "npm:8.5.1"
@@ -10585,7 +10566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^29.0.0, pretty-format@npm:^29.7.0":
+"pretty-format@npm:^29.7.0":
   version: 29.7.0
   resolution: "pretty-format@npm:29.7.0"
   dependencies:
