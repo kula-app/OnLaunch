@@ -1301,7 +1301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/globals@npm:^29.7.0":
+"@jest/globals@npm:29.7.0, @jest/globals@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/globals@npm:29.7.0"
   dependencies:
@@ -8140,7 +8140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-mock-extended@npm:^4.0.0-beta1":
+"jest-mock-extended@npm:4.0.0-beta1":
   version: 4.0.0-beta1
   resolution: "jest-mock-extended@npm:4.0.0-beta1"
   dependencies:
@@ -9545,9 +9545,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-mocks-http@npm:^1.16.1":
-  version: 1.16.2
-  resolution: "node-mocks-http@npm:1.16.2"
+"node-mocks-http@npm:1.16.1":
+  version: 1.16.1
+  resolution: "node-mocks-http@npm:1.16.1"
   dependencies:
     accepts: "npm:^1.3.7"
     content-disposition: "npm:^0.5.3"
@@ -9567,7 +9567,7 @@ __metadata:
       optional: true
     "@types/node":
       optional: true
-  checksum: 10c0/0d94f2c179a2a9b42c042d554faaed348083213400e9da0b0b25ce4498eb4f4d9467550402f53b2e5d1f1bbf5444c7d6c232ca377b56e5af9fbde9c9d85ad8fa
+  checksum: 10c0/08bc7512e63d5ea6efbf8b9f56f1f5c4304395529360ed78b91d7408830973f4032d6bfca4e9442a4ef77b83c2a7ce28c344f6c46ebd2118a1b57b9bf39d931b
   languageName: node
   linkType: hard
 
@@ -9889,7 +9889,7 @@ __metadata:
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
     "@fontsource-variable/plus-jakarta-sans": "npm:5.1.1"
-    "@jest/globals": "npm:^29.7.0"
+    "@jest/globals": "npm:29.7.0"
     "@prisma/client": "npm:6.3.1"
     "@prisma/instrumentation": "npm:6.3.1"
     "@sentry/cli": "npm:2.41.1"
@@ -9926,7 +9926,7 @@ __metadata:
     ioredis: "npm:5.4.2"
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
-    jest-mock-extended: "npm:^4.0.0-beta1"
+    jest-mock-extended: "npm:4.0.0-beta1"
     js-yaml: "npm:4.1.0"
     local-cypress: "npm:1.2.6"
     luxon: "npm:3.5.0"
@@ -9936,7 +9936,7 @@ __metadata:
     next-auth: "npm:4.24.11"
     next-router-mock: "npm:0.9.13"
     next-swagger-doc: "npm:0.4.1"
-    node-mocks-http: "npm:^1.16.1"
+    node-mocks-http: "npm:1.16.1"
     nodemailer: "npm:6.10.0"
     pinst: "npm:3.0.0"
     postcss: "npm:8.5.1"
