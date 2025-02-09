@@ -22,18 +22,18 @@
 
 ENVSH_SED="sed"
 if [ "$(uname)" = "Darwin" ]; then
-  echo "macOS detected, switching to gsed"
+  echo "[env.sh] macOS detected, switching to gsed"
 
   if command -v gsed >/dev/null 2>&1; then
-    echo "Found: $(gsed --version | head -n 1)"
+    echo "[env.sh] Found: $(gsed --version | head -n 1)"
   else
-    echo "gsed not found, trying to install..."
+    echo "[env.sh] gsed not found, trying to install..."
 
     if command -v brew >/dev/null 2>&1; then
-      echo "Found: $(brew --version | head -n 1)"
+      echo "[env.sh] Found: $(brew --version | head -n 1)"
       brew install gnu-sed
     else
-      echo "Homebrew not found, install it first: https://brew.sh/"
+      echo "[env.sh] Homebrew not found, install it first: https://brew.sh/"
       exit 1
     fi
 
@@ -48,7 +48,7 @@ env_vars=$(env | grep '^NEXT_PUBLIC_[A-Za-z0-9_]*=' | cut -d= -f1)
 # Build the JavaScript object string
 js_object="{"
 for var_name in $env_vars; do
-  echo "Found variable in env: $var_name"
+  echo "[env.sh] Found variable in env: $var_name"
 
   # Trim the "NEXT_PUBLIC_" prefix from the variable name
   key=$(echo "$var_name" | $ENVSH_SED 's/^NEXT_PUBLIC_//')
