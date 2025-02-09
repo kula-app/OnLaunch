@@ -3,7 +3,7 @@
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { useOrgs } from "@/hooks/use-orgs";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
   Alert,
@@ -34,7 +34,7 @@ export const UI: React.FC = () => {
   const { isLoading: isLoadingOrgs, orgs, error } = useOrgs();
   useEffect(() => {
     if (orgs && orgs.length === 0) {
-      router.push(Routes.createOrg);
+      router.push(Routes.createOrganization);
     }
   }, [orgs, router]);
 

@@ -10,7 +10,7 @@ import { ServerError } from "@/errors/server-error";
 import type { App } from "@/models/app";
 import type { Message } from "@/models/message";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -136,7 +136,7 @@ export const ConfiguredNavigationBar: React.FC<{
         case "orgs": {
           updatedNavigationItems.push({
             name: "Organizations",
-            href: Routes.orgs,
+            href: Routes.organizations,
           });
           break;
         }
@@ -147,7 +147,7 @@ export const ConfiguredNavigationBar: React.FC<{
           updatedNavigationItems.push({
             name: org?.name ?? "Organization",
             isLoading: isLoadingOrg,
-            href: Routes.org({
+            href: Routes.organization({
               orgId: item.orgId,
             }),
           });
@@ -156,7 +156,7 @@ export const ConfiguredNavigationBar: React.FC<{
         case "org-settings": {
           updatedNavigationItems.push({
             name: "Settings",
-            href: Routes.orgSettings({
+            href: Routes.organizationSettings({
               orgId: item.orgId,
             }),
           });
@@ -165,7 +165,7 @@ export const ConfiguredNavigationBar: React.FC<{
         case "create-org": {
           updatedNavigationItems.push({
             name: "Create",
-            href: Routes.createOrg,
+            href: Routes.createOrganization,
           });
           break;
         }

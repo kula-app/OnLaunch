@@ -8,7 +8,7 @@ import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
 import { App } from "@/models/app";
 import type { Org } from "@/models/org";
 import { OrgRole } from "@/models/org-role";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Alert,
   AlertDescription,

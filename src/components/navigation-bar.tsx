@@ -1,6 +1,6 @@
 "use client";
 
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Avatar,
   Box,
@@ -61,7 +61,7 @@ export const NavigationBar: React.FC<{
         justify={"space-between"}
         textStyle={"navigationBar"}
       >
-        <Link as={NextLink} href={Routes.INDEX} py={4}>
+        <Link as={NextLink} href={Routes.index} py={4}>
           <Text fontWeight={"bold"} fontSize={"lg"}>
             OnLaunch
           </Text>
@@ -135,7 +135,7 @@ export const NavigationBar: React.FC<{
               </MenuItem>
               <MenuItem
                 as={NextLink}
-                href={Routes.orgs}
+                href={Routes.organizations}
                 icon={<Icon as={FiUsers} boxSize={4} />}
               >
                 Your Organizations

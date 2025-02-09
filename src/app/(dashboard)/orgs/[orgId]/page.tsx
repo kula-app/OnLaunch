@@ -1,4 +1,4 @@
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import prisma from "@/services/db";
 import { authOptions } from "@/util/auth-options";
 import type { Metadata, NextPage } from "next";
@@ -50,7 +50,7 @@ const Page: NextPage<Props> = async ({ params }) => {
   if (!session) {
     return redirect(
       Routes.login({
-        redirect: Routes.org({
+        redirect: Routes.organization({
           orgId: +orgId,
         }),
       }),

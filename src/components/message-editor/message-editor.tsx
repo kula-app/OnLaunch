@@ -34,7 +34,7 @@ import type { MessageRuleCondition } from "@/models/message-rule-condition";
 import type { MessageRuleGroup } from "@/models/message-rule-group";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,

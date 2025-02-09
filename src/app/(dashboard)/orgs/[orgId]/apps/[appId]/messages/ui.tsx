@@ -6,7 +6,7 @@ import { MessageList } from "@/components/message-list";
 import { useMessages } from "@/hooks/use-messages";
 import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import { Message } from "@/models/message";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { truncateString } from "@/util/truncate-string";
 import {
   AlertDialog,
@@ -210,9 +210,7 @@ export const UI: React.FC<{
                   variant={"solid"}
                   colorScheme={"brand"}
                   onClick={() =>
-                    router.push(
-                      Routes.createNewMessageForOrgIdAndAppId(orgId, appId),
-                    )
+                    router.push(Routes.createMessage({ orgId, appId }))
                   }
                 >
                   Create Message
@@ -223,11 +221,7 @@ export const UI: React.FC<{
                 messages={activeMessages ?? []}
                 editMessage={(message) =>
                   router.push(
-                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
-                      orgId,
-                      appId,
-                      message.id,
-                    ),
+                    Routes.editMessage({ orgId, appId, messageId: message.id }),
                   )
                 }
                 deleteMessage={(message) => {
@@ -244,11 +238,7 @@ export const UI: React.FC<{
                 messages={plannedMessages ?? []}
                 editMessage={(message) =>
                   router.push(
-                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
-                      orgId,
-                      appId,
-                      message.id,
-                    ),
+                    Routes.editMessage({ orgId, appId, messageId: message.id }),
                   )
                 }
                 deleteMessage={(messageId) => {
@@ -265,11 +255,7 @@ export const UI: React.FC<{
                 messages={pastMessages ?? []}
                 editMessage={(message) =>
                   router.push(
-                    Routes.editMessageByOrgIdAndAppIdAndMessageId(
-                      orgId,
-                      appId,
-                      message.id,
-                    ),
+                    Routes.editMessage({ orgId, appId, messageId: message.id }),
                   )
                 }
                 deleteMessage={(messageId) => {

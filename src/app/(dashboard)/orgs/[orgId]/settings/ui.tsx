@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Card,
   CardBody,
@@ -69,7 +69,7 @@ export const UI: React.FC<{
     (index: number) => {
       setTabIndex(index);
       router.replace(
-        Routes.orgSettings({
+        Routes.organizationSettings({
           orgId,
           tab: orderedTabs[index].id,
         }),

@@ -1,4 +1,4 @@
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import prisma from "@/services/db";
 import { authOptions } from "@/util/auth-options";
 import type { Metadata, NextPage } from "next";

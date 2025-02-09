@@ -5,7 +5,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import ProductCard from "@/components/product-card";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import type { Org } from "@/models/org";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { Container, Flex, Heading, Skeleton, useToast } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

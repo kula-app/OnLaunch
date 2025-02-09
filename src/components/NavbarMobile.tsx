@@ -9,7 +9,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { MdExpandMore } from "react-icons/md";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 
 interface NavItem {
   label: string;

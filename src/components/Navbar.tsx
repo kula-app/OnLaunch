@@ -22,7 +22,7 @@ import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { MdClose, MdMenu } from "react-icons/md";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 import DesktopNav from "./NavbarDesktop";
 import MobileNav from "./NavbarMobile";
 
@@ -35,7 +35,7 @@ export default function Header(props: Props) {
   const router = useRouter();
 
   function navigateToAuthPage() {
-    router.push(Routes.SIGNUP);
+    router.push(Routes.signup);
   }
 
   return (

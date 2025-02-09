@@ -5,7 +5,7 @@ import { useApps } from "@/hooks/use-apps";
 import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
 import { useOrg } from "@/hooks/use-org";
 import { OrgRole } from "@/models/org-role";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
   Alert,
@@ -66,7 +66,9 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
             <Spacer />
             {org?.subName == "free" && (
               <Button
-                onClick={() => router.push(Routes.upgradeOrg({ orgId }))}
+                onClick={() =>
+                  router.push(Routes.upgradeOrganization({ orgId }))
+                }
                 colorScheme={"orange"}
                 leftIcon={<>✨</>}
               >
@@ -75,7 +77,9 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
             )}
             <IconButton
               icon={<FaGear />}
-              onClick={() => router.push(Routes.orgSettings({ orgId }))}
+              onClick={() =>
+                router.push(Routes.organizationSettings({ orgId }))
+              }
               aria-label={"Settings"}
             />
           </HStack>

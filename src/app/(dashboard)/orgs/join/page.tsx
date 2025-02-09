@@ -1,4 +1,5 @@
-import Routes from "@/routes/routes";
+import { loadClientConfig } from "@/config/loadClientConfig";
+import { Routes } from "@/routes/routes";
 import { authOptions } from "@/util/auth-options";
 import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
@@ -14,19 +15,34 @@ export const metadata: Metadata = {
 };
 
 const Page: NextPage<Props> = async ({ searchParams }) => {
-  const directInviteToken = (await searchParams)[
-    "direct-invite-token"
-  ] as string;
-  const inviteToken = (await searchParams)["invite-token"] as string;
+  const { directInviteTokenParam, inviteTokenParam } = await searchParams;
+
+  const directInviteToken =
+    directInviteTokenParam && Array.isArray(directInviteTokenParam)
+      ? directInviteTokenParam[0]
+      : directInviteTokenParam;
+  const inviteToken =
+    inviteTokenParam && Array.isArray(inviteTokenParam)
+      ? inviteTokenParam[0]
+      : inviteTokenParam;
+
+  const config = loadClientConfig();
 
   const session = await getServerSession(authOptions);
   if (!session) {
     return redirect(
       Routes.login({
-        redirect: Routes.orgJoin({
-          directInviteToken: directInviteToken,
-          inviteToken: inviteToken,
-        }),
+        redirect: directInviteToken
+          ? Routes.getOrganizationDirectInvitationUrl({
+              baseUrl: config.baseConfig.url,
+              token: directInviteToken,
+            })
+          : inviteToken
+            ? Routes.getOrganizationInvitationUrl({
+                baseUrl: config.baseConfig.url,
+                token: inviteToken,
+              })
+            : undefined,
       }),
     );
   }

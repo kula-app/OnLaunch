@@ -15,7 +15,7 @@ import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
 import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
 import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 import { authOptions } from "./auth-options";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 import { Logger } from "./logger";
@@ -91,7 +91,7 @@ export function sendTokenPerMail({
     case MailType.Verification:
       const verificationTemplate = createVerificationTemplate(
         firstName,
-        Routes.accountVerify({
+        Routes.getAccountVerificationUrl({
           baseUrl: config.baseConfig.url,
           token,
           email,
@@ -111,7 +111,7 @@ export function sendTokenPerMail({
     case MailType.ResetPassword:
       const resetPasswordTemplate = createResetPasswordTemplate(
         firstName,
-        Routes.accountRecoverConfirmWithToken({
+        Routes.getAccountConfirmationUrl({
           baseUrl: config.baseConfig.url,
           token,
         }),
@@ -130,7 +130,7 @@ export function sendTokenPerMail({
     case MailType.ChangeEmail:
       const changeEmailTemplate = createChangeEmailTemplate(
         firstName,
-        Routes.confirmEmailWithToken({
+        Routes.getAccountConfirmEmailUrl({
           baseUrl: config.baseConfig.url,
           token,
         }),
@@ -164,7 +164,7 @@ export function sendTokenPerMail({
     case MailType.DirectInvite:
       const directInviteTemplate = createDirectInviteTemplate(
         firstName,
-        Routes.directInvitationUrlWithToken({
+        Routes.getOrganizationDirectInvitationUrl({
           baseUrl: config.baseConfig.url,
           token,
         }),
@@ -182,7 +182,7 @@ export function sendTokenPerMail({
 
     case MailType.DirectInviteNewUser:
       const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
-        Routes.directInvitationUrlWithToken({
+        Routes.getOrganizationDirectInvitationUrl({
           baseUrl: config.baseConfig.url,
           token,
         }),

@@ -1,4 +1,4 @@
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { authOptions } from "@/util/auth-options";
 import type { Metadata, NextPage } from "next";
 import { getServerSession } from "next-auth";
@@ -21,7 +21,7 @@ const Page: NextPage<Props> = async () => {
     );
   }
 
-  return redirect(Routes.orgs);
+  return redirect(Routes.organizations);
 };
 
 export default Page;

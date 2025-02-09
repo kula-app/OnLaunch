@@ -7,7 +7,7 @@ import { AuthLegalConsent } from "@/components/auth/AuthLegalConsent";
 import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,
@@ -185,7 +185,7 @@ const UI: NextPage = () => {
                               <Link
                                 as={NextLink}
                                 color={"white"}
-                                href={Routes.ACCOUNT_RECOVERY}
+                                href={Routes.accountRecovery}
                                 fontWeight="medium"
                               >
                                 Forgot password?
@@ -215,7 +215,7 @@ const UI: NextPage = () => {
                     as={NextLink}
                     color={"white"}
                     ms="5px"
-                    href={Routes.SIGNUP}
+                    href={Routes.signup}
                     fontWeight="bold"
                   >
                     Sign Up

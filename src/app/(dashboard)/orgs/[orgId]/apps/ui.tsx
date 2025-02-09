@@ -4,7 +4,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { useApps } from "@/hooks/use-apps";
 import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
 import { OrgRole } from "@/models/org-role";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
   Box,

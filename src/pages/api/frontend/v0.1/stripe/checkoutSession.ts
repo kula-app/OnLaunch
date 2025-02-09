@@ -3,7 +3,7 @@ import { loadServerConfig } from "@/config/loadServerConfig";
 import type { Org } from "@/models/org";
 import { OrgUser } from "@/models/org-user";
 import { ProductType } from "@/models/productType";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import prisma from "@/services/db";
 import { createStripeClient } from "@/services/stripe";
 import { authenticatedUserWithRoleHandler } from "@/util/authenticatedHandler";
@@ -124,8 +124,8 @@ async function postHandler(
       client_reference_id: req.body.orgId,
       line_items: lineItems,
       mode: "subscription",
-      success_url: Routes.subscriptionPageSuccess(req.body.orgId),
-      cancel_url: Routes.subscriptionPageCancelled({
+      success_url: Routes.getSubscriptionPageSuccessUrl(req.body.orgId),
+      cancel_url: Routes.getSubscriptionPageCancelledUrl({
         baseUrl: config.baseConfig.url,
       }),
       tax_id_collection: { enabled: true },

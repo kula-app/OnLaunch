@@ -6,7 +6,7 @@ import { useState } from "react";
 import createCheckoutSession from "../api/stripe/createCheckoutSession";
 import { Product } from "../models/product";
 import { ProductType } from "../models/productType";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 
 interface Props {
   product: Product;
@@ -36,7 +36,7 @@ const ProductCard = (props: Props) => {
   const borderWidth = "1px";
 
   function navigateToOrgDetailsPage(id: number) {
-    router.push(Routes.getOrgAppsByOrgId(id));
+    router.push(Routes.apps({ orgId: id }));
   }
 
   const [includeUnlimitedOption, setIncludeUnlimitedOption] = useState(false);
