@@ -20,3 +20,6 @@ usernames = ["dependabot", "renovate"]
 title = "pull_request_title"
 body = "pull_request_body"
 include_coauthors = true
+
+# do not update pull requests of these usernames.
+ignored_usernames = ["dependabot", "renovate"]
