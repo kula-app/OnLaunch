@@ -6450,9 +6450,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:12.4.0":
-  version: 12.4.0
-  resolution: "framer-motion@npm:12.4.0"
+"framer-motion@npm:12.4.1":
+  version: 12.4.1
+  resolution: "framer-motion@npm:12.4.1"
   dependencies:
     motion-dom: "npm:^12.0.0"
     motion-utils: "npm:^12.0.0"
@@ -6468,7 +6468,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/ad19269b9d152a0f422e6414a3a74d6df32a3af90c7a0ac83cad158b9274800ccdff8d210cef11ff2fd2c1e805c9b5025033943ad609517c27e4630df2eb5368
+  checksum: 10c0/8d1f521f836d475330b1f9b9073d366f4aa7fcf15b7e697309847fdeeedc65928eff844aa6887ecc908451521934dec73726d8bf6c3895c4e58a88997df9f448
   languageName: node
   linkType: hard
 
@@ -9913,7 +9913,7 @@ __metadata:
     eslint: "npm:8.57.1"
     eslint-config-next: "npm:15.1.6"
     formik: "npm:2.4.6"
-    framer-motion: "npm:12.4.0"
+    framer-motion: "npm:12.4.1"
     http-status-codes: "npm:2.3.0"
     husky: "npm:9.1.7"
     ioredis: "npm:5.4.2"
