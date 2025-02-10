@@ -9940,7 +9940,7 @@ __metadata:
     react-chartjs-2: "npm:5.3.0"
     react-dom: "npm:18.3.1"
     react-icons: "npm:5.4.0"
-    redoc: "npm:2.3.0"
+    redoc: "npm:2.4.0"
     reflect-metadata: "npm:0.2.2"
     request-ip: "npm:3.3.0"
     start-server-and-test: "npm:2.0.10"
@@ -10981,9 +10981,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redoc@npm:2.3.0":
-  version: 2.3.0
-  resolution: "redoc@npm:2.3.0"
+"redoc@npm:2.4.0":
+  version: 2.4.0
+  resolution: "redoc@npm:2.4.0"
   dependencies:
     "@redocly/openapi-core": "npm:^1.4.0"
     classnames: "npm:^2.3.2"
@@ -11009,10 +11009,10 @@ __metadata:
   peerDependencies:
     core-js: ^3.1.4
     mobx: ^6.0.4
-    react: ^16.8.4 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0
+    react: ^16.8.4 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0 || ^19.0.0
     styled-components: ^4.1.1 || ^5.1.1 || ^6.0.5
-  checksum: 10c0/5caa554e8eb8fc274fe2e813655fddb1c60216a904325b6ec886fc3be621be24c4de23bc285c9ba9f87c148b8ebbc9fa90e4dec88ab0afe2b3a777ff6b9ea92e
+  checksum: 10c0/94a8c02e4f4962a808a58775036d99c1d09553f8ed31b2780efe43f639a5a7d9affe7a0a77513eed78143a1247cf2b2c79055c06b956d14767e203177f7fb5ae
   languageName: node
   linkType: hard
 
