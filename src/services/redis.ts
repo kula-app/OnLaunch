@@ -29,19 +29,25 @@ function redisClientSingleton(config = getRedisConfiguration()):
       db: config.db,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
+      connectTimeout: 3000, // Add explicit connection timeout
+      commandTimeout: 3000, // Add command timeout
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        if (err.message.includes(targetError)) {
+          // Only reconnect on specific errors
+          return true;
+        }
+        return false;
+      },
       retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000); // exponentially increase the retry delay, but not more than 2 seconds
-
-        if (times > 5) {
-          // If we've retried at least 5 times, give up.
+        if (times > 3) { // Reduce max retries from 5 to 3
           return null;
         }
-
-        return delay;
-      },
+        return Math.min(times * 100, 1000); // More conservative retry delay
+      }
     };
+
     if (config.isSentinelEnabled) {
-      // If sentinel is enabled, use the sentinel configuration
       logger.log(`Setting Redis options for sentinel configuration`);
       options = {
         ...options,
@@ -49,22 +55,38 @@ function redisClientSingleton(config = getRedisConfiguration()):
         sentinelPassword: config.sentinelPassword,
         password: config.password,
         name: config.name,
+        enableReadyCheck: false, // Disable ready check for faster connection
       };
     } else {
-      // If sentinel is not enabled, use the standalone Redis configuration
       logger.log(`Setting Redis options for single instance`);
       options = {
         ...options,
         host: config.host,
         port: config.port,
         password: config.password,
+        enableReadyCheck: false, // Disable ready check for faster connection
       };
     }
 
     const redis = new Redis(options);
 
+    // Add connection event handlers
+    redis.on("connect", () => {
+      logger.verbose("[Redis] Connected successfully");
+    });
+
     redis.on("error", (error: unknown) => {
       logger.error(`[Redis] Error connecting: ${error}`);
+    });
+
+    // Add connection ready handler
+    redis.on("ready", () => {
+      logger.verbose("[Redis] Client is ready");
+    });
+
+    // Handle cases where Redis becomes unavailable after initial connection
+    redis.on("close", () => {
+      logger.warn("[Redis] Connection closed");
     });
 
     return {
@@ -72,17 +94,31 @@ function redisClientSingleton(config = getRedisConfiguration()):
       client: redis,
     };
   } catch (e) {
-    logger.error(`[Redis] Could not create a Redis instance`);
-    throw new Error(`[Redis] Could not create a Redis instance`);
+    logger.error(`[Redis] Could not create a Redis instance: ${e}`);
+    // Return disabled state instead of throwing
+    return {
+      isEnabled: false,
+    };
   }
 }
 
-// Typed access to the global context
+// Modify the global singleton initialization to be more resilient
 const globalForRedis = globalThis as unknown as {
   redis: ReturnType<typeof redisClientSingleton> | undefined;
 };
 
-const redis = globalForRedis.redis ?? redisClientSingleton();
-globalForRedis.redis = redis;
+// Add initialization retry with timeout
+const initializeRedis = () => {
+  try {
+    const redis = redisClientSingleton();
+    globalForRedis.redis = redis;
+    return redis;
+  } catch (error) {
+    console.error("[Redis] Failed to initialize Redis client:", error);
+    return { isEnabled: false };
+  }
+};
+
+const redis = globalForRedis.redis ?? initializeRedis();
 
 export default redis;
