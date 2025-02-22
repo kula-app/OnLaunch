@@ -33,7 +33,7 @@
     "base64url": "3.0.1",
     "bcrypt": "5.1.1",
     "cal-sans": "1.0.1",
-    "chart.js": "4.4.7",
+    "chart.js": "4.4.8",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
     "dotenv": "16.4.7",
