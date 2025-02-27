@@ -10155,6 +10155,7 @@ __metadata:
     "@emotion/styled": "npm:11.14.0"
     "@fontsource-variable/plus-jakarta-sans": "npm:5.1.1"
     "@jest/globals": "npm:29.7.0"
+    "@opentelemetry/api": "npm:^1.9.0"
     "@prisma/client": "npm:6.4.1"
     "@prisma/instrumentation": "npm:6.4.1"
     "@sentry/cli": "npm:2.42.2"
