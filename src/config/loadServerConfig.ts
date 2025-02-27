@@ -110,6 +110,8 @@ export function loadServerConfig(): ServerConfig {
       sampleRate: parseNumberEnvValue(env.SENTRY_SAMPLE_RATE),
       profilesSampleRate: parseNumberEnvValue(env.SENTRY_PROFILES_SAMPLE_RATE),
       tracesSampleRate: parseNumberEnvValue(env.SENTRY_TRACES_SAMPLE_RATE),
+      // Increased the default threshold to 10 seconds, due to slow startup times on Kubernetes
+      anrThreshold: parseNumberEnvValue(env.SENTRY_ANR_THRESHOLD) ?? 10_000,
     },
   };
   return config;
