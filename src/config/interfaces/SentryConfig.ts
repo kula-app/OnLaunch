@@ -10,4 +10,5 @@ export interface SentryConfig {
   sampleRate?: number;
   profilesSampleRate?: number;
   tracesSampleRate?: number;
+  anrThreshold?: number;
 }
