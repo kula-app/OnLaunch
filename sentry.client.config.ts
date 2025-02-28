@@ -6,30 +6,25 @@ async function initSentry() {
   const sentryConfig = config.sentryConfig;
 
   console.log("Initializing Sentry on client, using DSN:", sentryConfig.dsn);
-  if (!sentryConfig.enabled) {
+  if (!sentryConfig.isEnabled) {
     console.warn("⚠️ WARNING: SENTRY IS NOT ENABLED! ⚠️");
   }
 
   Sentry.init({
-    enabled: sentryConfig.enabled,
+    enabled: sentryConfig.isEnabled,
     dsn: sentryConfig.dsn,
     debug: sentryConfig.debug,
-
     release: sentryConfig.release,
-
-    replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate,
-    replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate,
+    environment: sentryConfig.environment,
 
     integrations: [Sentry.replayIntegration()],
 
-    tracesSampler: (samplingContext) => {
-      // Ignore the health endpoint from trace sampling
-      if (samplingContext.transactionContext.name == "GET /api/health") {
-        return false;
-      }
-      return sentryConfig.tracesSampleRate ?? 0.2;
-    },
+    attachStacktrace: sentryConfig.attachStacktrace,
     sampleRate: sentryConfig.sampleRate,
+    tracesSampleRate: sentryConfig.tracesSampleRate,
+    profilesSampleRate: sentryConfig.profilesSampleRate,
+    replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate,
+    replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate,
   });
 }
 

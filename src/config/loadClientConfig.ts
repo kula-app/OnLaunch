@@ -21,7 +21,7 @@ export function loadClientConfig(): ClientConfig {
         "https://control.onlaunch.app/api/docs",
     },
     sentryConfig: {
-      enabled: parseBooleanEnvValueWithDefault(
+      isEnabled: parseBooleanEnvValueWithDefault(
         env.SENTRY_ENABLED ?? env.NEXT_PUBLIC_SENTRY_ENABLED,
         true,
       ),
@@ -30,12 +30,24 @@ export function loadClientConfig(): ClientConfig {
         false,
       ),
       dsn: env.SENTRY_DSN ?? env.NEXT_PUBLIC_SENTRY_DSN,
-      env: env.SENTRY_ENV ?? env.NEXT_PUBLIC_SENTRY_ENV,
       release: env.SENTRY_RELEASE ?? env.NEXT_PUBLIC_SENTRY_RELEASE,
+      environment: env.SENTRY_ENV ?? env.NEXT_PUBLIC_SENTRY_ENV,
+
       attachStacktrace: parseBooleanEnvValueWithDefault(
         env.SENTRY_ATTACH_STACKTRACE ??
           env.NEXT_PUBLIC_SENTRY_ATTACH_STACKTRACE,
         true,
+      ),
+      sampleRate: parseNumberEnvValue(
+        env.SENTRY_SAMPLE_RATE ?? env.NEXT_PUBLIC_SENTRY_SAMPLE_RATE,
+      ),
+      tracesSampleRate: parseNumberEnvValue(
+        env.SENTRY_TRACES_SAMPLE_RATE ??
+          env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
+      ),
+      profilesSampleRate: parseNumberEnvValue(
+        env.SENTRY_PROFILES_SAMPLE_RATE ??
+          env.NEXT_PUBLIC_SENTRY_PROFILES_SAMPLE_RATE,
       ),
       replaysOnErrorSampleRate: parseNumberEnvValue(
         env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE ??
@@ -45,12 +57,8 @@ export function loadClientConfig(): ClientConfig {
         env.SENTRY_REPLAYS_SESSION_SAMPLE_RATE ??
           env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
       ),
-      sampleRate: parseNumberEnvValue(
-        env.SENTRY_SAMPLE_RATE ?? env.NEXT_PUBLIC_SENTRY_SAMPLE_RATE,
-      ),
-      tracesSampleRate: parseNumberEnvValue(
-        env.SENTRY_TRACES_SAMPLE_RATE ??
-          env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
+      anrThreshold: parseNumberEnvValue(
+        env.SENTRY_ANR_THRESHOLD ?? env.NEXT_PUBLIC_SENTRY_ANR_THRESHOLD,
       ),
     },
     stripeConfig: {

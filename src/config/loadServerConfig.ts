@@ -12,7 +12,7 @@ import { parseStringArrayEnvValue } from "./parser/parseStringArrayEnvValue";
 export function loadServerConfig(): ServerConfig {
   let env = getEnvironment();
 
-  const config = {
+  const config: ServerConfig = {
     adminApi: {
       requestLimit:
         // request limit per hour
@@ -92,11 +92,12 @@ export function loadServerConfig(): ServerConfig {
       pass: env.SMTP_PASS ?? "",
     },
     sentryConfig: {
-      enabled: parseBooleanEnvValue(env.SENTRY_ENABLED?.toLowerCase()) ?? true,
+      isEnabled:
+        parseBooleanEnvValue(env.SENTRY_ENABLED?.toLowerCase()) ?? true,
       debug: parseBooleanEnvValue(env.SENTRY_DEBUG?.toLowerCase()) ?? false,
       dsn: env.SENTRY_DSN,
-      env: env.SENTRY_ENV,
       release: env.SENTRY_RELEASE,
+      environment: env.SENTRY_ENV,
       attachStacktrace: parseBooleanEnvValueWithDefault(
         env.SENTRY_ATTACH_STACKTRACE?.toLowerCase(),
         true,
