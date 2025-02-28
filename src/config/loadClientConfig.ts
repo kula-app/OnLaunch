@@ -21,7 +21,7 @@ export function loadClientConfig(): ClientConfig {
         "https://control.onlaunch.app/api/docs",
     },
     sentryConfig: {
-      enabled: parseBooleanEnvValueWithDefault(
+      isEnabled: parseBooleanEnvValueWithDefault(
         env.SENTRY_ENABLED ?? env.NEXT_PUBLIC_SENTRY_ENABLED,
         true,
       ),

@@ -1,9 +1,10 @@
 export interface SentryConfig {
-  enabled: boolean;
+  isEnabled: boolean;
   debug: boolean;
   dsn?: string;
   env?: string;
   release?: string;
+  environment?: string;
   attachStacktrace?: boolean;
   replaysOnErrorSampleRate?: number;
   replaysSessionSampleRate?: number;
