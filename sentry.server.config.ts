@@ -14,7 +14,7 @@ Sentry.init({
   dsn: sentryConfig.dsn,
   debug: sentryConfig.debug,
   release: sentryConfig.release,
-  environment: sentryConfig.env,
+  environment: sentryConfig.environment,
 
   integrations: [
     Sentry.anrIntegration({
