@@ -14,6 +14,7 @@ Sentry.init({
 
   integrations: [
     Sentry.anrIntegration({
+      anrThreshold: sentryConfig.anrThreshold,
       captureStackTrace: true,
     }),
     Sentry.extraErrorDataIntegration(),
