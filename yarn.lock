@@ -1112,10 +1112,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource-variable/plus-jakarta-sans@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@fontsource-variable/plus-jakarta-sans@npm:5.2.0"
-  checksum: 10c0/0dffc4e7c0137a7af7796c6f311e9d70f8edada62c8c7936f43a956a4eb8550db48c28960f08b89ec7517e53be2cdc961d950b21cccc02dba959eefc08f59d47
+"@fontsource-variable/plus-jakarta-sans@npm:5.2.5":
+  version: 5.2.5
+  resolution: "@fontsource-variable/plus-jakarta-sans@npm:5.2.5"
+  checksum: 10c0/f8f50d4b313662add9ad33e9926b0dcbedd17e7814b3aaa8087430d99be53218076424a8b714eab9fa58fa729fbc10ed78c24ae7ae19bf0f0cc64bf1d1961a9a
   languageName: node
   linkType: hard
 
@@ -10120,7 +10120,7 @@ __metadata:
     "@chakra-ui/react": "npm:2.10.6"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
-    "@fontsource-variable/plus-jakarta-sans": "npm:5.2.0"
+    "@fontsource-variable/plus-jakarta-sans": "npm:5.2.5"
     "@jest/globals": "npm:29.7.0"
     "@opentelemetry/api": "npm:1.9.0"
     "@prisma/client": "npm:6.4.1"
