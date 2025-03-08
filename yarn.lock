@@ -2801,10 +2801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:5.9.1":
-  version: 5.9.1
-  resolution: "@stripe/stripe-js@npm:5.9.1"
-  checksum: 10c0/129baee70a8c389e4f35fb03096a3457bee03867b91a3f0db40b39f1ba75f613140a5711a3999d9344885118524d181ad374fcc78fb0965427b9f6423c7f4841
+"@stripe/stripe-js@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@stripe/stripe-js@npm:5.9.2"
+  checksum: 10c0/d0473a7212b5cd47bc44a2e20447650ec5bc36ef3208dcfc27ad76ad12fdb92c33e8b20bcafc8377c26d3c6d7da8eafb68ecaa528979bea3004b086616128164
   languageName: node
   linkType: hard
 
@@ -10042,7 +10042,7 @@ __metadata:
     "@sentry/cli": "npm:2.42.2"
     "@sentry/nextjs": "npm:9.4.0"
     "@stripe/react-stripe-js": "npm:3.3.0"
-    "@stripe/stripe-js": "npm:5.9.1"
+    "@stripe/stripe-js": "npm:5.9.2"
     "@testing-library/dom": "npm:10.4.0"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.2.0"
