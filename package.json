@@ -39,7 +39,7 @@
     "class-validator": "0.14.1",
     "dotenv": "16.4.7",
     "formik": "2.4.6",
-    "framer-motion": "12.4.11",
+    "framer-motion": "12.4.12",
     "http-status-codes": "2.3.0",
     "ioredis": "5.6.0",
     "js-yaml": "4.1.0",
