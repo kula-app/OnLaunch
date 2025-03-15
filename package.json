@@ -80,7 +80,7 @@
     "@types/react-dom": "18.3.5",
     "@types/request-ip": "0.0.41",
     "core-js": "3.41.0",
-    "cypress": "14.1.0",
+    "cypress": "14.2.0",
     "eslint": "8.57.1",
     "eslint-config-next": "15.2.2",
     "husky": "9.1.7",
