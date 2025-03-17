@@ -579,9 +579,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/react@npm:2.10.6":
-  version: 2.10.6
-  resolution: "@chakra-ui/react@npm:2.10.6"
+"@chakra-ui/react@npm:2.10.7":
+  version: 2.10.7
+  resolution: "@chakra-ui/react@npm:2.10.7"
   dependencies:
     "@chakra-ui/hooks": "npm:2.4.4"
     "@chakra-ui/styled-system": "npm:2.12.2"
@@ -599,7 +599,7 @@ __metadata:
     framer-motion: ">=4.0.0"
     react: ">=18"
     react-dom: ">=18"
-  checksum: 10c0/f526c00de4a8bd3a7664a90967afffdffdf58956ecc4a521bdf9d0e6e06e76646ae8e99190d4bc9cdf8c53371f067bad55e68e49283d82880db2fb5f5f4acc87
+  checksum: 10c0/6d154a9bcd0c105fd96f80a3ab2ed020a0dd39b9c35e5c9152a3430dc7b4a72b2a08d883eb88f791ad95fc8a95bb115934ac8e782a93cd16e6d6c587dc27723d
   languageName: node
   linkType: hard
 
@@ -10313,7 +10313,7 @@ __metadata:
   resolution: "onlaunch@workspace:."
   dependencies:
     "@chakra-ui/icons": "npm:2.2.4"
-    "@chakra-ui/react": "npm:2.10.6"
+    "@chakra-ui/react": "npm:2.10.7"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
     "@fontsource-variable/plus-jakarta-sans": "npm:5.2.5"
