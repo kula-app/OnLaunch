@@ -27,7 +27,7 @@
     "@prisma/instrumentation": "6.5.0",
     "@sentry/cli": "2.42.3",
     "@sentry/nextjs": "9.6.0",
-    "@stripe/react-stripe-js": "3.4.0",
+    "@stripe/react-stripe-js": "3.5.0",
     "@stripe/stripe-js": "5.10.0",
     "@types/bcrypt": "5.0.2",
     "autoprefixer": "10.4.21",
