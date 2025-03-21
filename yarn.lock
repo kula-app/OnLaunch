@@ -3028,16 +3028,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/react-stripe-js@npm:3.4.0":
-  version: 3.4.0
-  resolution: "@stripe/react-stripe-js@npm:3.4.0"
+"@stripe/react-stripe-js@npm:3.5.0":
+  version: 3.5.0
+  resolution: "@stripe/react-stripe-js@npm:3.5.0"
   dependencies:
     prop-types: "npm:^15.7.2"
   peerDependencies:
     "@stripe/stripe-js": ">=1.44.1 <7.0.0"
     react: ">=16.8.0 <20.0.0"
     react-dom: ">=16.8.0 <20.0.0"
-  checksum: 10c0/cd32c668b3bfda66a48bbd866eb1a06aa9e238d7e15012c967af84fa6d5f9d7860f4c569cb699a6ebf9e04f3a5176e835b520eb420f8e63f10ffb646afda6f7d
+  checksum: 10c0/b88fe12ef754d0018ba6b1d4b7bed6dd555a7134c1d0c95045667cde986bb2d8a8789257b877b2cbab0dd1aa11e3d035eee1d039749796ae992469292c42667b
   languageName: node
   linkType: hard
 
@@ -10323,7 +10323,7 @@ __metadata:
     "@prisma/instrumentation": "npm:6.5.0"
     "@sentry/cli": "npm:2.42.3"
     "@sentry/nextjs": "npm:9.6.0"
-    "@stripe/react-stripe-js": "npm:3.4.0"
+    "@stripe/react-stripe-js": "npm:3.5.0"
     "@stripe/stripe-js": "npm:5.10.0"
     "@testing-library/dom": "npm:10.4.0"
     "@testing-library/jest-dom": "npm:6.6.3"
