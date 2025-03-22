@@ -76,7 +76,7 @@
     "@types/js-yaml": "4.0.9",
     "@types/node": "22.13.10",
     "@types/ramda": "0.30.2",
-    "@types/react": "18.3.18",
+    "@types/react": "18.3.19",
     "@types/react-dom": "18.3.5",
     "@types/request-ip": "0.0.41",
     "core-js": "3.41.0",
@@ -98,7 +98,7 @@
     "typescript": "5.8.2"
   },
   "resolutions": {
-    "@types/react": "18.3.18"
+    "@types/react": "18.3.19"
   },
   "packageManager": "yarn@4.7.0"
 }
