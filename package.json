@@ -60,7 +60,7 @@
     "redoc": "2.4.0",
     "reflect-metadata": "0.2.2",
     "request-ip": "3.3.0",
-    "stripe": "17.6.0",
+    "stripe": "17.7.0",
     "styled-components": "6.1.16",
     "swr": "2.3.3",
     "use-debounce": "10.0.4",
