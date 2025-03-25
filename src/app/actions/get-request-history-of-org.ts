@@ -15,7 +15,13 @@ import { getServerSession } from "next-auth";
 const logger = new Logger(__filename);
 
 export const getRequestHistoryOfOrg = createServerAction(
-  async ({ orgId }: { orgId: Org["id"] }): Promise<RequestHistory> => {
+  async ({
+    orgId,
+    timeRange,
+  }: {
+    orgId: Org["id"];
+    timeRange: "31days" | "365days";
+  }): Promise<RequestHistory> => {
     const session = await getServerSession(authOptions);
     if (!session) {
       throw new SessionNotFoundError();
@@ -44,17 +50,19 @@ export const getRequestHistoryOfOrg = createServerAction(
       );
     }
 
+    const interval = timeRange === "365days" ? '365 days' : '31 days';
+
     // Since prisma does not support direct date aggregation, the
     // grouping by the day is done via queryRaw, which uses
     // prisma's "tagged template" that should be reducing the risk
     // of SQL injections
-    // Get the count of loggedApiRequests grouped by day for the last 31 days
+    // Get the count of loggedApiRequests grouped by day for the specified time range
     const result: {
       date: string;
       count: number | bigint;
     }[] = await prisma.$queryRaw`
       WITH date_series AS (
-        SELECT generate_series(CURRENT_DATE - INTERVAL '31 days', CURRENT_DATE, INTERVAL '1 day')::DATE AS date
+        SELECT generate_series(CURRENT_DATE - INTERVAL ${interval}, CURRENT_DATE, INTERVAL '1 day')::DATE AS date
       )
       SELECT ds.date, COALESCE(count(lar."createdAt"), 0) AS count
       FROM date_series ds

@@ -15,7 +15,7 @@ export default function AppMetrics({
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getRequestHistoryOfApp({ orgId, appId });
+      const data = await getRequestHistoryOfApp({ orgId, appId, range: viewMode });
       setRequestHistory(data);
     }
     fetchData();
