@@ -23,7 +23,7 @@ export const getRequestHistoryOfApp = createServerAction(
   }: {
     orgId: Org["id"];
     appId: App["id"];
-    timeRange: "31days" | "365days";
+    timeRange: "31days" | "billing" | "365days";
   }): Promise<RequestHistory> => {
     const session = await getServerSession(authOptions);
     if (!session) {
