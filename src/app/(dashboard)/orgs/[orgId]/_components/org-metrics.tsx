@@ -1,6 +1,6 @@
 "use client";
 
-import { getRequestHistoryOfApp } from "@/app/actions/get-request-history-of-app";
+import { getRequestHistoryOfOrg } from "@/app/actions/get-request-history-of-org";
 import RequestsChart from "@/components/request-chart";
 import { ServerError } from "@/errors/server-error";
 import type { App } from "@/models/app";
@@ -10,7 +10,7 @@ import { RequestHistoryItem } from "@/models/request-history-item";
 import { Button, Card, CardBody, Text, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
-export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
+export const OrgMetrics: React.FC<{ orgId: Org["id"]; timeRange }> = ({
   orgId,
   appId,
 }) => {
@@ -24,7 +24,7 @@ export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
 
   const fetchHistory = useCallback(async () => {
     try {
-      const response = await getRequestHistoryOfApp({ orgId, appId, timeRange: viewMode });
+      const response = await getRequestHistoryOfOrg({ orgId, timeRange: viewMode });
       if (!response.success) {
         throw new ServerError(response.error.name, response.error.message);
       }
