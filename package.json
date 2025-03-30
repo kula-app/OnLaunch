@@ -25,7 +25,7 @@
     "@opentelemetry/api": "1.9.0",
     "@prisma/client": "6.5.0",
     "@prisma/instrumentation": "6.5.0",
-    "@sentry/cli": "2.42.4",
+    "@sentry/cli": "2.43.0",
     "@sentry/nextjs": "9.9.0",
     "@stripe/react-stripe-js": "3.5.1",
     "@stripe/stripe-js": "6.1.0",
