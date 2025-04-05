@@ -6,4 +6,6 @@ export interface MessageAction {
   actionType: MessageActionType;
   buttonDesign: ActionButtonDesign;
   title: string;
+
+  link?: string;
 }
