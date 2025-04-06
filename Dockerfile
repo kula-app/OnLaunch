@@ -71,12 +71,15 @@ RUN yarn build
 FROM node:22.14.0-alpine AS release
 LABEL maintainer="opensource@kula.app"
 
-LABEL org.label-schema.schema-version="1.0"
-LABEL org.label-schema.name="OnLaunch"
-LABEL org.label-schema.description="OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance."
-LABEL org.label-schema.url="http://onlaunch.app"
-LABEL org.label-schema.vcs-url="https://github.com/kula/OnLaunch"
-LABEL org.label-schema.vendor="kula app GmbH"
+# OCI Annotations (https://github.com/opencontainers/image-spec/blob/main/annotations.md)
+LABEL org.opencontainers.image.title="OnLaunch" \
+  org.opencontainers.image.description="OnLaunch is a service allowing app developers to notify app users about updates, warnings and maintenance." \
+  org.opencontainers.image.url="http://onlaunch.app" \
+  org.opencontainers.image.source="https://github.com/kula/OnLaunch" \
+  org.opencontainers.image.vendor="kula app GmbH" \
+  org.opencontainers.image.licenses="Apache-2.0"
+# Note: org.opencontainers.image.created, org.opencontainers.image.version, and org.opencontainers.image.revision
+# are set dynamically during Docker Hub automated builds via hooks/build
 
 # Set tini as entrypoint
 RUN apk add --no-cache tini
