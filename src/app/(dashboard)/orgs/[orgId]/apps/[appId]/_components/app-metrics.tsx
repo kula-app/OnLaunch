@@ -1,117 +1,56 @@
-"use client";
-
 import { getRequestHistoryOfApp } from "@/app/actions/get-request-history-of-app";
-import RequestsChart from "@/components/request-chart";
-import { ServerError } from "@/errors/server-error";
-import type { App } from "@/models/app";
-import type { Org } from "@/models/org";
-import type { RequestHistory } from "@/models/request-history";
-import { RequestHistoryItem } from "@/models/request-history-item";
-import { Button, Card, CardBody, Text, useToast } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import RequestChart from "@/components/request-chart";
+import { Box, Heading, Select, Spinner, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
-export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
+export default function AppMetrics({
   orgId,
   appId,
-}) => {
-  const toast = useToast();
-
-  const [history, setHistory] = useState<RequestHistory | null>();
-  const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
-  const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
-  const [showCurrentBillingPeriod, setShowCurrentBillingPeriod] =
-    useState(false);
-
-  const fetchHistory = useCallback(async () => {
-    try {
-      const response = await getRequestHistoryOfApp({
-        appId: appId,
-        orgId: orgId,
-      });
-      if (!response.success) {
-        throw new ServerError(response.error.name, response.error.message);
-      }
-      setHistory(response.value);
-    } catch (error: any) {
-      toast({
-        title: "Failed to fetch dashboard data!",
-        description: error.message,
-        status: "error",
-        isClosable: true,
-        duration: 6000,
-      });
-    }
-  }, [orgId, toast, appId]);
+}: {
+  orgId: string;
+  appId: string;
+}) {
+  const [requestHistory, setRequestHistory] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<"31days" | "billing" | "365days">("31days");
 
   useEffect(() => {
-    if (!history) {
-      fetchHistory();
+    async function fetchData() {
+      const data = await getRequestHistoryOfApp({ orgId, appId });
+      setRequestHistory(data);
     }
-  }, [history, fetchHistory]);
+    fetchData();
+  }, [orgId, appId, viewMode]);
 
-  // Either show whole last 31 days or filter to only show request data
-  // during the current billing period
-  const [filteredHistoryItems, setFilteredHistoryItems] = useState<
-    RequestHistoryItem[]
-  >([]);
-  const [totalSum, setTotalSum] = useState(0);
-  useEffect(() => {
-    let items = history?.items ?? [];
-    if (
-      showCurrentBillingPeriod &&
-      currentPeriodStart &&
-      periodStartDayCount !== undefined
-    ) {
-      // Filter out dates before currentPeriodStart and add the currentPeriodStart with its count
-      items = items
-        .filter((entry) => new Date(entry.date) > new Date(currentPeriodStart))
-        .concat([
-          {
-            date: new Date(currentPeriodStart),
-            count: BigInt(periodStartDayCount),
-          },
-        ]);
+  const filteredHistoryItems = requestHistory?.items.filter((item: any) => {
+    const now = new Date();
+    const itemDate = new Date(item.date);
+    if (viewMode === "31days") {
+      return now.getTime() - itemDate.getTime() <= 31 * 24 * 60 * 60 * 1000;
+    } else if (viewMode === "365days") {
+      return now.getTime() - itemDate.getTime() <= 365 * 24 * 60 * 60 * 1000;
     }
-    setFilteredHistoryItems(items);
-  }, [
-    currentPeriodStart,
-    history?.items,
-    periodStartDayCount,
-    showCurrentBillingPeriod,
-  ]);
-  useEffect(() => {
-    setTotalSum(
-      filteredHistoryItems.reduce((previousValue, current) => {
-        return Number(BigInt(previousValue) + current.count);
-      }, 0),
-    );
-  }, [filteredHistoryItems]);
+    // Add logic for "billing" view mode if needed
+    return true;
+  });
 
   return (
-    <Card w={"full"}>
-      <CardBody color={"white"}>
-        {currentPeriodStart && (
-          <Button
-            variant="ghost"
-            colorScheme="blue"
-            className="mt-8"
-            onClick={() => {
-              setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
-            }}
-          >
-            {showCurrentBillingPeriod
-              ? `show last 31 days`
-              : `show billing period`}
-          </Button>
+    <VStack align="start" spacing={4}>
+      <Heading size="md">App Metrics</Heading>
+      <Select
+        value={viewMode}
+        onChange={(e) => setViewMode(e.target.value as "31days" | "billing" | "365days")}
+      >
+        <option value="31days">Last 31 days</option>
+        <option value="billing">Billing period</option>
+        <option value="365days">Last 365 days</option>
+      </Select>
+      <Box w="full" h="400px" bg="gray.700" borderRadius="md" p={4}>
+        {requestHistory ? (
+          <RequestChart requestData={filteredHistoryItems} />
+        ) : (
+          <Spinner />
         )}
-        <RequestsChart requestData={filteredHistoryItems} />
-        <Text fontSize={"md"}>Total requests: {totalSum}</Text>
-        <Text fontSize={"xs"}>
-          {showCurrentBillingPeriod
-            ? "in the current billing period"
-            : "in the last 31 days"}
-        </Text>
-      </CardBody>
-    </Card>
+      </Box>
+    </VStack>
   );
-};
+}
