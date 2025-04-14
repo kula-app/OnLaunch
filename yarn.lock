@@ -6895,12 +6895,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:12.6.3":
-  version: 12.6.3
-  resolution: "framer-motion@npm:12.6.3"
+"framer-motion@npm:12.6.5":
+  version: 12.6.5
+  resolution: "framer-motion@npm:12.6.5"
   dependencies:
-    motion-dom: "npm:^12.6.3"
-    motion-utils: "npm:^12.6.3"
+    motion-dom: "npm:^12.6.5"
+    motion-utils: "npm:^12.6.5"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -6913,7 +6913,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/be583aeeccfe23902a2676724f66a747e0fa976d94eb3471bd6f9b57ab1eab5b7c08b851728d6b2b5928e8b578c62aa8ec61c47bf6059f8aac76211c8d39e26f
+  checksum: 10c0/31a75726fb65c38f902e5f0ad2065804449f5498ce475366e01fa57d18c329f845f9cb4910299a06a4f2df22b54032bce88dd14ce269bfd0399a9e0154cfc69f
   languageName: node
   linkType: hard
 
@@ -9736,19 +9736,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.6.3":
-  version: 12.6.3
-  resolution: "motion-dom@npm:12.6.3"
+"motion-dom@npm:^12.6.5":
+  version: 12.7.2
+  resolution: "motion-dom@npm:12.7.2"
   dependencies:
-    motion-utils: "npm:^12.6.3"
-  checksum: 10c0/ed3ff16a2e4d40fc72298f890863222d7ee008888bd6889e5ecbe81a9a5d2d23903289f35796e2e16952e21a270cbd609d74fd30399ce7a684a0f7f855c18251
+    motion-utils: "npm:^12.7.2"
+  checksum: 10c0/b3980eff8398236d1e5c0004ba818709529ad8efb48c9dd4fc346f0a7fea6996736d9dcd04333d6fa62e89847118373569a99caa0910fd29029735c3af24033e
   languageName: node
   linkType: hard
 
-"motion-utils@npm:^12.6.3":
-  version: 12.6.3
-  resolution: "motion-utils@npm:12.6.3"
-  checksum: 10c0/d44ea5b1f2a1b1e03033ae76132f1b431d117c3f205152f9811283cd7ca7782e9d499f4bdb460c64b6668ac64905fcc79636a38b40d37759f9d23b0673098534
+"motion-utils@npm:^12.6.5, motion-utils@npm:^12.7.2":
+  version: 12.7.2
+  resolution: "motion-utils@npm:12.7.2"
+  checksum: 10c0/ef974eee10d647f2cdfb80a3a739d60c5e8eb627818cbd80d92bd8b52b222735177fe3aecea7ec153b36fd348e8fdfbb233d4be68ed26b8eaa369fd7a06f4851
   languageName: node
   linkType: hard
 
@@ -10366,7 +10366,7 @@ __metadata:
     eslint: "npm:8.57.1"
     eslint-config-next: "npm:15.3.0"
     formik: "npm:2.4.6"
-    framer-motion: "npm:12.6.3"
+    framer-motion: "npm:12.6.5"
     http-status-codes: "npm:2.3.0"
     husky: "npm:9.1.7"
     ioredis: "npm:5.6.0"
