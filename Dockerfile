@@ -100,15 +100,21 @@ RUN chmod +x env.sh
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# copy production node_modules
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules ./node_modules
-COPY --from=dependencies_production /home/node/app/package.json ./package.json
+COPY --from=dependencies_production --chown=node:node /home/node/app/package.json ./package.json
 COPY --from=dependencies_production /home/node/app/yarn.lock ./yarn.lock
+
+# copy production node_modules - only keep essential tools, because next standalone is using a minimal node_modules
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/sharp ./node_modules/sharp
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/@sentry ./node_modules/@sentry
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.bin/sentry-cli ./node_modules/.bin/sentry-cli
+COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 
 # copy remaining build output
 COPY --from=build --chown=node:node /home/node/app/next.config.js ./next.config.js
 COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
-COPY --from=build --chown=node:node /home/node/app/public ./public
+
 # Copy the standalone server files directly to the app root
 COPY --from=build --chown=node:node /home/node/app/.next/standalone/. ./
 # Copy Next.js static assets to the expected location so that _next/static urls are valid
@@ -132,7 +138,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Smoke Tests
-RUN ./node_modules/.bin/next info
+RUN ./node_modules/.bin/next info && \
+  ./node_modules/.bin/prisma version && \
+  ./node_modules/.bin/sentry-cli --version
 
 # Set the default command to run the entrypoint script
 CMD ["/usr/local/bin/entrypoint.sh"]
