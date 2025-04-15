@@ -1,5 +1,12 @@
 # syntax=docker/dockerfile:1
 
+# ---- Download Base ----
+FROM alpine AS dl
+ARG TARGETARCH
+WORKDIR /tmp
+
+RUN apk add --no-cache curl unzip
+
 # ---- Base ----
 FROM node:22.14.0-alpine AS base
 
@@ -66,9 +73,29 @@ COPY --from=dependencies_development /home/node/app/node_modules ./node_modules
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn build
 
-# # ---- Release ----
+# ---- Download: sentry-cli --
+FROM dl AS dl-sentry-cli
+# renovate: datasource=github-releases depName=getsentry/sentry-cli
+ARG SENTRY_CLI_VERSION="2.43.0"
+RUN <<EOT ash
+if [ "${TARGETARCH}" = "amd64" ]; then
+  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-x64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+elif [ "${TARGETARCH}" = "arm64" ]; then
+  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+elif [ "${TARGETARCH}" = "arm" ] || [ "${TARGETARCH}" = "armv7" ]; then
+  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+elif [ "${TARGETARCH}" = "386" ] || [ "${TARGETARCH}" = "i386" ] || [ "${TARGETARCH}" = "i686" ]; then
+  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-i686-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+else
+  echo "Unsupported target architecture: ${TARGETARCH}"
+  exit 1
+fi
+EOT
+
+# ---- Release ----
 # build production ready image
 FROM node:22.14.0-alpine AS release
+ARG TARGETARCH
 LABEL maintainer="opensource@kula.app"
 
 # OCI Annotations (https://github.com/opencontainers/image-spec/blob/main/annotations.md)
@@ -84,6 +111,12 @@ LABEL org.opencontainers.image.title="OnLaunch" \
 # Set tini as entrypoint
 RUN apk add --no-cache tini
 ENTRYPOINT ["/sbin/tini", "--"]
+
+# Install sentry-cli
+COPY --from=dl-sentry-cli /tmp/sentry-cli.tar.gz .
+RUN tar -xvzf sentry-cli.tar.gz && \
+  install -o root -g root -m 0755 package/bin/sentry-cli /usr/local/bin/sentry-cli && \
+  rm -rf sentry-cli.tar.gz package
 
 # Change runtime working directory
 WORKDIR /home/node/app/
@@ -107,8 +140,6 @@ COPY --from=dependencies_production /home/node/app/yarn.lock ./yarn.lock
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/sharp ./node_modules/sharp
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/@sentry ./node_modules/@sentry
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.bin/sentry-cli ./node_modules/.bin/sentry-cli
 COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 
 # copy remaining build output
@@ -121,7 +152,7 @@ COPY --from=build --chown=node:node /home/node/app/.next/standalone/. ./
 COPY --from=build --chown=node:node /home/node/app/.next/static ./.next/static
 
 # Inject Sentry Source Maps
-RUN ./node_modules/.bin/sentry-cli sourcemaps inject .next
+RUN sentry-cli sourcemaps inject .next
 
 # select user
 USER node
@@ -138,9 +169,10 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Smoke Tests
-RUN ./node_modules/.bin/next info && \
-  ./node_modules/.bin/prisma version && \
-  ./node_modules/.bin/sentry-cli --version
+RUN set -x && \
+  node --version && \
+  sentry-cli --version && \
+  ./node_modules/.bin/prisma version
 
 # Set the default command to run the entrypoint script
 CMD ["/usr/local/bin/entrypoint.sh"]

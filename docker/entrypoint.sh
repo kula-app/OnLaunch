@@ -26,16 +26,16 @@ if [ ! -z "$SENTRY_CREATE_RELEASE" ]; then
     fi
 
     echo "[entrypoint.sh] Creating Sentry Release"
-    ./node_modules/.bin/sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
-    ./node_modules/.bin/sentry-cli releases new $SENTRY_RELEASE
+    sentry-cli login --auth-token $SENTRY_AUTH_TOKEN
+    sentry-cli releases new $SENTRY_RELEASE
     if [ ! -z "$SENTRY_UPLOAD_SOURCEMAPS" ]; then
       echo "[entrypoint.sh] Uploading Sourcemaps"
-      ./node_modules/.bin/sentry-cli sourcemaps upload --release $SENTRY_RELEASE .next
+      sentry-cli sourcemaps upload --release $SENTRY_RELEASE .next
     else
       echo "[entrypoint.sh] Skipped Uploading Sourcemaps"
     fi
     echo "[entrypoint.sh] Finalizing Sentry Release"
-    ./node_modules/.bin/sentry-cli releases finalize $SENTRY_RELEASE
+    sentry-cli releases finalize $SENTRY_RELEASE
 
     echo "[entrypoint.sh] Sentry release created: $SENTRY_RELEASE"
   else
