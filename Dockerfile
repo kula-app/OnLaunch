@@ -109,7 +109,10 @@ COPY --from=dependencies_production /home/node/app/yarn.lock ./yarn.lock
 COPY --from=build --chown=node:node /home/node/app/next.config.js ./next.config.js
 COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
 COPY --from=build --chown=node:node /home/node/app/public ./public
-COPY --from=build --chown=node:node /home/node/app/.next  ./.next
+# Copy the standalone server files directly to the app root
+COPY --from=build --chown=node:node /home/node/app/.next/standalone/. ./
+# Copy Next.js static assets to the expected location so that _next/static urls are valid
+COPY --from=build --chown=node:node /home/node/app/.next/static ./.next/static
 
 # Inject Sentry Source Maps
 RUN ./node_modules/.bin/sentry-cli sourcemaps inject .next

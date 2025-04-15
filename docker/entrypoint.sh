@@ -46,8 +46,8 @@ fi
 echo "[entrypoint.sh] Setup environment variables..."
 . ./env.sh
 
-echo "[entrypoint.sh] eploying Prisma migrations..."
+echo "[entrypoint.sh] Deploying Prisma migrations..."
 ./node_modules/.bin/prisma migrate deploy
 
-echo "[entrypoint.sh] Starting server..."
-./node_modules/.bin/next start
+echo "[entrypoint.sh] Starting Next.js server in standalone mode..."
+exec node server.js
