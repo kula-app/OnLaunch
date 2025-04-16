@@ -39,16 +39,6 @@ COPY prisma ./prisma
 # Generate the prisma client
 RUN yarn prisma generate
 
-FROM base AS dependencies_production
-# Install production node_modules, excluding 'devDependencies'
-RUN \
-  --mount=type=cache,target=/root/.yarn/cache \
-  yarn workspaces focus --production
-
-# Copy the generated prisma client into the production node_modules
-COPY --from=dependencies_development /home/node/app/prisma ./prisma
-COPY --from=dependencies_development /home/node/app/node_modules/.prisma ./node_modules/.prisma
-
 # ---- Build Setup ----
 FROM base AS build
 # Copy resources required for the build process.
@@ -118,6 +108,10 @@ RUN tar -xvzf sentry-cli.tar.gz && \
   install -o root -g root -m 0755 package/bin/sentry-cli /usr/local/bin/sentry-cli && \
   rm -rf sentry-cli.tar.gz package
 
+# Install Prisma CLI
+# renovate: datasource=npm depName=prisma
+RUN yarn global add prisma@6.6.0
+
 # Change runtime working directory
 WORKDIR /home/node/app/
 
@@ -133,14 +127,8 @@ RUN chmod +x env.sh
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY --from=dependencies_production --chown=node:node /home/node/app/package.json ./package.json
-COPY --from=dependencies_production /home/node/app/yarn.lock ./yarn.lock
-
-# copy production node_modules - only keep essential tools, because next standalone is using a minimal node_modules
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/sharp ./node_modules/sharp
-COPY --from=dependencies_production --chown=node:node /home/node/app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=build --chown=node:node /home/node/app/package.json ./package.json
+COPY --from=build --chown=node:node /home/node/app/yarn.lock ./yarn.lock
 
 # copy remaining build output
 COPY --from=build --chown=node:node /home/node/app/next.config.js ./next.config.js
@@ -150,11 +138,13 @@ COPY --from=build --chown=node:node /home/node/app/prisma ./prisma
 COPY --from=build --chown=node:node /home/node/app/.next/standalone/. ./
 # Copy Next.js static assets to the expected location so that _next/static urls are valid
 COPY --from=build --chown=node:node /home/node/app/.next/static ./.next/static
+# Copy the public folder to the app root
+COPY --from=build --chown=node:node /home/node/app/public ./public
 
 # Inject Sentry Source Maps
 RUN sentry-cli sourcemaps inject .next
 
-# select user
+# Select a non-root user to run the application
 USER node
 
 ENV NODE_ENV=production
@@ -172,7 +162,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 RUN set -x && \
   node --version && \
   sentry-cli --version && \
-  ./node_modules/.bin/prisma version
+  prisma --version
 
 # Set the default command to run the entrypoint script
 CMD ["/usr/local/bin/entrypoint.sh"]
