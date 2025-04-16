@@ -7,6 +7,24 @@ WORKDIR /tmp
 
 RUN apk add --no-cache curl unzip
 
+# ---- Prisma CLI ----
+FROM node:22.14.0-alpine AS prisma
+WORKDIR /tmp
+
+# Install tooling
+RUN apk add --no-cache jq
+
+# Setup the environment
+COPY .yarnrc.yml .
+COPY .yarn/releases .yarn/releases
+
+# Node Dependency Management
+COPY package.json .
+COPY yarn.lock .
+
+# Get the version of prisma and save it to a file to be used in the next stage
+RUN yarn info --json prisma | jq -r '.children.Version' > .prisma-version
+
 # ---- Base ----
 FROM node:22.14.0-alpine AS base
 
@@ -109,8 +127,9 @@ RUN tar -xvzf sentry-cli.tar.gz && \
   rm -rf sentry-cli.tar.gz package
 
 # Install Prisma CLI
-# renovate: datasource=npm depName=prisma
-RUN yarn global add prisma@6.6.0
+COPY --from=prisma /tmp/.prisma-version .
+RUN yarn global add prisma@$(cat .prisma-version) && \
+  rm .prisma-version
 
 # Change runtime working directory
 WORKDIR /home/node/app/
