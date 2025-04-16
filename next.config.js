@@ -4,6 +4,10 @@ const nextConfig = {
   // time in seconds of no pages generating during static
   // generation before timing out
   staticPageGenerationTimeout: 600,
+
+  // A standalone build output, .next/standalone directory, that only includes necessary files/dependencies.
+  // Useful for self-hosting in a Docker container.
+  output: "standalone",
 };
 
 // Injected content via Sentry wizard below

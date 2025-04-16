@@ -50,26 +50,36 @@ services:
       - ${SMTP_PORT:-1025}:${SMTP_PORT:-1025}
       - 8025:8025
 
-  # onlaunch:
-  #   build:
-  #     context: .
-  #   image: kula/onlaunch:latest
-  #   pull_policy: always
-  #   environment:
-  #     DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
-  #     HEALTH_API_KEY: onlaunch-api-key
-  #     NEXTAUTH_SECRET: "this is a secret example"
-  #     REDIS_ENABLED: true
-  #     REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
-  #     # SENTRY_DSN:
-  #     SENTRY_DEBUG: true
-  #     SIGNUPS_ENABLED: true
-  #     SMTP_HOST: mailhog
-  #     SMTP_PASS: ""
-  #     SMTP_PORT: ${SMTP_PORT:-1025}
-  #     SMTP_USER: ""
-  #   ports:
-  #     - 3000:3000
+  onlaunch:
+    # Use an app profile to not run the app by default
+    # To start everything including the onlaunch service, run:
+    #
+    #   docker compose --profile app up --build
+    profiles:
+      - app
+    depends_on:
+      - db
+      - redis
+      - redis-sentinel
+    build:
+      context: .
+    image: kula/onlaunch:latest
+    pull_policy: always
+    environment:
+      DATABASE_URL: postgresql://onlaunch:password@db:5432/onlaunch?schema=public
+      HEALTH_API_KEY: onlaunch-api-key
+      NEXTAUTH_SECRET: "this is a secret example"
+      REDIS_ENABLED: true
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-"password"}
+      # SENTRY_DSN:
+      SENTRY_DEBUG: true
+      SIGNUPS_ENABLED: true
+      SMTP_HOST: mailhog
+      SMTP_PASS: ""
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ""
+    ports:
+      - 3000:3000
 
 configs:
   pgpass:
