@@ -100,5 +100,5 @@
   "resolutions": {
     "@types/react": "18.3.20"
   },
-  "packageManager": "yarn@4.9.0"
+  "packageManager": "yarn@4.9.1"
 }
