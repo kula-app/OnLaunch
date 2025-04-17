@@ -3058,10 +3058,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:7.0.0":
-  version: 7.0.0
-  resolution: "@stripe/stripe-js@npm:7.0.0"
-  checksum: 10c0/0d585e393a78bfd450cb6cadd1e225c35e25ae90fdf4b32b31def50a55af289ae45cfe64403066d2565deb2ea04ec412c2f2d04ac0acd8b69795ab6bb19ec8ed
+"@stripe/stripe-js@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@stripe/stripe-js@npm:7.1.0"
+  checksum: 10c0/2d89465455e5127299c6b6cfe2c5cd315aca784bb5434b4c0c93bd3d40e5a5bca20ef48e220f677244e2bbf80d2e7df1f5d6c75b59b2933a31c8639fdf4e1a53
   languageName: node
   linkType: hard
 
@@ -10353,7 +10353,7 @@ __metadata:
     "@sentry/cli": "npm:2.43.0"
     "@sentry/nextjs": "npm:9.12.0"
     "@stripe/react-stripe-js": "npm:3.6.0"
-    "@stripe/stripe-js": "npm:7.0.0"
+    "@stripe/stripe-js": "npm:7.1.0"
     "@testing-library/dom": "npm:10.4.0"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.3.0"
