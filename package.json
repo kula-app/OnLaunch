@@ -26,7 +26,7 @@
     "@prisma/client": "6.6.0",
     "@prisma/instrumentation": "6.6.0",
     "@sentry/cli": "2.43.0",
-    "@sentry/nextjs": "9.12.0",
+    "@sentry/nextjs": "9.13.0",
     "@stripe/react-stripe-js": "3.6.0",
     "@stripe/stripe-js": "7.1.0",
     "@types/bcrypt": "5.0.2",
