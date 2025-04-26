@@ -6907,11 +6907,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:12.7.5":
-  version: 12.7.5
-  resolution: "framer-motion@npm:12.7.5"
+"framer-motion@npm:12.8.0":
+  version: 12.8.0
+  resolution: "framer-motion@npm:12.8.0"
   dependencies:
-    motion-dom: "npm:^12.7.5"
+    motion-dom: "npm:^12.8.0"
     motion-utils: "npm:^12.7.5"
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -6925,7 +6925,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/8e3f10e9956019cb39fc5ecf8fd901efe6e06b4cd5a4cb9742ed7e738f0fbdbfc484b2966c90529d39ae18d98fd35d16878eaa112fad4cf74926838421d6cd01
+  checksum: 10c0/9ac14ae3542ce668487dc5ab9b8d3793d65b1405a22e507737cee02cf4413e1af8f92fd0cd4d884d4ee55c20d50b5fe55b0b55b79867ec7d62e8a5adaa8843e4
   languageName: node
   linkType: hard
 
@@ -9748,7 +9748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.7.5":
+"motion-dom@npm:^12.8.0":
   version: 12.9.1
   resolution: "motion-dom@npm:12.9.1"
   dependencies:
@@ -10378,7 +10378,7 @@ __metadata:
     eslint: "npm:8.57.1"
     eslint-config-next: "npm:15.3.1"
     formik: "npm:2.4.6"
-    framer-motion: "npm:12.7.5"
+    framer-motion: "npm:12.8.0"
     http-status-codes: "npm:2.3.0"
     husky: "npm:9.1.7"
     ioredis: "npm:5.6.1"
