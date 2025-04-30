@@ -9984,9 +9984,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-mocks-http@npm:1.16.2":
-  version: 1.16.2
-  resolution: "node-mocks-http@npm:1.16.2"
+"node-mocks-http@npm:1.17.0":
+  version: 1.17.0
+  resolution: "node-mocks-http@npm:1.17.0"
   dependencies:
     accepts: "npm:^1.3.7"
     content-disposition: "npm:^0.5.3"
@@ -10006,7 +10006,7 @@ __metadata:
       optional: true
     "@types/node":
       optional: true
-  checksum: 10c0/0d94f2c179a2a9b42c042d554faaed348083213400e9da0b0b25ce4498eb4f4d9467550402f53b2e5d1f1bbf5444c7d6c232ca377b56e5af9fbde9c9d85ad8fa
+  checksum: 10c0/fe6a76d73986f157e3d217da1a8303d105e409bf6c0998beceb59f090242084d13ef07b3b656481fb068f2953070c03c9880e5f7c63a6ef9c2bb5c4ddf77a280
   languageName: node
   linkType: hard
 
@@ -10383,7 +10383,7 @@ __metadata:
     next-auth: "npm:4.24.11"
     next-router-mock: "npm:0.9.13"
     next-swagger-doc: "npm:0.4.1"
-    node-mocks-http: "npm:1.16.2"
+    node-mocks-http: "npm:1.17.0"
     nodemailer: "npm:6.10.1"
     pinst: "npm:3.0.0"
     postcss: "npm:8.5.3"
