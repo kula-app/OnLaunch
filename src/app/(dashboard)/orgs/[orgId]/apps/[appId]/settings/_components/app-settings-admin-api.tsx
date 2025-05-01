@@ -32,7 +32,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { FaCopy, FaEye, FaEyeSlash, FaPlus, FaTrash } from "react-icons/fa6";
+import {
+  FaCopy,
+  FaEye,
+  FaEyeSlash,
+  FaPlus,
+  FaTrash,
+  FaTriangleExclamation,
+} from "react-icons/fa6";
 import { CreateAppAdminAuthorizationTokenModal } from "./create-app-admin-authorization-token-modal";
 import { DeleteAppAdminAuthorizationTokenDialog } from "./delete-app-admin-authorization-token-dialog";
 
@@ -120,10 +127,13 @@ export const AppSettingsAdminAPI: React.FC<{
                       <Text>{token.expiryDate.toLocaleString()}</Text>
                     </VStack>
                   ) : (
-                    "No expiration date"
+                    <HStack>
+                      <FaTriangleExclamation />
+                      <Text noOfLines={1}>No expiration date</Text>
+                    </HStack>
                   )}
                 </Text>
-                <InputGroup w={"full"} variant={"brand-on-card"}>
+                <InputGroup w={"full"} maxW={"400px"} variant={"brand-on-card"}>
                   <Input
                     flexGrow={1}
                     value={token.token}
@@ -163,8 +173,6 @@ export const AppSettingsAdminAPI: React.FC<{
                       toast({
                         title: "Token copied to clipboard.",
                         status: "info",
-                        isClosable: true,
-                        duration: 3000,
                       });
                     }}
                     rounded={"full"}
