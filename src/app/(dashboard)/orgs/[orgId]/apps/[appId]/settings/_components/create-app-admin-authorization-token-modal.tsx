@@ -35,7 +35,7 @@ const createTokenFormValuesSchema = Yup.object<CreateTokenFormValues>().shape({
       "is-valid",
       "Please select an expiration time or enter a custom date",
       function (value) {
-        if (value === "custom") {
+        if (value === "custom" || value === "unlimited") {
           return this.parent.customExpirationDate !== undefined;
         }
         const parsedValue = parseInt(value as string, 10);
@@ -166,10 +166,17 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <Input
                           {...field}
                           onChange={(e) => {
-                            form.setFieldValue(
-                              field.name,
-                              parseInt(e.target.value, 10),
-                            );
+                            if (
+                              e.target.value === "unlimited" ||
+                              e.target.value === "custom"
+                            ) {
+                              form.setFieldValue(field.name, e.target.value);
+                            } else {
+                              form.setFieldValue(
+                                field.name,
+                                parseInt(e.target.value, 10),
+                              );
+                            }
                           }}
                           id={field.name}
                           placeholder="Select an expiration time"
