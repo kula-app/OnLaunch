@@ -855,8 +855,7 @@
           "actionType": {
             "type": "string",
             "enum": [
-              "DISMISS",
-              "OPEN_LINK"
+              "DISMISS"
             ]
           },
           "buttonDesign": {
@@ -865,9 +864,6 @@
               "FILLED",
               "TEXT"
             ]
-          },
-          "link": {
-            "type": "string"
           }
         }
       },
