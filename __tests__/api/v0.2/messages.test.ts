@@ -950,6 +950,7 @@ describe("/api/v0.2/messages", () => {
                   {
                     title: "Action 1",
                     actionType: "DISMISS",
+                    buttonDesign: "FILLED",
                   },
                 ],
               },
