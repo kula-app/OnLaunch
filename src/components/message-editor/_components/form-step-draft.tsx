@@ -69,6 +69,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
       innerRef={formRef}
       initialValues={initialValues}
       validationSchema={draftFormSchema}
+      // Reinitialize the form if the initial values change, e.g. when prefilling the form with an existing message
+      enableReinitialize={true}
       onSubmit={() => {}}
     >
       {() => (

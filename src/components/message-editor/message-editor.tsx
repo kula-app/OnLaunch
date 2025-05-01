@@ -511,6 +511,7 @@ export const MessageEditor: React.FC<{
               <ConclusionFormStep
                 appId={appId}
                 orgId={orgId}
+                messageId={messageId}
                 hidden={activeStepIdx < steps.length}
               />
               <Flex justifyContent={"center"}>

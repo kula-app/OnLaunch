@@ -35,6 +35,8 @@ export const FormStepTimeframe: React.FC<
       innerRef={formRef}
       initialValues={initialValues}
       validationSchema={timeframeSchema}
+      // Reinitialize the form if the initial values change, e.g. when prefilling the form with an existing message
+      enableReinitialize={true}
       onSubmit={() => {}}
     >
       {() => {
