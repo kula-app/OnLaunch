@@ -1,4 +1,4 @@
-import { ActionButtonDesign } from "@/models/action-button-design";
+import { MessageActionButtonDesign } from "@/models/message-action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -171,24 +171,24 @@ export class PrismaDataUtils {
 
   static mapButtonDesignFromPrisma(
     design: PrismaClient.ButtonDesign,
-  ): ActionButtonDesign | undefined {
+  ): MessageActionButtonDesign | undefined {
     switch (design) {
       case PrismaClient.ButtonDesign.FILLED:
-        return ActionButtonDesign.FILLED;
+        return MessageActionButtonDesign.FILLED;
       case PrismaClient.ButtonDesign.TEXT:
-        return ActionButtonDesign.OUTLINE;
+        return MessageActionButtonDesign.OUTLINE;
       default:
         return undefined;
     }
   }
 
   static mapButtonDesignToPrisma(
-    design: ActionButtonDesign,
+    design: MessageActionButtonDesign,
   ): PrismaClient.ButtonDesign | undefined {
     switch (design) {
-      case ActionButtonDesign.FILLED:
+      case MessageActionButtonDesign.FILLED:
         return PrismaClient.ButtonDesign.FILLED;
-      case ActionButtonDesign.OUTLINE:
+      case MessageActionButtonDesign.OUTLINE:
         return PrismaClient.ButtonDesign.TEXT;
     }
   }

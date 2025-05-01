@@ -14,6 +14,7 @@ import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
 import {
   MessageActionDtoType,
   type MessageActionDto,
+  type MessageActionLinkDto,
   type MessageDto,
   type MessagesResponseDto,
 } from "./messages-response-dto";
@@ -417,9 +418,13 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       (prev, action): MessageActionDto[] => {
         // Filter out actions that are not supported
         let actionType: MessageActionDtoType;
+        let link: MessageActionLinkDto | undefined;
         switch (action.actionType) {
           case ActionType.DISMISS:
             actionType = MessageActionDtoType.DISMISS;
+            break;
+          case ActionType.OPEN_LINK:
+            actionType = MessageActionDtoType.LINK;
             break;
           default:
             logger.warn(

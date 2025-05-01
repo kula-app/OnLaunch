@@ -1,4 +1,4 @@
-import { ActionButtonDesign } from "@/models/action-button-design";
+import { MessageActionButtonDesign } from "@/models/message-action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -1101,7 +1101,7 @@ describe("PrismaDataUtils", () => {
         // -- Act --
         const result = PrismaDataUtils.mapButtonDesignFromPrisma("FILLED");
         // -- Assert --
-        expect(result).toEqual(ActionButtonDesign.FILLED);
+        expect(result).toEqual(MessageActionButtonDesign.FILLED);
       });
     });
 
@@ -1110,28 +1110,28 @@ describe("PrismaDataUtils", () => {
         // -- Act --
         const result = PrismaDataUtils.mapButtonDesignFromPrisma("TEXT");
         // -- Assert --
-        expect(result).toEqual(ActionButtonDesign.OUTLINE);
+        expect(result).toEqual(MessageActionButtonDesign.OUTLINE);
       });
     });
   });
 
   describe("#mapButtonDesignToPrisma", () => {
-    describe(ActionButtonDesign.FILLED, () => {
+    describe(MessageActionButtonDesign.FILLED, () => {
       it("should be mapped", () => {
         // -- Act --
         const result = PrismaDataUtils.mapButtonDesignToPrisma(
-          ActionButtonDesign.FILLED,
+          MessageActionButtonDesign.FILLED,
         );
         // -- Assert --
         expect(result).toEqual(PrismaClient.ButtonDesign.FILLED);
       });
     });
 
-    describe(ActionButtonDesign.OUTLINE, () => {
+    describe(MessageActionButtonDesign.OUTLINE, () => {
       it("should be mapped", () => {
         // -- Act --
         const result = PrismaDataUtils.mapButtonDesignToPrisma(
-          ActionButtonDesign.OUTLINE,
+          MessageActionButtonDesign.OUTLINE,
         );
         // -- Assert --
         expect(result).toEqual(PrismaClient.ButtonDesign.TEXT);

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormikChangeHandler } from "@/components/formik-change-handler";
-import { ActionButtonDesign } from "@/models/action-button-design";
+import { MessageActionButtonDesign } from "@/models/message-action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import {
   Alert,
@@ -236,7 +236,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                                           id: generatedId,
                                           actionType: MessageActionType.DISMISS,
                                           buttonDesign:
-                                            ActionButtonDesign.FILLED,
+                                            MessageActionButtonDesign.FILLED,
                                           title: "",
                                         });
                                       }}
