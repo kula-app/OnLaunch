@@ -9,11 +9,18 @@ datasource db {
 
 enum ActionType {
   DISMISS @map("dismiss")
+  OPEN_LINK @map("open_link")
 }
 
 enum ButtonDesign {
   TEXT   @map("text")
   FILLED @map("filled")
+}
+
+enum MessageActionLinkTarget {
+  IN_APP_BROWSER  @map("in_app_browser")
+  SHARE_SHEET @map("share_sheet")
+  SYSTEM_BROWSER @map("system_browser")
 }
 
 enum Role {
@@ -39,6 +46,8 @@ model MessageAction {
   title        String
   actionType   ActionType
   buttonDesign ButtonDesign
+  link         String?
+  linkTarget   MessageActionLinkTarget?
 
   message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
   messageId Int?

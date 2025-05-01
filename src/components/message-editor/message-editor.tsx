@@ -26,10 +26,10 @@ import { SimpleFiltersRegion } from "@/components/message-editor/_models/filters
 import type { FormData } from "@/components/message-editor/_models/form-data";
 import type { TimeframeFormData } from "@/components/message-editor/_models/timeframe/timeframe-form-data";
 import { ServerError } from "@/errors/server-error";
-import { ActionButtonDesign } from "@/models/action-button-design";
 import type { App } from "@/models/app";
 import type { Message } from "@/models/message";
 import type { MessageAction } from "@/models/message-action";
+import { MessageActionButtonDesign } from "@/models/message-action-button-design";
 import type { MessageRuleCondition } from "@/models/message-rule-condition";
 import type { MessageRuleGroup } from "@/models/message-rule-group";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -219,6 +219,10 @@ export const MessageEditor: React.FC<{
             actionType: action.actionType,
             buttonDesign: action.buttonDesign,
             title: action.title,
+            link: {
+              link: action.link?.link,
+              target: action.link?.target,
+            },
           }),
         ) ?? [],
     };
@@ -325,6 +329,12 @@ export const MessageEditor: React.FC<{
               actionType: action.actionType,
               buttonDesign: action.buttonDesign,
               title: action.title,
+              link: action.link
+                ? {
+                    link: action.link.link,
+                    target: action.link.target,
+                  }
+                : undefined,
             }),
           ),
 
@@ -348,6 +358,10 @@ export const MessageEditor: React.FC<{
             actionType: action.actionType,
             buttonDesign: action.buttonDesign,
             title: action.title,
+            link: {
+              link: action.link.link,
+              target: action.link.target,
+            },
           })),
 
           isBlocking: draftFormRef.current.values.isBlocking,
@@ -466,13 +480,13 @@ export const MessageEditor: React.FC<{
                     actions:
                       values.actions.map((action) => {
                         switch (action.buttonDesign) {
-                          case ActionButtonDesign.FILLED:
+                          case MessageActionButtonDesign.FILLED:
                             return {
                               id: action.id,
                               label: action.title,
                               variant: "solid",
                             };
-                          case ActionButtonDesign.OUTLINE:
+                          case MessageActionButtonDesign.OUTLINE:
                             return {
                               id: action.id,
                               label: action.title,

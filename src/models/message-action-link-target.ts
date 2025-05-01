@@ -1,0 +1,5 @@
+export enum MessageActionLinkTarget {
+  IN_APP_BROWSER = "IN_APP_BROWSER",
+  SHARE_SHEET = "SHARE_SHEET",
+  SYSTEM_BROWSER = "SYSTEM_BROWSER",
+}
