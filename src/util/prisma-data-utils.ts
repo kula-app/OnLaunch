@@ -177,8 +177,6 @@ export class PrismaDataUtils {
         return ActionButtonDesign.FILLED;
       case PrismaClient.ButtonDesign.TEXT:
         return ActionButtonDesign.OUTLINE;
-      default:
-        return undefined;
     }
   }
 
@@ -199,6 +197,8 @@ export class PrismaDataUtils {
     switch (type) {
       case PrismaClient.ActionType.DISMISS:
         return MessageActionType.DISMISS;
+      case PrismaClient.ActionType.OPEN_APP_IN_APP_STORE:
+        return MessageActionType.OPEN_APP_IN_APP_STORE;
       default:
         return undefined;
     }
@@ -210,6 +210,8 @@ export class PrismaDataUtils {
     switch (type) {
       case MessageActionType.DISMISS:
         return PrismaClient.ActionType.DISMISS;
+      case MessageActionType.OPEN_APP_IN_APP_STORE:
+        return PrismaClient.ActionType.OPEN_APP_IN_APP_STORE;
     }
   }
 

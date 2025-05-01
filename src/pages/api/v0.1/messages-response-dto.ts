@@ -1,5 +1,6 @@
 export enum ActionType {
   Dismiss = "DISMISS",
+  OPEN_APP_IN_APP_STORE = "OPEN_APP_IN_APP_STORE",
 }
 
 export type ActionDto = {

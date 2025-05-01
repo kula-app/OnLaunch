@@ -855,7 +855,8 @@
           "actionType": {
             "type": "string",
             "enum": [
-              "DISMISS"
+              "DISMISS",
+              "OPEN_APP_IN_APP_STORE"
             ]
           },
           "buttonDesign": {
