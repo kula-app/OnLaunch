@@ -3,7 +3,7 @@ import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
 import { createRuleEvaluationContextFromHeaders } from "@/util/rule-evaluation/rule-evaluation-context";
 import { RuleEvaluator } from "@/util/rule-evaluation/rule-evaluator";
-import { ActionType } from "@prisma/client";
+import { ActionType, ButtonDesign } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject, ValidationError } from "class-validator";
 import { StatusCodes } from "http-status-codes";
@@ -12,6 +12,7 @@ import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
 import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
 import {
+  MessageActionButtonDesign,
   MessageActionDtoType,
   type MessageActionDto,
   type MessageDto,
@@ -427,9 +428,24 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
             );
             return prev;
         }
+        let buttonDesign: MessageActionButtonDesign;
+        switch (action.buttonDesign) {
+          case ButtonDesign.FILLED:
+            buttonDesign = MessageActionButtonDesign.FILLED;
+            break;
+          case ButtonDesign.TEXT:
+            buttonDesign = MessageActionButtonDesign.TEXT;
+            break;
+          default:
+            logger.warn(
+              `Unsupported button design in message(id = ${message.id}): ${action.buttonDesign}`,
+            );
+            return prev;
+        }
         return prev.concat([
           {
             actionType: actionType,
+            buttonDesign: buttonDesign,
             title: action.title,
           },
         ]);
