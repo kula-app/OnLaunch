@@ -32,6 +32,7 @@ import {
   FiUser,
   FiUsers,
 } from "react-icons/fi";
+import { GitHubStargazersButton } from "./ui/github-stargazers-button";
 
 export interface NavigationBarItem {
   name: string;
@@ -91,7 +92,8 @@ export const NavigationBar: React.FC<{
           </Breadcrumb>
         )}
       </Flex>
-      <Flex>
+      <Flex gap={2}>
+        <GitHubStargazersButton />
         <Menu>
           <MenuButton
             as={Button}
