@@ -7,27 +7,22 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  AspectRatio,
-  Box,
   Flex,
   FormControl,
   FormHelperText,
   FormLabel,
   Grid,
-  GridItem,
   Heading,
   HStack,
   IconButton,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
-  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
 import { FaCopy } from "react-icons/fa6";
+import { SDKCard } from "./sdk-card";
 
 export const AppSettingsSDKKeys: React.FC<{
   appId: App["id"];
@@ -39,7 +34,7 @@ export const AppSettingsSDKKeys: React.FC<{
     id: string;
     name: string;
     imageUrl: string;
-    url: string;
+    url?: string;
   }[] = [
     {
       id: "android",
@@ -123,30 +118,7 @@ export const AppSettingsSDKKeys: React.FC<{
           </Heading>
           <Grid templateColumns={"repeat(8, 1fr)"} gap={4} w={"full"}>
             {sdks.map((sdk) => (
-              <GridItem key={sdk.id} as={Flex} direction={"column"}>
-                <Link href={sdk.url} w={"full"} target={"_blank"}>
-                  <Box
-                    p={4}
-                    background={"white"}
-                    _hover={{
-                      background: "gray.200",
-                      m: 1,
-                    }}
-                    borderRadius={20}
-                  >
-                    <AspectRatio ratio={1}>
-                      <Image
-                        src={sdk.imageUrl}
-                        alt={sdk.name}
-                        fit={"contain !important" as "contain"}
-                      />
-                    </AspectRatio>
-                  </Box>
-                  <Text w={"full"} mt={2} align={"center"} color={"white"}>
-                    {sdk.name}
-                  </Text>
-                </Link>
-              </GridItem>
+              <SDKCard key={sdk.id} sdk={sdk} />
             ))}
           </Grid>
         </VStack>
