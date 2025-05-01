@@ -146,7 +146,7 @@ export class Routes {
     messageId: Message["id"];
     orgId: Org["id"];
   }): string {
-    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
+    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
   }
 
   // --- Authentication ---
