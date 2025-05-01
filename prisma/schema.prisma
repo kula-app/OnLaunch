@@ -9,6 +9,7 @@ datasource db {
 
 enum ActionType {
   DISMISS @map("dismiss")
+  OPEN_APP_IN_APP_STORE @map("open_app_in_app_store")
 }
 
 enum ButtonDesign {

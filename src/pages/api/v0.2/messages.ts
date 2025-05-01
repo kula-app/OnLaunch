@@ -422,6 +422,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           case ActionType.DISMISS:
             actionType = MessageActionDtoType.DISMISS;
             break;
+          case ActionType.OPEN_APP_IN_APP_STORE:
+            actionType = MessageActionDtoType.OPEN_APP_IN_APP_STORE;
+            break;
           default:
             logger.warn(
               `Unsupported action type in message(id = ${message.id}): ${action.actionType}`,

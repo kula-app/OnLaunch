@@ -366,7 +366,7 @@ export const MessageEditor: React.FC<{
       goToNext();
     } catch (error) {
       toast({
-        title: "Error while creating new organisation!",
+        title: "Failed to create message!",
         description: `${error}`,
         status: "error",
         isClosable: true,

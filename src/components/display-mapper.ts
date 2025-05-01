@@ -6,6 +6,8 @@ export function displayNameForActionType(type: MessageActionType): string {
   switch (type) {
     case MessageActionType.DISMISS:
       return "Dismiss";
+    case MessageActionType.OPEN_APP_IN_APP_STORE:
+      return "Open App Store Page";
     default:
       return "Unknown";
   }

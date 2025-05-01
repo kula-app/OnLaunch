@@ -1218,6 +1218,70 @@ describe("/api/v0.2/messages", () => {
         );
         expect(prismaMock.loggedApiRequests.create).toHaveBeenCalled();
       });
+
+      describe("message with open in app store action", () => {
+        it("should return message with open in app store action", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+
+            title: "Action 1",
+            actionType: $Enums.ActionType.OPEN_APP_IN_APP_STORE,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+
+            blocking: false,
+
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          expect(res._getJSONData()).toStrictEqual([
+            {
+              id: 1,
+              title: "Message 1",
+              body: "This is a message",
+              blocking: false,
+              actions: [
+                {
+                  actionType: "OPEN_APP_IN_APP_STORE",
+                  buttonDesign: "FILLED",
+                  title: "Action 1",
+                },
+              ],
+            },
+          ]);
+        });
+      });
     });
   });
 
