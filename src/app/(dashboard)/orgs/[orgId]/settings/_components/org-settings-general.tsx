@@ -223,7 +223,7 @@ export const OrgSettingsGeneral: React.FC<{
 
             toast({
               title: "Success!",
-              description: `Organisation with id '${orgId}' has been deleted!`,
+              description: `Organisation has been deleted!`,
               status: "success",
               isClosable: true,
               duration: 6000,
@@ -232,7 +232,7 @@ export const OrgSettingsGeneral: React.FC<{
             router.push(Routes.dashboard);
           } catch (error) {
             toast({
-              title: `Error while deleting org with id ${orgId}!`,
+              title: `Error while deleting organisation!`,
               description: `${error}`,
               status: "error",
               isClosable: true,
