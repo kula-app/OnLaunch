@@ -9,7 +9,7 @@ import { AuthLegalConsent } from "@/components/auth/AuthLegalConsent";
 import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,

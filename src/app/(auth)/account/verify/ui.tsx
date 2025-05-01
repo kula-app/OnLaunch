@@ -8,7 +8,7 @@ import { AuthHeader } from "@/components/auth/AuthHeader";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import { useCooldown } from "@/hooks/useCooldown";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { Logger } from "@/util/logger";
 import {
   Box,
@@ -95,7 +95,7 @@ const SuspenseBody: React.FC = () => {
   async function resendLink(email: string) {
     try {
       const result = await requestAccountVerificationEmail(email);
-      if (result.error) {
+      if (!result.success) {
         throw new ServerError(result.error.name, result.error.message);
       }
       resendLinkCooldown.start();

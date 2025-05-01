@@ -7,7 +7,7 @@ import { AuthLegalConsent } from "@/components/auth/AuthLegalConsent";
 import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,
@@ -23,18 +23,32 @@ import { NextPage } from "next";
 import { signIn } from "next-auth/react";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
+type LoginFormValues = Yup.InferType<typeof LoginFormSchema>;
 
 const UI: NextPage = () => {
   const router = useRouter();
   const toast = useToast();
 
+  let [initialValues, setInitialValues] = useState<LoginFormValues>({
+    email: "",
+    password: "",
+  });
   const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams?.has("email")) {
+      setInitialValues({
+        email: searchParams.get("email") ?? "",
+        password: "",
+      });
+    }
+  }, [searchParams]);
 
   return (
     <HStack spacing={0} align={"stretch"}>
@@ -92,10 +106,8 @@ const UI: NextPage = () => {
                   </Text>
                 </VStack>
                 <Formik
-                  initialValues={{
-                    email: searchParams?.get("email") ?? "",
-                    password: "",
-                  }}
+                  initialValues={initialValues}
+                  enableReinitialize={true}
                   validationSchema={LoginFormSchema}
                   initialStatus={{
                     isWaitingVerificationForEmail: undefined,
@@ -173,7 +185,7 @@ const UI: NextPage = () => {
                               <Link
                                 as={NextLink}
                                 color={"white"}
-                                href={Routes.ACCOUNT_RECOVERY}
+                                href={Routes.accountRecovery}
                                 fontWeight="medium"
                               >
                                 Forgot password?
@@ -203,7 +215,7 @@ const UI: NextPage = () => {
                     as={NextLink}
                     color={"white"}
                     ms="5px"
-                    href={Routes.SIGNUP}
+                    href={Routes.signup}
                     fontWeight="bold"
                   >
                     Sign Up

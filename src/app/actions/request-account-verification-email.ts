@@ -58,12 +58,12 @@ export const requestAccountVerificationEmail = createServerAction(
       },
     });
 
-    sendTokenPerMail(
-      user.email ?? email,
-      user.firstName,
-      verificationToken.token,
-      MailType.Verification,
-    );
+    sendTokenPerMail({
+      email: user.email ?? email,
+      firstName: user.firstName,
+      token: verificationToken.token,
+      mailType: MailType.Verification,
+    });
     logger.log(
       `Verification email sent for user with id '${user.id}' to email '${user.email}'`,
     );

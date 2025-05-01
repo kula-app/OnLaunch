@@ -222,8 +222,13 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const app = await prisma.app.findFirst({
     where: {
       publicKey: publicKey,
+      isDeleted: {
+        not: true,
+      },
       organisation: {
-        isDeleted: false,
+        isDeleted: {
+          not: true,
+        },
       },
     },
     include: {
@@ -231,7 +236,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         include: {
           subs: {
             where: {
-              isDeleted: false,
+              isDeleted: {
+                not: true,
+              },
             },
             include: {
               subItems: true,

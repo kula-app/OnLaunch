@@ -1,3 +1,7 @@
+import type { Org } from "@/models/org";
+import { OrgRole } from "@/models/org-role";
+import type { OrgUser } from "@/models/org-user";
+import type { User } from "@/models/user";
 import prisma from "@/services/db";
 import { compare, genSalt, hash } from "bcrypt";
 import { StatusCodes } from "http-status-codes";
@@ -11,10 +15,11 @@ import { createEmailChangedTemplate } from "../mailTemplate/emailChanged";
 import { createResetPasswordTemplate } from "../mailTemplate/resetPassword";
 import { createVerificationTemplate } from "../mailTemplate/verification";
 import { MailType } from "../models/mailType";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 import { authOptions } from "./auth-options";
 import { ifEmptyThenUndefined } from "./ifEmptyThenUndefined";
 import { Logger } from "./logger";
+import { PrismaDataUtils } from "./prisma-data-utils";
 import { generateRandomHex } from "./random";
 
 const nodemailer = require("nodemailer");
@@ -55,12 +60,17 @@ export function generateToken() {
   return generateRandomHex(32);
 }
 
-export function sendTokenPerMail(
-  email: string,
-  firstName: string | null,
-  token: string,
-  mailType: MailType,
-) {
+export function sendTokenPerMail({
+  email,
+  firstName,
+  token,
+  mailType,
+}: {
+  email: string;
+  firstName: string | null;
+  token: string;
+  mailType: MailType;
+}) {
   logger.log(`Sending mail of type '${mailType}'`);
 
   const config = loadServerConfig();
@@ -81,7 +91,11 @@ export function sendTokenPerMail(
     case MailType.Verification:
       const verificationTemplate = createVerificationTemplate(
         firstName,
-        Routes.accountVerify({ token, email }),
+        Routes.getAccountVerificationUrl({
+          baseUrl: config.baseConfig.url,
+          token,
+          email,
+        }),
         senderName,
       );
 
@@ -97,7 +111,10 @@ export function sendTokenPerMail(
     case MailType.ResetPassword:
       const resetPasswordTemplate = createResetPasswordTemplate(
         firstName,
-        Routes.accountRecoverConfirmWithToken(token),
+        Routes.getAccountConfirmationUrl({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -113,7 +130,10 @@ export function sendTokenPerMail(
     case MailType.ChangeEmail:
       const changeEmailTemplate = createChangeEmailTemplate(
         firstName,
-        Routes.changeEmailWithToken(token),
+        Routes.getAccountConfirmEmailUrl({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -144,7 +164,10 @@ export function sendTokenPerMail(
     case MailType.DirectInvite:
       const directInviteTemplate = createDirectInviteTemplate(
         firstName,
-        Routes.directInvitationUrlWithToken(token),
+        Routes.getOrganizationDirectInvitationUrl({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -159,7 +182,10 @@ export function sendTokenPerMail(
 
     case MailType.DirectInviteNewUser:
       const directInviteNewUserTemplate = createDirectInviteNewUserTemplate(
-        Routes.directInvitationUrlWithToken(token),
+        Routes.getOrganizationDirectInvitationUrl({
+          baseUrl: config.baseConfig.url,
+          token,
+        }),
         senderName,
       );
 
@@ -181,7 +207,7 @@ export function sendTokenPerMail(
 export async function getUserFromRequest(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<User | undefined> {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -191,12 +217,27 @@ export async function getUserFromRequest(
   }
 
   logger.log("Returning user after checking authorization");
-  return session.user;
+  const user = await prisma.user.findFirstOrThrow({
+    where: {
+      id: session.user.id,
+    },
+  });
+  return {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
 }
 export async function getUserWithRoleFromRequest(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<
+  | (OrgUser & {
+      orgId: Org["id"];
+    })
+  | undefined
+> {
   const user = await getUserFromRequest(req, res);
 
   if (!user) {
@@ -224,23 +265,29 @@ export async function getUserWithRoleFromRequest(
     select: {
       role: true,
       orgId: true,
+      user: true,
     },
   });
 
-  if (userInOrg?.role !== "ADMIN" && userInOrg?.role !== "USER") {
+  if (!userInOrg) {
     logger.error(
       `User with id '${user.id}' not found in organisation with id '${req.query.orgId}'`,
     );
     // if user has no business here, return a 404
-    return res.status(StatusCodes.NOT_FOUND).json({
+    res.status(StatusCodes.NOT_FOUND).json({
       message: `no user with id '${user.id}' found in organisation with id '${req.query.orgId}'`,
     });
+    return;
   }
 
   return {
-    role: userInOrg?.role,
     id: user.id,
+    firstName: userInOrg?.user.firstName,
+    lastName: userInOrg?.user.lastName,
     email: user.email,
+
     orgId: userInOrg?.orgId,
+    role:
+      PrismaDataUtils.mapUserRoleFromPrisma(userInOrg?.role) ?? OrgRole.USER,
   };
 }

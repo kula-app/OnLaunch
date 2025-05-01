@@ -54,12 +54,12 @@ export const requestPasswordResetEmail = createServerAction(
     });
 
     logger.log(`Sending password reset token to user with email '${email}'`);
-    sendTokenPerMail(
-      user.email ?? email,
-      user.firstName,
-      generatedToken,
-      MailType.ResetPassword,
-    );
+    sendTokenPerMail({
+      email: user.email ?? email,
+      firstName: user.firstName,
+      token: generatedToken,
+      mailType: MailType.ResetPassword,
+    });
     logger.log(`Password reset token sent to user with email '${email}'`);
   },
 );

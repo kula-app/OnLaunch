@@ -1,10 +1,14 @@
 export interface SentryConfig {
-  debug?: boolean;
-  dsn?: string;
-  env?: string;
-  release?: string;
-  replaysOnErrorSampleRate?: number;
-  replaysSessionSampleRate?: number;
-  sampleRate?: number;
-  tracesSampleRate: number;
+  isEnabled: boolean;
+  debug: boolean;
+  dsn: string | undefined;
+  release: string | undefined;
+  environment: string | undefined;
+  attachStacktrace: boolean;
+  replaysOnErrorSampleRate: number | undefined;
+  replaysSessionSampleRate: number | undefined;
+  sampleRate: number | undefined;
+  profilesSampleRate: number | undefined;
+  tracesSampleRate: number | undefined;
+  anrThreshold: number | undefined;
 }

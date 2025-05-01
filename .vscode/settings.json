@@ -1,27 +1,4 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.tslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
-  },
-  "editor.wordWrapColumn": 150,
-  "files.associations": {
-    ".env": "properties",
-    ".env.example": "properties",
-    ".example.env": "properties"
-  },
-  "javascript.format.semicolons": "insert",
-  "javascript.referencesCodeLens.enabled": true,
-  "javascript.suggest.completeFunctionCalls": true,
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.format.semicolons": "insert",
-  "typescript.implementationsCodeLens.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.locale": "en",
-  "typescript.suggest.completeFunctionCalls": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
@@ -34,7 +11,30 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.fixAll.tslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.wordWrapColumn": 150,
+  "files.associations": {
+    ".env": "properties",
+    ".env.example": "properties",
+    ".example.env": "properties"
+  },
+  "javascript.format.semicolons": "insert",
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.suggest.completeFunctionCalls": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "testing.automaticallyOpenTestResults": "neverOpen",
+  "typescript.format.semicolons": "insert",
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.locale": "en",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "testing.openTesting": "neverOpen",
-  "typescript.preferences.preferTypeOnlyAutoImports": true
+  "typescript.updateImportsOnFileMove.enabled": "always"
 }

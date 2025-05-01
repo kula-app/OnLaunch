@@ -1,45 +1,117 @@
-import { loadServerConfig } from "../config/loadServerConfig";
+import type { App } from "@/models/app";
+import type { Message } from "@/models/message";
+import type { Org } from "@/models/org";
 
-const config = loadServerConfig();
+export class Routes {
+  static get index(): string {
+    return "/";
+  }
 
-class Routes {
-  static readonly INDEX = "/";
-
-  static get dashboard() {
+  static get dashboard(): string {
     return "/dashboard";
   }
 
-  static readonly CHANGE_EMAIL = "/changeEmail";
-  static readonly PROFILE = "/profile";
+  static get profile(): string {
+    return "/profile";
+  }
 
-  static readonly SUBSCRIPTION = "/subscription";
+  static get subscription(): string {
+    return "/subscription";
+  }
 
-  static get orgs(): string {
+  // --- Organizations ---
+
+  static get organizations(): string {
     return "/orgs";
   }
 
-  static get createNewOrg(): string {
+  static get createOrganization(): string {
     return "/orgs/new";
   }
 
-  static org(params: { orgId: number; reason?: "user-joined" }): string {
-    const url = new URL(config.nextAuth.url);
-    url.pathname = `/orgs/${params.orgId}`;
-    if (params.reason) {
-      url.searchParams.set("reason", params.reason);
+  static organization({
+    orgId,
+    reason,
+  }: {
+    orgId: Org["id"];
+    reason?: "user-joined";
+  }): string {
+    let path = `/orgs/${orgId}`;
+    let searchParams = new URLSearchParams();
+    if (reason) {
+      searchParams.set("reason", reason);
     }
-    return url.toString();
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
   }
 
-  static apps({ orgId }: { orgId: number }): string {
+  static upgradeOrganization({ orgId }: { orgId: Org["id"] }): string {
+    return `/orgs/${orgId}/upgrade`;
+  }
+
+  static organizationSettings({
+    orgId,
+    tab,
+  }: {
+    orgId: Org["id"];
+    tab?: string;
+  }): string {
+    let path = `/orgs/${orgId}/settings`;
+    let searchParams = new URLSearchParams();
+    if (tab) {
+      searchParams.set("tab", tab);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
+  }
+
+  // --- Apps ---
+
+  static apps({ orgId }: { orgId: Org["id"] }): string {
     return `/orgs/${orgId}/apps`;
   }
 
-  static app({ orgId, appId }: { appId: number; orgId: number }): string {
+  static createApp({ orgId }: { orgId: Org["id"] }): string {
+    return `/orgs/${orgId}/apps/new`;
+  }
+
+  static app({ orgId, appId }: { appId: App["id"]; orgId: Org["id"] }): string {
     return `/orgs/${orgId}/apps/${appId}`;
   }
 
-  static messages({ orgId, appId }: { appId: number; orgId: number }): string {
+  static appSettings({
+    orgId,
+    appId,
+    tab,
+  }: {
+    appId: App["id"];
+    orgId: Org["id"];
+    tab?: string;
+  }): string {
+    let path = `/orgs/${orgId}/apps/${appId}/settings`;
+    let searchParams = new URLSearchParams();
+    if (tab) {
+      searchParams.set("tab", tab);
+    }
+    if (searchParams.size > 0) {
+      return `${path}?${searchParams.toString()}`;
+    }
+    return path;
+  }
+
+  // --- Messages ---
+
+  static messages({
+    orgId,
+    appId,
+  }: {
+    appId: App["id"];
+    orgId: Org["id"];
+  }): string {
     return `/orgs/${orgId}/apps/${appId}/messages`;
   }
 
@@ -47,50 +119,37 @@ class Routes {
     orgId,
     appId,
   }: {
-    appId: number;
-    orgId: number;
+    appId: App["id"];
+    orgId: Org["id"];
   }): string {
     return `/orgs/${orgId}/apps/${appId}/messages/new`;
   }
 
-  static orgSettingsById(orgId: number): string {
-    return `/orgs/${orgId}/settings`;
+  static message({
+    orgId,
+    appId,
+    messageId,
+  }: {
+    appId: App["id"];
+    messageId: Message["id"];
+    orgId: Org["id"];
+  }): string {
+    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
   }
 
-  static appSettingsByOrgIdAndAppId(orgId: number, appId: number): string {
-    return `${Routes.getOrgAppsByOrgId(orgId)}/${appId}/settings`;
+  static editMessage({
+    orgId,
+    appId,
+    messageId,
+  }: {
+    appId: App["id"];
+    messageId: Message["id"];
+    orgId: Org["id"];
+  }): string {
+    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}`;
   }
 
-  static getOrgAppsByOrgId(orgId: number): string {
-    return `/orgs/${orgId}/apps`;
-  }
-
-  static getOrgUpgradeByOrgId(orgId: number): string {
-    return `/orgs/${orgId}/upgrade`;
-  }
-
-  static createNewAppForOrgId(orgId: number): string {
-    return `/orgs/${orgId}/apps/new`;
-  }
-
-  static getMessagesByOrgIdAndAppId(orgId: number, appId: number): string {
-    return `/orgs/${orgId}/apps/${appId}/messages`;
-  }
-
-  static createNewMessageForOrgIdAndAppId(
-    orgId: number,
-    appId: number,
-  ): string {
-    return `/orgs/${orgId}/apps/${appId}/messages/new`;
-  }
-
-  static editMessageByOrgIdAndAppIdAndMessageId(
-    orgId: number,
-    appId: number,
-    messageId: number,
-  ): string {
-    return `/orgs/${orgId}/apps/${appId}/messages/${messageId}/edit`;
-  }
+  // --- Authentication ---
 
   static login(params?: {
     email?: string | null;
@@ -99,6 +158,7 @@ class Routes {
       | "account-recovery-requested"
       | "account-recovered"
       | "account-verified"
+      | "email-confirmation"
       | "logout";
   }): string {
     const path = "/login";
@@ -109,49 +169,113 @@ class Routes {
     if (params?.redirect) {
       searchParams.set("redirect", params.redirect);
     }
+    if (params?.reason) {
+      searchParams.set("reason", params.reason);
+    }
     if (searchParams.size > 0) {
       return `${path}?${searchParams.toString()}`;
     }
     return path;
   }
 
-  static readonly SIGNUP = "/signup";
-  static readonly ACCOUNT_RECOVERY = "/account/recover";
-  static readonly ACCOUNT_RECOVERY_CONFIRM = "/account/recover/confirm";
-
-  // the bellow functions use the full path of website for external usage
-
-  static changeEmailWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.CHANGE_EMAIL}?token=${token}`;
+  static get signup(): string {
+    return "/signup";
   }
 
-  static invitationUrlWithToken(token: string): string {
-    return `${config.nextAuth.url}/orgs/join?invite-token=${token}`;
+  static get accountRecovery(): string {
+    return "/account/recover";
   }
 
-  static directInvitationUrlWithToken(token: string): string {
-    return `${config.nextAuth.url}/orgs/join?direct-invite-token=${token}`;
-  }
-
-  static accountRecoverConfirmWithToken(token: string): string {
-    return `${config.nextAuth.url}/${Routes.ACCOUNT_RECOVERY_CONFIRM}?token=${token}`;
-  }
-
-  static accountVerify(params: { token: string; email: string }): string {
-    const url = new URL(config.nextAuth.url);
-    url.pathname = "/account/verify";
-    url.searchParams.set("token", params.token);
-    url.searchParams.set("email", params.email);
+  static getAccountConfirmEmailUrl({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    const url = new URL(baseUrl);
+    url.pathname = "/account/confirm-email";
+    url.searchParams.set("token", token);
     return url.toString();
   }
 
-  static subscriptionPageSuccess(orgId: string): string {
-    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?success=true&orgId=${orgId}`;
+  static getOrganizationInvitationUrl({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = "/orgs/join";
+    url.searchParams.set("invite-token", token);
+    return url.toString();
   }
 
-  static subscriptionPageCancelled(): string {
-    return `${config.nextAuth.url}${Routes.SUBSCRIPTION}?canceled=true`;
+  static getOrganizationDirectInvitationUrl({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = "/orgs/join";
+    url.searchParams.set("direct-invite-token", token);
+    return url.toString();
+  }
+
+  static getAccountConfirmationUrl({
+    baseUrl,
+    token,
+  }: {
+    baseUrl: string;
+    token: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = "/account/recover/confirm";
+    url.searchParams.set("token", token);
+    return url.toString();
+  }
+
+  static getAccountVerificationUrl({
+    baseUrl,
+    token,
+    email,
+  }: {
+    baseUrl: string;
+    token: string;
+    email: string;
+  }): string {
+    const url = new URL(baseUrl);
+    url.pathname = "/account/verify";
+    url.searchParams.set("token", token);
+    url.searchParams.set("email", email);
+    return url.toString();
+  }
+
+  static getSubscriptionPageSuccessUrl({
+    baseUrl,
+    orgId,
+  }: {
+    baseUrl: string;
+    orgId: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = Routes.subscription;
+    url.searchParams.set("success", "true");
+    url.searchParams.set("orgId", orgId);
+    return url.toString();
+  }
+
+  static getSubscriptionPageCancelledUrl({
+    baseUrl,
+  }: {
+    baseUrl: string;
+  }): string {
+    let url = new URL(baseUrl);
+    url.pathname = Routes.subscription;
+    url.searchParams.set("canceled", "true");
+    return url.toString();
   }
 }
-
-export default Routes;

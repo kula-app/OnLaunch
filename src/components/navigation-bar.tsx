@@ -1,4 +1,6 @@
-import Routes from "@/routes/routes";
+"use client";
+
+import { Routes } from "@/routes/routes";
 import {
   Avatar,
   Box,
@@ -16,6 +18,7 @@ import {
   MenuGroup,
   MenuItem,
   MenuList,
+  SkeletonText,
   Text,
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
@@ -29,15 +32,18 @@ import {
   FiUser,
   FiUsers,
 } from "react-icons/fi";
+import { GitHubStargazersButton } from "./ui/github-stargazers-button";
+
+export interface NavigationBarItem {
+  name: string;
+  href: string;
+  isActive?: boolean;
+  isLoading?: boolean;
+}
 
 export const NavigationBar: React.FC<{
-  isLoading?: boolean;
-  pages?: {
-    name: string;
-    href: string;
-    isActive?: boolean;
-  }[];
-}> = ({ isLoading, pages }) => {
+  items?: NavigationBarItem[];
+}> = ({ items }) => {
   const session = useSession();
 
   return (
@@ -56,12 +62,12 @@ export const NavigationBar: React.FC<{
         justify={"space-between"}
         textStyle={"navigationBar"}
       >
-        <Link as={NextLink} href={Routes.INDEX} py={4}>
+        <Link as={NextLink} href={Routes.index} py={4}>
           <Text fontWeight={"bold"} fontSize={"lg"}>
             OnLaunch
           </Text>
         </Link>
-        {pages && pages.length > 0 && (
+        {items && items.length > 0 && (
           <Breadcrumb
             display={{ base: "none", md: "flex" }}
             px={4}
@@ -72,21 +78,22 @@ export const NavigationBar: React.FC<{
                 <Icon as={FiHome} />
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {isLoading ? (
-              <BreadcrumbItem>
-                <BreadcrumbLink>Loading...</BreadcrumbLink>
+            {items.map((item, index) => (
+              <BreadcrumbItem key={index} isCurrentPage={item.isActive}>
+                <BreadcrumbLink href={item.href}>
+                  {item.isLoading ? (
+                    <SkeletonText noOfLines={1} w={20} skeletonHeight={4} />
+                  ) : (
+                    item.name
+                  )}
+                </BreadcrumbLink>
               </BreadcrumbItem>
-            ) : (
-              pages?.map((page, index) => (
-                <BreadcrumbItem key={index} isCurrentPage={page.isActive}>
-                  <BreadcrumbLink href={page.href}>{page.name}</BreadcrumbLink>
-                </BreadcrumbItem>
-              ))
-            )}
+            ))}
           </Breadcrumb>
         )}
       </Flex>
-      <Flex>
+      <Flex gap={2}>
+        <GitHubStargazersButton />
         <Menu>
           <MenuButton
             as={Button}
@@ -94,7 +101,12 @@ export const NavigationBar: React.FC<{
             variant={"link"}
             cursor={"pointer"}
           >
-            <Avatar bg={"white"} size={"sm"} name={session?.data?.user?.name} />
+            <Avatar
+              bg={"white"}
+              color={"black"}
+              size={"sm"}
+              name={session?.data?.user?.name}
+            />
           </MenuButton>
           <MenuList alignItems={"center"} maxW={64}>
             <Box px={3} py={1.5}>
@@ -118,14 +130,14 @@ export const NavigationBar: React.FC<{
             <MenuGroup title={"Profile"}>
               <MenuItem
                 as={NextLink}
-                href={Routes.PROFILE}
+                href={Routes.profile}
                 icon={<Icon as={FiUser} boxSize={4} />}
               >
                 Your Profile
               </MenuItem>
               <MenuItem
                 as={NextLink}
-                href={Routes.orgs}
+                href={Routes.organizations}
                 icon={<Icon as={FiUsers} boxSize={4} />}
               >
                 Your Organizations

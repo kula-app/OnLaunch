@@ -3,6 +3,7 @@ import { MessageActionType } from "@/models/message-action-type";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import { MessageRuleSystemVariable } from "@/models/message-rule-system-variable";
+import { OrgRole } from "@/models/org-role";
 import * as PrismaClient from "@prisma/client";
 
 export class PrismaDataUtils {
@@ -209,6 +210,17 @@ export class PrismaDataUtils {
     switch (type) {
       case MessageActionType.DISMISS:
         return PrismaClient.ActionType.DISMISS;
+    }
+  }
+
+  static mapUserRoleFromPrisma(role: PrismaClient.Role): OrgRole | undefined {
+    switch (role) {
+      case PrismaClient.Role.ADMIN:
+        return OrgRole.ADMIN;
+      case PrismaClient.Role.USER:
+        return OrgRole.USER;
+      default:
+        return undefined;
     }
   }
 }

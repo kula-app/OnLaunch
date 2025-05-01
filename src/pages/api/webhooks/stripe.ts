@@ -194,6 +194,7 @@ export default async function handler(
               },
               data: {
                 isDeleted: true,
+                deletedAt: new Date(),
               },
             });
           } catch (error) {

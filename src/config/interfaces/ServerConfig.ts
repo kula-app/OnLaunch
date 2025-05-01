@@ -6,6 +6,7 @@ import { HealthConfig } from "./HealthConfig";
 import { NextAuthConfig } from "./NextAuthConfig";
 import { RedisConfig } from "./RedisConfig";
 import { SentryConfig } from "./SentryConfig";
+import type { ServerBaseConfig } from "./server-base-config";
 import { SignupConfig } from "./SignupConfig";
 import { SmtpConfig } from "./SmtpConfig";
 import { StripeConfig } from "./StripeConfig";
@@ -13,6 +14,7 @@ import { UsageReportConfig } from "./UsageReportConfig";
 
 export interface ServerConfig {
   adminApi: AdminApiConfig;
+  baseConfig: ServerBaseConfig;
   database: DatabaseConfig;
   emailContent: EmailContentConfig;
   freeSub: FreeSubConfig;

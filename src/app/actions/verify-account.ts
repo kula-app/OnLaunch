@@ -18,20 +18,21 @@ export const verifyEmail = createServerAction(
         token: token,
       },
     });
-
     if (!lookupToken) {
-      logger.error("Provided verification token not found");
+      logger.warn("Provided verification token not found");
       throw new NotFoundError("Verification token not found");
     }
-
-    if (lookupToken && lookupToken.isArchived) {
+    if (lookupToken.isArchived) {
       logger.error("User already verified");
       throw new UserAlreadyVerifiedError("User already verified");
     }
-
-    if (lookupToken && lookupToken.isObsolete) {
+    if (lookupToken.isObsolete) {
       logger.error("Verification token is obsolete");
       throw new TokenObsoleteError("Verification token is obsolete");
+    }
+    if (lookupToken.expiryDate < new Date()) {
+      logger.error("Provided verification token has expired");
+      throw new TokenExpiredError("Verification token has expired");
     }
 
     logger.log(`Looking up user with id '${lookupToken.userId}'`);
@@ -44,16 +45,9 @@ export const verifyEmail = createServerAction(
       logger.error("User not found");
       throw new NotFoundError("User not found");
     }
-
     if (user.isVerified) {
       logger.error("User already verified");
       throw new UserAlreadyVerifiedError("User already verified");
-    }
-
-    // if token expired and user not verified, throw error
-    if (lookupToken && lookupToken.expiryDate < new Date()) {
-      logger.error("Provided verification token has expired");
-      throw new TokenExpiredError("Verification token has expired");
     }
 
     logger.log(`Updating user with id '${lookupToken.userId}' as verified`);

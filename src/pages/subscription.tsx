@@ -3,7 +3,7 @@ import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Routes from "../routes/routes";
+import { Routes } from "../routes/routes";
 import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
@@ -32,12 +32,12 @@ export default function ProfilePage() {
   }
 
   function navigateToNewOrgPage() {
-    router.push(Routes.createNewOrg);
+    router.push(Routes.createOrganization);
   }
 
   useEffect(() => {
     function navigateToOrgDetailsPage(id: number) {
-      router.push(Routes.getOrgAppsByOrgId(id));
+      router.push(Routes.apps({ orgId: id }));
     }
 
     if (!router.isReady) return;

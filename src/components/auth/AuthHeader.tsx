@@ -1,4 +1,4 @@
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import { Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 

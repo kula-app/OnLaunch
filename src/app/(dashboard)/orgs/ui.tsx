@@ -1,13 +1,17 @@
 "use client";
 
-import { getOrgs } from "@/app/actions/get-orgs";
-import { NavigationBar } from "@/components/navigation-bar";
-import { ServerError } from "@/errors/server-error";
+import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
+import { useOrgs } from "@/hooks/use-orgs";
 import type { Org } from "@/models/org";
-import { Logger } from "@/util/logger";
+import { Routes } from "@/routes/routes";
+import { rainbowColors } from "@/theme/rainbow-colors";
 import {
-  Box,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   CircularProgress,
+  Container,
   Flex,
   Grid,
   GridItem,
@@ -17,128 +21,109 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useToast,
+  VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
-import { OrgCard } from "./components/org-card";
-
-const colors = ["purple.500", "blue.300", "cyan.400", "teal.400", "orange.300"];
-const logger = new Logger(__filename);
+import { OrgCard } from "./_components/org-card";
 
 export const UI: React.FC = () => {
-  const toast = useToast();
+  const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [orgs, setOrgs] = useState<Org[] | null>(null);
+  const { isLoading: isLoadingOrgs, orgs, error } = useOrgs();
   useEffect(() => {
-    async function fetchOrgs() {
-      setIsLoading(true);
-      try {
-        logger.verbose("Fetching organizations");
-        const response = await getOrgs();
-        if (response.error) {
-          throw new ServerError(response.error.name, response.error.message);
-        }
-        setOrgs(response.value);
-      } catch (error: any) {
-        toast({
-          title: "Failed to fetch organizations",
-          description: error.message,
-          status: "error",
-        });
-      }
-      setIsLoading(false);
+    if (orgs && orgs.length === 0) {
+      router.push(Routes.createOrganization);
     }
-
-    if (!orgs) {
-      fetchOrgs();
-    }
-  });
+  }, [orgs, router]);
 
   const [searchFilter, setSearchFilter] = useState<string>("");
+  const [filteredOrgs, setFilteredOrgs] = useState<Org[]>([]);
+  useEffect(() => {
+    if (searchFilter.length > 0) {
+      setFilteredOrgs(
+        orgs?.filter((org) =>
+          org.name.toLowerCase().includes(searchFilter.toLowerCase()),
+        ) ?? [],
+      );
+    } else {
+      setFilteredOrgs(orgs ?? []);
+    }
+  }, [orgs, searchFilter]);
 
   return (
     <Flex direction={"column"} minH={"100vh"}>
-      <NavigationBar
-        pages={[
-          {
-            name: "Organizations",
-            href: "/orgs",
-          },
-        ]}
-      />
-      <Box p={4}>
-        <Flex justify="space-between" align="center" mb={6}>
-          <Heading size={"lg"} as={"h1"} color={"white"}>
-            Organizations
-          </Heading>
+      <ConfiguredNavigationBar items={[{ kind: "orgs" }]} />
+      <Container maxW={"6xl"}>
+        <VStack w={"full"} align={"start"}>
+          <Flex justify="space-between" align="center" mb={6} w={"full"}>
+            <Heading size={"lg"} as={"h1"} color={"white"}>
+              Organizations
+            </Heading>
 
-          <InputGroup w={"auto"} color={"white"}>
-            <Input
-              placeholder="Search"
-              value={searchFilter ?? ""}
-              onChange={(e) => setSearchFilter(e.currentTarget.value)}
-            />
-            <InputRightElement>
-              {searchFilter !== "" ? (
-                <Icon
-                  as={FiX}
-                  aria-label="Clear search"
-                  onClick={() => setSearchFilter("")}
-                  color={"gray.200"}
-                  cursor={"pointer"}
-                />
-              ) : (
-                <Icon as={FiSearch} color={"gray.200"} />
-              )}
-            </InputRightElement>
-          </InputGroup>
-        </Flex>
-        <Box mb={4}>
-          <Text color={"gray.200"}>
+            <InputGroup w={"auto"} color={"white"}>
+              <Input
+                placeholder="Search"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.currentTarget.value)}
+              />
+              <InputRightElement>
+                {searchFilter.length > 0 ? (
+                  <Icon
+                    as={FiX}
+                    aria-label="Clear search"
+                    onClick={() => setSearchFilter("")}
+                    color={"gray.200"}
+                    cursor={"pointer"}
+                  />
+                ) : (
+                  <Icon as={FiSearch} color={"gray.200"} />
+                )}
+              </InputRightElement>
+            </InputGroup>
+          </Flex>
+          <Text color={"gray.200"} mb={4}>
             Organizations allow you to manage multiple app projects and invite
             your team to collaborate.
           </Text>
-        </Box>
-        <Grid templateColumns="repeat(4, minmax(200px, 1fr))" gap={6}>
-          <GridItem key={"create"}>
-            <OrgCard
-              id={-1}
-              name="Create Project"
-              type="create"
-              bg="gray.200"
-              color={"gray.600"}
-            />
-          </GridItem>
-          {isLoading && (
-            <GridItem key={"loading"}>
-              <Flex h={"full"} align={"center"}>
-                <CircularProgress isIndeterminate size={8} />
-              </Flex>
-            </GridItem>
+          {error && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Failed to fetch organizations!</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
           )}
-          {orgs
-            ?.filter((org) => {
-              if (searchFilter === "") {
-                return true;
-              }
-              return org.name
-                .toLowerCase()
-                .includes(searchFilter.toLowerCase());
-            })
-            .map((org, index) => (
+          <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+            <GridItem key={"create"}>
+              <OrgCard
+                id={-1}
+                name="Create Organization"
+                type="create"
+                bg="gray.200"
+                color={"gray.600"}
+              />
+            </GridItem>
+            {isLoadingOrgs && (
+              <GridItem key={"loading"}>
+                <Flex h={"full"} align={"center"}>
+                  <CircularProgress isIndeterminate size={8} />
+                </Flex>
+              </GridItem>
+            )}
+            {filteredOrgs.map((org, index) => (
               <GridItem key={org.id}>
                 <OrgCard
                   id={org.id}
                   name={org.name}
-                  bg={colors[index % colors.length]}
+                  bg={rainbowColors[index % rainbowColors.length]}
                   color={"white"}
                 />
               </GridItem>
             ))}
-        </Grid>
-      </Box>
+          </Grid>
+        </VStack>
+      </Container>
     </Flex>
   );
 };

@@ -14,6 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script type="text/javascript" src="/__env.js" />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

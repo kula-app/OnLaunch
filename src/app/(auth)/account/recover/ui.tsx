@@ -5,7 +5,7 @@ import { AuthCoverImageColumn } from "@/components/auth/AuthCoverImageColumn";
 import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthTextField } from "@/components/auth/AuthTextField";
-import Routes from "@/routes/routes";
+import { Routes } from "@/routes/routes";
 import {
   Box,
   Button,

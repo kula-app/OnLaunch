@@ -5,10 +5,9 @@ const nextConfig = {
   // generation before timing out
   staticPageGenerationTimeout: 600,
 
-  experimental: {
-    // Enable the instrumentation hook for Sentry v8.x
-    instrumentationHook: true,
-  },
+  // A standalone build output, .next/standalone directory, that only includes necessary files/dependencies.
+  // Useful for self-hosting in a Docker container.
+  output: "standalone",
 };
 
 // Injected content via Sentry wizard below
@@ -32,6 +31,11 @@ module.exports = withSentryConfig(nextConfig, {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
+  // Automatically annotate React components to show their full name in breadcrumbs and session replay
+  reactComponentAnnotation: {
+    enabled: true,
+  },
+
   // Transpiles SDK to be compatible with IE11 (increases bundle size)
   transpileClientSDK: true,
 
@@ -43,4 +47,10 @@ module.exports = withSentryConfig(nextConfig, {
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
+
+  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+  // See the following for more information:
+  // https://docs.sentry.io/product/crons/
+  // https://vercel.com/docs/cron-jobs
+  automaticVercelMonitors: true,
 });

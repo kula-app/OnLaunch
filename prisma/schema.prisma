@@ -154,6 +154,9 @@ model App {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
   name      String
   publicKey String    @unique
   messages  Message[]
@@ -208,8 +211,9 @@ model Organisation {
   updatedAt DateTime @updatedAt
 
   name            String
-  invitationToken String  @unique
-  isDeleted       Boolean @default(false)
+  invitationToken String    @unique
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
 
   // stripe data
   stripeCustomerId String?
@@ -381,7 +385,8 @@ model Subscription {
   subId   String @id
   subName String
 
-  isDeleted Boolean @default(false)
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 
   // current billing period, used for reporting metered usage
   currentPeriodStart DateTime
@@ -417,6 +422,7 @@ model OrganisationAdminToken {
   role      OrganisationAccessLevel @default(FULL)
   // true indicates that this token has been revoked by a user
   isDeleted Boolean                 @default(false)
+  deletedAt DateTime?
 
   // the org the token belongs to
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
@@ -435,6 +441,7 @@ model AppAdminToken {
   expiryDate DateTime?
   // true indicates that this token has been revoked by a user
   isDeleted  Boolean        @default(false)
+  deletedAt  DateTime?
 
   // the app the token belongs to
   app   App @relation(fields: [appId], references: [id], onDelete: Cascade)
