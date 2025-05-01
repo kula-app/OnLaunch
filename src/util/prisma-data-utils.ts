@@ -160,12 +160,14 @@ export class PrismaDataUtils {
 
   static mapGroupOperatorToPrisma(
     operator: MessageRuleGroupOperator,
-  ): PrismaClient.MessageRuleGroupOperator {
+  ): PrismaClient.MessageRuleGroupOperator | undefined {
     switch (operator) {
       case MessageRuleGroupOperator.AND:
         return PrismaClient.MessageRuleGroupOperator.AND;
       case MessageRuleGroupOperator.OR:
         return PrismaClient.MessageRuleGroupOperator.OR;
+      default:
+        return undefined;
     }
   }
 
@@ -177,6 +179,8 @@ export class PrismaDataUtils {
         return ActionButtonDesign.FILLED;
       case PrismaClient.ButtonDesign.TEXT:
         return ActionButtonDesign.OUTLINE;
+      default:
+        return undefined;
     }
   }
 
@@ -188,6 +192,8 @@ export class PrismaDataUtils {
         return PrismaClient.ButtonDesign.FILLED;
       case ActionButtonDesign.OUTLINE:
         return PrismaClient.ButtonDesign.TEXT;
+      default:
+        return undefined;
     }
   }
 
@@ -212,6 +218,8 @@ export class PrismaDataUtils {
         return PrismaClient.ActionType.DISMISS;
       case MessageActionType.OPEN_APP_IN_APP_STORE:
         return PrismaClient.ActionType.OPEN_APP_IN_APP_STORE;
+      default:
+        return undefined;
     }
   }
 
