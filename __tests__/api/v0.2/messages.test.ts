@@ -1274,6 +1274,7 @@ describe("/api/v0.2/messages", () => {
               actions: [
                 {
                   actionType: "OPEN_APP_IN_APP_STORE",
+                  buttonDesign: "FILLED",
                   title: "Action 1",
                 },
               ],
