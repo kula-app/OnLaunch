@@ -2,9 +2,15 @@ export enum MessageActionDtoType {
   DISMISS = "DISMISS",
 }
 
+export enum MessageActionButtonDesign {
+  FILLED = "FILLED",
+  TEXT = "TEXT",
+}
+
 export interface MessageActionDto {
   actionType: MessageActionDtoType;
   title: string;
+  buttonDesign: MessageActionButtonDesign;
 }
 
 export interface MessageDto {
