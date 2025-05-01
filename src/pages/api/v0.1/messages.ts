@@ -159,6 +159,12 @@ const logger = new Logger(__filename);
  *                           type: string
  *                           enum:
  *                             - DISMISS
+ *                             - OPEN_APP_IN_APP_STORE
+ *                         buttonDesign:
+ *                           type: string
+ *                           enum:
+ *                             - FILLED
+ *                             - TEXT
  *                         title:
  *                           type: string
  *       400:
