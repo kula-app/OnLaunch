@@ -160,8 +160,14 @@ const logger = new Logger(__filename);
  *                           type: string
  *                           enum:
  *                             - DISMISS
+ *                             - OPEN_APP_IN_APP_STORE
  *                         title:
  *                           type: string
+ *                         buttonDesign:
+ *                           type: string
+ *                           enum:
+ *                             - FILLED
+ *                             - TEXT
  *       400:
  *         description: Bad request. See response body for validation errors.
  *       404:
