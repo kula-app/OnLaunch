@@ -104,9 +104,8 @@ export const AppSettingsSDKKeys: React.FC<{
                     onClick={() => {
                       navigator.clipboard.writeText(app?.publicKey ?? "");
                       toast({
-                        title: "Success!",
-                        description: "Public key copied to clipboard.",
-                        status: "success",
+                        title: "Public key copied to clipboard.",
+                        status: "info",
                       });
                     }}
                   />
