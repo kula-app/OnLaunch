@@ -4790,14 +4790,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-validator@npm:0.14.1":
-  version: 0.14.1
-  resolution: "class-validator@npm:0.14.1"
+"class-validator@npm:0.14.2":
+  version: 0.14.2
+  resolution: "class-validator@npm:0.14.2"
   dependencies:
     "@types/validator": "npm:^13.11.8"
-    libphonenumber-js: "npm:^1.10.53"
+    libphonenumber-js: "npm:^1.11.1"
     validator: "npm:^13.9.0"
-  checksum: 10c0/946e914e47548b5081449c720ea6a4877bac63dc960e14fca4b990b56e64efe3802d12f07ec22d6420c290245b72ea2d646939239f2a3b597794e6c4c2a4f2ae
+  checksum: 10c0/5bb67389d38fa23d342dffdd8e2dcee8235e1906e59799df5b2050278a6d89292fcaa88167f0215e3ddd684f47dcd51b004efa7be32d8aded91ee06cb317b3b8
   languageName: node
   linkType: hard
 
@@ -9120,10 +9120,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.10.53":
-  version: 1.11.7
-  resolution: "libphonenumber-js@npm:1.11.7"
-  checksum: 10c0/c22a7d5b479393b71403b9be704669ca03de92adb051a1c5385d237293e2a89385732ad2406053bd72275e8d2e872dc1ee7c46ffc6de632a3b4d582023362635
+"libphonenumber-js@npm:^1.11.1":
+  version: 1.12.7
+  resolution: "libphonenumber-js@npm:1.12.7"
+  checksum: 10c0/ac732b5e8bfe093b4c2aa470a69f52304ebe7cfefebe3ef902ba0cbbf2c159da00993cae0425c7e497961ca015d46082925f37a6c8626b07e98e1bb9e45414cb
   languageName: node
   linkType: hard
 
@@ -10371,7 +10371,7 @@ __metadata:
     cal-sans: "npm:1.0.1"
     chart.js: "npm:4.4.9"
     class-transformer: "npm:0.5.1"
-    class-validator: "npm:0.14.1"
+    class-validator: "npm:0.14.2"
     core-js: "npm:3.42.0"
     cypress: "npm:14.3.2"
     dotenv: "npm:16.5.0"
