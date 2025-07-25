@@ -27,9 +27,8 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { FaArrowRight, FaGear } from "react-icons/fa6";
-import { OrgCard } from "../_components/org-card";
+import { AppCard } from "./_components/app-card";
 import { OrgMetrics } from "./_components/org-metrics";
-import { AppCard } from "./apps/_components/app-card";
 
 export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
   const router = useRouter();
@@ -106,12 +105,13 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
             <Grid templateColumns="repeat(4, 1fr)" gap={6}>
               {authenticatedUserRole === OrgRole.ADMIN && (
                 <GridItem key={"create"}>
-                  <OrgCard
-                    id={-1}
+                  <AppCard
+                    appId={-1}
                     name="Create App"
                     type="create"
                     bg="gray.200"
                     color={"gray.600"}
+                    orgId={orgId}
                   />
                 </GridItem>
               )}

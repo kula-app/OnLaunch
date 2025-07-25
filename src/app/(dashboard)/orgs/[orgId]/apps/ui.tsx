@@ -23,7 +23,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
-import { AppCard } from "./_components/app-card";
+import { AppCard } from "../_components/app-card";
 
 export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
   const router = useRouter();
