@@ -64,7 +64,7 @@
     "swr": "2.3.6",
     "use-debounce": "10.0.6",
     "uuid": "11.1.0",
-    "yup": "1.6.1"
+    "yup": "1.7.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
