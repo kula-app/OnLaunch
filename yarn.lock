@@ -2578,9 +2578,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/cli-darwin@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-darwin@npm:2.56.0"
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "@sentry/cli-linux-arm64@npm:2.55.0":
   version: 2.55.0
   resolution: "@sentry/cli-linux-arm64@npm:2.55.0"
+  conditions: (os=linux | os=freebsd | os=android) & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-arm64@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-linux-arm64@npm:2.56.0"
   conditions: (os=linux | os=freebsd | os=android) & cpu=arm64
   languageName: node
   linkType: hard
@@ -2592,9 +2606,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/cli-linux-arm@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-linux-arm@npm:2.56.0"
+  conditions: (os=linux | os=freebsd | os=android) & cpu=arm
+  languageName: node
+  linkType: hard
+
 "@sentry/cli-linux-i686@npm:2.55.0":
   version: 2.55.0
   resolution: "@sentry/cli-linux-i686@npm:2.55.0"
+  conditions: (os=linux | os=freebsd | os=android) & (cpu=x86 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-linux-i686@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-linux-i686@npm:2.56.0"
   conditions: (os=linux | os=freebsd | os=android) & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
@@ -2606,9 +2634,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/cli-linux-x64@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-linux-x64@npm:2.56.0"
+  conditions: (os=linux | os=freebsd | os=android) & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@sentry/cli-win32-arm64@npm:2.55.0":
   version: 2.55.0
   resolution: "@sentry/cli-win32-arm64@npm:2.55.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-win32-arm64@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-win32-arm64@npm:2.56.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -2620,6 +2662,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/cli-win32-i686@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-win32-i686@npm:2.56.0"
+  conditions: os=win32 & (cpu=x86 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
 "@sentry/cli-win32-x64@npm:2.55.0":
   version: 2.55.0
   resolution: "@sentry/cli-win32-x64@npm:2.55.0"
@@ -2627,7 +2676,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:2.55.0, @sentry/cli@npm:^2.49.0":
+"@sentry/cli-win32-x64@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli-win32-x64@npm:2.56.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli@npm:2.56.0":
+  version: 2.56.0
+  resolution: "@sentry/cli@npm:2.56.0"
+  dependencies:
+    "@sentry/cli-darwin": "npm:2.56.0"
+    "@sentry/cli-linux-arm": "npm:2.56.0"
+    "@sentry/cli-linux-arm64": "npm:2.56.0"
+    "@sentry/cli-linux-i686": "npm:2.56.0"
+    "@sentry/cli-linux-x64": "npm:2.56.0"
+    "@sentry/cli-win32-arm64": "npm:2.56.0"
+    "@sentry/cli-win32-i686": "npm:2.56.0"
+    "@sentry/cli-win32-x64": "npm:2.56.0"
+    https-proxy-agent: "npm:^5.0.0"
+    node-fetch: "npm:^2.6.7"
+    progress: "npm:^2.0.3"
+    proxy-from-env: "npm:^1.1.0"
+    which: "npm:^2.0.2"
+  dependenciesMeta:
+    "@sentry/cli-darwin":
+      optional: true
+    "@sentry/cli-linux-arm":
+      optional: true
+    "@sentry/cli-linux-arm64":
+      optional: true
+    "@sentry/cli-linux-i686":
+      optional: true
+    "@sentry/cli-linux-x64":
+      optional: true
+    "@sentry/cli-win32-arm64":
+      optional: true
+    "@sentry/cli-win32-i686":
+      optional: true
+    "@sentry/cli-win32-x64":
+      optional: true
+  bin:
+    sentry-cli: bin/sentry-cli
+  checksum: 10c0/fcc64ae01d55461bbcc81a6973f882bf1aa8dfb2fe030fd3b3e2e7fe204466aa763276b29b1ba8158af7703b6c744ba114d2c289805e291606c9900c16d84dca
+  languageName: node
+  linkType: hard
+
+"@sentry/cli@npm:^2.49.0":
   version: 2.55.0
   resolution: "@sentry/cli@npm:2.55.0"
   dependencies:
@@ -10060,7 +10156,7 @@ __metadata:
     "@opentelemetry/api": "npm:1.9.0"
     "@prisma/client": "npm:6.8.2"
     "@prisma/instrumentation": "npm:6.8.2"
-    "@sentry/cli": "npm:2.55.0"
+    "@sentry/cli": "npm:2.56.0"
     "@sentry/nextjs": "npm:9.46.0"
     "@stripe/react-stripe-js": "npm:3.10.0"
     "@stripe/stripe-js": "npm:7.9.0"
