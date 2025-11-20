@@ -5348,18 +5348,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4.3.4":
-  version: 4.3.4
-  resolution: "debug@npm:4.3.4"
-  dependencies:
-    ms: "npm:2.1.2"
-  peerDependenciesMeta:
-    supports-color:
-      optional: true
-  checksum: 10c0/cedbec45298dd5c501d01b92b119cd3faebe5438c3917ff11ae1bff86a6c722930ac9c8659792824013168ba6db7c4668225d845c633fbdafbbf902a6389f736
-  languageName: node
-  linkType: hard
-
 "debug@npm:4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
@@ -9164,12 +9152,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"local-cypress@npm:1.2.6":
-  version: 1.2.6
-  resolution: "local-cypress@npm:1.2.6"
+"local-cypress@npm:1.2.8":
+  version: 1.2.8
+  resolution: "local-cypress@npm:1.2.8"
   dependencies:
-    debug: "npm:4.3.4"
-  checksum: 10c0/a8763f6071a91b18b6d559fd9ef1d90bb5653a2aca69186c4bbcf4715ec507b526db4a9b14702e472533236ed8b77d8dc51612bea1ef6908db3795f6349f5e5b
+    debug: "npm:4.4.3"
+  checksum: 10c0/344f34fb31d46d6c90247a481321f44dc0533659f121c96730fd2bfa2fdab88b6a4740fb8a76a2ea31c4200fdd98641b4c5999526d98eec010d574eb2e5f5772
   languageName: node
   linkType: hard
 
@@ -10408,7 +10396,7 @@ __metadata:
     jest-environment-jsdom: "npm:29.7.0"
     jest-mock-extended: "npm:4.0.0"
     js-yaml: "npm:4.1.1"
-    local-cypress: "npm:1.2.6"
+    local-cypress: "npm:1.2.8"
     luxon: "npm:3.7.2"
     mobx: "npm:6.15.0"
     moment: "npm:2.30.1"
