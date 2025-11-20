@@ -38,7 +38,7 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2",
     "dotenv": "16.6.1",
-    "formik": "2.4.6",
+    "formik": "2.4.9",
     "framer-motion": "12.23.24",
     "http-status-codes": "2.3.0",
     "ioredis": "5.8.1",

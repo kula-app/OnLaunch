@@ -6828,9 +6828,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formik@npm:2.4.6":
-  version: 2.4.6
-  resolution: "formik@npm:2.4.6"
+"formik@npm:2.4.9":
+  version: 2.4.9
+  resolution: "formik@npm:2.4.9"
   dependencies:
     "@types/hoist-non-react-statics": "npm:^3.3.1"
     deepmerge: "npm:^2.1.1"
@@ -6842,7 +6842,7 @@ __metadata:
     tslib: "npm:^2.0.0"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10c0/e2853fc7833649386ff183eac9cb6a69a999c4b05aabe5636152e1cec1eb35ac0d9f511425624f0d7a88c6e19d4fd2aa259399a6683f0475c30170a5a3ea4f79
+  checksum: 10c0/2b76154b624f4464871f56204a7a87fec9f0cc24d742ad4e20628bd680a81ef2ae9966f54b616003f623dc1f7c7b25a25aafa8a59bcc1d940b7526fb665dbd0b
   languageName: node
   linkType: hard
 
@@ -10404,7 +10404,7 @@ __metadata:
     dotenv: "npm:16.6.1"
     eslint: "npm:8.57.1"
     eslint-config-next: "npm:15.3.1"
-    formik: "npm:2.4.6"
+    formik: "npm:2.4.9"
     framer-motion: "npm:12.23.24"
     http-status-codes: "npm:2.3.0"
     husky: "npm:9.1.7"
