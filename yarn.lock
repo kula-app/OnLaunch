@@ -10429,7 +10429,7 @@ __metadata:
     prisma: "npm:6.19.0"
     ramda: "npm:0.32.0"
     react: "npm:18.3.1"
-    react-chartjs-2: "npm:5.3.0"
+    react-chartjs-2: "npm:5.3.1"
     react-dom: "npm:18.3.1"
     react-icons: "npm:5.5.0"
     redoc: "npm:2.5.2"
@@ -11295,13 +11295,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-chartjs-2@npm:5.3.0":
-  version: 5.3.0
-  resolution: "react-chartjs-2@npm:5.3.0"
+"react-chartjs-2@npm:5.3.1":
+  version: 5.3.1
+  resolution: "react-chartjs-2@npm:5.3.1"
   peerDependencies:
     chart.js: ^4.1.1
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/4415d40217c084a49f9a936fbd30f67e0e705148e6f8359bec65601033d1076f31085c45793839fc29ec833e6c427b0bf9861a0c54c432c08d35bc9590ffa41a
+  checksum: 10c0/40fac3fe23a163232d952bf5cd2a14d7baceadea326b57909d5e556ed2481b7cfb177582ac8f39b8dc51ac11f3d19a6127784746f35f5771181ab700110e7326
   languageName: node
   linkType: hard
 
