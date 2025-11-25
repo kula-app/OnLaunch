@@ -2,11 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "prCreation": "immediate",
-  "automerge": true,
+  "automerge": false,
   "lockFileMaintenance": {
+    "automerge": false,
     "enabled": true,
-    "extends": ["schedule:daily"],
-    "automerge": true
+    "extends": ["schedule:daily"]
   },
   "stopUpdatingLabel": "renovate:disabled",
   "timezone": "Europe/Vienna"
