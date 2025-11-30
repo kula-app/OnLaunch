@@ -36,7 +36,7 @@
     "cal-sans": "1.0.1",
     "chart.js": "4.5.1",
     "class-transformer": "0.5.1",
-    "class-validator": "0.14.2",
+    "class-validator": "0.14.3",
     "dotenv": "16.6.1",
     "formik": "2.4.9",
     "framer-motion": "12.23.24",
