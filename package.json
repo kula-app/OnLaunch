@@ -46,7 +46,7 @@
     "luxon": "3.7.2",
     "mobx": "6.15.0",
     "moment": "2.30.1",
-    "next": "15.4.7",
+    "next": "15.4.8",
     "next-auth": "4.24.13",
     "next-swagger-doc": "0.4.1",
     "nodemailer": "7.0.10",
