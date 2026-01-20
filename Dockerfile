@@ -8,7 +8,7 @@ WORKDIR /tmp
 RUN apk add --no-cache curl unzip
 
 # ---- Prisma CLI ----
-FROM node:22.21.1-alpine AS prisma
+FROM node:24.13.0-alpine AS prisma
 WORKDIR /tmp
 
 # Install tooling
@@ -26,7 +26,7 @@ COPY yarn.lock .
 RUN yarn info --json prisma | jq -r '.children.Version' > .prisma-version
 
 # ---- Base ----
-FROM node:22.21.1-alpine AS base
+FROM node:24.13.0-alpine AS base
 
 # Set Working Directory
 WORKDIR /home/node/app
@@ -102,7 +102,7 @@ EOT
 
 # ---- Release ----
 # build production ready image
-FROM node:22.21.1-alpine AS release
+FROM node:24.13.0-alpine AS release
 ARG TARGETARCH
 LABEL maintainer="opensource@kula.app"
 
