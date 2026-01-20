@@ -9837,13 +9837,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-router-mock@npm:0.9.13":
-  version: 0.9.13
-  resolution: "next-router-mock@npm:0.9.13"
+"next-router-mock@npm:1.0.5":
+  version: 1.0.5
+  resolution: "next-router-mock@npm:1.0.5"
   peerDependencies:
     next: ">=10.0.0"
     react: ">=17.0.0"
-  checksum: 10c0/c6b4ee1eb4145a7c126c3c436e124ace5c2ae9e516aa1721487d89a201f7249317b8380649ff76c2b8434d2b87d2c59f6c0d5277ba83851f0f6c2e2dedbfe051
+  checksum: 10c0/ca37d925e2cff24968de6221606c06be6ddebd1d590861ed5136cbd27a38bcb81a7e31c0dd3074f39d34ae3278a3427c63746fd303f60d3474ec0fed1b5d4897
   languageName: node
   linkType: hard
 
@@ -10408,7 +10408,7 @@ __metadata:
     moment: "npm:2.30.1"
     next: "npm:15.4.8"
     next-auth: "npm:4.24.13"
-    next-router-mock: "npm:0.9.13"
+    next-router-mock: "npm:1.0.5"
     next-swagger-doc: "npm:0.4.1"
     node-mocks-http: "npm:1.17.2"
     nodemailer: "npm:7.0.11"
