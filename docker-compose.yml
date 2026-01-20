@@ -35,7 +35,7 @@ services:
       - redis-sentinel_data:/bitnami
 
   redis:
-    image: redis:7
+    image: redis:8
     command: redis-server --requirepass ${REDIS_PASSWORD:-"password"}
     ports:
       - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
