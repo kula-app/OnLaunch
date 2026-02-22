@@ -1,0 +1,189 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        description: "Name of the Docker image (e.g., onlaunch)"
+        required: true
+        type: string
+      context-path:
+        description: "Build context path (e.g., .)"
+        required: true
+        type: string
+      dockerfile-path:
+        description: "Path to Dockerfile (e.g., ./Dockerfile)"
+        required: true
+        type: string
+      build-args:
+        description: "Build arguments as multi-line string"
+        required: false
+        type: string
+        default: ""
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      SENTRY_AUTH_TOKEN:
+        required: false
+
+jobs:
+  build:
+    name: Build (${{ matrix.platform.name }})
+    runs-on: ${{ matrix.platform.runner }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: linux/amd64
+            tag: linux-amd64
+            runner: ubuntu-24.04
+          - name: linux/arm64
+            tag: linux-arm64
+            runner: ubuntu-24.04-arm
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.image-name }}-${{ matrix.platform.name }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.context-path }}
+          file: ${{ inputs.dockerfile-path }}
+          platforms: ${{ matrix.platform.name }}
+          build-args: ${{ inputs.build-args }}
+          secrets: |
+            ${{ github.event_name != 'pull_request' && secrets.SENTRY_AUTH_TOKEN != '' && format('sentry_auth_token={0}', secrets.SENTRY_AUTH_TOKEN) || ''}}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}:buildcache-${{ matrix.platform.tag }}
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}:buildcache-${{ matrix.platform.tag }},mode=max
+          tags: |
+            docker.io/kula/${{ inputs.image-name }}
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
+
+      - name: Export digest
+        run: |
+          set -e
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+          ls -la /tmp/digests
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v6
+        with:
+          name: digests-${{ inputs.image-name }}-${{ matrix.platform.tag }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    name: Create Manifest
+    runs-on: ubuntu-24.04
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-merge-${{ inputs.image-name }}
+      cancel-in-progress: true
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v7
+        with:
+          path: /tmp/digests
+          pattern: digests-${{ inputs.image-name }}-*
+          merge-multiple: true
+
+      - name: List digests
+        run: ls -la /tmp/digests
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            docker.io/kula/${{ inputs.image-name }}
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.event_name != 'pull_request' }}
+            type=sha
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          # Extract all tags
+          image_tags=$(printf '%s' "$DOCKER_METADATA_OUTPUT_JSON" | jq -cr '.tags | map("-t " + .) | join(" ")')
+          echo "Creating manifest list with tags: $image_tags"
+
+          # Extract unique image names (without tags) to build digest references
+          image_names=$(printf '%s' "$DOCKER_METADATA_OUTPUT_JSON" | jq -cr '.tags | map(split(":")[0]) | unique | join(" ")')
+          echo "Image names: $image_names"
+
+          # Build digest references for all images
+          digest_refs=""
+          for image_name in $image_names; do
+            for digest_file in *; do
+              digest_refs="$digest_refs ${image_name}@sha256:${digest_file}"
+            done
+          done
+          echo "Digest references: $digest_refs"
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Dry run: would create manifest list with the following tags: $image_tags"
+            echo "Would use digests: $digest_refs"
+          else
+            echo "Creating manifest using buildx..."
+            docker buildx imagetools create $image_tags $digest_refs
+            # Inspect the first tag for verification
+            first_tag=$(printf '%s' "$DOCKER_METADATA_OUTPUT_JSON" | jq -cr '.tags[0]')
+            docker buildx imagetools inspect "$first_tag"
+          fi
