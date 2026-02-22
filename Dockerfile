@@ -164,6 +164,9 @@ COPY --from=build --chown=node:node /home/node/app/public ./public
 RUN sentry-cli sourcemaps inject .next
 
 # Upload sourcemaps to Sentry (matched via debug IDs, no release needed at build time)
+# GIT_SHA is used as a cache buster so this layer re-runs on each new commit
+# (secrets are not part of the Docker cache key)
+ARG GIT_SHA
 RUN --mount=type=secret,id=sentry_auth_token \
     if [ -f /run/secrets/sentry_auth_token ]; then \
       echo "Uploading sourcemaps to Sentry..." && \
