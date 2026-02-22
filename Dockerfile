@@ -163,6 +163,19 @@ COPY --from=build --chown=node:node /home/node/app/public ./public
 # Inject Sentry Source Maps
 RUN sentry-cli sourcemaps inject .next
 
+# Upload sourcemaps to Sentry (matched via debug IDs, no release needed at build time)
+RUN --mount=type=secret,id=sentry_auth_token \
+    if [ -f /run/secrets/sentry_auth_token ]; then \
+      echo "Uploading sourcemaps to Sentry..." && \
+      SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
+      sentry-cli sourcemaps upload \
+        --org kula-app \
+        --project onlaunch \
+        .next; \
+    else \
+      echo "Skipping sourcemap upload (no SENTRY_AUTH_TOKEN secret provided)"; \
+    fi
+
 # Select a non-root user to run the application
 USER node
 
