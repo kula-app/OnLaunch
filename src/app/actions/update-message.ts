@@ -17,7 +17,7 @@ type ActionDto = Omit<Message, "appId">;
 export const updateMessage = createAuthenticatedServerAction(
   async (session, dto: ActionDto) => {
     logger.log(`Updating message with id '${dto.id}'`);
-    prisma.$transaction(async () => {
+    await prisma.$transaction(async () => {
       logger.verbose(`Fetch message with id '${dto.id}'`);
       const message = await prisma.message.findUnique({
         where: {
