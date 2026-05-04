@@ -1,4 +1,9 @@
-import { ActionType, ButtonDesign, type MessageAction } from ".prisma/client";
+import {
+  ActionType,
+  ButtonDesign,
+  MessageActionLinkTarget,
+  type MessageAction,
+} from ".prisma/client";
 import { IsAfter } from "@/util/validators/isAfterValidator";
 import { Type } from "class-transformer";
 import {
@@ -29,6 +34,10 @@ class ActionDto {
   @IsString()
   @MaxLength(200)
   link?: string;
+
+  @IsOptional()
+  @IsEnum(MessageActionLinkTarget)
+  linkTarget?: MessageActionLinkTarget;
 }
 
 export class CreateMessageDto {
