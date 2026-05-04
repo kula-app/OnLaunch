@@ -129,7 +129,7 @@ const logger = new Logger(__filename);
  *           type: string
  *         actionType:
  *           type: string
- *           enum: [DISMISS]
+ *           enum: [DISMISS, OPEN_APP_IN_APP_STORE]
  *         buttonDesign:
  *           type: string
  *           enum: [FILLED, TEXT]

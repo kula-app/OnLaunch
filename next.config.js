@@ -24,6 +24,11 @@ module.exports = withSentryConfig(nextConfig, {
   org: "kula-app",
   project: "onlaunch",
 
+  // Disable automatic sourcemap upload — handled by sentry-cli in Dockerfile
+  sourcemaps: {
+    disable: true,
+  },
+
   // -- SENTRY SDK OPTIONS --
   // For all available options, see:
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/

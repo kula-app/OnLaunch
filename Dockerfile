@@ -8,7 +8,7 @@ WORKDIR /tmp
 RUN apk add --no-cache curl unzip
 
 # ---- Prisma CLI ----
-FROM node:22.15.0-alpine AS prisma
+FROM node:24.13.0-alpine AS prisma
 WORKDIR /tmp
 
 # Install tooling
@@ -26,7 +26,7 @@ COPY yarn.lock .
 RUN yarn info --json prisma | jq -r '.children.Version' > .prisma-version
 
 # ---- Base ----
-FROM node:22.15.0-alpine AS base
+FROM node:24.13.0-alpine AS base
 
 # Set Working Directory
 WORKDIR /home/node/app
@@ -102,7 +102,7 @@ EOT
 
 # ---- Release ----
 # build production ready image
-FROM node:22.15.0-alpine AS release
+FROM node:24.13.0-alpine AS release
 ARG TARGETARCH
 LABEL maintainer="opensource@kula.app"
 
@@ -162,6 +162,22 @@ COPY --from=build --chown=node:node /home/node/app/public ./public
 
 # Inject Sentry Source Maps
 RUN sentry-cli sourcemaps inject .next
+
+# Upload sourcemaps to Sentry (matched via debug IDs, no release needed at build time)
+# GIT_SHA is used as a cache buster so this layer re-runs on each new commit
+# (secrets are not part of the Docker cache key)
+ARG GIT_SHA
+RUN --mount=type=secret,id=sentry_auth_token \
+    if [ -f /run/secrets/sentry_auth_token ]; then \
+      echo "Uploading sourcemaps to Sentry..." && \
+      SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
+      sentry-cli sourcemaps upload \
+        --org kula-app \
+        --project onlaunch \
+        .next; \
+    else \
+      echo "Skipping sourcemap upload (no SENTRY_AUTH_TOKEN secret provided)"; \
+    fi
 
 # Select a non-root user to run the application
 USER node

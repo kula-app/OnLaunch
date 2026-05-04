@@ -22,6 +22,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { FaCopy } from "react-icons/fa6";
+import { FetchMessagesFromAPISection } from "./fetch-messages-from-api-section";
 import { SDKCard } from "./sdk-card";
 
 export const AppSettingsSDKKeys: React.FC<{
@@ -122,6 +123,7 @@ export const AppSettingsSDKKeys: React.FC<{
             ))}
           </Grid>
         </VStack>
+        <FetchMessagesFromAPISection apiKey={app?.publicKey} />
       </Flex>
     </>
   );

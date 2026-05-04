@@ -159,6 +159,12 @@ const logger = new Logger(__filename);
  *                           type: string
  *                           enum:
  *                             - DISMISS
+ *                             - OPEN_APP_IN_APP_STORE
+ *                         buttonDesign:
+ *                           type: string
+ *                           enum:
+ *                             - FILLED
+ *                             - TEXT
  *                         title:
  *                           type: string
  *       400:
@@ -409,6 +415,9 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           switch (action.actionType) {
             case $Enums.ActionType.DISMISS:
               actionType = ActionType.Dismiss;
+              break;
+            case $Enums.ActionType.OPEN_APP_IN_APP_STORE:
+              actionType = ActionType.OPEN_APP_IN_APP_STORE;
               break;
             default:
               return prev;

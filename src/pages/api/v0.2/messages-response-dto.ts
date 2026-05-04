@@ -1,6 +1,12 @@
 export enum MessageActionDtoType {
   DISMISS = "DISMISS",
+  OPEN_APP_IN_APP_STORE = "OPEN_APP_IN_APP_STORE",
   LINK = "LINK",
+}
+
+export enum MessageActionButtonDesign {
+  FILLED = "FILLED",
+  TEXT = "TEXT",
 }
 
 export enum MessageActionLinkDtoTarget {
@@ -17,6 +23,7 @@ export interface MessageActionLinkDto {
 export interface MessageActionDto {
   actionType: MessageActionDtoType;
   title: string;
+  buttonDesign: MessageActionButtonDesign;
   link?: MessageActionLinkDto;
 }
 

@@ -537,7 +537,15 @@
                             "actionType": {
                               "type": "string",
                               "enum": [
-                                "DISMISS"
+                                "DISMISS",
+                                "OPEN_APP_IN_APP_STORE"
+                              ]
+                            },
+                            "buttonDesign": {
+                              "type": "string",
+                              "enum": [
+                                "FILLED",
+                                "TEXT"
                               ]
                             },
                             "title": {
@@ -740,11 +748,36 @@
                             "actionType": {
                               "type": "string",
                               "enum": [
-                                "DISMISS"
+                                "DISMISS",
+                                "OPEN_APP_IN_APP_STORE",
+                                "LINK"
                               ]
                             },
                             "title": {
                               "type": "string"
+                            },
+                            "buttonDesign": {
+                              "type": "string",
+                              "enum": [
+                                "FILLED",
+                                "TEXT"
+                              ]
+                            },
+                            "link": {
+                              "type": "object",
+                              "properties": {
+                                "link": {
+                                  "type": "string"
+                                },
+                                "target": {
+                                  "type": "string",
+                                  "enum": [
+                                    "IN_APP_BROWSER",
+                                    "SHARE_SHEET",
+                                    "SYSTEM_BROWSER"
+                                  ]
+                                }
+                              }
                             }
                           }
                         }
@@ -855,7 +888,8 @@
           "actionType": {
             "type": "string",
             "enum": [
-              "DISMISS"
+              "DISMISS",
+              "OPEN_APP_IN_APP_STORE"
             ]
           },
           "buttonDesign": {
