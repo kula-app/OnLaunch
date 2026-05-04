@@ -800,8 +800,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 1",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
-              link: null,
-              linkTarget: null,
+            link: null,
+            linkTarget: null,
             };
             const message1: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -848,8 +848,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 2",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
-              link: null,
-              linkTarget: null,
+            link: null,
+            linkTarget: null,
             };
             const message2: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -1022,8 +1022,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 1",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
-              link: null,
-              linkTarget: null,
+            link: null,
+            linkTarget: null,
             };
             const message1: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -1225,6 +1225,317 @@ describe("/api/v0.2/messages", () => {
         expect(prismaMock.loggedApiRequests.create).toHaveBeenCalled();
       });
 
+      describe("message with open link action", () => {
+        it("should return message with open link action and IN_APP_BROWSER target", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Open Link",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: "https://onlaunch.app",
+            linkTarget: $Enums.MessageActionLinkTarget.IN_APP_BROWSER,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          expect(res._getJSONData()).toStrictEqual([
+            {
+              id: 1,
+              title: "Message 1",
+              body: "This is a message",
+              blocking: false,
+              actions: [
+                {
+                  actionType: "LINK",
+                  buttonDesign: "FILLED",
+                  title: "Open Link",
+                  link: {
+                    link: "https://onlaunch.app",
+                    target: "IN_APP_BROWSER",
+                  },
+                },
+              ],
+            },
+          ]);
+        });
+
+        it("should return message with open link action and SHARE_SHEET target", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Share",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: "https://onlaunch.app",
+            linkTarget: $Enums.MessageActionLinkTarget.SHARE_SHEET,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          expect(
+            (res._getJSONData() as { actions: { link: unknown }[] }[])[0]
+              .actions[0].link,
+          ).toStrictEqual({
+            link: "https://onlaunch.app",
+            target: "SHARE_SHEET",
+          });
+        });
+
+        it("should return message with open link action and SYSTEM_BROWSER target", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Open in browser",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: "https://onlaunch.app",
+            linkTarget: $Enums.MessageActionLinkTarget.SYSTEM_BROWSER,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          expect(
+            (res._getJSONData() as { actions: { link: unknown }[] }[])[0]
+              .actions[0].link,
+          ).toStrictEqual({
+            link: "https://onlaunch.app",
+            target: "SYSTEM_BROWSER",
+          });
+        });
+
+        it("should omit link field when link is null", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Open Link",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: null,
+            linkTarget: $Enums.MessageActionLinkTarget.IN_APP_BROWSER,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          const action = (
+            res._getJSONData() as { actions: { link?: unknown }[] }[]
+          )[0].actions[0];
+          expect(action).not.toHaveProperty("link");
+        });
+
+        it("should omit link field when linkTarget is null", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Open Link",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: "https://onlaunch.app",
+            linkTarget: null,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          const action = (
+            res._getJSONData() as { actions: { link?: unknown }[] }[]
+          )[0].actions[0];
+          expect(action).not.toHaveProperty("link");
+        });
+
+        it("should omit link field when both link and linkTarget are null", async () => {
+          // -- Arrange --
+          jest.useFakeTimers().setSystemTime(new Date(1000));
+          const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+            method: "GET",
+            headers: {
+              "x-api-key": "client-key",
+            },
+          });
+
+          const action1: PrismaMessageAction = {
+            id: 1,
+            messageId: null,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Open Link",
+            actionType: $Enums.ActionType.OPEN_LINK,
+            buttonDesign: $Enums.ButtonDesign.FILLED,
+            link: null,
+            linkTarget: null,
+          };
+          const message1: PrismaMessage & {
+            actions: PrismaMessageAction[];
+          } = {
+            id: 1,
+            appId: 1,
+            createdAt: new Date(1000),
+            updatedAt: new Date(2000),
+            title: "Message 1",
+            body: "This is a message",
+            actions: [action1],
+            blocking: false,
+            startDate: new Date(500),
+            endDate: new Date(1500),
+          };
+          prismaMock.message.findMany.mockResolvedValue([message1]);
+
+          // -- Act --
+          await handler(req, res);
+
+          // -- Assert --
+          expect(res.statusCode).toEqual(StatusCodes.OK);
+          const action = (
+            res._getJSONData() as { actions: { link?: unknown }[] }[]
+          )[0].actions[0];
+          expect(action).not.toHaveProperty("link");
+        });
+      });
+
       describe("message with open in app store action", () => {
         it("should return message with open in app store action", async () => {
           // -- Arrange --
@@ -1246,8 +1557,8 @@ describe("/api/v0.2/messages", () => {
             title: "Action 1",
             actionType: $Enums.ActionType.OPEN_APP_IN_APP_STORE,
             buttonDesign: $Enums.ButtonDesign.FILLED,
-              link: null,
-              linkTarget: null,
+            link: null,
+            linkTarget: null,
           };
           const message1: PrismaMessage & {
             actions: PrismaMessageAction[];

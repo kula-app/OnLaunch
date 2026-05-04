@@ -1,4 +1,5 @@
 import { MessageActionButtonDesign } from "@/models/message-action-button-design";
+import { MessageActionLinkTarget } from "@/models/message-action-link-target";
 import { MessageActionType } from "@/models/message-action-type";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -1161,6 +1162,28 @@ describe("PrismaDataUtils", () => {
         expect(result).toEqual(MessageActionType.DISMISS);
       });
     });
+
+    describe(PrismaClient.ActionType.OPEN_APP_IN_APP_STORE, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapActionTypeFromPrisma(
+          PrismaClient.ActionType.OPEN_APP_IN_APP_STORE,
+        );
+        // -- Assert --
+        expect(result).toEqual(MessageActionType.OPEN_APP_IN_APP_STORE);
+      });
+    });
+
+    describe(PrismaClient.ActionType.OPEN_LINK, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapActionTypeFromPrisma(
+          PrismaClient.ActionType.OPEN_LINK,
+        );
+        // -- Assert --
+        expect(result).toEqual(MessageActionType.OPEN_LINK);
+      });
+    });
   });
 
   describe("#mapActionTypeToPrisma", () => {
@@ -1172,6 +1195,126 @@ describe("PrismaDataUtils", () => {
         );
         // -- Assert --
         expect(result).toEqual(PrismaClient.ActionType.DISMISS);
+      });
+    });
+
+    describe(MessageActionType.OPEN_APP_IN_APP_STORE, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapActionTypeToPrisma(
+          MessageActionType.OPEN_APP_IN_APP_STORE,
+        );
+        // -- Assert --
+        expect(result).toEqual(PrismaClient.ActionType.OPEN_APP_IN_APP_STORE);
+      });
+    });
+
+    describe(MessageActionType.OPEN_LINK, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapActionTypeToPrisma(
+          MessageActionType.OPEN_LINK,
+        );
+        // -- Assert --
+        expect(result).toEqual(PrismaClient.ActionType.OPEN_LINK);
+      });
+    });
+  });
+
+  describe("#mapMessageActionLinkTargetFromPrisma", () => {
+    describe("unknown target", () => {
+      it("should return undefined", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetFromPrisma(
+          "unknown" as PrismaClient.MessageActionLinkTarget,
+        );
+        // -- Assert --
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe(PrismaClient.MessageActionLinkTarget.IN_APP_BROWSER, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetFromPrisma(
+          PrismaClient.MessageActionLinkTarget.IN_APP_BROWSER,
+        );
+        // -- Assert --
+        expect(result).toEqual(MessageActionLinkTarget.IN_APP_BROWSER);
+      });
+    });
+
+    describe(PrismaClient.MessageActionLinkTarget.SHARE_SHEET, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetFromPrisma(
+          PrismaClient.MessageActionLinkTarget.SHARE_SHEET,
+        );
+        // -- Assert --
+        expect(result).toEqual(MessageActionLinkTarget.SHARE_SHEET);
+      });
+    });
+
+    describe(PrismaClient.MessageActionLinkTarget.SYSTEM_BROWSER, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetFromPrisma(
+          PrismaClient.MessageActionLinkTarget.SYSTEM_BROWSER,
+        );
+        // -- Assert --
+        expect(result).toEqual(MessageActionLinkTarget.SYSTEM_BROWSER);
+      });
+    });
+  });
+
+  describe("#mapMessageActionLinkTargetToPrisma", () => {
+    describe("unknown target", () => {
+      it("should return undefined", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+          "unknown" as MessageActionLinkTarget,
+        );
+        // -- Assert --
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe(MessageActionLinkTarget.IN_APP_BROWSER, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+          MessageActionLinkTarget.IN_APP_BROWSER,
+        );
+        // -- Assert --
+        expect(result).toEqual(
+          PrismaClient.MessageActionLinkTarget.IN_APP_BROWSER,
+        );
+      });
+    });
+
+    describe(MessageActionLinkTarget.SHARE_SHEET, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+          MessageActionLinkTarget.SHARE_SHEET,
+        );
+        // -- Assert --
+        expect(result).toEqual(
+          PrismaClient.MessageActionLinkTarget.SHARE_SHEET,
+        );
+      });
+    });
+
+    describe(MessageActionLinkTarget.SYSTEM_BROWSER, () => {
+      it("should be mapped", () => {
+        // -- Act --
+        const result = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+          MessageActionLinkTarget.SYSTEM_BROWSER,
+        );
+        // -- Assert --
+        expect(result).toEqual(
+          PrismaClient.MessageActionLinkTarget.SYSTEM_BROWSER,
+        );
       });
     });
   });

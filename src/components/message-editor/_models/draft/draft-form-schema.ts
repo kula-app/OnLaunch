@@ -14,16 +14,20 @@ const actionSchema: Yup.ObjectSchema<DraftFormActionData> = Yup.object({
     .required("Button design is required")
     .oneOf(Object.values(MessageActionButtonDesign)),
   link: Yup.object({
-    link: Yup.string()
-      .url("The link must be a valid URL")
-      .required("Link is required"),
-    target: Yup.string()
-      .oneOf(Object.values(MessageActionLinkTarget))
-      .required("Target is required"),
+    link: Yup.string().url("The link must be a valid URL"),
+    target: Yup.string().oneOf(Object.values(MessageActionLinkTarget)),
   }).when("actionType", {
     is: MessageActionType.OPEN_LINK,
-    then: (schema) => schema.required("Target is required"),
-    otherwise: (schema) => schema.notRequired(),
+    then: () =>
+      Yup.object({
+        link: Yup.string()
+          .url("The link must be a valid URL")
+          .required("Link is required"),
+        target: Yup.string()
+          .oneOf(Object.values(MessageActionLinkTarget))
+          .required("Target is required"),
+      }).required(),
+    otherwise: (schema) => schema.optional(),
   }),
 }).required();
 

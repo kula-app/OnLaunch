@@ -12,9 +12,9 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 
@@ -30,12 +30,18 @@ class ActionDto {
   @IsEnum(ButtonDesign)
   buttonDesign!: ButtonDesign;
 
-  @IsOptional()
+  @ValidateIf((o: ActionDto) => o.actionType === ActionType.OPEN_LINK)
+  @IsNotEmpty({
+    message: "link is required when actionType is OPEN_LINK",
+  })
   @IsString()
   @MaxLength(200)
   link?: string;
 
-  @IsOptional()
+  @ValidateIf((o: ActionDto) => o.actionType === ActionType.OPEN_LINK)
+  @IsNotEmpty({
+    message: "linkTarget is required when actionType is OPEN_LINK",
+  })
   @IsEnum(MessageActionLinkTarget)
   linkTarget?: MessageActionLinkTarget;
 }
