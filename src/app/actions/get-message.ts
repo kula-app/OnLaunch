@@ -60,11 +60,20 @@ export const getMessage = createAuthenticatedServerAction(
       if (!buttonDesign) {
         throw new Error(`Unknown button design: ${action.buttonDesign}`);
       }
+      const linkTarget = action.linkTarget
+        ? PrismaDataUtils.mapMessageActionLinkTargetFromPrisma(
+            action.linkTarget,
+          )
+        : undefined;
       return {
         id: action.id,
         title: action.title,
         actionType: actionType,
         buttonDesign,
+        link:
+          action.link != null && linkTarget != null
+            ? { link: action.link, target: linkTarget }
+            : undefined,
       };
     });
     return {

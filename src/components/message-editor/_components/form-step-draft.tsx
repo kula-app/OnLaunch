@@ -238,6 +238,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                                           buttonDesign:
                                             MessageActionButtonDesign.FILLED,
                                           title: "",
+                                          link: {},
                                         });
                                       }}
                                     >

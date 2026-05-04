@@ -800,6 +800,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 1",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
+              link: null,
+              linkTarget: null,
             };
             const message1: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -846,6 +848,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 2",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
+              link: null,
+              linkTarget: null,
             };
             const message2: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -1018,6 +1022,8 @@ describe("/api/v0.2/messages", () => {
               title: "Action 1",
               actionType: $Enums.ActionType.DISMISS,
               buttonDesign: $Enums.ButtonDesign.FILLED,
+              link: null,
+              linkTarget: null,
             };
             const message1: PrismaMessage & {
               actions: PrismaMessageAction[];
@@ -1240,6 +1246,8 @@ describe("/api/v0.2/messages", () => {
             title: "Action 1",
             actionType: $Enums.ActionType.OPEN_APP_IN_APP_STORE,
             buttonDesign: $Enums.ButtonDesign.FILLED,
+              link: null,
+              linkTarget: null,
           };
           const message1: PrismaMessage & {
             actions: PrismaMessageAction[];

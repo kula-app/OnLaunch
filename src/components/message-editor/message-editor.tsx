@@ -329,12 +329,13 @@ export const MessageEditor: React.FC<{
               actionType: action.actionType,
               buttonDesign: action.buttonDesign,
               title: action.title,
-              link: action.link
-                ? {
-                    link: action.link.link,
-                    target: action.link.target,
-                  }
-                : undefined,
+              link:
+                action.link && action.link.link && action.link.target
+                  ? {
+                      link: action.link.link,
+                      target: action.link.target,
+                    }
+                  : undefined,
             }),
           ),
 
@@ -358,10 +359,13 @@ export const MessageEditor: React.FC<{
             actionType: action.actionType,
             buttonDesign: action.buttonDesign,
             title: action.title,
-            link: {
-              link: action.link.link,
-              target: action.link.target,
-            },
+            link:
+              action.link && action.link.link && action.link.target
+                ? {
+                    link: action.link.link,
+                    target: action.link.target,
+                  }
+                : undefined,
           })),
 
           isBlocking: draftFormRef.current.values.isBlocking,
