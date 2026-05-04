@@ -466,10 +466,12 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
               default:
                 target = undefined;
             }
-            link = {
-              link: action.link ?? undefined,
-              target: target,
-            };
+            if (action.link != null && target != null) {
+              link = {
+                link: action.link,
+                target: target,
+              };
+            }
             break;
           }
           default:
