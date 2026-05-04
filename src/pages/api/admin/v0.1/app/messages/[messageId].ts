@@ -199,6 +199,8 @@ async function getHandler(
       title: action.title,
       actionType: action.actionType,
       buttonDesign: action.buttonDesign,
+      link: action.link ?? undefined,
+      linkTarget: action.linkTarget ?? undefined,
     }),
   );
   const dto: MessageDto = {
@@ -334,6 +336,8 @@ async function putHandler(
           title: action.title,
           actionType: action.actionType,
           buttonDesign: action.buttonDesign,
+          link: action.link ?? undefined,
+          linkTarget: action.linkTarget ?? undefined,
         }),
       );
     }

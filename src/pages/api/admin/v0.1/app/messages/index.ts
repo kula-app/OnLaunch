@@ -180,6 +180,8 @@ async function getHandler(
       title: action.title,
       actionType: action.actionType,
       buttonDesign: action.buttonDesign,
+      link: action.link ?? undefined,
+      linkTarget: action.linkTarget ?? undefined,
     })),
   }));
 
@@ -237,6 +239,8 @@ async function postHandler(
         title: action.title,
         actionType: action.actionType,
         buttonDesign: action.buttonDesign,
+        link: action.link ?? undefined,
+        linkTarget: action.linkTarget ?? undefined,
       }),
     );
   }

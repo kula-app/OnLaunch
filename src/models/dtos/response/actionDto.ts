@@ -3,4 +3,5 @@ export interface ActionDto {
   actionType: string;
   buttonDesign: string;
   link?: string;
+  linkTarget?: string;
 }
