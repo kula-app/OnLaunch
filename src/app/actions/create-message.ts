@@ -84,10 +84,26 @@ export const createMessage = createAuthenticatedServerAction(
                   );
                 }
 
+                let linkTarget:
+                  | PrismaClient.MessageActionLinkTarget
+                  | undefined;
+                if (action.link) {
+                  linkTarget = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+                    action.link.target,
+                  );
+                  if (!linkTarget) {
+                    throw new BadRequestError(
+                      `Unknown link target: ${action.link.target}`,
+                    );
+                  }
+                }
+
                 return {
                   title: action.title,
                   actionType: actionType,
                   buttonDesign: buttonDesign,
+                  link: action.link?.link,
+                  linkTarget: linkTarget,
                 };
               }) ?? [],
           },

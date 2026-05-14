@@ -1,4 +1,4 @@
-export enum ActionButtonDesign {
+export enum MessageActionButtonDesign {
   FILLED = "FILLED",
   OUTLINE = "OUTLINE",
 }

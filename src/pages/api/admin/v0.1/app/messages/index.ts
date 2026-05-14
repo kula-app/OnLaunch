@@ -8,6 +8,7 @@ import { authenticate } from "@/util/adminApi/auth";
 import { Logger } from "@/util/logger";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
+import { flattenValidationErrors } from "@/util/validators/flattenValidationErrors";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -180,6 +181,8 @@ async function getHandler(
       title: action.title,
       actionType: action.actionType,
       buttonDesign: action.buttonDesign,
+      link: action.link ?? undefined,
+      linkTarget: action.linkTarget ?? undefined,
     })),
   }));
 
@@ -195,13 +198,7 @@ async function postHandler(
   const validationErrors = await validate(createMessageDto);
 
   if (validationErrors.length > 0) {
-    const errors = validationErrors
-      .flatMap((error) =>
-        error.constraints
-          ? Object.values(error.constraints)
-          : ["An unknown error occurred"],
-      )
-      .join(", ");
+    const errors = flattenValidationErrors(validationErrors).join(", ");
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json(getErrorDto(`Validation failed: ${errors}`));
@@ -237,6 +234,8 @@ async function postHandler(
         title: action.title,
         actionType: action.actionType,
         buttonDesign: action.buttonDesign,
+        link: action.link ?? undefined,
+        linkTarget: action.linkTarget ?? undefined,
       }),
     );
   }

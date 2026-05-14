@@ -749,7 +749,8 @@
                               "type": "string",
                               "enum": [
                                 "DISMISS",
-                                "OPEN_APP_IN_APP_STORE"
+                                "OPEN_APP_IN_APP_STORE",
+                                "LINK"
                               ]
                             },
                             "title": {
@@ -761,6 +762,22 @@
                                 "FILLED",
                                 "TEXT"
                               ]
+                            },
+                            "link": {
+                              "type": "object",
+                              "properties": {
+                                "link": {
+                                  "type": "string"
+                                },
+                                "target": {
+                                  "type": "string",
+                                  "enum": [
+                                    "IN_APP_BROWSER",
+                                    "SHARE_SHEET",
+                                    "SYSTEM_BROWSER"
+                                  ]
+                                }
+                              }
                             }
                           }
                         }
