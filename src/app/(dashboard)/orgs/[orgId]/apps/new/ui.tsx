@@ -5,7 +5,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Button, Card, Flex, Heading, Input, Text, useToast, VStack, Field } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Input, Text, useToast, VStack, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -134,12 +134,12 @@ export const UI: React.FC<{
                             !!form.errors?.name && !!form.touched?.name;
 
                           return (
-                            <Field.Root
+                            <ChakraField.Root
                               color="white"
                               w={"full"}
                               invalid={isFieldInvalid}
                             >
-                              <Field.Label htmlFor={field.name}>Name</Field.Label>
+                              <ChakraField.Label htmlFor={field.name}>Name</ChakraField.Label>
                               <Input
                                 {...field}
                                 id={field.name}
@@ -151,12 +151,12 @@ export const UI: React.FC<{
                               <ErrorMessage
                                 name={field.name}
                                 render={(errorMessage) => (
-                                  <Field.ErrorText>
+                                  <ChakraField.ErrorText>
                                     {errorMessage}
-                                  </Field.ErrorText>
+                                  </ChakraField.ErrorText>
                                 )}
                               />
-                            </Field.Root>
+                            </ChakraField.Root>
                           );
                         }}
                       </Field>

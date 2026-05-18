@@ -16,7 +16,7 @@ import {
   Text,
   useToast,
   VStack,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -122,12 +122,12 @@ export const ChangeEmailCard: React.FC<{
                       !!form.errors?.email && !!form.touched?.email;
 
                     return (
-                      <Field.Root
+                      <ChakraField.Root
                         color="white"
                         w={"full"}
                         invalid={isFieldInvalid}
                       >
-                        <Field.Label htmlFor={field.name}>Email</Field.Label>
+                        <ChakraField.Label htmlFor={field.name}>Email</ChakraField.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -138,10 +138,10 @@ export const ChangeEmailCard: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>

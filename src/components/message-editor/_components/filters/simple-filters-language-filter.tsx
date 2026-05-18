@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field } from "@chakra-ui/react";
+import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -48,11 +48,11 @@ export const SimpleLanguageFilter: React.FC = () => {
           const isFieldInvalid = !!errors && !!touched;
 
           return (
-            <Field.Root color={"white"} invalid={isFieldInvalid}>
+            <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
               <Flex dir={"row"} align={"center"}>
-                <Field.Label mb={0} htmlFor={field.name}>
+                <ChakraField.Label mb={0} htmlFor={field.name}>
                   Do you want to target specific languages?
-                </Field.Label>
+                </ChakraField.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -63,10 +63,10 @@ export const SimpleLanguageFilter: React.FC = () => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                  <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                 )}
               />
-            </Field.Root>
+            </ChakraField.Root>
           );
         }}
       </Field>
@@ -106,8 +106,8 @@ const IncludedLangageFilter: React.FC = () => {
         const isFieldInvalid = !!errors && !!touched;
 
         return (
-          <Field.Root color={"white"} invalid={isFieldInvalid}>
-            <Field.Label>Which languages should be included?</Field.Label>
+          <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
+            <ChakraField.Label>Which languages should be included?</ChakraField.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
                 <Tag
@@ -155,10 +155,10 @@ const IncludedLangageFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
               )}
             />
-          </Field.Root>
+          </ChakraField.Root>
         );
       }}
     </Field>
@@ -193,8 +193,8 @@ const ExcludedLangageFilter: React.FC = () => {
         const isFieldInvalid = !!errors && !!touched;
 
         return (
-          <Field.Root color={"white"} mt={4} invalid={!isFieldInvalid}>
-            <Field.Label>Which languages should be excluded?</Field.Label>
+          <ChakraField.Root color={"white"} mt={4} invalid={!isFieldInvalid}>
+            <ChakraField.Label>Which languages should be excluded?</ChakraField.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
                 <Tag
@@ -232,10 +232,10 @@ const ExcludedLangageFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
               )}
             />
-          </Field.Root>
+          </ChakraField.Root>
         );
       }}
     </Field>

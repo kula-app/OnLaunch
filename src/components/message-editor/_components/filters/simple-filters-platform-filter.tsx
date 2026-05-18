@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Select, Field } from "@chakra-ui/react";
+import { Flex, Select, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -31,11 +31,11 @@ export const SimpleFiltersPlatformFilter: React.FC = () => {
         const isFieldInvalid = !!errors && !!touched;
 
         return (
-          <Field.Root color={"white"} invalid={isFieldInvalid}>
+          <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
             <Flex flexDir={"row"} align={"center"}>
-              <Field.Label my={0} htmlFor={field.name}>
+              <ChakraField.Label my={0} htmlFor={field.name}>
                 Which platform should see this message?
-              </Field.Label>
+              </ChakraField.Label>
               <Select
                 {...field}
                 id={field.name}
@@ -52,10 +52,10 @@ export const SimpleFiltersPlatformFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
               )}
             />
-          </Field.Root>
+          </ChakraField.Root>
         );
       }}
     </Field>

@@ -25,7 +25,7 @@ import {
   Dialog,
   Portal,
   Separator,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -132,12 +132,12 @@ export const AppSettingsGeneral: React.FC<{
                     !!form.errors?.name && !!form.touched?.name;
 
                   return (
-                    <Field.Root
+                    <ChakraField.Root
                       color="white"
                       w={"full"}
                       invalid={isFieldInvalid}
                     >
-                      <Field.Label htmlFor={field.name}>App Name</Field.Label>
+                      <ChakraField.Label htmlFor={field.name}>App Name</ChakraField.Label>
                       <Input
                         {...field}
                         id={field.name}
@@ -151,10 +151,10 @@ export const AppSettingsGeneral: React.FC<{
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                          <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                         )}
                       />
-                    </Field.Root>
+                    </ChakraField.Root>
                   );
                 }}
               </Field>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field } from "@chakra-ui/react";
+import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -49,11 +49,11 @@ export const SimpleFiltersRegionFilter: React.FC = () => {
           const isFieldInvalid = !!errors && !!touched;
 
           return (
-            <Field.Root color={"white"} invalid={isFieldInvalid}>
+            <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
               <Flex dir={"row"} align={"center"}>
-                <Field.Label mb={0} htmlFor={field.name}>
+                <ChakraField.Label mb={0} htmlFor={field.name}>
                   Do you want to target specific regions?
-                </Field.Label>
+                </ChakraField.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -65,10 +65,10 @@ export const SimpleFiltersRegionFilter: React.FC = () => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                  <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                 )}
               />
-            </Field.Root>
+            </ChakraField.Root>
           );
         }}
       </Field>
@@ -114,8 +114,8 @@ export const IncludedRegionFilter: React.FC = () => {
             name: displayTextForRegion(region),
           }));
         return (
-          <Field.Root color={"white"} invalid={isFieldInvalid}>
-            <Field.Label>Which regions should be included?</Field.Label>
+          <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
+            <ChakraField.Label>Which regions should be included?</ChakraField.Label>
             <Wrap>
               {field.value?.map((region, idx) => (
                 <Tag
@@ -158,10 +158,10 @@ export const IncludedRegionFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
               )}
             />
-          </Field.Root>
+          </ChakraField.Root>
         );
       }}
     </Field>
@@ -203,8 +203,8 @@ export const ExcludedRegionFilter: React.FC = () => {
           }));
 
         return (
-          <Field.Root color={"white"} mt={4} invalid={isFieldInvalid}>
-            <Field.Label>Which regions should be excluded?</Field.Label>
+          <ChakraField.Root color={"white"} mt={4} invalid={isFieldInvalid}>
+            <ChakraField.Label>Which regions should be excluded?</ChakraField.Label>
             <Wrap>
               {(field.value ?? []).map((region, idx) => (
                 <Tag
@@ -243,7 +243,7 @@ export const ExcludedRegionFilter: React.FC = () => {
                 }}
               />
             </Wrap>
-          </Field.Root>
+          </ChakraField.Root>
         );
       }}
     </Field>

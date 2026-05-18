@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Heading, HStack, Input, Text, VStack, type BoxProps, Field } from "@chakra-ui/react";
+import { Box, Heading, HStack, Input, Text, VStack, type BoxProps, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -46,8 +46,8 @@ export const FormStepTimeframe: React.FC<
                         !!form.errors?.startDate && !!form.touched?.startDate;
 
                       return (
-                        <Field.Root color="white" invalid={isFieldInvalid}>
-                          <Field.Label htmlFor={field.name}>Start Date</Field.Label>
+                        <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                          <ChakraField.Label htmlFor={field.name}>Start Date</ChakraField.Label>
                           <Input
                             {...field}
                             value={moment(field.value).format(
@@ -78,12 +78,12 @@ export const FormStepTimeframe: React.FC<
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <Field.ErrorText>
+                              <ChakraField.ErrorText>
                                 {errorMessage}
-                              </Field.ErrorText>
+                              </ChakraField.ErrorText>
                             )}
                           />
-                        </Field.Root>
+                        </ChakraField.Root>
                       );
                     }}
                   </Field>
@@ -93,8 +93,8 @@ export const FormStepTimeframe: React.FC<
                         !!form.errors?.endDate && !!form.touched?.endDate;
 
                       return (
-                        <Field.Root color="white" invalid={isFieldInvalid}>
-                          <Field.Label htmlFor={field.name}>End Date</Field.Label>
+                        <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                          <ChakraField.Label htmlFor={field.name}>End Date</ChakraField.Label>
                           <Input
                             {...field}
                             value={moment(field.value).format(
@@ -125,12 +125,12 @@ export const FormStepTimeframe: React.FC<
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <Field.ErrorText>
+                              <ChakraField.ErrorText>
                                 {errorMessage}
-                              </Field.ErrorText>
+                              </ChakraField.ErrorText>
                             )}
                           />
-                        </Field.Root>
+                        </ChakraField.Root>
                       );
                     }}
                   </Field>

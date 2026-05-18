@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Select, Switch, VStack, Field } from "@chakra-ui/react";
+import { Box, Flex, Select, Switch, VStack, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -66,16 +66,16 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
           const isFieldInvalid = !!errors && !!touched;
 
           return (
-            <Field.Root color={"white"} invalid={isFieldInvalid}>
+            <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
               <Flex dir={"row"} align={"center"}>
-                <Field.Label mb={0} htmlFor={field.name}>
+                <ChakraField.Label mb={0} htmlFor={field.name}>
                   {isTargetingMultiplePlatforms &&
                     "Do you want to target specific platform versions?"}
                   {isTargetingOnlyAndroid &&
                     "Do you want to target a specific Android version?"}
                   {isTargetingOnlyIos &&
                     "Do you want to target a specific iOS version?"}
-                </Field.Label>
+                </ChakraField.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -87,10 +87,10 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                  <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                 )}
               />
-            </Field.Root>
+            </ChakraField.Root>
           );
         }}
       </Field>
@@ -100,10 +100,10 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
         hidden={!values.simple?.platformVersionFilter?.isEnabled}
       >
         {isTargetingAndroid && (
-          <Field.Root color={"white"}>
-            <Field.Label hidden={isTargetingOnlyAndroid}>
+          <ChakraField.Root color={"white"}>
+            <ChakraField.Label hidden={isTargetingOnlyAndroid}>
               Which version of Android is running on the user&apos;s device?
-            </Field.Label>
+            </ChakraField.Label>
             <Flex gap={2}>
               <Field name="simple.platformVersionFilter.android.comparator">
                 {({ field }: FieldProps) => (
@@ -120,7 +120,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                        <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                       )}
                     />
                   </VStack>
@@ -141,20 +141,20 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                        <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                       )}
                     />
                   </VStack>
                 )}
               </Field>
             </Flex>
-          </Field.Root>
+          </ChakraField.Root>
         )}
         {isTargetingIos && (
-          <Field.Root color={"white"}>
-            <Field.Label hidden={isTargetingOnlyIos}>
+          <ChakraField.Root color={"white"}>
+            <ChakraField.Label hidden={isTargetingOnlyIos}>
               Which version of iOS is running on the user&apos;s device?
-            </Field.Label>
+            </ChakraField.Label>
             <Flex gap={2}>
               <Field name="simple.platformVersionFilter.ios.comparator">
                 {({ field }: FieldProps) => (
@@ -171,7 +171,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                        <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                       )}
                     />
                   </VStack>
@@ -190,14 +190,14 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                        <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                       )}
                     />
                   </VStack>
                 )}
               </Field>
             </Flex>
-          </Field.Root>
+          </ChakraField.Root>
         )}
       </Box>
     </Box>

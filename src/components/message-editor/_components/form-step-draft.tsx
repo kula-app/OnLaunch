@@ -16,7 +16,7 @@ import {
   Textarea,
   VStack,
   type BoxProps,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -86,8 +86,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                       !!form.errors?.title && !!form.touched?.title;
 
                     return (
-                      <Field.Root color="white" invalid={isFieldValid}>
-                        <Field.Label htmlFor={field.name}>Title</Field.Label>
+                      <ChakraField.Root color="white" invalid={isFieldValid}>
+                        <ChakraField.Label htmlFor={field.name}>Title</ChakraField.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -99,10 +99,10 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>
@@ -112,8 +112,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                       !!form.errors?.body && !!form.touched?.body;
 
                     return (
-                      <Field.Root color="white" invalid={isFieldInvalid}>
-                        <Field.Label htmlFor={field.name}>Body</Field.Label>
+                      <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                        <ChakraField.Label htmlFor={field.name}>Body</ChakraField.Label>
                         <Textarea
                           {...field}
                           id={field.name}
@@ -130,17 +130,17 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>
                 <Field name="isBlocking">
                   {({ field, form }: FieldProps<boolean, DraftFormData>) => {
                     return (
-                      <Field.Root
+                      <ChakraField.Root
                         display="flex"
                         alignItems="center"
                         color="white"
@@ -154,14 +154,14 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                               id={field.name}
                               size={"md"}
                             />
-                            <Field.Label htmlFor={field.name} mb={0} ml={2}>
+                            <ChakraField.Label htmlFor={field.name} mb={0} ml={2}>
                               Require user to use action?
-                            </Field.Label>
+                            </ChakraField.Label>
                           </HStack>
-                          <Field.HelperText color={"gray.200"}>
+                          <ChakraField.HelperText color={"gray.200"}>
                             Blocking messages can only be dismissed using
                             actions.
-                          </Field.HelperText>
+                          </ChakraField.HelperText>
                           {field.value && form.values.actions.length === 0 && (
                             <Alert.Root status="warning" variant={"solid"} mt={4}>
                               <Alert.Indicator />
@@ -178,7 +178,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                             </Alert.Root>
                           )}
                         </VStack>
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>

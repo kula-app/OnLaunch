@@ -41,7 +41,7 @@ import {
   Tr,
   useToast,
   VStack,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import { useSession } from "next-auth/react";
@@ -496,14 +496,14 @@ const InviteUserForm: React.FC<{
                   !!form.errors?.email && !!form.touched?.email;
 
                 return (
-                  <Field.Root
+                  <ChakraField.Root
                     color="white"
                     w={"full"}
                     invalid={isFieldInvalid}
                   >
-                    <Field.Label htmlFor={field.name}>
+                    <ChakraField.Label htmlFor={field.name}>
                       Invite user by email
-                    </Field.Label>
+                    </ChakraField.Label>
                     <HStack>
                       <Input
                         {...field}
@@ -523,10 +523,10 @@ const InviteUserForm: React.FC<{
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                        <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                       )}
                     />
-                  </Field.Root>
+                  </ChakraField.Root>
                 );
               }}
             </Field>
@@ -574,8 +574,8 @@ const InvitationLinkForm: React.FC<{
   });
   return (
     <VStack direction={"column"} w={"full"} align={"end"}>
-      <Field.Root color="white" w={"full"}>
-        <Field.Label>Invitation Link</Field.Label>
+      <ChakraField.Root color="white" w={"full"}>
+        <ChakraField.Label>Invitation Link</ChakraField.Label>
         <HStack>
           <InputGroup variant={"brand-on-card"}>
             <Input id="invite" value={invitationUrl} readOnly fontSize={"sm"} />
@@ -605,10 +605,10 @@ const InvitationLinkForm: React.FC<{
             <Text px={4}>Reset Link</Text>
           </Button>
         </HStack>
-        <Field.HelperText color={"gray.200"}>
+        <ChakraField.HelperText color={"gray.200"}>
           Share this link with users to invite them to the organisation.
-        </Field.HelperText>
-      </Field.Root>
+        </ChakraField.HelperText>
+      </ChakraField.Root>
     </VStack>
   );
 };

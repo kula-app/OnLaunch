@@ -2,7 +2,7 @@
 
 import { updatePassword } from "@/app/actions/update-password";
 import { ServerError } from "@/errors/server-error";
-import { Box, Button, Card, Heading, Input, useToast, VStack, Field } from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Input, useToast, VStack, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -85,10 +85,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.touched?.passwordOld;
 
                       return (
-                        <Field.Root color="white" invalid={isFieldInvalid}>
-                          <Field.Label htmlFor={field.name}>
+                        <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                          <ChakraField.Label htmlFor={field.name}>
                             Current password
-                          </Field.Label>
+                          </ChakraField.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -100,12 +100,12 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <Field.ErrorText>
+                              <ChakraField.ErrorText>
                                 {errorMessage}
-                              </Field.ErrorText>
+                              </ChakraField.ErrorText>
                             )}
                           />
-                        </Field.Root>
+                        </ChakraField.Root>
                       );
                     }}
                   </Field>
@@ -119,10 +119,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.errors?.password && !!form.touched?.password;
 
                       return (
-                        <Field.Root color="white" invalid={isFieldInvalid}>
-                          <Field.Label htmlFor={field.name}>
+                        <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                          <ChakraField.Label htmlFor={field.name}>
                             New password
-                          </Field.Label>
+                          </ChakraField.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -134,12 +134,12 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <Field.ErrorText>
+                              <ChakraField.ErrorText>
                                 {errorMessage}
-                              </Field.ErrorText>
+                              </ChakraField.ErrorText>
                             )}
                           />
-                        </Field.Root>
+                        </ChakraField.Root>
                       );
                     }}
                   </Field>
@@ -154,10 +154,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.touched?.passwordConfirmation;
 
                       return (
-                        <Field.Root color="white" invalid={isFieldInvalid}>
-                          <Field.Label htmlFor={field.name}>
+                        <ChakraField.Root color="white" invalid={isFieldInvalid}>
+                          <ChakraField.Label htmlFor={field.name}>
                             Confirm new password
-                          </Field.Label>
+                          </ChakraField.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -169,12 +169,12 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <Field.ErrorText>
+                              <ChakraField.ErrorText>
                                 {errorMessage}
-                              </Field.ErrorText>
+                              </ChakraField.ErrorText>
                             )}
                           />
-                        </Field.Root>
+                        </ChakraField.Root>
                       );
                     }}
                   </Field>

@@ -13,7 +13,7 @@ import {
   ModalOverlay,
   Spacer,
   Text,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import moment from "moment";
@@ -132,8 +132,8 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.errors?.label && !!form.touched?.label;
 
                     return (
-                      <Field.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                        <Field.Label htmlFor={field.name}>Token Label</Field.Label>
+                      <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                        <ChakraField.Label htmlFor={field.name}>Token Label</ChakraField.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -143,10 +143,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>
@@ -159,8 +159,8 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.errors?.expiresIn && !!form.touched?.expiresIn;
 
                     return (
-                      <Field.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                        <Field.Label htmlFor={field.name}>Expires In</Field.Label>
+                      <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                        <ChakraField.Label htmlFor={field.name}>Expires In</ChakraField.Label>
                         <Input
                           {...field}
                           onChange={(e) => {
@@ -190,10 +190,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>
@@ -207,7 +207,7 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.touched?.customExpirationDate;
 
                     return (
-                      <Field.Root
+                      <ChakraField.Root
                         w={"full"}
                         invalid={isFieldInvalid}
                         mt={4}
@@ -215,9 +215,9 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                           form.values.expiresIn === "custom" ? "block" : "none"
                         }
                       >
-                        <Field.Label htmlFor={field.name}>
+                        <ChakraField.Label htmlFor={field.name}>
                           Custom Expiration Date
-                        </Field.Label>
+                        </ChakraField.Label>
                         <Input
                           {...field}
                           value={moment(field.value).format("YYYY-MM-DDTHH:mm")}
@@ -236,10 +236,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                           )}
                         />
-                      </Field.Root>
+                      </ChakraField.Root>
                     );
                   }}
                 </Field>
