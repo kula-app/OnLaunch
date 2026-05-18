@@ -9,13 +9,13 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
-import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
+import { MessagesRequestHeadersDto } from "@/api-dtos/v0.1/messages-request-headers-dto";
 import {
   ActionType,
   MessageDto,
   MessagesResponseDto,
   type ActionDto,
-} from "./messages-response-dto";
+} from "@/api-dtos/v0.1/messages-response-dto";
 
 const logger = new Logger(__filename);
 
