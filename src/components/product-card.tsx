@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Checkbox, Divider, Flex, Text } from "@chakra-ui/react";
+import { Steps, Box, Button, Checkbox, Flex, Text, Separator } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import createCheckoutSession from "../api/stripe/createCheckoutSession";
@@ -106,24 +106,22 @@ const ProductCard = (props: Props) => {
       </Box>
       {props.product.unlimitedOption && (
         <Box>
-          <Divider borderColor={borderColor} borderWidth={borderWidth} />
-          <Checkbox
-            isChecked={includeUnlimitedOption}
-            onChange={(e) => {
+          <Separator borderColor={borderColor} borderWidth={borderWidth} />
+          <Checkbox.Root
+            onCheckedChange={(e) => {
               setIncludeUnlimitedOption(e.target.checked);
             }}
-          >
-            unlimited exceeding requests at{" "}
-            {formatCurrency(
-              props.product.unlimitedOption.priceAmount as number,
-            )}{" "}
-            per extra request
-          </Checkbox>
+            checked={includeUnlimitedOption}
+          ><Checkbox.HiddenInput /><Checkbox.Control><Checkbox.Indicator /></Checkbox.Control><Checkbox.Label>unlimited exceeding requests at{" "}
+              {formatCurrency(
+                props.product.unlimitedOption.priceAmount as number,
+              )}{" "}per extra request
+                        </Checkbox.Label></Checkbox.Root>
         </Box>
       )}
       <Box flexGrow={1}></Box>
       <Button
-        colorScheme="blue"
+        colorPalette="blue"
         onClick={() => handleSubscription()}
         mt={4}
         w="full"

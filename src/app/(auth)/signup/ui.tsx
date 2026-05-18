@@ -10,16 +10,7 @@ import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import { Routes } from "@/routes/routes";
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Link,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import NextLink from "next/link";
@@ -38,7 +29,7 @@ const UI: NextPage = () => {
   const toast = useToast();
 
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -53,7 +44,7 @@ const UI: NextPage = () => {
           justify={"center"}
           maxW={{ base: "100%", lg: "580px" }}
         >
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0}>
             <AuthHeader />
             <VStack mb={{ lg: "16px" }} mx={"32px"} textAlign={"center"}>
               <Text
@@ -125,14 +116,14 @@ const UI: NextPage = () => {
                   >
                     {(props) => (
                       <Form style={{ width: "100%" }}>
-                        <VStack spacing={"32px"} w={"100%"}>
+                        <VStack gap={"32px"} w={"100%"}>
                           {props.status.isWaitingVerificationForEmail && (
                             <AuthVerificationEmailSent
                               email={props.status.isWaitingVerificationForEmail}
                             />
                           )}
                           {!props.status.isWaitingVerificationForEmail && (
-                            <VStack spacing={"18px"} w={"100%"}>
+                            <VStack gap={"18px"} w={"100%"}>
                               <AuthTextField
                                 name={"firstName"}
                                 label={"First Name"}
@@ -166,7 +157,7 @@ const UI: NextPage = () => {
                                 variant="brand"
                                 w="100%"
                                 minH="50"
-                                isLoading={props.isSubmitting}
+                                loading={props.isSubmitting}
                                 mt={"6px"}
                               >
                                 Sign Up
@@ -177,15 +168,8 @@ const UI: NextPage = () => {
                           )}
                           <Text color={"gray.400"} fontWeight="medium">
                             Already have an account?
-                            <Link
-                              as={NextLink}
-                              color={"white"}
-                              ms="5px"
-                              href={Routes.login()}
-                              fontWeight="bold"
-                            >
-                              Sign In
-                            </Link>
+                            <Link color={"white"} ms="5px" fontWeight="bold" asChild><NextLink href={Routes.login()}>Sign In
+                                                          </NextLink></Link>
                           </Text>
                         </VStack>
                       </Form>

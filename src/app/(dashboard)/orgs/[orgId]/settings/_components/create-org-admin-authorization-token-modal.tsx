@@ -2,9 +2,6 @@
 
 import {
   Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   HStack,
   Input,
   Modal,
@@ -16,6 +13,7 @@ import {
   ModalOverlay,
   Spacer,
   Text,
+  Field,
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import React from "react";
@@ -67,8 +65,8 @@ export const CreateOrgAdminAuthorizationTokenModal: React.FC<{
                       !!form.errors?.label && !!form.touched?.label;
 
                     return (
-                      <FormControl w={"full"} isInvalid={isFieldInvalid} mt={4}>
-                        <FormLabel htmlFor={field.name}>Token Label</FormLabel>
+                      <Field.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                        <Field.Label htmlFor={field.name}>Token Label</Field.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -79,10 +77,10 @@ export const CreateOrgAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -90,12 +88,12 @@ export const CreateOrgAdminAuthorizationTokenModal: React.FC<{
               <ModalFooter>
                 <HStack>
                   <Spacer />
-                  <Button variant="solid" colorScheme="gray" onClick={onClose}>
+                  <Button variant="solid" colorPalette="gray" onClick={onClose}>
                     Cancel
                   </Button>
                   <Button
                     variant="solid"
-                    colorScheme="brand"
+                    colorPalette="brand"
                     onClick={props.submitForm}
                   >
                     Create

@@ -2,9 +2,6 @@
 
 import {
   Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   HStack,
   Input,
   Modal,
@@ -16,6 +13,7 @@ import {
   ModalOverlay,
   Spacer,
   Text,
+  Field,
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import moment from "moment";
@@ -134,8 +132,8 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.errors?.label && !!form.touched?.label;
 
                     return (
-                      <FormControl w={"full"} isInvalid={isFieldInvalid} mt={4}>
-                        <FormLabel htmlFor={field.name}>Token Label</FormLabel>
+                      <Field.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                        <Field.Label htmlFor={field.name}>Token Label</Field.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -145,10 +143,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -161,8 +159,8 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.errors?.expiresIn && !!form.touched?.expiresIn;
 
                     return (
-                      <FormControl w={"full"} isInvalid={isFieldInvalid} mt={4}>
-                        <FormLabel htmlFor={field.name}>Expires In</FormLabel>
+                      <Field.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                        <Field.Label htmlFor={field.name}>Expires In</Field.Label>
                         <Input
                           {...field}
                           onChange={(e) => {
@@ -192,10 +190,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -209,17 +207,17 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                       !!form.touched?.customExpirationDate;
 
                     return (
-                      <FormControl
+                      <Field.Root
                         w={"full"}
-                        isInvalid={isFieldInvalid}
+                        invalid={isFieldInvalid}
                         mt={4}
                         display={
                           form.values.expiresIn === "custom" ? "block" : "none"
                         }
                       >
-                        <FormLabel htmlFor={field.name}>
+                        <Field.Label htmlFor={field.name}>
                           Custom Expiration Date
-                        </FormLabel>
+                        </Field.Label>
                         <Input
                           {...field}
                           value={moment(field.value).format("YYYY-MM-DDTHH:mm")}
@@ -238,10 +236,10 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -249,12 +247,12 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
               <ModalFooter>
                 <HStack>
                   <Spacer />
-                  <Button variant="solid" colorScheme="gray" onClick={onClose}>
+                  <Button variant="solid" colorPalette="gray" onClick={onClose}>
                     Cancel
                   </Button>
                   <Button
                     variant="solid"
-                    colorScheme="brand"
+                    colorPalette="brand"
                     onClick={props.submitForm}
                   >
                     Create

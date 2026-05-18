@@ -1,5 +1,5 @@
 import { Routes } from "@/routes/routes";
-import { Link, Text, VStack } from "@chakra-ui/react";
+import { Steps, Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export const AuthHeader: React.FC = () => {
@@ -10,17 +10,17 @@ export const AuthHeader: React.FC = () => {
       mb={"32px"}
       display={{ base: "solid", lg: "none" }}
     >
-      <Link as={NextLink} href={Routes.dashboard}>
-        <Text
-          fontSize="xl"
-          color="white"
-          fontWeight="medium"
-          my={"16px"}
-          mx={"16px"}
-        >
-          OnLaunch 🚀
-        </Text>
-      </Link>
+      <Link asChild><NextLink href={Routes.dashboard}>
+          <Text
+            fontSize="xl"
+            color="white"
+            fontWeight="medium"
+            my={"16px"}
+            mx={"16px"}
+          >
+            OnLaunch 🚀
+          </Text>
+        </NextLink></Link>
     </VStack>
   );
 };

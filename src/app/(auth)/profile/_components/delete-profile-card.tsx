@@ -3,22 +3,17 @@
 import { deleteUser } from "@/app/actions/delete-user";
 import { ServerError } from "@/errors/server-error";
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
+  Steps,
   Box,
   Button,
   Card,
-  CardBody,
   Heading,
   Text,
   useDisclosure,
   useToast,
   VStack,
+  Dialog,
+  Portal,
 } from "@chakra-ui/react";
 import { signOut } from "next-auth/react";
 import { useRef } from "react";
@@ -26,7 +21,7 @@ import { useRef } from "react";
 export const DeleteProfileCard: React.FC = () => {
   const toast = useToast();
 
-  const { isOpen, onOpen: openDeleteDialog, onClose } = useDisclosure();
+  const { open, onOpen: openDeleteDialog, onClose } = useDisclosure();
   const cancelRef = useRef(null);
 
   async function sendDeleteProfile() {
@@ -54,53 +49,62 @@ export const DeleteProfileCard: React.FC = () => {
         <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
           Delete Profile
         </Heading>
-        <Card p={4} w={"full"}>
-          <CardBody>
+        <Card.Root p={4} w={"full"}>
+          <Card.Body>
             <VStack w={"full"} gap={4} align={"start"}>
               <Text color={"white"} w={"full"}>
                 Once you delete your profile, there is no going back. Please be
                 certain.
               </Text>
-              <Button colorScheme="red" onClick={openDeleteDialog}>
+              <Button colorPalette="red" onClick={openDeleteDialog}>
                 Delete Profile
               </Button>
             </VStack>
-          </CardBody>
-        </Card>
+          </Card.Body>
+        </Card.Root>
       </Box>
-
-      <AlertDialog
-        isOpen={isOpen}
+      <Dialog.Root
+        open={isOpen}
         motionPreset="slideInBottom"
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-        isCentered
-      >
-        <AlertDialogOverlay />
-        <AlertDialogContent>
-          <AlertDialogHeader>Are you sure?</AlertDialogHeader>
-          <AlertDialogCloseButton />
-          <AlertDialogBody>
-            Once you delete your profile, there is no going back. Please be
-            certain.
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              colorScheme="red"
-              ml={3}
-              onClick={() => {
-                sendDeleteProfile();
-                onClose();
-              }}
-            >
-              Confirm
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        initialFocusEl={() => cancelRef.current}
+        placement='center'
+        role='alertdialog'
+        onOpenChange={e => {
+          if (!e.open) {
+            onClose();
+          }
+        }}>
+        <Portal>
+
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>Are you sure?</Dialog.Header>
+              <Dialog.CloseTrigger />
+              <Dialog.Body>
+                Once you delete your profile, there is no going back. Please be
+                certain.
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  colorPalette="red"
+                  ml={3}
+                  onClick={() => {
+                    sendDeleteProfile();
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+
+        </Portal>
+      </Dialog.Root>
     </>
   );
 };

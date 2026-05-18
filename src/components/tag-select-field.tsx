@@ -1,4 +1,5 @@
-import { chakra, forwardRef, type HTMLChakraProps } from "@chakra-ui/react";
+import { forwardRef } from "react";
+import { Steps, chakra, type HTMLChakraProps } from "@chakra-ui/react";
 import { cx } from "@chakra-ui/utils";
 
 type Omitted = "disabled" | "required" | "readOnly" | "size";
@@ -15,7 +16,7 @@ export interface SelectFieldProps
   placeholder?: string;
 }
 
-export const SelectField = forwardRef<SelectFieldProps, "select">(
+export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
   function SelectField(props, ref) {
     const { children, placeholder, className, ...rest } = props;
 

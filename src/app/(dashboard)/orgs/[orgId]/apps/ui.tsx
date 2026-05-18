@@ -7,8 +7,9 @@ import { OrgRole } from "@/models/org-role";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
+  Steps,
   Box,
-  CircularProgress,
+  ProgressCircle,
   Container,
   Flex,
   Grid,
@@ -72,19 +73,13 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                 <Input
                   placeholder="Search"
                   value={searchFilter}
-                  onChange={(e) => setSearchFilter(e.currentTarget.value)}
+                  onValueChange={(e) => setSearchFilter(e.currentTarget.value)}
                 />
                 <InputRightElement>
                   {searchFilter.length > 0 ? (
-                    <Icon
-                      as={FiX}
-                      aria-label="Clear search"
-                      onClick={() => setSearchFilter("")}
-                      color={"gray.200"}
-                      cursor={"pointer"}
-                    />
+                    <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
                   ) : (
-                    <Icon as={FiSearch} color={"gray.200"} />
+                    <Icon color={"gray.200"} asChild><FiSearch /></Icon>
                   )}
                 </InputRightElement>
               </InputGroup>
@@ -105,7 +100,12 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
               {isLoadingApps && (
                 <GridItem key={"loading"}>
                   <Flex h={"full"} align={"center"}>
-                    <CircularProgress isIndeterminate size={8} />
+                    <ProgressCircle.Root value={null} size={8}>
+                      <ProgressCircle.Circle>
+                        <ProgressCircle.Track />
+                        <ProgressCircle.Range />
+                      </ProgressCircle.Circle>
+                    </ProgressCircle.Root>
                   </Flex>
                 </GridItem>
               )}

@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Box,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  HStack,
-  Input,
-  Text,
-  VStack,
-  type BoxProps,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Input, Text, VStack, type BoxProps, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -42,7 +31,7 @@ export const FormStepTimeframe: React.FC<
       {() => {
         return (
           <Box {...boxProps}>
-            <VStack align={"start"} spacing={8} w={"xl"}>
+            <VStack align={"start"} gap={8} w={"xl"}>
               <VStack w={"full"} align={"start"}>
                 <Heading size="lg" as="h1" color={"white"}>
                   Select Timeframe
@@ -57,8 +46,8 @@ export const FormStepTimeframe: React.FC<
                         !!form.errors?.startDate && !!form.touched?.startDate;
 
                       return (
-                        <FormControl color="white" isInvalid={isFieldInvalid}>
-                          <FormLabel htmlFor={field.name}>Start Date</FormLabel>
+                        <Field.Root color="white" invalid={isFieldInvalid}>
+                          <Field.Label htmlFor={field.name}>Start Date</Field.Label>
                           <Input
                             {...field}
                             value={moment(field.value).format(
@@ -89,12 +78,12 @@ export const FormStepTimeframe: React.FC<
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <FormErrorMessage>
+                              <Field.ErrorText>
                                 {errorMessage}
-                              </FormErrorMessage>
+                              </Field.ErrorText>
                             )}
                           />
-                        </FormControl>
+                        </Field.Root>
                       );
                     }}
                   </Field>
@@ -104,8 +93,8 @@ export const FormStepTimeframe: React.FC<
                         !!form.errors?.endDate && !!form.touched?.endDate;
 
                       return (
-                        <FormControl color="white" isInvalid={isFieldInvalid}>
-                          <FormLabel htmlFor={field.name}>End Date</FormLabel>
+                        <Field.Root color="white" invalid={isFieldInvalid}>
+                          <Field.Label htmlFor={field.name}>End Date</Field.Label>
                           <Input
                             {...field}
                             value={moment(field.value).format(
@@ -136,12 +125,12 @@ export const FormStepTimeframe: React.FC<
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <FormErrorMessage>
+                              <Field.ErrorText>
                                 {errorMessage}
-                              </FormErrorMessage>
+                              </Field.ErrorText>
                             )}
                           />
-                        </FormControl>
+                        </Field.Root>
                       );
                     }}
                   </Field>

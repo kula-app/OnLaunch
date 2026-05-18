@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { Steps, ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import "cal-sans";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
@@ -13,7 +13,7 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <ChakraProvider theme={chakraTheme} resetCSS>
+    <ChakraProvider value={chakraTheme} resetCSS>
       <SessionProvider session={session}>
         <Navbar session={session} />
         <Component {...pageProps} />

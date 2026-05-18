@@ -8,10 +8,8 @@ import { OrgRole } from "@/models/org-role";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Container,
@@ -51,13 +49,12 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
       <ConfiguredNavigationBar
         items={[{ kind: "orgs" }, { kind: "org", orgId }]}
       />
-
       <Container maxW={"6xl"}>
         <VStack p={4} w={"full"} gap={8}>
           <HStack w={"full"}>
             <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
               <Skeleton
-                isLoaded={!isLoadingOrg && !isLoadingAuthenticatedUserRole}
+                loading={!(!isLoadingOrg && !isLoadingAuthenticatedUserRole)}
               >
                 Organization &lsquo;{org?.name}&rsquo;
               </Skeleton>
@@ -68,39 +65,34 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                 onClick={() =>
                   router.push(Routes.upgradeOrganization({ orgId }))
                 }
-                colorScheme={"orange"}
-                leftIcon={<>✨</>}
-              >
-                Upgrade Plan
-              </Button>
+                colorPalette={"orange"}><>✨</>Upgrade Plan
+                              </Button>
             )}
             <IconButton
-              icon={<FaGear />}
               onClick={() =>
                 router.push(Routes.organizationSettings({ orgId }))
               }
-              aria-label={"Settings"}
-            />
+              aria-label={"Settings"}><FaGear /></IconButton>
           </HStack>
           {(orgError || authenticatedUserRoleError) && (
-            <Alert status={"error"} w={"full"}>
-              <AlertIcon />
-              <AlertTitle>Failed to load organisation!</AlertTitle>
-              <AlertDescription>
+            <Alert.Root status={"error"} w={"full"}>
+              <Alert.Indicator />
+              <Alert.Title>Failed to load organisation!</Alert.Title>
+              <Alert.Description>
                 {(orgError ?? authenticatedUserRoleError)?.message}
-              </AlertDescription>
-            </Alert>
+              </Alert.Description>
+            </Alert.Root>
           )}
           <Box w={"full"}>
             <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
               Recently used apps
             </Heading>
             {appsError && (
-              <Alert status={"error"} w={"full"}>
-                <AlertIcon />
-                <AlertTitle>Failed to load apps!</AlertTitle>
-                <AlertDescription>{appsError.message}</AlertDescription>
-              </Alert>
+              <Alert.Root status={"error"} w={"full"}>
+                <Alert.Indicator />
+                <Alert.Title>Failed to load apps!</Alert.Title>
+                <Alert.Description>{appsError.message}</Alert.Description>
+              </Alert.Root>
             )}
             <Grid templateColumns="repeat(4, 1fr)" gap={6}>
               {authenticatedUserRole === OrgRole.ADMIN && (
@@ -148,11 +140,8 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                 <Button
                   onClick={() => router.push(Routes.apps({ orgId }))}
                   variant={"ghost"}
-                  rightIcon={<FaArrowRight />}
-                  color={"white"}
-                >
-                  View all apps
-                </Button>
+                  color={"white"}>View all apps
+                                  <FaArrowRight /></Button>
               </GridItem>
             </Grid>
           </Box>

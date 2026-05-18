@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { Steps, Box, HStack, Text } from "@chakra-ui/react";
 import React, { type PropsWithChildren } from "react";
 import { FiBatteryCharging, FiWifi } from "react-icons/fi";
 
@@ -62,7 +62,6 @@ export const PhoneBezel: React.FC<PhoneBezelProps> = ({
         borderLeftRadius="sm"
         border={border}
       />
-
       {/* Power Button */}
       <Box
         position="absolute"
@@ -74,7 +73,6 @@ export const PhoneBezel: React.FC<PhoneBezelProps> = ({
         borderRightRadius="sm"
         border={border}
       />
-
       <Box
         width="full"
         height="full"
@@ -111,7 +109,7 @@ export const PhoneBezel: React.FC<PhoneBezelProps> = ({
           />
 
           {/* Battery and Wifi */}
-          <HStack spacing={2}>
+          <HStack gap={2}>
             <FiWifi size={18} />
             <FiBatteryCharging size={18} />
           </HStack>

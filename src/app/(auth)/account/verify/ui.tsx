@@ -10,15 +10,7 @@ import { ServerError } from "@/errors/server-error";
 import { useCooldown } from "@/hooks/useCooldown";
 import { Routes } from "@/routes/routes";
 import { Logger } from "@/util/logger";
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 
@@ -119,7 +111,7 @@ const SuspenseBody: React.FC = () => {
   }
 
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -135,7 +127,7 @@ const SuspenseBody: React.FC = () => {
           w={"100%"}
           maxW={{ base: "100%", lg: "580px" }}
         >
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0} w={"100%"}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0} w={"100%"}>
             <AuthHeader />
             <Box p={"30px"} w={"100%"} maxW={{ base: "650px", lg: "450px" }}>
               <VStack
@@ -148,7 +140,7 @@ const SuspenseBody: React.FC = () => {
                   lg: "32px",
                 }}
                 w={"100%"}
-                spacing={"16px"}
+                gap={"16px"}
               >
                 <VStack textAlign={"left"} align={"left"} w={"100%"}>
                   <Text
@@ -177,13 +169,13 @@ const SuspenseBody: React.FC = () => {
                           w="100%"
                           minH="50"
                           mt={"6px"}
-                          isLoading={isLoading}
+                          loading={isLoading}
                           onClick={async () => {
                             if (email && token) {
                               await verifyUser(token, email);
                             }
                           }}
-                          isDisabled={verifyCooldown.isActive}
+                          disabled={verifyCooldown.isActive}
                         >
                           VERIFY
                           {verifyCooldown.isActive &&
@@ -240,13 +232,13 @@ const SuspenseBody: React.FC = () => {
                         w="100%"
                         minH="50"
                         mt={"6px"}
-                        isLoading={isLoading}
+                        loading={isLoading}
                         onClick={() => {
                           if (email) {
                             resendLink(email);
                           }
                         }}
-                        isDisabled={resendLinkCooldown.isActive}
+                        disabled={resendLinkCooldown.isActive}
                       >
                         Send Link Again
                         {resendLinkCooldown.isActive &&

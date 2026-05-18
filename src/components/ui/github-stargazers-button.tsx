@@ -1,5 +1,5 @@
 "use client";
-import { Button, Link } from "@chakra-ui/react";
+import { Steps, Button, Link } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa6";
 
@@ -23,14 +23,7 @@ export const GitHubStargazersButton: React.FC = () => {
 
   return (
     <Link href={"https://github.com/kula-app/OnLaunch"} target={"_blank"}>
-      <Button
-        leftIcon={<FaGithub />}
-        colorScheme="gray"
-        size={"sm"}
-        variant="solid"
-      >
-        {formattedStarCount(stargazers)}
-      </Button>
+      <Button colorPalette="gray" size={"sm"} variant="solid"><FaGithub />{formattedStarCount(stargazers)}</Button>
     </Link>
   );
 };

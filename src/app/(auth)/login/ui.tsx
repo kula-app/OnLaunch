@@ -8,16 +8,7 @@ import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import { Routes } from "@/routes/routes";
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Link,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { signIn } from "next-auth/react";
@@ -51,7 +42,7 @@ const UI: NextPage = () => {
   }, [searchParams]);
 
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -67,7 +58,7 @@ const UI: NextPage = () => {
           w={"100%"}
           maxW={{ base: "100%", lg: "580px" }}
         >
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0} w={"100%"}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0} w={"100%"}>
             <AuthHeader />
             <Box p={"30px"} w={"100%"} maxW={{ base: "650px", lg: "450px" }}>
               <VStack
@@ -148,7 +139,7 @@ const UI: NextPage = () => {
                 >
                   {(props) => (
                     <Form style={{ width: "100%" }}>
-                      <VStack spacing={"32px"} w={"100%"}>
+                      <VStack gap={"32px"} w={"100%"}>
                         {props.status.isWaitingVerificationForEmail && (
                           <AuthVerificationEmailSent
                             email={props.status.isWaitingVerificationForEmail}
@@ -162,7 +153,7 @@ const UI: NextPage = () => {
                         )}
                         {!props.status.isWaitingVerificationForEmail && (
                           <VStack
-                            spacing={"18px"}
+                            gap={"18px"}
                             w={"100%"}
                             color={"white"}
                             align={"start"}
@@ -182,14 +173,8 @@ const UI: NextPage = () => {
                               autoComplete={"password"}
                             />
                             <VStack w={"100%"} align={"end"}>
-                              <Link
-                                as={NextLink}
-                                color={"white"}
-                                href={Routes.accountRecovery}
-                                fontWeight="medium"
-                              >
-                                Forgot password?
-                              </Link>
+                              <Link color={"white"} fontWeight="medium" asChild><NextLink href={Routes.accountRecovery}>Forgot password?
+                                                              </NextLink></Link>
                             </VStack>
                             <Button
                               variant="brand"
@@ -197,7 +182,7 @@ const UI: NextPage = () => {
                               w="100%"
                               minH="50"
                               mt={"6px"}
-                              isLoading={props.isSubmitting}
+                              loading={props.isSubmitting}
                             >
                               Sign In
                             </Button>
@@ -211,15 +196,8 @@ const UI: NextPage = () => {
                 </Formik>
                 <Text color={"gray.400"} fontWeight="medium" mt={"16px"}>
                   Don&apos;t have an account?
-                  <Link
-                    as={NextLink}
-                    color={"white"}
-                    ms="5px"
-                    href={Routes.signup}
-                    fontWeight="bold"
-                  >
-                    Sign Up
-                  </Link>
+                  <Link color={"white"} ms="5px" fontWeight="bold" asChild><NextLink href={Routes.signup}>Sign Up
+                                      </NextLink></Link>
                 </Text>
               </VStack>
             </Box>

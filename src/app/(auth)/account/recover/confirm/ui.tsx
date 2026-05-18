@@ -6,15 +6,7 @@ import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { Routes } from "@/routes/routes";
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -74,7 +66,7 @@ const SuspenseBody: React.FC = () => {
       >
         {(props) => (
           <Form style={{ width: "100%" }}>
-            <VStack spacing={"32px"} w={"100%"}>
+            <VStack gap={"32px"} w={"100%"}>
               <Text
                 fontSize="md"
                 color="white"
@@ -87,7 +79,7 @@ const SuspenseBody: React.FC = () => {
               </Text>
 
               <VStack
-                spacing={"18px"}
+                gap={"18px"}
                 w={"100%"}
                 color={"white"}
                 align={"start"}
@@ -105,7 +97,7 @@ const SuspenseBody: React.FC = () => {
                   w="100%"
                   minH="50"
                   mt={"6px"}
-                  isLoading={props.isSubmitting}
+                  loading={props.isSubmitting}
                 >
                   Change Password
                 </Button>
@@ -120,7 +112,7 @@ const SuspenseBody: React.FC = () => {
 
 const UI: NextPage = () => {
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -136,7 +128,7 @@ const UI: NextPage = () => {
           w={"100%"}
           maxW={{ base: "100%", lg: "580px" }}
         >
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0} w={"100%"}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0} w={"100%"}>
             <AuthHeader />
             <Box p={"30px"} w={"100%"} maxW={{ base: "650px", lg: "450px" }}>
               <VStack

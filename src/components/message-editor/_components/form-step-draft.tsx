@@ -5,16 +5,9 @@ import { ActionButtonDesign } from "@/models/action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
   Heading,
   HStack,
   Input,
@@ -23,6 +16,7 @@ import {
   Textarea,
   VStack,
   type BoxProps,
+  Field,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -82,7 +76,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                 New Message
               </Heading>
               <VStack
-                spacing={{ base: 4, md: "24px" }}
+                gap={{ base: 4, md: "24px" }}
                 align={"end"}
                 w={"full"}
               >
@@ -92,8 +86,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                       !!form.errors?.title && !!form.touched?.title;
 
                     return (
-                      <FormControl color="white" isInvalid={isFieldValid}>
-                        <FormLabel htmlFor={field.name}>Title</FormLabel>
+                      <Field.Root color="white" invalid={isFieldValid}>
+                        <Field.Label htmlFor={field.name}>Title</Field.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -105,10 +99,10 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -118,8 +112,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                       !!form.errors?.body && !!form.touched?.body;
 
                     return (
-                      <FormControl color="white" isInvalid={isFieldInvalid}>
-                        <FormLabel htmlFor={field.name}>Body</FormLabel>
+                      <Field.Root color="white" invalid={isFieldInvalid}>
+                        <Field.Label htmlFor={field.name}>Body</Field.Label>
                         <Textarea
                           {...field}
                           id={field.name}
@@ -136,22 +130,22 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
                 <Field name="isBlocking">
                   {({ field, form }: FieldProps<boolean, DraftFormData>) => {
                     return (
-                      <FormControl
+                      <Field.Root
                         display="flex"
                         alignItems="center"
                         color="white"
                       >
-                        <VStack align={"start"} spacing={0} w={"full"}>
+                        <VStack align={"start"} gap={0} w={"full"}>
                           <HStack>
                             <Switch
                               {...field}
@@ -160,31 +154,31 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                               id={field.name}
                               size={"md"}
                             />
-                            <FormLabel htmlFor={field.name} mb={0} ml={2}>
+                            <Field.Label htmlFor={field.name} mb={0} ml={2}>
                               Require user to use action?
-                            </FormLabel>
+                            </Field.Label>
                           </HStack>
-                          <FormHelperText color={"gray.200"}>
+                          <Field.HelperText color={"gray.200"}>
                             Blocking messages can only be dismissed using
                             actions.
-                          </FormHelperText>
+                          </Field.HelperText>
                           {field.value && form.values.actions.length === 0 && (
-                            <Alert status="warning" variant={"solid"} mt={4}>
-                              <AlertIcon />
+                            <Alert.Root status="warning" variant={"solid"} mt={4}>
+                              <Alert.Indicator />
                               <Box>
-                                <AlertTitle>Attention!</AlertTitle>
-                                <AlertDescription>
+                                <Alert.Title>Attention!</Alert.Title>
+                                <Alert.Description>
                                   You did not add any actions to this message
                                   yet! <br />
                                   Blocking messages without actions will not be
                                   dismissable and will block the user from using
                                   the app.
-                                </AlertDescription>
+                                </Alert.Description>
                               </Box>
-                            </Alert>
+                            </Alert.Root>
                           )}
                         </VStack>
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
@@ -192,7 +186,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                   <Text as={FormLabel} color={"white"}>
                     Actions
                   </Text>
-                  <VStack w={"full"} align={"start"} spacing={4}>
+                  <VStack w={"full"} align={"start"} gap={4}>
                     <Field name="actions">
                       {({ field }: FieldProps<DraftFormData["actions"]>) => {
                         return (
@@ -220,10 +214,9 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                                     justify={"center"}
                                   >
                                     <Button
-                                      colorScheme={"brand"}
+                                      colorPalette={"brand"}
                                       variant={"solid"}
                                       rounded={"full"}
-                                      leftIcon={<FiPlusCircle />}
                                       onClick={() => {
                                         const generatedId =
                                           Math.max(
@@ -239,10 +232,8 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                                             ActionButtonDesign.FILLED,
                                           title: "",
                                         });
-                                      }}
-                                    >
-                                      Add Action
-                                    </Button>
+                                      }}><FiPlusCircle />Add Action
+                                                                          </Button>
                                   </Flex>
                                 </>
                               );

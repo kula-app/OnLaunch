@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@chakra-ui/react";
+import { Steps, Box } from "@chakra-ui/react";
 import { useFormikContext } from "formik";
 import type { FilterFormData } from "../../_models/filters/filters-form-data";
 import { AdvancedFiltersRuleGroupBox } from "./advanced-filters-rule-group-box";

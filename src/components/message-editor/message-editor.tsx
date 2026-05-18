@@ -1,6 +1,6 @@
-"use client";
-
+"use client";;
 import { createMessage } from "@/app/actions/create-message";
+import { LuCheck } from 'react-icons/lu';
 import { deleteMessage } from "@/app/actions/delete-message";
 import { getMessage } from "@/app/actions/get-message";
 import { updateMessage } from "@/app/actions/update-message";
@@ -36,31 +36,20 @@ import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import {
+  Steps,
   Box,
   Button,
   Card,
-  CardBody,
-  CardFooter,
   Flex,
   Icon,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Spacer,
-  Step,
-  StepIcon,
-  StepIndicator,
-  Stepper,
-  StepSeparator,
-  StepStatus,
   Text,
   useDisclosure,
   useSteps,
   useToast,
   type ButtonProps,
+  Dialog,
+  Portal,
 } from "@chakra-ui/react";
 import type { FormikProps } from "formik";
 import { useRouter } from "next/navigation";
@@ -115,23 +104,19 @@ export const MessageEditor: React.FC<{
     { id: FormDataStepId.TIMEFRAME },
     { id: FormDataStepId.FILTERS },
   ];
-  const {
-    activeStep: activeStepIdx,
-    goToNext,
-    goToPrevious,
-  } = useSteps({
-    index: 0,
-    count: steps.length,
+  const stepsApi = useSteps({
+    defaultStep: 0,
+    count: steps.length
   });
   const activeStepId: FormDataStep["id"] | undefined = steps[activeStepIdx]?.id;
 
   const {
-    isOpen: isOpenDiscardModal,
+    open: isOpenDiscardModal,
     onOpen: onOpenDiscardModal,
     onClose: onCloseDiscardModal,
   } = useDisclosure();
   const {
-    isOpen: isDeleteModalOpen,
+    open: isDeleteModalOpen,
     onOpen: onOpenDeleteModal,
     onClose: onCloseDeleteModal,
   } = useDisclosure();
@@ -411,45 +396,47 @@ export const MessageEditor: React.FC<{
         mt={{ base: 12, md: 0 }}
         px={{ base: 4, md: 0 }}
       >
-        <Card
+        <Card.Root
           mt={{ base: 8 }}
           p={{
             md: 4,
           }}
         >
-          <CardBody>
+          <Card.Body>
             <Box minW={"sm"} maxW={"lg"} alignSelf={"center"}>
-              <Stepper index={activeStepIdx} size={"sm"} gap={0}>
+              <Steps.RootProvider size={"sm"} gap={0} value={stepsApi}>
                 {steps.map((step, index) => (
-                  <Step key={step.id} gap={0}>
-                    <StepIndicator
-                      sx={{
-                        "[data-status=complete] &": {
+                  <Steps.Item key={step.id} gap={0}>
+                    <Steps.Indicator
+                      css={{
+                        '& [data-status=complete] &': {
                           background: "blue.300",
                           borderColor: "blue.300",
                         },
-                        "[data-status=active] &": {
+
+                        '& [data-status=active] &': {
                           background: "brand.300",
                           borderColor: "brand.300",
                         },
-                        "[data-status=incomplete] &": {
+
+                        '& [data-status=incomplete] &': {
                           background: "gray.300",
                           borderColor: "gray.300",
-                        },
+                        }
                       }}
                     >
-                      <StepStatus
-                        complete={<StepIcon />}
-                        active={<Icon as={FaQuestion} color={"white"} />}
+                      <Steps.Status
+                        complete={<LuCheck />}
+                        current={<Icon color={"white"} asChild><FaQuestion /></Icon>}
                       />
-                    </StepIndicator>
-                    <StepSeparator
+                    </Steps.Indicator>
+                    <Steps.Separator
                       _horizontal={{ ml: "0" }}
                       background={"gray.300"}
                     />
-                  </Step>
+                  </Steps.Item>
                 ))}
-              </Stepper>
+              </Steps.RootProvider>
             </Box>
             <Flex flexDir={"row"} align={"start"} gap={8} mt={4}>
               <FormStepDraft
@@ -523,12 +510,12 @@ export const MessageEditor: React.FC<{
                 />
               </Flex>
             </Flex>
-          </CardBody>
-          <CardFooter display={"flex"} flexDir={"row"} gap={4}>
+          </Card.Body>
+          <Card.Footer display={"flex"} flexDir={"row"} gap={4}>
             {activeStepIdx === 0 && (
               <>
                 <Button
-                  colorScheme="gray"
+                  colorPalette="gray"
                   onClick={() => {
                     // If the form is dirty, we want to show a confirmation modal to confirm discarding changes
                     if (
@@ -545,21 +532,21 @@ export const MessageEditor: React.FC<{
                   Cancel
                 </Button>
                 {messageId && (
-                  <Button colorScheme="red" onClick={onOpenDeleteModal}>
+                  <Button colorPalette="red" onClick={onOpenDeleteModal}>
                     Delete
                   </Button>
                 )}
               </>
             )}
             {activeStepIdx > 0 && (
-              <Button colorScheme="gray" onClick={() => goToPrevious()}>
+              <Button colorPalette="gray" onClick={() => goToPrevious()}>
                 Back
               </Button>
             )}
             <Spacer />
             {activeStepId === FormDataStepId.DRAFT && (
               <Button
-                colorScheme="blue"
+                colorPalette="blue"
                 onClick={async () => {
                   if (!draftFormRef.current) {
                     return;
@@ -575,7 +562,7 @@ export const MessageEditor: React.FC<{
             )}
             {activeStepId === FormDataStepId.TIMEFRAME && (
               <Button
-                colorScheme="blue"
+                colorPalette="blue"
                 onClick={async () => {
                   if (!timeframeFormRef.current) {
                     return;
@@ -591,100 +578,118 @@ export const MessageEditor: React.FC<{
             )}
             {activeStepId === FormDataStepId.FILTERS && (
               <Button
-                colorScheme="brand"
+                colorPalette="brand"
                 type="submit"
-                isLoading={isSubmitting}
+                loading={isSubmitting}
                 onClick={submit}
               >
                 {messageId ? "Update" : "Create"}
               </Button>
             )}
-          </CardFooter>
-        </Card>
+          </Card.Footer>
+        </Card.Root>
       </Flex>
-
-      <Modal
-        isOpen={isOpenDiscardModal}
-        onClose={onCloseDiscardModal}
-        onEsc={onCloseDiscardModal}
-        isCentered
+      <Dialog.Root
+        open={isOpenDiscardModal}
+        onEscapeKeyDown={onCloseDiscardModal}
+        placement='center'
+        onOpenChange={e => {
+          if (!e.open) {
+            onCloseDiscardModal();
+          }
+        }}
       >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Discard Changes?</ModalHeader>
-          <ModalBody>
-            <Text>
-              Are you sure you want to discard your changes?
-              <br />
-              Any unsaved data will be lost.
-            </Text>
-          </ModalBody>
-          <ModalFooter display={"flex"} flexDir={"row"} gap={2}>
-            <Button onClick={onCloseDiscardModal}>Cancel</Button>
-            <Button
-              onClick={() => {
-                onCloseDiscardModal();
-                router.push(Routes.app({ orgId, appId }));
-              }}
-              variant={"solid"}
-              colorScheme={"red"}
-            >
-              Discard
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        <Portal>
 
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>Discard Changes?</Dialog.Header>
+              <Dialog.Body>
+                <Text>
+                  Are you sure you want to discard your changes?
+                  <br />
+                  Any unsaved data will be lost.
+                </Text>
+              </Dialog.Body>
+              <Dialog.Footer display={"flex"} flexDir={"row"} gap={2}>
+                <Button onClick={onCloseDiscardModal}>Cancel</Button>
+                <Button
+                  onClick={() => {
+                    onCloseDiscardModal();
+                    router.push(Routes.app({ orgId, appId }));
+                  }}
+                  variant={"solid"}
+                  colorPalette={"red"}
+                >
+                  Discard
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+
+        </Portal>
+      </Dialog.Root>
       {messageId && (
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onClose={onCloseDeleteModal}
-          onEsc={onCloseDeleteModal}
-          isCentered
+        <Dialog.Root
+          open={isDeleteModalOpen}
+          onEscapeKeyDown={onCloseDeleteModal}
+          placement='center'
+          onOpenChange={e => {
+            if (!e.open) {
+              onCloseDeleteModal();
+            }
+          }}
         >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Delete Message?</ModalHeader>
-            <ModalBody>
-              <Text>
-                Are you sure you want to delete this message?
-                <br />
-                This action cannot be undone.
-              </Text>
-            </ModalBody>
-            <ModalFooter display={"flex"} flexDir={"row"} gap={2}>
-              <Button onClick={onCloseDeleteModal}>Cancel</Button>
-              <Button
-                onClick={async () => {
-                  try {
-                    const result = await deleteMessage(messageId);
-                    if (!result.success) {
-                      throw new ServerError(
-                        result.error.name,
-                        result.error.message,
-                      );
-                    }
-                    router.push(Routes.messages({ orgId, appId }));
-                  } catch (error) {
-                    toast({
-                      title: "Failed to delete message!",
-                      description: `${error}`,
-                      status: "error",
-                      isClosable: true,
-                      duration: 6000,
-                    });
-                  } finally {
-                    onCloseDeleteModal();
-                  }
-                }}
-                variant={"solid"}
-                colorScheme={"red"}
-              >
-                Delete
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+          <Portal>
+
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content>
+                <Dialog.Header>Delete Message?</Dialog.Header>
+                <Dialog.Body>
+                  <Text>
+                    Are you sure you want to delete this message?
+                    <br />
+                    This action cannot be undone.
+                  </Text>
+                </Dialog.Body>
+                <Dialog.Footer display={"flex"} flexDir={"row"} gap={2}>
+                  <Button onClick={onCloseDeleteModal}>Cancel</Button>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const result = await deleteMessage(messageId);
+                        if (!result.success) {
+                          throw new ServerError(
+                            result.error.name,
+                            result.error.message,
+                          );
+                        }
+                        router.push(Routes.messages({ orgId, appId }));
+                      } catch (error) {
+                        toast({
+                          title: "Failed to delete message!",
+                          description: `${error}`,
+                          status: "error",
+                          isClosable: true,
+                          duration: 6000,
+                        });
+                      } finally {
+                        onCloseDeleteModal();
+                      }
+                    }}
+                    variant={"solid"}
+                    colorPalette={"red"}
+                  >
+                    Delete
+                  </Button>
+                </Dialog.Footer>
+              </Dialog.Content>
+            </Dialog.Positioner>
+
+          </Portal>
+        </Dialog.Root>
       )}
     </>
   );

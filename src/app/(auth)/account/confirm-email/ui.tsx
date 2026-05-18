@@ -7,20 +7,7 @@ import { AuthHeader } from "@/components/auth/AuthHeader";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import { Routes } from "@/routes/routes";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Link,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Alert, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
@@ -99,7 +86,7 @@ export const UI: React.FC<{
   }, [token, submitEmailChangeToken, isAttempted, sessionStatus]);
 
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -109,7 +96,7 @@ export const UI: React.FC<{
         minH={{ base: "100vh" }}
       >
         <Flex direction={"column"} justify={"center"} w={"100%"}>
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0} w={"100%"}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0} w={"100%"}>
             <AuthHeader />
             <Box p={"30px"} w={"100%"}>
               <VStack
@@ -122,7 +109,7 @@ export const UI: React.FC<{
                   lg: "32px",
                 }}
                 w={"100%"}
-                spacing={"16px"}
+                gap={"16px"}
               >
                 <VStack textAlign={"left"} align={"left"} w={"100%"}>
                   <Text
@@ -138,18 +125,18 @@ export const UI: React.FC<{
                 <VStack w={"full"} color="white">
                   {isInvalid ? (
                     <>
-                      <Alert status="error" w={"full"} color={"black"}>
-                        <AlertIcon />
-                        <VStack align="start" spacing={0}>
-                          <AlertTitle>
+                      <Alert.Root status="error" w={"full"} color={"black"}>
+                        <Alert.Indicator />
+                        <VStack align="start" gap={0}>
+                          <Alert.Title>
                             The confirmation link is invalid.
-                          </AlertTitle>
-                          <AlertTitle>
+                          </Alert.Title>
+                          <Alert.Title>
                             To confirm your email, please request a new one from
                             your user profile.
-                          </AlertTitle>
+                          </Alert.Title>
                         </VStack>
-                      </Alert>
+                      </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
                           variant="brand"
@@ -164,18 +151,18 @@ export const UI: React.FC<{
                     </>
                   ) : isTokenUsed ? (
                     <>
-                      <Alert status="error" w={"full"} color={"black"}>
-                        <AlertIcon />
-                        <VStack align="start" spacing={0}>
-                          <AlertTitle>
+                      <Alert.Root status="error" w={"full"} color={"black"}>
+                        <Alert.Indicator />
+                        <VStack align="start" gap={0}>
+                          <Alert.Title>
                             This confirmation link has already been used.
-                          </AlertTitle>
-                          <AlertDescription>
+                          </Alert.Title>
+                          <Alert.Description>
                             If you didn&apos;t confirm your email yet, please
                             request a new one from your user profile.
-                          </AlertDescription>
+                          </Alert.Description>
                         </VStack>
-                      </Alert>
+                      </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
                           variant="brand"
@@ -190,17 +177,17 @@ export const UI: React.FC<{
                     </>
                   ) : isExpired ? (
                     <>
-                      <Alert status="error" w={"full"} color={"black"}>
-                        <AlertIcon />
-                        <VStack align="start" spacing={0}>
-                          <AlertTitle>
+                      <Alert.Root status="error" w={"full"} color={"black"}>
+                        <Alert.Indicator />
+                        <VStack align="start" gap={0}>
+                          <Alert.Title>
                             The confirmation link has expired.{" "}
-                          </AlertTitle>
-                          <AlertDescription>
+                          </Alert.Title>
+                          <Alert.Description>
                             Please request a new one from your user profile.
-                          </AlertDescription>
+                          </Alert.Description>
                         </VStack>
-                      </Alert>
+                      </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
                           variant="brand"
@@ -215,11 +202,11 @@ export const UI: React.FC<{
                     </>
                   ) : isObsolete ? (
                     <>
-                      <Alert status="error" w={"full"} color={"black"}>
-                        <AlertIcon />
-                        <VStack align="start" spacing={0}>
-                          <AlertTitle>Link is not valid anymore!</AlertTitle>
-                          <AlertDescription>
+                      <Alert.Root status="error" w={"full"} color={"black"}>
+                        <Alert.Indicator />
+                        <VStack align="start" gap={0}>
+                          <Alert.Title>Link is not valid anymore!</Alert.Title>
+                          <Alert.Description>
                             <Text>
                               The confirmation link is no longer valid, because
                               a newer one has been sent!
@@ -232,9 +219,9 @@ export const UI: React.FC<{
                               If you didn&apos;t receive a new link, you can
                               request a new one in your user profile.
                             </Text>
-                          </AlertDescription>
+                          </Alert.Description>
                         </VStack>
-                      </Alert>
+                      </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
                           variant="brand"
@@ -273,17 +260,17 @@ export const UI: React.FC<{
                     </>
                   ) : isConfirmed ? (
                     <>
-                      <Alert status="success" w={"full"} color={"black"}>
-                        <AlertIcon />
-                        <VStack align="start" spacing={0}>
-                          <AlertTitle>
+                      <Alert.Root status="success" w={"full"} color={"black"}>
+                        <Alert.Indicator />
+                        <VStack align="start" gap={0}>
+                          <Alert.Title>
                             Your email has been confirmed.
-                          </AlertTitle>
-                          <AlertDescription>
+                          </Alert.Title>
+                          <Alert.Description>
                             You can now log in with your new email and password.
-                          </AlertDescription>
+                          </Alert.Description>
                         </VStack>
-                      </Alert>
+                      </Alert.Root>
                       <Link
                         href={Routes.login({
                           reason: "email-confirmation",
@@ -320,7 +307,7 @@ export const UI: React.FC<{
                         w="100%"
                         minH="50"
                         mt={"6px"}
-                        isLoading={isLoading}
+                        loading={isLoading}
                         onClick={() => {
                           submitEmailChangeToken(token);
                         }}

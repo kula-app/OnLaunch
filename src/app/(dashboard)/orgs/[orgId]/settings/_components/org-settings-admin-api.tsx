@@ -1,5 +1,4 @@
-"use client";
-
+"use client";;
 import { createOrgAdminToken } from "@/app/actions/create-org-admin-token";
 import { deleteOrgAdminToken } from "@/app/actions/delete-org-admin-token";
 import { loadClientConfig } from "@/config/loadClientConfig";
@@ -7,12 +6,9 @@ import { useOrgAdminTokens } from "@/hooks/use-org-admin-tokens";
 import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import type { Org } from "@/models/org";
 import type { OrgAdminToken } from "@/models/org-admin-token";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Flex,
@@ -26,15 +22,17 @@ import {
   Skeleton,
   Spacer,
   Text,
-  Tooltip,
   useDisclosure,
   useToast,
   VStack,
+  Icon,
 } from "@chakra-ui/react";
+import { Tooltip } from '@/components/ui/tooltip';
 import React, { useState } from "react";
 import { FaCopy, FaEye, FaEyeSlash, FaPlus, FaTrash } from "react-icons/fa6";
 import { CreateOrgAdminAuthorizationTokenModal } from "./create-org-admin-authorization-token-modal";
 import { DeleteOrgAdminAuthorizationTokenDialog } from "./delete-org-admin-authorization-token-dialog";
+import { LuExternalLink } from 'react-icons/lu';
 
 export const OrgSettingsAdminAPI: React.FC<{
   orgId: Org["id"];
@@ -45,7 +43,7 @@ export const OrgSettingsAdminAPI: React.FC<{
   const { tokens, error, isLoading, refresh } = useOrgAdminTokens({ orgId });
 
   const {
-    isOpen: isCreateTokenOpen,
+    open: isCreateTokenOpen,
     onOpen: onCreateTokenOpen,
     onClose: onCreateTokenClose,
   } = useDisclosure();
@@ -72,40 +70,34 @@ export const OrgSettingsAdminAPI: React.FC<{
             <Link
               color={"brand.200"}
               href={`${config.docsConfig.url}#tag/Admin-API`}
-              isExternal
-            >
-              Admin API <ExternalLinkIcon mx="2px" />
+              target='_blank'
+              rel='noopener noreferrer'>
+              Admin API <Icon mx="2px" asChild><LuExternalLink /></Icon>
             </Link>
           </Text>
         </VStack>
         <Spacer />
-        <Button
-          variant={"brand"}
-          onClick={onCreateTokenOpen}
-          leftIcon={<FaPlus />}
-          rounded={"full"}
-        >
-          Create Token
-        </Button>
+        <Button variant={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
+                  </Button>
       </HStack>
       <Box mt={4}>
         {error && (
-          <Alert status={"error"}>
-            <AlertIcon />
-            <AlertTitle>Failed to fetch tokens!</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status={"error"}>
+            <Alert.Indicator />
+            <Alert.Title>Failed to fetch tokens!</Alert.Title>
+            <Alert.Description>{error.message}</Alert.Description>
+          </Alert.Root>
         )}
-        <VStack w={"full"} spacing={4}>
+        <VStack w={"full"} gap={4}>
           {tokens && tokens.length === 0 && (
-            <Alert status={"info"}>
-              <AlertIcon />
-              <AlertTitle>No tokens found!</AlertTitle>
-              <AlertDescription>
+            <Alert.Root status={"info"}>
+              <Alert.Indicator />
+              <Alert.Title>No tokens found!</Alert.Title>
+              <Alert.Description>
                 You can create a new token by clicking the &quot;Create
                 Token&quot; button
-              </AlertDescription>
-            </Alert>
+              </Alert.Description>
+            </Alert.Root>
           )}
           {tokens?.map((token, index) => {
             return (
@@ -123,10 +115,7 @@ export const OrgSettingsAdminAPI: React.FC<{
                   <InputRightElement>
                     <IconButton
                       variant={"ghost"}
-                      colorScheme={"whiteAlpha"}
-                      icon={
-                        visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />
-                      }
+                      colorPalette={"whiteAlpha"}
                       aria-label={"Toggle visibility"}
                       size={"xs"}
                       onClick={() => {
@@ -139,15 +128,13 @@ export const OrgSettingsAdminAPI: React.FC<{
                             visibleTokens.union(new Set([token.id])),
                           );
                         }
-                      }}
-                    />
+                      }}>{visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />}</IconButton>
                   </InputRightElement>
                 </InputGroup>
-                <Tooltip label="Copy Token">
+                <Tooltip content="Copy Token">
                   <IconButton
-                    colorScheme="gray"
+                    colorPalette="gray"
                     aria-label={"Copy Token"}
-                    icon={<FaCopy />}
                     onClick={() => {
                       navigator.clipboard.writeText(token.token);
                       toast({
@@ -157,19 +144,16 @@ export const OrgSettingsAdminAPI: React.FC<{
                         duration: 3000,
                       });
                     }}
-                    rounded={"full"}
-                  />
+                    rounded={"full"}><FaCopy /></IconButton>
                 </Tooltip>
-                <Tooltip label="Delete Token">
+                <Tooltip content="Delete Token">
                   <IconButton
-                    colorScheme="red"
+                    colorPalette="red"
                     aria-label={"Delete Token"}
                     onClick={() => {
                       setTokenToDelete(token);
                     }}
-                    icon={<FaTrash />}
-                    rounded={"full"}
-                  />
+                    rounded={"full"}><FaTrash /></IconButton>
                 </Tooltip>
               </Flex>
             );
@@ -177,7 +161,6 @@ export const OrgSettingsAdminAPI: React.FC<{
           {isLoading && <Skeleton height={10} />}
         </VStack>
       </Box>
-
       <DeleteOrgAdminAuthorizationTokenDialog
         isOpen={isTokenDeletionOpen}
         onClose={onTokenDeletionClose}
@@ -211,7 +194,6 @@ export const OrgSettingsAdminAPI: React.FC<{
         }}
         token={tokenToDelete}
       />
-
       <CreateOrgAdminAuthorizationTokenModal
         isOpen={isCreateTokenOpen}
         onClose={onCreateTokenClose}

@@ -1,14 +1,5 @@
 "use client";
-import {
-  Box,
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Heading, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
 
 export const FetchMessagesFromAPISection: React.FC<{
   apiKey: string | null | undefined;
@@ -20,12 +11,12 @@ export const FetchMessagesFromAPISection: React.FC<{
       <Heading size={"md"} color={"white"} w={"full"}>
         Fetch directly from API
       </Heading>
-      <Tabs w={"full"} variant={"soft-rounded"} colorScheme="teal">
-        <TabList>
+      <Tabs.Root w={"full"} variant={"soft-rounded"} colorPalette="teal">
+        <Tabs.List>
           <Tab>cURL</Tab>
           <Tab>JavaScript</Tab>
           <Tab>Python</Tab>
-        </TabList>
+        </Tabs.List>
 
         <TabPanels>
           <TabPanel>
@@ -92,7 +83,7 @@ print(response.json())`}
             </Box>
           </TabPanel>
         </TabPanels>
-      </Tabs>
+      </Tabs.Root>
     </VStack>
   );
 };

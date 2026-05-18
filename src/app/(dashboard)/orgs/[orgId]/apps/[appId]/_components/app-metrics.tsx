@@ -7,7 +7,7 @@ import type { App } from "@/models/app";
 import type { Org } from "@/models/org";
 import type { RequestHistory } from "@/models/request-history";
 import { RequestHistoryItem } from "@/models/request-history-item";
-import { Button, Card, CardBody, Text, useToast } from "@chakra-ui/react";
+import { Steps, Button, Card, Text, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
 export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
@@ -88,12 +88,12 @@ export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
   }, [filteredHistoryItems]);
 
   return (
-    <Card w={"full"}>
-      <CardBody color={"white"}>
+    <Card.Root w={"full"}>
+      <Card.Body color={"white"}>
         {currentPeriodStart && (
           <Button
             variant="ghost"
-            colorScheme="blue"
+            colorPalette="blue"
             className="mt-8"
             onClick={() => {
               setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
@@ -111,7 +111,7 @@ export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
             ? "in the current billing period"
             : "in the last 31 days"}
         </Text>
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

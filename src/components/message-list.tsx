@@ -1,10 +1,9 @@
-"use client";
-
+"use client";;
 import { Message } from "@/models/message";
 import { truncateString } from "@/util/truncate-string";
 import {
+  Steps,
   Card,
-  CardBody,
   HStack,
   IconButton,
   Skeleton,
@@ -16,9 +15,9 @@ import {
   Text,
   Th,
   Thead,
-  Tooltip,
   Tr,
 } from "@chakra-ui/react";
+import { Tooltip } from '@/components/ui/tooltip';
 import React from "react";
 import { FaTrash } from "react-icons/fa6";
 import { MdEdit } from "react-icons/md";
@@ -31,43 +30,43 @@ export const MessageList: React.FC<{
   deleteMessage?: (messageId: Message) => void;
 }> = ({ isLoading, messages, editMessage, deleteMessage }) => {
   return (
-    <Card w={"full"}>
-      <CardBody>
+    <Card.Root w={"full"}>
+      <Card.Body>
         {messages.length === 0 && (
           <Text size={"md"} color={"white"}>
             No messages found.
           </Text>
         )}
         {messages.length > 0 && (
-          <Table w={"full"} variant={"brand-on-card"} size={"sm"}>
-            <Thead>
-              <Tr>
-                <Th>Title</Th>
-                <Th>Body</Th>
-                <Th>Blocking</Th>
-                <Th>Start Date</Th>
-                <Th>End Date</Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
+          <Table.Root w={"full"} variant={"brand-on-card"} size={"sm"}>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>Title</Table.ColumnHeader>
+                <Table.ColumnHeader>Body</Table.ColumnHeader>
+                <Table.ColumnHeader>Blocking</Table.ColumnHeader>
+                <Table.ColumnHeader>Start Date</Table.ColumnHeader>
+                <Table.ColumnHeader>End Date</Table.ColumnHeader>
+                <Table.ColumnHeader></Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
               {messages.map((message: Message, index: number) => {
                 return (
-                  <Tr key={index}>
-                    <Td>{message.title}</Td>
-                    <Td>{truncateString(message.body, 70)}</Td>
-                    <Td>
+                  <Table.Row key={index}>
+                    <Table.Cell>{message.title}</Table.Cell>
+                    <Table.Cell>{truncateString(message.body, 70)}</Table.Cell>
+                    <Table.Cell>
                       <div className="flex justify-center">
                         {message.isBlocking ? "Yes" : "No"}
                       </div>
-                    </Td>
-                    <Td>{message.startDate.toLocaleString()}</Td>
-                    <Td>{message.endDate.toLocaleString()}</Td>
-                    <Td>
+                    </Table.Cell>
+                    <Table.Cell>{message.startDate.toLocaleString()}</Table.Cell>
+                    <Table.Cell>{message.endDate.toLocaleString()}</Table.Cell>
+                    <Table.Cell>
                       <HStack gap={4} w={"full"}>
                         <Spacer />
                         {editMessage && (
-                          <Tooltip label="Edit Message">
+                          <Tooltip content="Edit Message">
                             <IconButton
                               className="mr-2"
                               aria-label={"Edit Message"}
@@ -78,22 +77,20 @@ export const MessageList: React.FC<{
                           </Tooltip>
                         )}
                         {deleteMessage && (
-                          <Tooltip label="Delete Message">
+                          <Tooltip content="Delete Message">
                             <IconButton
                               aria-label={"Delete message"}
                               onClick={() => deleteMessage(message)}
-                              icon={<FaTrash />}
-                              colorScheme="red"
-                            />
+                              colorPalette="red"><FaTrash /></IconButton>
                           </Tooltip>
                         )}
                       </HStack>
-                    </Td>
-                  </Tr>
+                    </Table.Cell>
+                  </Table.Row>
                 );
               })}
-            </Tbody>
-          </Table>
+            </Table.Body>
+          </Table.Root>
         )}
         {isLoading && (
           <div className="w-full">
@@ -104,7 +101,7 @@ export const MessageList: React.FC<{
             </Stack>
           </div>
         )}
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

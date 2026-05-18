@@ -7,21 +7,16 @@ import { useCooldown } from "@/hooks/useCooldown";
 import type { User } from "@/models/user";
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
   Box,
   Button,
   Card,
-  CardBody,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
   Input,
   Text,
   useToast,
   VStack,
+  Field,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -110,8 +105,8 @@ export const ChangeEmailCard: React.FC<{
       <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
         Change Email
       </Heading>
-      <Card p={4} w={"full"}>
-        <CardBody>
+      <Card.Root p={4} w={"full"}>
+        <Card.Body>
           <Formik
             innerRef={formRef}
             enableReinitialize
@@ -127,12 +122,12 @@ export const ChangeEmailCard: React.FC<{
                       !!form.errors?.email && !!form.touched?.email;
 
                     return (
-                      <FormControl
+                      <Field.Root
                         color="white"
                         w={"full"}
-                        isInvalid={isFieldInvalid}
+                        invalid={isFieldInvalid}
                       >
-                        <FormLabel htmlFor={field.name}>Email</FormLabel>
+                        <Field.Label htmlFor={field.name}>Email</Field.Label>
                         <Input
                           {...field}
                           id={field.name}
@@ -143,26 +138,26 @@ export const ChangeEmailCard: React.FC<{
                         <ErrorMessage
                           name={field.name}
                           render={(errorMessage) => (
-                            <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                            <Field.ErrorText>{errorMessage}</Field.ErrorText>
                           )}
                         />
-                      </FormControl>
+                      </Field.Root>
                     );
                   }}
                 </Field>
                 <Button
-                  colorScheme="brand"
+                  colorPalette="brand"
                   type="submit"
-                  isLoading={props.isSubmitting}
-                  isDisabled={!props.dirty}
+                  loading={props.isSubmitting}
+                  disabled={!props.dirty}
                   onClick={props.submitForm}
                 >
                   Update
                 </Button>
                 {user?.unconfirmedEmail && (
-                  <Alert status="warning" w={"full"} mt={4}>
-                    <AlertIcon />
-                    <AlertDescription w={"full"}>
+                  <Alert.Root status="warning" w={"full"} mt={4}>
+                    <Alert.Indicator />
+                    <Alert.Description w={"full"}>
                       <HStack w={"full"} justify={"space-between"}>
                         <Text>
                           Please verify your new email address by clicking the
@@ -170,10 +165,10 @@ export const ChangeEmailCard: React.FC<{
                           <strong>{user.unconfirmedEmail}</strong>
                         </Text>
                         <Button
-                          colorScheme="orange"
+                          colorPalette="orange"
                           size="sm"
                           variant={"outline"}
-                          isLoading={isResending}
+                          loading={isResending}
                           disabled={resendCooldown.isActive}
                           onClick={onSubmitResend}
                         >
@@ -182,14 +177,14 @@ export const ChangeEmailCard: React.FC<{
                             `(${resendCooldown.seconds}s)`}
                         </Button>
                       </HStack>
-                    </AlertDescription>
-                  </Alert>
+                    </Alert.Description>
+                  </Alert.Root>
                 )}
               </VStack>
             )}
           </Formik>
-        </CardBody>
-      </Card>
+        </Card.Body>
+      </Card.Root>
     </Box>
   );
 };

@@ -6,14 +6,7 @@ import {
 } from "@/components/display-mapper";
 import { ActionButtonDesign } from "@/models/action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
-import {
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  IconButton,
-  Input,
-  Select,
-} from "@chakra-ui/react";
+import { Flex, IconButton, Input, Select, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -42,9 +35,9 @@ export const DraftMessageActionRow: React.FC<{
             !!form.touched?.actions?.[index]?.title;
 
           return (
-            <FormControl
+            <Field.Root
               color="white"
-              isInvalid={isFieldInvalid}
+              invalid={isFieldInvalid}
               w={"auto"}
               flexGrow={1}
             >
@@ -61,10 +54,10 @@ export const DraftMessageActionRow: React.FC<{
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>
@@ -78,7 +71,7 @@ export const DraftMessageActionRow: React.FC<{
             !!form.touched?.actions?.[index]?.buttonDesign;
 
           return (
-            <FormControl color="white" isInvalid={isFieldInvalid} w={"auto"}>
+            <Field.Root color="white" invalid={isFieldInvalid} w={"auto"}>
               <Select {...field} id={field.name} variant={"brand-on-card"}>
                 {Object.values(ActionButtonDesign).map((buttonDesign) => (
                   <option key={buttonDesign} value={buttonDesign}>
@@ -86,14 +79,13 @@ export const DraftMessageActionRow: React.FC<{
                   </option>
                 ))}
               </Select>
-
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>
@@ -106,7 +98,7 @@ export const DraftMessageActionRow: React.FC<{
             !!draftActionErrors?.[index]?.actionType &&
             !!form.touched?.actions?.[index]?.actionType;
           return (
-            <FormControl color="white" isInvalid={isFieldInvalid} w={"auto"}>
+            <Field.Root color="white" invalid={isFieldInvalid} w={"auto"}>
               <Select {...field} id={field.name} variant={"brand-on-card"}>
                 {Object.values(MessageActionType).map((actionType) => (
                   <option key={actionType} value={actionType}>
@@ -117,10 +109,10 @@ export const DraftMessageActionRow: React.FC<{
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>

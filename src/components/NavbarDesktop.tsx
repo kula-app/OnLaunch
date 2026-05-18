@@ -1,15 +1,5 @@
-import {
-  Box,
-  Flex,
-  Icon,
-  Link,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Stack,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Steps, Box, Flex, Icon, Link, Popover, Stack, Text } from "@chakra-ui/react";
+import { useColorModeValue } from "./ui/color-mode";
 import { MdChevronRight } from "react-icons/md";
 import { Routes } from "../routes/routes";
 
@@ -33,11 +23,14 @@ export default function DesktopNav() {
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
   return (
-    <Stack direction={"row"} spacing={4}>
+    <Stack direction={"row"} gap={4}>
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
-          <Popover trigger={"hover"} placement={"bottom-start"}>
-            <PopoverTrigger>
+          <Popover.Root
+            positioning={{
+              placement: "bottom-start"
+            }}>
+            <Popover.Trigger asChild>
               <Link
                 p={2}
                 href={navItem.href ?? "#"}
@@ -51,25 +44,26 @@ export default function DesktopNav() {
               >
                 {navItem.label}
               </Link>
-            </PopoverTrigger>
+            </Popover.Trigger>
 
             {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={"xl"}
-                bg={popoverContentBgColor}
-                p={4}
-                rounded={"xl"}
-                minW={"sm"}
-              >
-                <Stack>
-                  {navItem.children.map((child) => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
+              <Popover.Positioner>
+                <Popover.Content
+                  border={0}
+                  boxShadow={"xl"}
+                  bg={popoverContentBgColor}
+                  p={4}
+                  rounded={"xl"}
+                  minW={"sm"}>
+                  <Stack>
+                    {navItem.children.map((child) => (
+                      <DesktopSubNav key={child.label} {...child} />
+                    ))}
+                  </Stack>
+                </Popover.Content>
+              </Popover.Positioner>
             )}
-          </Popover>
+          </Popover.Root>
         </Box>
       ))}
     </Stack>
@@ -106,7 +100,7 @@ function DesktopSubNav({ label, href, subLabel }: NavItem) {
           align={"center"}
           flex={1}
         >
-          <Icon color={"pink.400"} w={5} h={5} as={MdChevronRight} />
+          <Icon color={"pink.400"} w={5} h={5} asChild><MdChevronRight /></Icon>
         </Flex>
       </Stack>
     </Link>

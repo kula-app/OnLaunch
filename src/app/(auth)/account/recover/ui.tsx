@@ -6,15 +6,7 @@ import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { Routes } from "@/routes/routes";
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
@@ -29,7 +21,7 @@ const UI: NextPage = () => {
   const toast = useToast();
 
   return (
-    <HStack spacing={0} align={"stretch"}>
+    <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
       <Flex
         direction={"column"}
@@ -45,7 +37,7 @@ const UI: NextPage = () => {
           w={"100%"}
           maxW={{ base: "100%", lg: "580px" }}
         >
-          <VStack my={{ lg: "60px" }} align={"center"} spacing={0} w={"100%"}>
+          <VStack my={{ lg: "60px" }} align={"center"} gap={0} w={"100%"}>
             <AuthHeader />
             <Box p={"30px"} w={"100%"} maxW={{ base: "650px", lg: "450px" }}>
               <VStack
@@ -58,7 +50,7 @@ const UI: NextPage = () => {
                   lg: "32px",
                 }}
                 w={"100%"}
-                spacing={"16px"}
+                gap={"16px"}
               >
                 <VStack textAlign={"left"} align={"left"} w={"100%"}>
                   <Text
@@ -97,7 +89,7 @@ const UI: NextPage = () => {
                 >
                   {(props) => (
                     <Form style={{ width: "100%" }}>
-                      <VStack spacing={"32px"} w={"100%"} color="white">
+                      <VStack gap={"32px"} w={"100%"} color="white">
                         <Text w={"full"}>
                           {props.status.isSent ? (
                             <>
@@ -115,7 +107,7 @@ const UI: NextPage = () => {
 
                         {!props.status.isSent && (
                           <VStack
-                            spacing={"18px"}
+                            gap={"18px"}
                             w={"100%"}
                             color={"white"}
                             align={"start"}
@@ -133,14 +125,14 @@ const UI: NextPage = () => {
                               w="100%"
                               minH="50"
                               mt={"6px"}
-                              isLoading={props.isSubmitting}
+                              loading={props.isSubmitting}
                             >
                               Send Email
                             </Button>
                           </VStack>
                         )}
                         {props.status.isSent && (
-                          <VStack spacing={"16px"} w="100%">
+                          <VStack gap={"16px"} w="100%">
                             <Button
                               variant={"brand"}
                               w="100%"
@@ -156,7 +148,7 @@ const UI: NextPage = () => {
                               Back To Login
                             </Button>
                             <Button
-                              colorScheme="gray"
+                              colorPalette="gray"
                               w="100%"
                               minH="50"
                               onClick={() => {

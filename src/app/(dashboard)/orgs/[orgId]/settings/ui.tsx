@@ -3,8 +3,8 @@
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { Routes } from "@/routes/routes";
 import {
+  Steps,
   Card,
-  CardBody,
   Container,
   Flex,
   Heading,
@@ -104,21 +104,21 @@ export const UI: React.FC<{
           <Heading size={"lg"} w={"full"} color={"white"} mt={4}>
             Organisation Settings
           </Heading>
-          <Card w={"full"}>
-            <CardBody>
-              <Tabs
-                isFitted
+          <Card.Root w={"full"}>
+            <Card.Body>
+              <Tabs.Root
+                fitted
                 w={"full"}
                 variant={"brand-on-card"}
-                colorScheme="brand"
-                index={tabIndex}
-                onChange={handleTabIndexChange}
+                colorPalette="brand"
+                value={tabIndex}
+                onValueChange={handleTabIndexChange}
               >
-                <TabList>
+                <Tabs.List>
                   {orderedTabs.map((tab) => (
                     <Tab key={tab.id}>{tab.name}</Tab>
                   ))}
-                </TabList>
+                </Tabs.List>
                 <TabPanels>
                   {orderedTabs.map((tab) => (
                     <TabPanel key={tab.id}>
@@ -137,9 +137,9 @@ export const UI: React.FC<{
                     </TabPanel>
                   ))}
                 </TabPanels>
-              </Tabs>
-            </CardBody>
-          </Card>
+              </Tabs.Root>
+            </Card.Body>
+          </Card.Root>
         </VStack>
       </Container>
     </Flex>

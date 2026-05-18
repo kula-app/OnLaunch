@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Select,
-  Switch,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Select, Switch, VStack, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -75,16 +66,16 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
           const isFieldInvalid = !!errors && !!touched;
 
           return (
-            <FormControl color={"white"} isInvalid={isFieldInvalid}>
+            <Field.Root color={"white"} invalid={isFieldInvalid}>
               <Flex dir={"row"} align={"center"}>
-                <FormLabel mb={0} htmlFor={field.name}>
+                <Field.Label mb={0} htmlFor={field.name}>
                   {isTargetingMultiplePlatforms &&
                     "Do you want to target specific platform versions?"}
                   {isTargetingOnlyAndroid &&
                     "Do you want to target a specific Android version?"}
                   {isTargetingOnlyIos &&
                     "Do you want to target a specific iOS version?"}
-                </FormLabel>
+                </Field.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -96,10 +87,10 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>
@@ -109,14 +100,14 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
         hidden={!values.simple?.platformVersionFilter?.isEnabled}
       >
         {isTargetingAndroid && (
-          <FormControl color={"white"}>
-            <FormLabel hidden={isTargetingOnlyAndroid}>
+          <Field.Root color={"white"}>
+            <Field.Label hidden={isTargetingOnlyAndroid}>
               Which version of Android is running on the user&apos;s device?
-            </FormLabel>
+            </Field.Label>
             <Flex gap={2}>
               <Field name="simple.platformVersionFilter.android.comparator">
                 {({ field }: FieldProps) => (
-                  <VStack align={"start"} spacing={0}>
+                  <VStack align={"start"} gap={0}>
                     <Select {...field} variant={"brand-on-card"} w={"auto"}>
                       {Object.values(SimpleFiltersComparator).map(
                         (comparator) => (
@@ -129,7 +120,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
                       )}
                     />
                   </VStack>
@@ -137,7 +128,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               </Field>
               <Field name="simple.platformVersionFilter.android.version">
                 {({ field }: FieldProps) => (
-                  <VStack align={"start"} spacing={0}>
+                  <VStack align={"start"} gap={0}>
                     <Select {...field} variant={"brand-on-card"} w={"auto"}>
                       {Object.values(SimpleFiltersAndroidVersion).map(
                         (version) => (
@@ -150,24 +141,24 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
                       )}
                     />
                   </VStack>
                 )}
               </Field>
             </Flex>
-          </FormControl>
+          </Field.Root>
         )}
         {isTargetingIos && (
-          <FormControl color={"white"}>
-            <FormLabel hidden={isTargetingOnlyIos}>
+          <Field.Root color={"white"}>
+            <Field.Label hidden={isTargetingOnlyIos}>
               Which version of iOS is running on the user&apos;s device?
-            </FormLabel>
+            </Field.Label>
             <Flex gap={2}>
               <Field name="simple.platformVersionFilter.ios.comparator">
                 {({ field }: FieldProps) => (
-                  <VStack align={"start"} spacing={0}>
+                  <VStack align={"start"} gap={0}>
                     <Select {...field} variant={"brand-on-card"} w={"auto"}>
                       {Object.values(SimpleFiltersComparator).map(
                         (comparator) => (
@@ -180,7 +171,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
                       )}
                     />
                   </VStack>
@@ -188,7 +179,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               </Field>
               <Field name="simple.platformVersionFilter.ios.version">
                 {({ field }: FieldProps) => (
-                  <VStack align={"start"} spacing={0}>
+                  <VStack align={"start"} gap={0}>
                     <Select {...field} variant={"brand-on-card"} w={"auto"}>
                       {Object.values(SimpleFiltersIosVersion).map((version) => (
                         <option key={version} value={version}>
@@ -199,14 +190,14 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
                       )}
                     />
                   </VStack>
                 )}
               </Field>
             </Flex>
-          </FormControl>
+          </Field.Root>
         )}
       </Box>
     </Box>

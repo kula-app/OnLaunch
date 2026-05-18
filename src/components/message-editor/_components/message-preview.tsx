@@ -4,6 +4,7 @@ import { PhoneBezel } from "@/components/phone-bezel";
 import { PhoneModalSheet } from "@/components/phone-modal-sheet";
 import type { MessageAction } from "@/models/message-action";
 import {
+  Steps,
   Button,
   Heading,
   HStack,
@@ -40,13 +41,11 @@ export const MessagePreview: React.FC<Props> = ({
             <Spacer />
             <IconButton
               aria-label="Close"
-              icon={<FiX />}
               variant={"solid"}
-              colorScheme={"gray"}
+              colorPalette={"gray"}
               rounded="full"
               size={"sm"}
-              opacity={isCloseButtonVisible ? 1 : 0}
-            />
+              opacity={isCloseButtonVisible ? 1 : 0}><FiX /></IconButton>
           </HStack>
           <Heading
             size="lg"
@@ -61,7 +60,7 @@ export const MessagePreview: React.FC<Props> = ({
             px={4}
             align={"start"}
             w={"full"}
-            spacing={2}
+            gap={2}
             overflowY={"scroll"}
           >
             {content.length > 0 ? (
@@ -75,13 +74,13 @@ export const MessagePreview: React.FC<Props> = ({
             )}
           </VStack>
           <Spacer />
-          <VStack spacing={4} p={4} w={"full"}>
+          <VStack gap={4} p={4} w={"full"}>
             {actions.map((action) => (
               <Button
                 key={action.id}
                 variant={action.variant}
                 w={"full"}
-                colorScheme={"blue"}
+                colorPalette={"blue"}
               >
                 {action.label.length > 0 ? (
                   action.label

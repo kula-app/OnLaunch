@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Select,
-  Switch,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Input, Select, Switch, Text, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -72,13 +62,13 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
 
           const isFieldInvalid = !!errors && !!touched;
           return (
-            <FormControl isInvalid={isFieldInvalid} color={"white"}>
+            <Field.Root invalid={isFieldInvalid} color={"white"}>
               <Flex dir={"row"} align={"center"}>
-                <FormLabel mb={0} htmlFor={field.name}>
+                <Field.Label mb={0} htmlFor={field.name}>
                   {isTargetingMultiplePlatforms
                     ? "Do you want to target specific app versions?"
                     : "Do you want to target a specific app version?"}
-                </FormLabel>
+                </Field.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -90,10 +80,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>
@@ -141,7 +131,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
 
                   const isFieldInvalid = !!errors && !!touched;
                   return (
-                    <FormControl isInvalid={isFieldInvalid} w={"auto"}>
+                    <Field.Root invalid={isFieldInvalid} w={"auto"}>
                       <Select {...field} variant={"brand-on-card"}>
                         {Object.values(SimpleFiltersComparator).map(
                           (comparator) => (
@@ -154,10 +144,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>
@@ -191,7 +181,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
 
                   const isFieldInvalid = !!errors && !!touched;
                   return (
-                    <FormControl isInvalid={isFieldInvalid} w={"auto"}>
+                    <Field.Root invalid={isFieldInvalid} w={"auto"}>
                       <Input
                         {...field}
                         value={field.value ?? ""}
@@ -202,10 +192,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>
@@ -251,7 +241,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
 
                   const isFieldInvalid = !!errors && !!touched;
                   return (
-                    <FormControl isInvalid={isFieldInvalid} w={"auto"}>
+                    <Field.Root invalid={isFieldInvalid} w={"auto"}>
                       <Select {...field} variant={"brand-on-card"}>
                         {Object.values(SimpleFiltersComparator).map(
                           (comparator) => (
@@ -264,10 +254,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>
@@ -301,7 +291,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
 
                   const isFieldInvalid = !!errors && !!touched;
                   return (
-                    <FormControl isInvalid={isFieldInvalid} w={"auto"}>
+                    <Field.Root invalid={isFieldInvalid} w={"auto"}>
                       <Input
                         {...field}
                         value={field.value ?? ""}
@@ -312,10 +302,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>

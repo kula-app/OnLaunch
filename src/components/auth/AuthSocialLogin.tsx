@@ -1,12 +1,4 @@
-import {
-  Divider,
-  Flex,
-  HStack,
-  Icon,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Flex, HStack, Icon, Text, useToast, VStack, Separator } from "@chakra-ui/react";
 import { getProviders, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
@@ -78,15 +70,15 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
 
   return (
     <>
-      <VStack w={"full"} spacing={"16px"}>
+      <VStack w={"full"} gap={"16px"}>
         <HStack w={"full"}>
-          <Divider />
+          <Separator />
           <Text color={"white"} fontSize={"xs"} textAlign={"center"} w={"full"}>
             Or continue with
           </Text>
-          <Divider />
+          <Separator />
         </HStack>
-        <HStack spacing="15px" justify="center">
+        <HStack gap="15px" justify="center">
           {isGitHubEnabled && (
             <AuthGradientBorder borderRadius="15px" onClick={loginWithGitHub}>
               <Flex
@@ -102,11 +94,10 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
               >
                 <Icon
                   color={"white"}
-                  as={FaGithub}
                   w="30px"
                   h="30px"
                   _hover={{ filter: "brightness(150%)" }}
-                />
+                  asChild><FaGithub /></Icon>
               </Flex>
             </AuthGradientBorder>
           )}
@@ -125,11 +116,10 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
               >
                 <Icon
                   color={"white"}
-                  as={FaGoogle}
                   w="30px"
                   h="30px"
                   _hover={{ filter: "brightness(150%)" }}
-                />
+                  asChild><FaGoogle /></Icon>
               </Flex>
             </AuthGradientBorder>
           )}

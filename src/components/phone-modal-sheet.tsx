@@ -1,9 +1,9 @@
-import { Box, VStack } from "@chakra-ui/react";
+import { Steps, Box, VStack } from "@chakra-ui/react";
 import React, { type PropsWithChildren } from "react";
 
 export const PhoneModalSheet: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <VStack spacing={0} h={"full"} w={"full"}>
+    <VStack gap={0} h={"full"} w={"full"}>
       {/* Reduced background */}
       <Box px={4} w={"full"} h={3} zIndex={10}>
         <Box bg="white" h="full" borderTopRadius={12} />

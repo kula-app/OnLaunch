@@ -6,11 +6,9 @@ import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  CircularProgress,
+  ProgressCircle,
   Container,
   Flex,
   Grid,
@@ -66,19 +64,13 @@ export const UI: React.FC = () => {
               <Input
                 placeholder="Search"
                 value={searchFilter}
-                onChange={(e) => setSearchFilter(e.currentTarget.value)}
+                onValueChange={(e) => setSearchFilter(e.currentTarget.value)}
               />
               <InputRightElement>
                 {searchFilter.length > 0 ? (
-                  <Icon
-                    as={FiX}
-                    aria-label="Clear search"
-                    onClick={() => setSearchFilter("")}
-                    color={"gray.200"}
-                    cursor={"pointer"}
-                  />
+                  <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
                 ) : (
-                  <Icon as={FiSearch} color={"gray.200"} />
+                  <Icon color={"gray.200"} asChild><FiSearch /></Icon>
                 )}
               </InputRightElement>
             </InputGroup>
@@ -88,11 +80,11 @@ export const UI: React.FC = () => {
             your team to collaborate.
           </Text>
           {error && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>Failed to fetch organizations!</AlertTitle>
-              <AlertDescription>{error.message}</AlertDescription>
-            </Alert>
+            <Alert.Root status="error">
+              <Alert.Indicator />
+              <Alert.Title>Failed to fetch organizations!</Alert.Title>
+              <Alert.Description>{error.message}</Alert.Description>
+            </Alert.Root>
           )}
           <Grid templateColumns="repeat(4, 1fr)" gap={6}>
             <GridItem key={"create"}>
@@ -107,7 +99,12 @@ export const UI: React.FC = () => {
             {isLoadingOrgs && (
               <GridItem key={"loading"}>
                 <Flex h={"full"} align={"center"}>
-                  <CircularProgress isIndeterminate size={8} />
+                  <ProgressCircle.Root value={null} size={8}>
+                    <ProgressCircle.Circle>
+                      <ProgressCircle.Track />
+                      <ProgressCircle.Range />
+                    </ProgressCircle.Circle>
+                  </ProgressCircle.Root>
                 </Flex>
               </GridItem>
             )}

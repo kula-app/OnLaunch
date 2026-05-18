@@ -4,7 +4,7 @@ import { TagSelect } from "@/components/tag-select";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import { MessageRuleSystemVariable } from "@/models/message-rule-system-variable";
-import { Box, Button, Flex, Spacer } from "@chakra-ui/react";
+import { Steps, Box, Button, Flex, Spacer } from "@chakra-ui/react";
 import { Field, FieldArray, type FieldProps } from "formik";
 import { useEffect, useRef, useState } from "react";
 import { FaLayerGroup, FaPlus, FaTrash } from "react-icons/fa6";
@@ -261,9 +261,8 @@ const ActionsContainerBox: React.FC<{
               return (
                 <Button
                   variant={"solid"}
-                  colorScheme={"gray"}
+                  colorPalette={"gray"}
                   size={"xs"}
-                  leftIcon={<FaPlus />}
                   onClick={() => {
                     fieldArray.push({
                       id: uuidv4(),
@@ -273,10 +272,8 @@ const ActionsContainerBox: React.FC<{
                     });
                     setAdvancedFilterDirty();
                   }}
-                  disabled={availableSystemVariables.length === 0}
-                >
-                  Add Filter
-                </Button>
+                  disabled={availableSystemVariables.length === 0}><FaPlus />Add Filter
+                                  </Button>
               );
             }}
           </Field>
@@ -286,9 +283,8 @@ const ActionsContainerBox: React.FC<{
         {(fieldArray) => (
           <Button
             variant={"solid"}
-            colorScheme={"gray"}
+            colorPalette={"gray"}
             size={"xs"}
-            leftIcon={<FaLayerGroup />}
             onClick={() => {
               fieldArray.push({
                 id: uuidv4(),
@@ -296,23 +292,18 @@ const ActionsContainerBox: React.FC<{
                 rules: [],
               });
               setAdvancedFilterDirty();
-            }}
-          >
-            Add Group
-          </Button>
+            }}><FaLayerGroup />Add Group
+                      </Button>
         )}
       </FieldArray>
       <Spacer />
       {onDeleteGroup && (
         <Button
           variant={"solid"}
-          colorScheme={"red"}
+          colorPalette={"red"}
           size={"xs"}
-          leftIcon={<FaTrash />}
-          onClick={onDeleteGroup}
-        >
-          Delete Group
-        </Button>
+          onClick={onDeleteGroup}><FaTrash />Delete Group
+                  </Button>
       )}
     </Flex>
   );

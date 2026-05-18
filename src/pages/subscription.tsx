@@ -1,5 +1,5 @@
 import { loadClientConfig } from "@/config/loadClientConfig";
-import { Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
+import { Steps, Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -69,14 +69,14 @@ export default function ProfilePage() {
             <Stack>
               <Button
                 onClick={() => navigateToDashboardPage()}
-                colorScheme="blue"
+                colorPalette="blue"
                 className="mt-8"
               >
                 go to dashboard
               </Button>
               <Button
                 onClick={navigateToNewOrgPage}
-                colorScheme="blue"
+                colorPalette="blue"
                 className="mt-2"
               >
                 create another
@@ -99,7 +99,7 @@ export default function ProfilePage() {
             <Stack>
               <Button
                 onClick={navigateToDashboardPage}
-                colorScheme="blue"
+                colorPalette="blue"
                 className="mt-8"
               >
                 go to dashboard

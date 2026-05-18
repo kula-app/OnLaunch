@@ -19,17 +19,10 @@ import type { OrgUserInvitation } from "@/models/org-user-invitation";
 import { Routes } from "@/routes/routes";
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Avatar,
   Box,
   Button,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
   Heading,
   HStack,
   IconButton,
@@ -48,6 +41,7 @@ import {
   Tr,
   useToast,
   VStack,
+  Field,
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import { useSession } from "next-auth/react";
@@ -215,15 +209,15 @@ export const OrgSettingsUsers: React.FC<{
   return (
     <VStack direction={"column"} w={"full"} align={"start"} gap={8}>
       {(orgError || authenticatedUserRoleError) && (
-        <Alert status={"error"} w={"full"}>
-          <AlertIcon />
-          <AlertTitle>Failed to load organisation!</AlertTitle>
-          <AlertDescription>
+        <Alert.Root status={"error"} w={"full"}>
+          <Alert.Indicator />
+          <Alert.Title>Failed to load organisation!</Alert.Title>
+          <Alert.Description>
             {(orgError ?? authenticatedUserRoleError)?.message}
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       )}
-      <VStack spacing={4} align={"start"} w={"full"}>
+      <VStack gap={4} align={"start"} w={"full"}>
         <HStack w={"full"} justify={"space-between"}>
           <Heading as={"h2"} size={"md"} color={"white"}>
             Users
@@ -241,11 +235,11 @@ export const OrgSettingsUsers: React.FC<{
           />
         </HStack>
         {userError && (
-          <Alert status={"error"} w={"full"}>
-            <AlertIcon />
-            <AlertTitle>Failed to load users!</AlertTitle>
-            <AlertDescription>{userError.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status={"error"} w={"full"}>
+            <Alert.Indicator />
+            <Alert.Title>Failed to load users!</Alert.Title>
+            <Alert.Description>{userError.message}</Alert.Description>
+          </Alert.Root>
         )}
         <TableContainer w={"full"}>
           <Table w={"full"} variant={"brand-on-card"}>
@@ -263,10 +257,7 @@ export const OrgSettingsUsers: React.FC<{
                 return (
                   <Tr key={index}>
                     <Td w={6}>
-                      <Avatar
-                        size={"sm"}
-                        name={user.firstName + " " + user.lastName}
-                      />
+                      <Avatar.Root size={"sm"}><Avatar.Fallback name={user.firstName + " " + user.lastName} /></Avatar.Root>
                     </Td>
                     <Td>{user.firstName + " " + user.lastName}</Td>
                     <Td>{user.email}</Td>
@@ -331,17 +322,16 @@ export const OrgSettingsUsers: React.FC<{
           </Table>
         </TableContainer>
       </VStack>
-
-      <VStack spacing={4} align={"start"} w={"full"}>
+      <VStack gap={4} align={"start"} w={"full"}>
         <Heading as={"h2"} size={"md"} color={"white"}>
           Invite Users
         </Heading>
         {invitationsError && (
-          <Alert status={"error"} w={"full"}>
-            <AlertIcon />
-            <AlertTitle>Failed to load invitations!</AlertTitle>
-            <AlertDescription>{invitationsError.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status={"error"} w={"full"}>
+            <Alert.Indicator />
+            <Alert.Title>Failed to load invitations!</Alert.Title>
+            <Alert.Description>{invitationsError.message}</Alert.Description>
+          </Alert.Root>
         )}
         {authenticatedUserRole === OrgRole.ADMIN && (
           <>
@@ -377,14 +367,14 @@ export const OrgSettingsUsers: React.FC<{
           />
         </HStack>
         {invitations && invitations.length == 0 && (
-          <Alert status={"info"} w={"full"}>
-            <AlertIcon />
-            <AlertTitle>No pending invitations!</AlertTitle>
-            <AlertDescription>
+          <Alert.Root status={"info"} w={"full"}>
+            <Alert.Indicator />
+            <Alert.Title>No pending invitations!</Alert.Title>
+            <Alert.Description>
               You can invite users by entering their email address above or by
               sharing the invitation link.
-            </AlertDescription>
-          </Alert>
+            </Alert.Description>
+          </Alert.Root>
         )}
         {invitations && invitations.length > 0 && (
           <TableContainer w={"full"}>
@@ -506,14 +496,14 @@ const InviteUserForm: React.FC<{
                   !!form.errors?.email && !!form.touched?.email;
 
                 return (
-                  <FormControl
+                  <Field.Root
                     color="white"
                     w={"full"}
-                    isInvalid={isFieldInvalid}
+                    invalid={isFieldInvalid}
                   >
-                    <FormLabel htmlFor={field.name}>
+                    <Field.Label htmlFor={field.name}>
                       Invite user by email
-                    </FormLabel>
+                    </Field.Label>
                     <HStack>
                       <Input
                         {...field}
@@ -522,27 +512,21 @@ const InviteUserForm: React.FC<{
                         variant={"brand-on-card"}
                       />
                       <Button
-                        colorScheme="brand"
+                        colorPalette="brand"
                         type="submit"
-                        isLoading={props.isSubmitting}
+                        loading={props.isSubmitting}
                         onClick={props.submitForm}
-                        rounded={"full"}
-                        leftIcon={
-                          <Box pl={4}>
-                            <FaPaperPlane />
-                          </Box>
-                        }
-                      >
-                        <Box pr={4}>Send Invitation</Box>
-                      </Button>
+                        rounded={"full"}><Box pl={4}>
+                          <FaPaperPlane />
+                        </Box><Box pr={4}>Send Invitation</Box></Button>
                     </HStack>
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <Field.ErrorText>{errorMessage}</Field.ErrorText>
                       )}
                     />
-                  </FormControl>
+                  </Field.Root>
                 );
               }}
             </Field>
@@ -590,8 +574,8 @@ const InvitationLinkForm: React.FC<{
   });
   return (
     <VStack direction={"column"} w={"full"} align={"end"}>
-      <FormControl color="white" w={"full"}>
-        <FormLabel>Invitation Link</FormLabel>
+      <Field.Root color="white" w={"full"}>
+        <Field.Label>Invitation Link</Field.Label>
         <HStack>
           <InputGroup variant={"brand-on-card"}>
             <Input id="invite" value={invitationUrl} readOnly fontSize={"sm"} />
@@ -614,17 +598,17 @@ const InvitationLinkForm: React.FC<{
             </InputRightElement>
           </InputGroup>
           <Button
-            colorScheme={"orange"}
+            colorPalette={"orange"}
             onClick={onResetInvitationToken}
             rounded={"full"}
           >
             <Text px={4}>Reset Link</Text>
           </Button>
         </HStack>
-        <FormHelperText color={"gray.200"}>
+        <Field.HelperText color={"gray.200"}>
           Share this link with users to invite them to the organisation.
-        </FormHelperText>
-      </FormControl>
+        </Field.HelperText>
+      </Field.Root>
     </VStack>
   );
 };

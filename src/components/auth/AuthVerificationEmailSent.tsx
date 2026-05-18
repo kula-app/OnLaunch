@@ -1,6 +1,6 @@
 import { requestAccountVerificationEmail } from "@/app/actions/request-account-verification-email";
 import { useCooldown } from "@/hooks/useCooldown";
-import { Box, Button, Heading, Text, useToast, VStack } from "@chakra-ui/react";
+import { Steps, Box, Button, Heading, Text, useToast, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 export const AuthVerificationEmailSent: React.FC<{
@@ -31,7 +31,7 @@ export const AuthVerificationEmailSent: React.FC<{
   }
 
   return (
-    <VStack color="white" textAlign={"center"} spacing={"24px"}>
+    <VStack color="white" textAlign={"center"} gap={"24px"}>
       <Heading size="md">Please verify your email address to continue.</Heading>
       <Box>
         <Text>You&apos;re almost there! We sent an email to</Text>
@@ -49,20 +49,20 @@ export const AuthVerificationEmailSent: React.FC<{
       <Box>
         <Text>Still didn&apos;t receive the email? No problem.</Text>
       </Box>
-      <VStack spacing={"16px"} w="100%">
+      <VStack gap={"16px"} w="100%">
         <Button
           variant="brand"
           w="100%"
           minH="50"
           onClick={() => resendVerificationEmail(email)}
-          isLoading={isLoading}
-          isDisabled={cooldown.isActive}
+          loading={isLoading}
+          disabled={cooldown.isActive}
         >
           Send Email Again {cooldown.isActive && `(${cooldown.seconds}s)`}
         </Button>
         {isBackButtonVisible && (
           <Button
-            colorScheme="gray"
+            colorPalette="gray"
             w="100%"
             minH="50"
             onClick={onBackButtonClick}

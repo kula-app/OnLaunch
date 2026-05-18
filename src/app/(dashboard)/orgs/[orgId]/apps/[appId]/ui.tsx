@@ -6,6 +6,7 @@ import { useApp } from "@/hooks/use-app";
 import { useMessages } from "@/hooks/use-messages";
 import { Routes } from "@/routes/routes";
 import {
+  Steps,
   Box,
   Button,
   Container,
@@ -47,19 +48,17 @@ export const UI: React.FC<{
         <Container maxW={"6xl"}>
           <VStack p={4} w={"full"} gap={8}>
             <HStack w={"full"}>
-              <Skeleton isLoaded={!isLoadingApp}>
+              <Skeleton loading={!!isLoadingApp}>
                 <Heading size={"lg"} as={"h1"} color={"white"} mb={4}>
                   App &lsquo;{app?.name}&rsquo;
                 </Heading>
               </Skeleton>
               <Spacer />
               <IconButton
-                icon={<FaGear />}
                 onClick={() =>
                   router.push(Routes.appSettings({ orgId, appId }))
                 }
-                aria-label={"Settings"}
-              />
+                aria-label={"Settings"}><FaGear /></IconButton>
             </HStack>
             <Box w={"full"}>
               <HStack w={"full"} mb={4}>
@@ -69,7 +68,7 @@ export const UI: React.FC<{
                 <Spacer />
                 <Button
                   variant={"solid"}
-                  colorScheme={"gray"}
+                  colorPalette={"gray"}
                   onClick={() => {
                     router.push(
                       Routes.messages({
@@ -82,9 +81,8 @@ export const UI: React.FC<{
                   View All
                 </Button>
                 <Button
-                  colorScheme={"brand"}
+                  colorPalette={"brand"}
                   variant={"solid"}
-                  leftIcon={<FaPlus />}
                   onClick={() =>
                     router.push(
                       Routes.createMessage({
@@ -92,10 +90,8 @@ export const UI: React.FC<{
                         appId,
                       }),
                     )
-                  }
-                >
-                  Create Message
-                </Button>
+                  }><FaPlus />Create Message
+                                  </Button>
               </HStack>
               <MessageList
                 isLoading={isLoadingMessages}

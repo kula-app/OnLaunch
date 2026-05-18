@@ -1,7 +1,7 @@
 "use client";
 
 import { Routes } from "@/routes/routes";
-import { Box, Card, CardBody, Icon, Text } from "@chakra-ui/react";
+import { Steps, Box, Card, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { FiPlus } from "react-icons/fi";
@@ -16,7 +16,7 @@ export const OrgCard: React.FC<{
   const router = useRouter();
 
   return (
-    <Card
+    <Card.Root
       cursor={"pointer"}
       onClick={() => {
         if (type === "create") {
@@ -30,7 +30,7 @@ export const OrgCard: React.FC<{
         }
       }}
     >
-      <CardBody
+      <Card.Body
         display={"flex"}
         alignItems={"center"}
         flexDir={"row"}
@@ -56,12 +56,12 @@ export const OrgCard: React.FC<{
           justifyContent="center"
           mr={3}
         >
-          {type == "create" ? <Icon as={FiPlus} /> : name.substring(0, 1)}
+          {type == "create" ? <Icon asChild><FiPlus /></Icon> : name.substring(0, 1)}
         </Box>
         <Text fontWeight="medium" color="white" maxH={10}>
           {name}
         </Text>
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

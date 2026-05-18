@@ -9,13 +9,7 @@ import { Message } from "@/models/message";
 import { Routes } from "@/routes/routes";
 import { truncateString } from "@/util/truncate-string";
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
+  Steps,
   Box,
   Button,
   Container,
@@ -26,6 +20,8 @@ import {
   Text,
   useToast,
   VStack,
+  Dialog,
+  Portal,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -206,15 +202,12 @@ export const UI: React.FC<{
                 </Heading>
                 <Spacer />
                 <Button
-                  leftIcon={<FaPlus />}
                   variant={"solid"}
-                  colorScheme={"brand"}
+                  colorPalette={"brand"}
                   onClick={() =>
                     router.push(Routes.createMessage({ orgId, appId }))
-                  }
-                >
-                  Create Message
-                </Button>
+                  }><FaPlus />Create Message
+                                  </Button>
               </HStack>
               <MessageList
                 isLoading={isLoadingActiveMessages}
@@ -270,45 +263,54 @@ export const UI: React.FC<{
           </VStack>
         </Container>
       </Flex>
-
-      <AlertDialog
-        isOpen={isOpen}
+      <Dialog.Root
+        open={isOpen}
         motionPreset="slideInBottom"
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-        isCentered
-      >
-        <AlertDialogOverlay />
-        <AlertDialogContent>
-          <AlertDialogHeader>Delete Message?</AlertDialogHeader>
-          <AlertDialogCloseButton />
-          <AlertDialogBody>
-            <Text>Are you sure you want to delete this message:</Text>
-            <Text my={4}>
-              <strong>{messageToDelete?.title}</strong>
-              <br />
-              {truncateString(messageToDelete?.body ?? "", 70)}
-            </Text>
-            <Text>This action can not be undone.</Text>
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <HStack>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  callDeleteMessage();
-                  onClose();
-                }}
-              >
-                Delete
-              </Button>
-            </HStack>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        initialFocusEl={() => cancelRef.current}
+        placement='center'
+        role='alertdialog'
+        onOpenChange={e => {
+          if (!e.open) {
+            onClose();
+          }
+        }}>
+        <Portal>
+
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>Delete Message?</Dialog.Header>
+              <Dialog.CloseTrigger />
+              <Dialog.Body>
+                <Text>Are you sure you want to delete this message:</Text>
+                <Text my={4}>
+                  <strong>{messageToDelete?.title}</strong>
+                  <br />
+                  {truncateString(messageToDelete?.body ?? "", 70)}
+                </Text>
+                <Text>This action can not be undone.</Text>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <HStack>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    colorPalette="red"
+                    onClick={() => {
+                      callDeleteMessage();
+                      onClose();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </HStack>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+
+        </Portal>
+      </Dialog.Root>
     </>
   );
 };

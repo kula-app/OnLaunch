@@ -1,5 +1,4 @@
-"use client";
-
+"use client";;
 import { createAppAdminToken } from "@/app/actions/create-app-admin-token";
 import { deleteAppAdminToken } from "@/app/actions/delete-app-admin-token";
 import { loadClientConfig } from "@/config/loadClientConfig";
@@ -7,12 +6,9 @@ import { useAppAdminTokens } from "@/hooks/use-app-admin-tokens";
 import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import { App } from "@/models/app";
 import type { AppAdminToken } from "@/models/app-admin-token";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Flex,
@@ -26,11 +22,12 @@ import {
   Skeleton,
   Spacer,
   Text,
-  Tooltip,
   useDisclosure,
   useToast,
   VStack,
+  Icon,
 } from "@chakra-ui/react";
+import { Tooltip } from '@/components/ui/tooltip';
 import React, { useState } from "react";
 import {
   FaCopy,
@@ -42,6 +39,7 @@ import {
 } from "react-icons/fa6";
 import { CreateAppAdminAuthorizationTokenModal } from "./create-app-admin-authorization-token-modal";
 import { DeleteAppAdminAuthorizationTokenDialog } from "./delete-app-admin-authorization-token-dialog";
+import { LuExternalLink } from 'react-icons/lu';
 
 export const AppSettingsAdminAPI: React.FC<{
   appId: App["id"];
@@ -52,7 +50,7 @@ export const AppSettingsAdminAPI: React.FC<{
   const { tokens, error, isLoading, refresh } = useAppAdminTokens(appId);
 
   const {
-    isOpen: isCreateTokenOpen,
+    open: isCreateTokenOpen,
     onOpen: onCreateTokenOpen,
     onClose: onCreateTokenClose,
   } = useDisclosure();
@@ -79,40 +77,34 @@ export const AppSettingsAdminAPI: React.FC<{
             <Link
               color={"brand.200"}
               href={`${config.docsConfig.url}#tag/Admin-API`}
-              isExternal
-            >
-              Admin API <ExternalLinkIcon mx="2px" />
+              target='_blank'
+              rel='noopener noreferrer'>
+              Admin API <Icon mx="2px" asChild><LuExternalLink /></Icon>
             </Link>
           </Text>
         </VStack>
         <Spacer />
-        <Button
-          variant={"brand"}
-          onClick={onCreateTokenOpen}
-          leftIcon={<FaPlus />}
-          rounded={"full"}
-        >
-          Create Token
-        </Button>
+        <Button variant={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
+                  </Button>
       </HStack>
       <Box mt={4}>
         {error && (
-          <Alert status={"error"}>
-            <AlertIcon />
-            <AlertTitle>Failed to fetch tokens!</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status={"error"}>
+            <Alert.Indicator />
+            <Alert.Title>Failed to fetch tokens!</Alert.Title>
+            <Alert.Description>{error.message}</Alert.Description>
+          </Alert.Root>
         )}
-        <VStack w={"full"} spacing={4}>
+        <VStack w={"full"} gap={4}>
           {tokens && tokens.length === 0 && (
-            <Alert status={"info"}>
-              <AlertIcon />
-              <AlertTitle>No tokens found!</AlertTitle>
-              <AlertDescription>
+            <Alert.Root status={"info"}>
+              <Alert.Indicator />
+              <Alert.Title>No tokens found!</Alert.Title>
+              <Alert.Description>
                 You can create a new token by clicking the &quot;Create
                 Token&quot; button
-              </AlertDescription>
-            </Alert>
+              </Alert.Description>
+            </Alert.Root>
           )}
           {tokens?.map((token, index) => {
             return (
@@ -129,7 +121,7 @@ export const AppSettingsAdminAPI: React.FC<{
                   ) : (
                     <HStack>
                       <FaTriangleExclamation />
-                      <Text noOfLines={1}>No expiration date</Text>
+                      <Text lineClamp={1}>No expiration date</Text>
                     </HStack>
                   )}
                 </Text>
@@ -143,10 +135,7 @@ export const AppSettingsAdminAPI: React.FC<{
                   <InputRightElement>
                     <IconButton
                       variant={"ghost"}
-                      colorScheme={"whiteAlpha"}
-                      icon={
-                        visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />
-                      }
+                      colorPalette={"whiteAlpha"}
                       aria-label={"Toggle visibility"}
                       size={"xs"}
                       onClick={() => {
@@ -159,15 +148,13 @@ export const AppSettingsAdminAPI: React.FC<{
                             visibleTokens.union(new Set([token.id])),
                           );
                         }
-                      }}
-                    />
+                      }}>{visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />}</IconButton>
                   </InputRightElement>
                 </InputGroup>
-                <Tooltip label="Copy Token">
+                <Tooltip content="Copy Token">
                   <IconButton
-                    colorScheme="gray"
+                    colorPalette="gray"
                     aria-label={"Copy Token"}
-                    icon={<FaCopy />}
                     onClick={() => {
                       navigator.clipboard.writeText(token.token);
                       toast({
@@ -175,19 +162,16 @@ export const AppSettingsAdminAPI: React.FC<{
                         status: "info",
                       });
                     }}
-                    rounded={"full"}
-                  />
+                    rounded={"full"}><FaCopy /></IconButton>
                 </Tooltip>
-                <Tooltip label="Delete Token">
+                <Tooltip content="Delete Token">
                   <IconButton
-                    colorScheme="red"
+                    colorPalette="red"
                     aria-label={"Delete Token"}
                     onClick={() => {
                       setTokenToDelete(token);
                     }}
-                    icon={<FaTrash />}
-                    rounded={"full"}
-                  />
+                    rounded={"full"}><FaTrash /></IconButton>
                 </Tooltip>
               </Flex>
             );
@@ -195,7 +179,6 @@ export const AppSettingsAdminAPI: React.FC<{
           {isLoading && <Skeleton height={10} />}
         </VStack>
       </Box>
-
       <DeleteAppAdminAuthorizationTokenDialog
         isOpen={isTokenDeletionOpen}
         onClose={onTokenDeletionClose}
@@ -224,7 +207,6 @@ export const AppSettingsAdminAPI: React.FC<{
         }}
         token={tokenToDelete}
       />
-
       <CreateAppAdminAuthorizationTokenModal
         isOpen={isCreateTokenOpen}
         onClose={onCreateTokenClose}

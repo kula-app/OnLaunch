@@ -3,14 +3,9 @@
 import { useApp } from "@/hooks/use-app";
 import type { App } from "@/models/app";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
   Grid,
   Heading,
   HStack,
@@ -20,6 +15,7 @@ import {
   InputRightElement,
   useToast,
   VStack,
+  Field,
 } from "@chakra-ui/react";
 import { FaCopy } from "react-icons/fa6";
 import { FetchMessagesFromAPISection } from "./fetch-messages-from-api-section";
@@ -73,15 +69,15 @@ export const AppSettingsSDKKeys: React.FC<{
     <>
       <Flex direction={"column"} w={"full"} align={"start"} gap={8}>
         {appError && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Failed to fetch app</AlertTitle>
-            <AlertDescription>{appError.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status="error">
+            <Alert.Indicator />
+            <Alert.Title>Failed to fetch app</Alert.Title>
+            <Alert.Description>{appError.message}</Alert.Description>
+          </Alert.Root>
         )}
         <VStack direction={"column"} w={"full"} align={"end"}>
-          <FormControl color="white" w={"full"}>
-            <FormLabel fontWeight={"bold"}>App Public Key</FormLabel>
+          <Field.Root color="white" w={"full"}>
+            <Field.Label fontWeight={"bold"}>App Public Key</Field.Label>
             <HStack>
               <InputGroup variant={"brand-on-card"}>
                 <Input
@@ -92,9 +88,8 @@ export const AppSettingsSDKKeys: React.FC<{
                 />
                 <InputRightElement>
                   <IconButton
-                    colorScheme={"whiteAlpha"}
+                    colorPalette={"whiteAlpha"}
                     aria-label="Copy Public Key"
-                    icon={<FaCopy />}
                     roundedLeft={"none"}
                     roundedRight={"full"}
                     onClick={() => {
@@ -103,15 +98,14 @@ export const AppSettingsSDKKeys: React.FC<{
                         title: "Public key copied to clipboard.",
                         status: "info",
                       });
-                    }}
-                  />
+                    }}><FaCopy /></IconButton>
                 </InputRightElement>
               </InputGroup>
             </HStack>
-            <FormHelperText color={"gray.200"}>
+            <Field.HelperText color={"gray.200"}>
               Use this key in your Client SDK to connect to this app.
-            </FormHelperText>
-          </FormControl>
+            </Field.HelperText>
+          </Field.Root>
         </VStack>
         <VStack w={"full"} gap={4}>
           <Heading size={"md"} color={"white"} w={"full"}>

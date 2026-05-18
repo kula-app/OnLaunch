@@ -5,21 +5,7 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Input, Text, useToast, VStack, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -71,27 +57,27 @@ export const UI: React.FC<{
         px={{ base: 4, md: 0 }}
       >
         <Flex direction={"column"} justifyContent={"center"}>
-          <VStack color="white" spacing={"24px"} textAlign={"center"}>
+          <VStack color="white" gap={"24px"} textAlign={"center"}>
             <Heading size="lg" as="h1">
               Create Your App
             </Heading>
           </VStack>
-          <Card
+          <Card.Root
             mt={{ base: 8 }}
             p={{
               base: 2,
               md: "22px",
             }}
           >
-            <CardHeader>
+            <Card.Header>
               <Heading size="md" color="white">
                 What&apos;s the name of your app?
               </Heading>
               <Text size="sm" color="gray.400">
                 You can always change this later in the settings.
               </Text>
-            </CardHeader>
-            <CardBody>
+            </Card.Header>
+            <Card.Body>
               <Formik
                 initialValues={initialValues}
                 validationSchema={createAppSchema}
@@ -136,7 +122,7 @@ export const UI: React.FC<{
                   <Form>
                     <VStack
                       w={"full"}
-                      spacing={{ base: 4, md: "24px" }}
+                      gap={{ base: 4, md: "24px" }}
                       align={"end"}
                     >
                       <Field name="name">
@@ -148,12 +134,12 @@ export const UI: React.FC<{
                             !!form.errors?.name && !!form.touched?.name;
 
                           return (
-                            <FormControl
+                            <Field.Root
                               color="white"
                               w={"full"}
-                              isInvalid={isFieldInvalid}
+                              invalid={isFieldInvalid}
                             >
-                              <FormLabel htmlFor={field.name}>Name</FormLabel>
+                              <Field.Label htmlFor={field.name}>Name</Field.Label>
                               <Input
                                 {...field}
                                 id={field.name}
@@ -165,19 +151,19 @@ export const UI: React.FC<{
                               <ErrorMessage
                                 name={field.name}
                                 render={(errorMessage) => (
-                                  <FormErrorMessage>
+                                  <Field.ErrorText>
                                     {errorMessage}
-                                  </FormErrorMessage>
+                                  </Field.ErrorText>
                                 )}
                               />
-                            </FormControl>
+                            </Field.Root>
                           );
                         }}
                       </Field>
                       <Button
-                        colorScheme="brand"
+                        colorPalette="brand"
                         type="submit"
-                        isLoading={props.isSubmitting}
+                        loading={props.isSubmitting}
                       >
                         CREATE
                       </Button>
@@ -185,8 +171,8 @@ export const UI: React.FC<{
                   </Form>
                 )}
               </Formik>
-            </CardBody>
-          </Card>
+            </Card.Body>
+          </Card.Root>
         </Flex>
       </Flex>
     </Flex>

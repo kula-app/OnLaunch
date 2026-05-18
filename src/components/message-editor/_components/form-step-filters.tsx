@@ -8,9 +8,6 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   Modal,
   ModalBody,
@@ -23,6 +20,7 @@ import {
   useDisclosure,
   VStack,
   type BoxProps,
+  Field,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -89,11 +87,11 @@ export const FormStepFilters: React.FC<
                   const isFieldInvalid =
                     !!form.errors?.isAll && !!form.touched?.isAll;
                   return (
-                    <FormControl color={"white"} isInvalid={isFieldInvalid}>
+                    <Field.Root color={"white"} invalid={isFieldInvalid}>
                       <Flex flexDir={"row"} align={"center"}>
-                        <FormLabel my={0} htmlFor={field.name}>
+                        <Field.Label my={0} htmlFor={field.name}>
                           Do you want to show this message to all users?
-                        </FormLabel>
+                        </Field.Label>
                         <Select
                           {...field}
                           value={field.value ? "true" : "false"}
@@ -114,10 +112,10 @@ export const FormStepFilters: React.FC<
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>
@@ -130,7 +128,7 @@ export const FormStepFilters: React.FC<
                         form,
                       }: FieldProps<FilterKind, FilterFormData>) => (
                         <ButtonGroup
-                          isAttached
+                          attached
                           variant="solid"
                           color={"white"}
                           my={4}
@@ -151,17 +149,11 @@ export const FormStepFilters: React.FC<
                                   form.setFieldValue("kind", kind);
                                 }
                               }}
-                              colorScheme={
+                              colorPalette={
                                 field.value === kind ? "brand" : "white"
                               }
                               variant={
                                 field.value === kind ? "solid" : "outline"
-                              }
-                              leftIcon={
-                                kind === FilterKind.SIMPLE &&
-                                form.values.advanced?.isDirty ? (
-                                  <FaTriangleExclamation />
-                                ) : undefined
                               }
                               borderRadius={"full"}
                               borderRightRadius={idx === 0 ? 0 : undefined}
@@ -176,10 +168,12 @@ export const FormStepFilters: React.FC<
                                 field.value !== kind
                                   ? "rgb(86, 87, 122)"
                                   : undefined
-                              }
-                            >
-                              {displayTextForFilterKind(kind)}
-                            </Button>
+                              }>{
+                                kind === FilterKind.SIMPLE &&
+                                form.values.advanced?.isDirty ? (
+                                  <FaTriangleExclamation />
+                                ) : undefined
+                              }{displayTextForFilterKind(kind)}</Button>
                           ))}
                         </ButtonGroup>
                       )}
@@ -194,7 +188,6 @@ export const FormStepFilters: React.FC<
                 </>
               )}
             </VStack>
-
             <Modal
               isOpen={isOpenDiscardModal}
               onClose={onCloseDiscardModal}
@@ -221,7 +214,7 @@ export const FormStepFilters: React.FC<
                       props.setFieldValue("kind", FilterKind.SIMPLE);
                     }}
                     variant={"solid"}
-                    colorScheme={"red"}
+                    colorPalette={"red"}
                   >
                     Switch To Simple Filters
                   </Button>

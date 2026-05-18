@@ -4,11 +4,11 @@ import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleSystemVariable } from "@/models/message-rule-system-variable";
 import {
   Flex,
-  FormControl,
   Icon,
   IconButton,
   Input,
   Select,
+  Field,
 } from "@chakra-ui/react";
 import { Field, type FieldProps } from "formik";
 import { FaTrash } from "react-icons/fa6";
@@ -40,7 +40,7 @@ export const AdvancedFiltersConditionBox: React.FC<
         {({
           field,
         }: FieldProps<AdvancedFiltersRuleCondition["systemVariable"]>) => (
-          <FormControl w={"auto"}>
+          <Field.Root w={"auto"}>
             <Select
               {...field}
               onChange={(e) => {
@@ -61,7 +61,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 </option>
               ))}
             </Select>
-          </FormControl>
+          </Field.Root>
         )}
       </Field>
       <Field name={keypath.concat(["operator"]).join(".")}>
@@ -69,7 +69,7 @@ export const AdvancedFiltersConditionBox: React.FC<
           field,
           form,
         }: FieldProps<AdvancedFiltersRuleCondition["comparator"]>) => (
-          <FormControl w={"auto"} flexGrow={1}>
+          <Field.Root w={"auto"} flexGrow={1}>
             <Select
               {...field}
               onChange={(e) => {
@@ -86,7 +86,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 </option>
               ))}
             </Select>
-          </FormControl>
+          </Field.Root>
         )}
       </Field>
       <Field name={keypath.concat(["userVariable"]).join(".")}>
@@ -99,7 +99,7 @@ export const AdvancedFiltersConditionBox: React.FC<
             form.values,
           );
           return (
-            <FormControl
+            <Field.Root
               w={"auto"}
               flexGrow={1}
               hidden={isUnaryOperator(parent.operator)}
@@ -116,7 +116,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 size={"xs"}
                 placeholder={"Enter a value..."}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>

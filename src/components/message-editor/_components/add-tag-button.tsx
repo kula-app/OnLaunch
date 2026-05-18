@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tag,
-  TagLabel,
-  TagRightIcon,
-} from "@chakra-ui/react";
+import { Steps, Box, Input, Menu, Tag, TagLabel, TagRightIcon, Portal } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 
@@ -38,33 +28,33 @@ export function AddTagButton<T extends React.Key>({
   }, [search, values]);
 
   return (
-    <Menu closeOnSelect={false}>
-      <MenuButton type={"button"}>
-        <Tag size={"md"} key={"add"} variant="outline" colorScheme="blue">
-          <TagLabel>Add</TagLabel>
-          <TagRightIcon as={FiPlusCircle} />
-        </Tag>
-      </MenuButton>
-      <MenuList>
-        <Box px={3} pb={2}>
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={"Search..."}
-          />
-        </Box>
-        {filteredValues.map((value) => (
-          <MenuItem
-            key={value.id}
-            onClick={() => {
-              onClick(value.id);
-              setSearch("");
-            }}
-          >
-            {value.name}
-          </MenuItem>
-        ))}
-      </MenuList>
-    </Menu>
+    <Menu.Root closeOnSelect={false}>
+      <Menu.Trigger type={"button"}>
+        <Tag.Root size={"md"} key={"add"} variant="outline" colorPalette="blue">
+          <Tag.Label>Add</Tag.Label>
+          <Tag.EndElement asChild><FiPlusCircle /></Tag.EndElement>
+        </Tag.Root>
+      </Menu.Trigger>
+      <Portal><Menu.Positioner><Menu.Content>
+            <Box px={3} pb={2}>
+              <Input
+                value={search}
+                onValueChange={(e) => setSearch(e.target.value)}
+                placeholder={"Search..."}
+              />
+            </Box>
+            {filteredValues.map((value) => (
+              <Menu.Item
+                key={value.id}
+                onSelect={() => {
+                  onClick(value.id);
+                  setSearch("");
+                }}
+                value='item-0'>
+                {value.name}
+              </Menu.Item>
+            ))}
+          </Menu.Content></Menu.Positioner></Portal>
+    </Menu.Root>
   );
 }

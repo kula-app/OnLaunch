@@ -2,7 +2,7 @@
 
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { MessageEditor } from "@/components/message-editor/message-editor";
-import { Flex } from "@chakra-ui/react";
+import { Steps, Flex } from "@chakra-ui/react";
 import type React from "react";
 
 interface Props {

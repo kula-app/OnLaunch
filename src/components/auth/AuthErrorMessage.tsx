@@ -1,6 +1,6 @@
 "use client";
 
-import { Text } from "@chakra-ui/react";
+import { Steps, Text } from "@chakra-ui/react";
 import { ErrorMessage } from "formik";
 import { PropsWithChildren } from "react";
 

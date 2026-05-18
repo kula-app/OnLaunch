@@ -11,7 +11,7 @@ import type { App } from "@/models/app";
 import type { Message } from "@/models/message";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { useToast } from "@chakra-ui/react";
+import { Steps, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
 export type ConfiguredNavigationBarItem =

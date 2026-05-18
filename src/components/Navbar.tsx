@@ -1,23 +1,21 @@
 import {
+  Steps,
   Avatar,
   Box,
   Button,
   Center,
-  Collapse,
+  Collapsible,
   Flex,
   IconButton,
   Link,
   Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
   Stack,
   Text,
   useBreakpointValue,
-  useColorModeValue,
   useDisclosure,
+  Portal,
 } from "@chakra-ui/react";
+import { useColorModeValue } from "./ui/color-mode";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -31,7 +29,7 @@ interface Props {
 }
 
 export default function Header(props: Props) {
-  const { isOpen, onToggle } = useDisclosure();
+  const { open, onToggle } = useDisclosure();
   const router = useRouter();
 
   function navigateToAuthPage() {
@@ -57,12 +55,7 @@ export default function Header(props: Props) {
           display={{ base: "flex", md: "none" }}
         >
           {!!props.session && (
-            <IconButton
-              onClick={onToggle}
-              icon={isOpen ? <MdClose /> : <MdMenu />}
-              variant={"ghost"}
-              aria-label={"Toggle Navigation"}
-            />
+            <IconButton onClick={onToggle} variant={"ghost"} aria-label={"Toggle Navigation"}>{isOpen ? <MdClose /> : <MdMenu />}</IconButton>
           )}
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
@@ -71,11 +64,10 @@ export default function Header(props: Props) {
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
               color={useColorModeValue("gray.800", "white")}
-              as="b"
               textDecoration="none"
-            >
-              OnLaunch &#128640;
-            </Text>
+              asChild
+            ><b>OnLaunch 🚀
+                          </b></Text>
           </Link>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
@@ -87,65 +79,51 @@ export default function Header(props: Props) {
           flex={{ base: 1, md: 0 }}
           justify={"flex-end"}
           direction={"row"}
-          spacing={6}
+          gap={6}
         >
           {!props.session && (
-            <Button
-              as={"a"}
-              fontSize={"sm"}
-              fontWeight={400}
-              variant={"link"}
-              onClick={navigateToAuthPage}
-              href={"#"}
-            >
-              Sign In
-            </Button>
+            <Button fontSize={"sm"} fontWeight={400} variant={"link"} asChild><a onClick={navigateToAuthPage} href={"#"}>Sign In
+                          </a></Button>
           )}
           {!!props.session && (
-            <Menu>
-              <MenuButton
-                as={Button}
-                rounded={"full"}
-                variant={"link"}
-                cursor={"pointer"}
-                minW={0}
-              >
-                <Avatar size={"sm"} name={props.session.user.name} />
-              </MenuButton>
-              <MenuList alignItems={"center"}>
-                <br />
-                <Center>
-                  <Avatar size={"2xl"} name={props.session.user.name} />
-                </Center>
-                <br />
-                <Center>
-                  <p>{props?.session?.user?.name}</p>
-                </Center>
-                <br />
-                <MenuDivider />
-                <MenuItem as="a" href={Routes.dashboard}>
-                  Your Organisations
-                </MenuItem>
-                <MenuItem as="a" href="/profile">
-                  Your Profile
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem
-                  onClick={() => {
-                    signOut();
-                    navigateToAuthPage();
-                  }}
-                >
-                  Logout
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <Menu.Root>
+              <Menu.Trigger asChild><Button rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                  <Avatar.Root size={"sm"}><Avatar.Fallback name={props.session.user.name} /></Avatar.Root>
+                </Button></Menu.Trigger>
+              <Portal><Menu.Positioner><Menu.Content>
+                    <br />
+                    <Center>
+                      <Avatar.Root size={"2xl"}><Avatar.Fallback name={props.session.user.name} /></Avatar.Root>
+                    </Center>
+                    <br />
+                    <Center>
+                      <p>{props?.session?.user?.name}</p>
+                    </Center>
+                    <br />
+                    <Menu.Separator />
+                    <Menu.Item value='item-0' asChild><a href={Routes.dashboard}>Your Organisations
+                                          </a></Menu.Item>
+                    <Menu.Item value='item-1' asChild><a href="/profile">Your Profile
+                                          </a></Menu.Item>
+                    <Menu.Separator />
+                    <Menu.Item
+                      onSelect={() => {
+                        signOut();
+                        navigateToAuthPage();
+                      }}
+                      value='item-2'>
+                      Logout
+                    </Menu.Item>
+                  </Menu.Content></Menu.Positioner></Portal>
+            </Menu.Root>
           )}
         </Stack>
       </Flex>
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
-      </Collapse>
+      <Collapsible.Root open={isOpen}>
+        <Collapsible.Content>
+          <MobileNav />
+        </Collapsible.Content>
+      </Collapsible.Root>
     </Box>
   );
 }

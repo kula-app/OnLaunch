@@ -2,18 +2,7 @@
 
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { useAuthenticatedUser } from "@/hooks/use-authenticated-user";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Container,
-  Flex,
-  Heading,
-  Skeleton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Steps, Alert, Container, Flex, Heading, Skeleton, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import { ChangeEmailCard } from "./_components/change-email-card";
 import { ChangePasswordCard } from "./_components/change-password-card";
@@ -34,7 +23,7 @@ export const UI: React.FC = () => {
         <Container maxW={"6xl"}>
           <VStack p={4} w={"full"} gap={8}>
             <Heading size={"lg"} as={"h1"} color={"white"} w={"full"}>
-              <Skeleton isLoaded={!isLoadingUser}>
+              <Skeleton loading={!!isLoadingUser}>
                 {user?.firstName ? (
                   <Text>Hello, {user?.firstName}!</Text>
                 ) : (
@@ -43,11 +32,11 @@ export const UI: React.FC = () => {
               </Skeleton>
             </Heading>
             {userError && (
-              <Alert status="error">
-                <AlertIcon />
-                <AlertTitle>Failed to fetch profile</AlertTitle>
-                <AlertDescription>{userError.message}</AlertDescription>
-              </Alert>
+              <Alert.Root status="error">
+                <Alert.Indicator />
+                <Alert.Title>Failed to fetch profile</Alert.Title>
+                <Alert.Description>{userError.message}</Alert.Description>
+              </Alert.Root>
             )}
             <ChangeEmailCard user={user} refreshUser={refreshUser} />
             <ChangePasswordCard />

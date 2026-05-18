@@ -6,13 +6,11 @@ import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import {
+  Steps,
   Button,
   ButtonGroup,
   Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CircularProgress,
+  ProgressCircle,
   Flex,
   Heading,
   Text,
@@ -177,19 +175,19 @@ export const UI: React.FC<{
         px={{ base: 4, md: 0 }}
       >
         <Flex direction={"column"} justifyContent={"center"}>
-          <Card mt={{ base: 12, sm: "48px" }} p={2}>
+          <Card.Root mt={{ base: 12, sm: "48px" }} p={2}>
             {fetchError ? (
-              <CardBody>
+              <Card.Body>
                 <Text color={"white"}>{fetchError}</Text>
-              </CardBody>
+              </Card.Body>
             ) : org ? (
               <>
-                <CardHeader>
+                <Card.Header>
                   <Heading size="md" color="white">
                     Join Organization {org.name}
                   </Heading>
-                </CardHeader>
-                <CardBody>
+                </Card.Header>
+                <Card.Body>
                   <Text color={"white"}>
                     You are invited to join the organization &apos;{org.name}
                     &apos;.
@@ -198,39 +196,44 @@ export const UI: React.FC<{
                     <br />
                     You can leave at any time.
                   </Text>
-                </CardBody>
-                <CardFooter
+                </Card.Body>
+                <Card.Footer
                   display={"flex"}
                   flexDirection={"column"}
                   alignItems={"end"}
                 >
-                  <ButtonGroup spacing="2">
+                  <ButtonGroup gap="2">
                     <Button
                       variant="solid"
-                      colorScheme="gray"
+                      colorPalette="gray"
                       onClick={() => router.push(Routes.dashboard)}
                     >
                       Cancel
                     </Button>
                     <Button
                       variant="solid"
-                      colorScheme="green"
+                      colorPalette="green"
                       onClick={() => acceptInvitation(org.id)}
-                      isLoading={isAccepting}
+                      loading={isAccepting}
                     >
                       Accept
                     </Button>
                   </ButtonGroup>
-                </CardFooter>
+                </Card.Footer>
               </>
             ) : (
               <>
-                <CardBody>
-                  <CircularProgress isIndeterminate size={8} />
-                </CardBody>
+                <Card.Body>
+                  <ProgressCircle.Root value={null} size={8}>
+                    <ProgressCircle.Circle>
+                      <ProgressCircle.Track />
+                      <ProgressCircle.Range />
+                    </ProgressCircle.Circle>
+                  </ProgressCircle.Root>
+                </Card.Body>
               </>
             )}
-          </Card>
+          </Card.Root>
         </Flex>
       </Flex>
     </Flex>

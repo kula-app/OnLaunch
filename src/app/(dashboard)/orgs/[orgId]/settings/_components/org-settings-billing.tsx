@@ -8,10 +8,8 @@ import { useOrgSubscriptions } from "@/hooks/use-org-subscriptions";
 import type { Org } from "@/models/org";
 import { getColorLabel, translateSubName } from "@/util/nameTag";
 import {
+  Steps,
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Grid,
@@ -68,54 +66,51 @@ export const OrgSettingsBilling: React.FC<{
         Active Subscription
       </Heading>
       {error && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Failed to fetch billing data!</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
+        <Alert.Root status="error">
+          <Alert.Indicator />
+          <Alert.Title>Failed to fetch billing data!</Alert.Title>
+          <Alert.Description>{error.message}</Alert.Description>
+        </Alert.Root>
       )}
       {subscriptions?.length ? (
         <>
-          <TableContainer>
-            <Table variant={"brand-on-card"}>
-              <Thead>
-                <Tr>
-                  <Th>
+          <Table.ScrollArea>
+            <Table.Root variant={"brand-on-card"}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>
                     <strong>Subscription</strong>
-                  </Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader></Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
                 {subscriptions?.map((sub) => {
                   return (
-                    <Tr key={sub.id}>
-                      <Td>
-                        <Tag
+                    <Table.Row key={sub.id}>
+                      <Table.Cell>
+                        <Tag.Root
                           size={"md"}
                           borderRadius="full"
                           variant="solid"
-                          colorScheme={getColorLabel(sub.name)}
+                          colorPalette={getColorLabel(sub.name)}
                         >
                           {translateSubName(sub.name)}
-                        </Tag>
-                      </Td>
-                    </Tr>
+                        </Tag.Root>
+                      </Table.Cell>
+                    </Table.Row>
                   );
                 })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+              </Table.Body>
+            </Table.Root>
+          </Table.ScrollArea>
 
           <Button
-            rightIcon={<FiExternalLink />}
-            colorScheme="blue"
+            colorPalette="blue"
             variant="solid"
             onClick={openCustomerPortal}
-            isLoading={isLoadingCustomerPortalSession}
-          >
-            Manage Subscriptions
-          </Button>
+            loading={isLoadingCustomerPortalSession}>Manage Subscriptions
+                      <FiExternalLink /></Button>
         </>
       ) : (
         <Text color={"white"}>

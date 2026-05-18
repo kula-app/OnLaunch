@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Input, Field } from "@chakra-ui/react";
 import { Field, FieldProps } from "formik";
 import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from "react";
 import { AuthErrorMessage } from "./AuthErrorMessage";
@@ -11,10 +11,10 @@ export const AuthTextField: React.FC<{
   placeholder: string;
   autoComplete: HTMLInputAutoCompleteAttribute;
 }> = ({ name, type, placeholder, label, autoComplete }) => (
-  <FormControl>
-    <FormLabel color={"white"} ms="4px" fontSize="sm" fontWeight="normal">
+  <Field.Root>
+    <Field.Label color={"white"} ms="4px" fontSize="sm" fontWeight="normal">
       {label}
-    </FormLabel>
+    </Field.Label>
     <AuthGradientBorder h="50px" w={"100%"} borderRadius="20px">
       <Field name={name}>
         {({ field }: FieldProps) => (
@@ -43,5 +43,5 @@ export const AuthTextField: React.FC<{
       </Field>
     </AuthGradientBorder>
     <AuthErrorMessage name={name} />
-  </FormControl>
+  </Field.Root>
 );

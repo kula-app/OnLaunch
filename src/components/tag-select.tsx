@@ -1,7 +1,8 @@
+import { forwardRef } from "react";
 import {
+  Steps,
   HTMLChakraProps,
   chakra,
-  forwardRef,
   useFormControl,
   useMultiStyleConfig,
   type FormControlOptions,
@@ -57,7 +58,7 @@ export interface SelectProps
  *
  * @see Docs https://v2.chakra-ui.com/docs/components/select
  */
-export const TagSelect = forwardRef<SelectProps, "select">((props, ref) => {
+export const TagSelect = forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
   const styles = useMultiStyleConfig("Select", props);
 
   const { rootProps, placeholder, color, height, h, minH, minHeight, ...rest } =

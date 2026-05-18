@@ -5,7 +5,7 @@ import RequestsChart from "@/components/request-chart";
 import { ServerError } from "@/errors/server-error";
 import type { RequestHistory } from "@/models/request-history";
 import { RequestHistoryItem } from "@/models/request-history-item";
-import { Button, Card, CardBody, Text, useToast } from "@chakra-ui/react";
+import { Steps, Button, Card, Text, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
 export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
@@ -82,12 +82,12 @@ export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
   }, [filteredHistoryItems]);
 
   return (
-    <Card w={"full"}>
-      <CardBody color={"white"}>
+    <Card.Root w={"full"}>
+      <Card.Body color={"white"}>
         {currentPeriodStart && (
           <Button
             variant="ghost"
-            colorScheme="blue"
+            colorPalette="blue"
             className="mt-8"
             onClick={() => {
               setShowCurrentBillingPeriod(!showCurrentBillingPeriod);
@@ -105,7 +105,7 @@ export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
             ? "in the current billing period"
             : "in the last 31 days"}
         </Text>
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

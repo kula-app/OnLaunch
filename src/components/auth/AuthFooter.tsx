@@ -1,17 +1,15 @@
-import { HStack, Link, Text, VStack } from "@chakra-ui/react";
+import { Steps, HStack, Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export const AuthFooter: React.FC = () => {
   return (
     <VStack w={"100%"} color="white">
       <HStack>
-        <Link as={NextLink} href="https://kula.app/terms" target="_blank">
-          Terms of Service
-        </Link>
+        <Link asChild><NextLink href="https://kula.app/terms" target="_blank">Terms of Service
+                  </NextLink></Link>
         <Text>&middot;</Text>
-        <Link as={NextLink} href="https://kula.app/privacy" target="_blank">
-          Privacy Policy
-        </Link>
+        <Link asChild><NextLink href="https://kula.app/privacy" target="_blank">Privacy Policy
+                  </NextLink></Link>
       </HStack>
       <Text
         textAlign={{

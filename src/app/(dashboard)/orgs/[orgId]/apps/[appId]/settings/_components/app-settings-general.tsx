@@ -11,22 +11,8 @@ import { OrgRole } from "@/models/org-role";
 import { Routes } from "@/routes/routes";
 import {
   Alert,
-  AlertDescription,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
   Button,
-  Divider,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
   IconButton,
@@ -36,6 +22,10 @@ import {
   useDisclosure,
   useToast,
   VStack,
+  Dialog,
+  Portal,
+  Separator,
+  Field,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -88,20 +78,20 @@ export const AppSettingsGeneral: React.FC<{
     <>
       <Flex direction={"column"} w={"full"} align={"start"}>
         {appError && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Failed to fetch app</AlertTitle>
-            <AlertDescription>{appError.message}</AlertDescription>
-          </Alert>
+          <Alert.Root status="error">
+            <Alert.Indicator />
+            <Alert.Title>Failed to fetch app</Alert.Title>
+            <Alert.Description>{appError.message}</Alert.Description>
+          </Alert.Root>
         )}
         {authenticatedUserRoleError && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Failed to fetch user role</AlertTitle>
-            <AlertDescription>
+          <Alert.Root status="error">
+            <Alert.Indicator />
+            <Alert.Title>Failed to fetch user role</Alert.Title>
+            <Alert.Description>
               {authenticatedUserRoleError.message}
-            </AlertDescription>
-          </Alert>
+            </Alert.Description>
+          </Alert.Root>
         )}
         <Formik
           innerRef={formRef}
@@ -142,12 +132,12 @@ export const AppSettingsGeneral: React.FC<{
                     !!form.errors?.name && !!form.touched?.name;
 
                   return (
-                    <FormControl
+                    <Field.Root
                       color="white"
                       w={"full"}
-                      isInvalid={isFieldInvalid}
+                      invalid={isFieldInvalid}
                     >
-                      <FormLabel htmlFor={field.name}>App Name</FormLabel>
+                      <Field.Label htmlFor={field.name}>App Name</Field.Label>
                       <Input
                         {...field}
                         id={field.name}
@@ -161,18 +151,18 @@ export const AppSettingsGeneral: React.FC<{
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
                         )}
                       />
-                    </FormControl>
+                    </Field.Root>
                   );
                 }}
               </Field>
               <Button
-                colorScheme="brand"
+                colorPalette="brand"
                 type="submit"
-                isLoading={props.isSubmitting}
-                isDisabled={isAppLoading || !props.dirty}
+                loading={props.isSubmitting}
+                disabled={isAppLoading || !props.dirty}
                 onClick={props.submitForm}
               >
                 Update
@@ -180,7 +170,7 @@ export const AppSettingsGeneral: React.FC<{
             </VStack>
           )}
         </Formik>
-        <Divider color={"gray.700"} my={4} />
+        <Separator color={"gray.700"} my={4} />
         <HStack w={"full"} maxW={"xl"}>
           <VStack w={"full"} align={"start"} color={"white"}>
             <Heading size="md">Delete App</Heading>
@@ -203,7 +193,6 @@ export const AppSettingsGeneral: React.FC<{
           </Tooltip>
         </HStack>
       </Flex>
-
       <DeleteAppAlert
         isOpen={isAppDeletionOpen}
         onClose={onAppDeletionClose}
@@ -249,37 +238,46 @@ export const DeleteAppAlert: React.FC<{
   const cancelAppDeletionRef = useRef(null);
 
   return (
-    <AlertDialog
-      isOpen={isOpen}
+    <Dialog.Root
+      open={isOpen}
       motionPreset="slideInBottom"
-      leastDestructiveRef={cancelAppDeletionRef}
-      onClose={onClose}
-      isCentered
-    >
-      <AlertDialogOverlay />
+      initialFocusEl={() => cancelAppDeletionRef.current}
+      placement='center'
+      role='alertdialog'
+      onOpenChange={e => {
+        if (!e.open) {
+          onClose();
+        }
+      }}>
+      <Portal>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>{`Are you sure?`}</AlertDialogHeader>
-        <AlertDialogCloseButton />
-        <AlertDialogBody>
-          Deleting an appanization is irreversible and cannot be undone.
-        </AlertDialogBody>
-        <AlertDialogFooter>
-          <Button ref={cancelAppDeletionRef} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            colorScheme="red"
-            ml={3}
-            onClick={() => {
-              onSubmit();
-              onClose();
-            }}
-          >
-            Confirm
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>{`Are you sure?`}</Dialog.Header>
+            <Dialog.CloseTrigger />
+            <Dialog.Body>
+              Deleting an appanization is irreversible and cannot be undone.
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Button ref={cancelAppDeletionRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                colorPalette="red"
+                ml={3}
+                onClick={() => {
+                  onSubmit();
+                  onClose();
+                }}
+              >
+                Confirm
+              </Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+
+      </Portal>
+    </Dialog.Root>
   );
 };

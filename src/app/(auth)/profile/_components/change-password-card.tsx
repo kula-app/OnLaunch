@@ -2,19 +2,7 @@
 
 import { updatePassword } from "@/app/actions/update-password";
 import { ServerError } from "@/errors/server-error";
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Input, useToast, VStack, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -52,8 +40,8 @@ export const ChangePasswordCard: React.FC = () => {
         <Heading size={"md"} as={"h2"} color={"white"} mb={4}>
           Change Password
         </Heading>
-        <Card p={4} w={"full"}>
-          <CardBody>
+        <Card.Root p={4} w={"full"}>
+          <Card.Body>
             <Formik
               innerRef={formRef}
               enableReinitialize
@@ -97,10 +85,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.touched?.passwordOld;
 
                       return (
-                        <FormControl color="white" isInvalid={isFieldInvalid}>
-                          <FormLabel htmlFor={field.name}>
+                        <Field.Root color="white" invalid={isFieldInvalid}>
+                          <Field.Label htmlFor={field.name}>
                             Current password
-                          </FormLabel>
+                          </Field.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -112,12 +100,12 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <FormErrorMessage>
+                              <Field.ErrorText>
                                 {errorMessage}
-                              </FormErrorMessage>
+                              </Field.ErrorText>
                             )}
                           />
-                        </FormControl>
+                        </Field.Root>
                       );
                     }}
                   </Field>
@@ -131,10 +119,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.errors?.password && !!form.touched?.password;
 
                       return (
-                        <FormControl color="white" isInvalid={isFieldInvalid}>
-                          <FormLabel htmlFor={field.name}>
+                        <Field.Root color="white" invalid={isFieldInvalid}>
+                          <Field.Label htmlFor={field.name}>
                             New password
-                          </FormLabel>
+                          </Field.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -146,12 +134,12 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <FormErrorMessage>
+                              <Field.ErrorText>
                                 {errorMessage}
-                              </FormErrorMessage>
+                              </Field.ErrorText>
                             )}
                           />
-                        </FormControl>
+                        </Field.Root>
                       );
                     }}
                   </Field>
@@ -166,10 +154,10 @@ export const ChangePasswordCard: React.FC = () => {
                         !!form.touched?.passwordConfirmation;
 
                       return (
-                        <FormControl color="white" isInvalid={isFieldInvalid}>
-                          <FormLabel htmlFor={field.name}>
+                        <Field.Root color="white" invalid={isFieldInvalid}>
+                          <Field.Label htmlFor={field.name}>
                             Confirm new password
-                          </FormLabel>
+                          </Field.Label>
                           <Input
                             {...field}
                             id={field.name}
@@ -181,20 +169,20 @@ export const ChangePasswordCard: React.FC = () => {
                           <ErrorMessage
                             name={field.name}
                             render={(errorMessage) => (
-                              <FormErrorMessage>
+                              <Field.ErrorText>
                                 {errorMessage}
-                              </FormErrorMessage>
+                              </Field.ErrorText>
                             )}
                           />
-                        </FormControl>
+                        </Field.Root>
                       );
                     }}
                   </Field>
                   <Button
-                    colorScheme="brand"
+                    colorPalette="brand"
                     type="submit"
-                    isLoading={props.isSubmitting}
-                    isDisabled={!props.dirty}
+                    loading={props.isSubmitting}
+                    disabled={!props.dirty}
                     onClick={props.submitForm}
                   >
                     Update
@@ -202,8 +190,8 @@ export const ChangePasswordCard: React.FC = () => {
                 </VStack>
               )}
             </Formik>
-          </CardBody>
-        </Card>
+          </Card.Body>
+        </Card.Root>
       </Box>
     </>
   );

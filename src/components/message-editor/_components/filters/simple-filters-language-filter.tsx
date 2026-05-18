@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Switch,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-  Wrap,
-} from "@chakra-ui/react";
+import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -59,11 +48,11 @@ export const SimpleLanguageFilter: React.FC = () => {
           const isFieldInvalid = !!errors && !!touched;
 
           return (
-            <FormControl color={"white"} isInvalid={isFieldInvalid}>
+            <Field.Root color={"white"} invalid={isFieldInvalid}>
               <Flex dir={"row"} align={"center"}>
-                <FormLabel mb={0} htmlFor={field.name}>
+                <Field.Label mb={0} htmlFor={field.name}>
                   Do you want to target specific languages?
-                </FormLabel>
+                </Field.Label>
                 <Switch
                   {...field}
                   id={field.name}
@@ -74,10 +63,10 @@ export const SimpleLanguageFilter: React.FC = () => {
               <ErrorMessage
                 name={field.name}
                 render={(errorMessage) => (
-                  <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                  <Field.ErrorText>{errorMessage}</Field.ErrorText>
                 )}
               />
-            </FormControl>
+            </Field.Root>
           );
         }}
       </Field>
@@ -117,8 +106,8 @@ const IncludedLangageFilter: React.FC = () => {
         const isFieldInvalid = !!errors && !!touched;
 
         return (
-          <FormControl color={"white"} isInvalid={isFieldInvalid}>
-            <FormLabel>Which languages should be included?</FormLabel>
+          <Field.Root color={"white"} invalid={isFieldInvalid}>
+            <Field.Label>Which languages should be included?</Field.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
                 <Tag
@@ -166,10 +155,10 @@ const IncludedLangageFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
               )}
             />
-          </FormControl>
+          </Field.Root>
         );
       }}
     </Field>
@@ -204,8 +193,8 @@ const ExcludedLangageFilter: React.FC = () => {
         const isFieldInvalid = !!errors && !!touched;
 
         return (
-          <FormControl color={"white"} mt={4} isInvalid={!isFieldInvalid}>
-            <FormLabel>Which languages should be excluded?</FormLabel>
+          <Field.Root color={"white"} mt={4} invalid={!isFieldInvalid}>
+            <Field.Label>Which languages should be excluded?</Field.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
                 <Tag
@@ -243,10 +232,10 @@ const ExcludedLangageFilter: React.FC = () => {
             <ErrorMessage
               name={field.name}
               render={(errorMessage) => (
-                <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                <Field.ErrorText>{errorMessage}</Field.ErrorText>
               )}
             />
-          </FormControl>
+          </Field.Root>
         );
       }}
     </Field>
