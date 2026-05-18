@@ -8488,16 +8488,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-mock-extended@npm:4.0.0":
-  version: 4.0.0
-  resolution: "jest-mock-extended@npm:4.0.0"
+"jest-mock-extended@npm:4.0.1":
+  version: 4.0.1
+  resolution: "jest-mock-extended@npm:4.0.1"
   dependencies:
-    ts-essentials: "npm:^10.0.2"
+    lodash.isequal: "npm:^4.5.0"
+    ts-essentials: "npm:^10.1.1"
   peerDependencies:
     "@jest/globals": ^28.0.0 || ^29.0.0 || ^30.0.0
     jest: ^24.0.0 || ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0 || ^30.0.0
-    typescript: ^3.0.0 || ^4.0.0 || ^5.0.0
-  checksum: 10c0/ba51e8e49dba995a54bd9c45aa4d27e6b64a6199289c92292a286117d3f8a733fe480fc56b6d356505696fc79af193625892f5022ea69243525e706515a93249
+    typescript: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
+  checksum: 10c0/bd0f4f2b14f820e9434ace8d7b5a472a7e34029cf70bd8ae1c8e92fd16b8ebc31ce0fd4812780b317d6b967eed6786639c9be3f1530728598b94110667ad51ef
   languageName: node
   linkType: hard
 
@@ -10319,7 +10320,7 @@ __metadata:
     ioredis: "npm:5.10.1"
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
-    jest-mock-extended: "npm:4.0.0"
+    jest-mock-extended: "npm:4.0.1"
     js-yaml: "npm:4.1.1"
     local-cypress: "npm:1.2.8"
     luxon: "npm:3.7.2"
@@ -13142,15 +13143,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-essentials@npm:^10.0.2":
-  version: 10.0.3
-  resolution: "ts-essentials@npm:10.0.3"
+"ts-essentials@npm:^10.1.1":
+  version: 10.2.0
+  resolution: "ts-essentials@npm:10.2.0"
   peerDependencies:
     typescript: ">=4.5.0"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/1bbad8241d8db1ebe4b2eb8f3c984b879de24b14ea42010fcbbc71d9a61a4e3ccd95f7a22c8c0709e2cad578fe1722012e9fbf74420a2ca3fc840565d0b8eb9d
+  checksum: 10c0/49a5fbf523e8cd36ba0c4b11af1288421660dc7e41a6bfb4946cc968c2af90c73072ae87f2a0031e63bd2f56c48829623f563e0d195d2df26f90532368cd5e8f
   languageName: node
   linkType: hard
 
