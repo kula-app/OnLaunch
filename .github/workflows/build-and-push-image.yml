@@ -97,7 +97,7 @@ jobs:
           ls -la /tmp/digests
 
       - name: Upload digest
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: digests-${{ inputs.image-name }}-${{ matrix.platform.tag }}
           path: /tmp/digests/*
@@ -118,7 +118,7 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Download digests
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: digests-${{ inputs.image-name }}-*
