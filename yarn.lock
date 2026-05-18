@@ -9827,9 +9827,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:4.24.13":
-  version: 4.24.13
-  resolution: "next-auth@npm:4.24.13"
+"next-auth@npm:4.24.14":
+  version: 4.24.14
+  resolution: "next-auth@npm:4.24.14"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
     "@panva/hkdf": "npm:^1.0.2"
@@ -9851,7 +9851,7 @@ __metadata:
       optional: true
     nodemailer:
       optional: true
-  checksum: 10c0/33a03d71951c30007aacfdb589afabd361440c95635068e4270108bfcdd155cf76b0ab3f82fa99d8c747888f250f0e6c675a8c4f9a2d80ad7f5bcacd8542a5c6
+  checksum: 10c0/b96d68d723816547c3069a5191c357de11b7ae2ab49a0a6bb985ccc5712abe39d2c33be59b93bc6caae575a31eb92da68cc38edd53659d4edcc283d17471b87f
   languageName: node
   linkType: hard
 
@@ -10429,7 +10429,7 @@ __metadata:
     mobx: "npm:6.15.3"
     moment: "npm:2.30.1"
     next: "npm:15.5.18"
-    next-auth: "npm:4.24.13"
+    next-auth: "npm:4.24.14"
     next-router-mock: "npm:1.0.5"
     next-swagger-doc: "npm:0.4.1"
     node-mocks-http: "npm:1.17.2"
