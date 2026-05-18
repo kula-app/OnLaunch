@@ -9977,10 +9977,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:7.0.13":
-  version: 7.0.13
-  resolution: "nodemailer@npm:7.0.13"
-  checksum: 10c0/b26aa5b9fa4a033bbc1e1c16ef75ee2a9c8641fd290c00a8361d6a251b3c1b8bad545a23efa627f59cb266340a448891ea8aa49d8a9307c767b8505219d95079
+"nodemailer@npm:8.0.5":
+  version: 8.0.5
+  resolution: "nodemailer@npm:8.0.5"
+  checksum: 10c0/5e8450499bd059c56d74ba96fa5f9928de2ecdae0d53c083dba5661d797114c1f9524d30f992d0263cc5a7dcf5a54b9c1d92dc1f766da150c9d0bde7d3798431
   languageName: node
   linkType: hard
 
@@ -10353,7 +10353,7 @@ __metadata:
     next-router-mock: "npm:1.0.5"
     next-swagger-doc: "npm:0.4.1"
     node-mocks-http: "npm:1.17.2"
-    nodemailer: "npm:7.0.13"
+    nodemailer: "npm:8.0.5"
     pinst: "npm:3.0.0"
     postcss: "npm:8.5.10"
     prettier: "npm:3.8.1"
