@@ -10,14 +10,14 @@ import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 import { getProducts } from "../frontend/v0.1/stripe/products";
-import { MessagesRequestHeadersDto } from "./messages-request-headers-dto";
+import { MessagesRequestHeadersDto } from "@/api-dtos/v0.2/messages-request-headers-dto";
 import {
   MessageActionButtonDesign,
   MessageActionDtoType,
   type MessageActionDto,
   type MessageDto,
   type MessagesResponseDto,
-} from "./messages-response-dto";
+} from "@/api-dtos/v0.2/messages-response-dto";
 
 const logger = new Logger(__filename);
 
