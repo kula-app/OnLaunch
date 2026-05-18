@@ -1,5 +1,5 @@
 "use client";
-import { Steps, AspectRatio, Box, Flex, GridItem, Image, Link, Text } from "@chakra-ui/react";
+import { AspectRatio, Box, Flex, GridItem, Image, Link, Text } from "@chakra-ui/react";
 
 export const SDKCard: React.FC<{
   sdk: {

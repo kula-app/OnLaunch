@@ -35,6 +35,7 @@ import type { MessageRuleGroup } from "@/models/message-rule-group";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
+import { toaster } from "@/components/ui/toaster";
 import {
   Steps,
   Box,
@@ -46,7 +47,6 @@ import {
   Text,
   useDisclosure,
   useSteps,
-  useToast,
   type ButtonProps,
   Dialog,
   Portal,
@@ -88,7 +88,6 @@ export const MessageEditor: React.FC<{
    */
   messageId: Message["id"] | undefined;
 }> = ({ appId, orgId, messageId }) => {
-  const toast = useToast();
   const router = useRouter();
 
   enum FormDataStepId {
@@ -350,18 +349,17 @@ export const MessageEditor: React.FC<{
       // Go the conclusion step
       goToNext();
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Failed to create message!",
         description: `${error}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     } finally {
       setIsSubmitting(false);
     }
   }, [
-    toast,
     draftFormRef,
     timeframeFormRef,
     filterFormRef,
@@ -668,11 +666,11 @@ export const MessageEditor: React.FC<{
                         }
                         router.push(Routes.messages({ orgId, appId }));
                       } catch (error) {
-                        toast({
+                        toaster.create({
                           title: "Failed to delete message!",
                           description: `${error}`,
-                          status: "error",
-                          isClosable: true,
+                          type: "error",
+                          closable: true,
                           duration: 6000,
                         });
                       } finally {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Steps, Box, Input, Menu, Tag, TagLabel, TagRightIcon, Portal } from "@chakra-ui/react";
+import { Box, Input, Menu, Tag, Portal } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 

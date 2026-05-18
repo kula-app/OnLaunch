@@ -3,15 +3,10 @@
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { Routes } from "@/routes/routes";
 import {
-  Steps,
   Card,
   Container,
   Flex,
   Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Tabs,
   VStack,
 } from "@chakra-ui/react";
@@ -111,32 +106,31 @@ export const UI: React.FC<{
                 w={"full"}
                 variant={"brand-on-card"}
                 colorPalette="brand"
-                value={tabIndex}
-                onValueChange={handleTabIndexChange}
+                defaultValue={SettingTab.GENERAL}
               >
                 <Tabs.List>
                   {orderedTabs.map((tab) => (
-                    <Tab key={tab.id}>{tab.name}</Tab>
+                    <Tabs.Trigger key={tab.id} value={tab.id}>
+                      {tab.name}
+                    </Tabs.Trigger>
                   ))}
                 </Tabs.List>
-                <TabPanels>
-                  {orderedTabs.map((tab) => (
-                    <TabPanel key={tab.id}>
-                      {tab.id === SettingTab.GENERAL && (
-                        <OrgSettingsGeneral orgId={orgId} />
-                      )}
-                      {tab.id === SettingTab.BILLING && (
-                        <OrgSettingsBilling orgId={orgId} />
-                      )}
-                      {tab.id === SettingTab.USERS && (
-                        <OrgSettingsUsers orgId={orgId} />
-                      )}
-                      {tab.id === SettingTab.ADMIN_API && (
-                        <OrgSettingsAdminAPI orgId={orgId} />
-                      )}
-                    </TabPanel>
-                  ))}
-                </TabPanels>
+                {orderedTabs.map((tab) => (
+                  <Tabs.Content key={tab.id} value={tab.id}>
+                    {tab.id === SettingTab.GENERAL && (
+                      <OrgSettingsGeneral orgId={orgId} />
+                    )}
+                    {tab.id === SettingTab.BILLING && (
+                      <OrgSettingsBilling orgId={orgId} />
+                    )}
+                    {tab.id === SettingTab.USERS && (
+                      <OrgSettingsUsers orgId={orgId} />
+                    )}
+                    {tab.id === SettingTab.ADMIN_API && (
+                      <OrgSettingsAdminAPI orgId={orgId} />
+                    )}
+                  </Tabs.Content>
+                ))}
               </Tabs.Root>
             </Card.Body>
           </Card.Root>

@@ -3,13 +3,13 @@
 import { deleteMessage } from "@/app/actions/delete-message";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { MessageList } from "@/components/message-list";
+import { toaster } from "@/components/ui/toaster";
 import { useMessages } from "@/hooks/use-messages";
 import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import { Message } from "@/models/message";
 import { Routes } from "@/routes/routes";
 import { truncateString } from "@/util/truncate-string";
 import {
-  Steps,
   Box,
   Button,
   Container,
@@ -18,7 +18,6 @@ import {
   HStack,
   Spacer,
   Text,
-  useToast,
   VStack,
   Dialog,
   Portal,
@@ -32,7 +31,6 @@ export const UI: React.FC<{
   appId: number;
 }> = ({ orgId, appId }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const {
     isLoading: isLoadingActiveMessages,
@@ -116,11 +114,11 @@ export const UI: React.FC<{
       refreshPlannedMessages();
       refreshPastMessages();
 
-      toast({
+      toaster.create({
         title: "Messages refreshed!",
         description: `Messages have been refreshed.`,
-        status: "info",
-        isClosable: true,
+        type: "info",
+        closable: true,
         duration: 6000,
       });
     }, timestamp.getTime() - Date.now());
@@ -133,7 +131,6 @@ export const UI: React.FC<{
     refreshActiveMessages,
     refreshPastMessages,
     refreshPlannedMessages,
-    toast,
   ]);
 
   const {
@@ -154,19 +151,19 @@ export const UI: React.FC<{
       refreshPlannedMessages();
       refreshPastMessages();
 
-      toast({
+      toaster.create({
         title: "Success!",
         description: `Message with id '${messageToDelete}' successfully deleted.`,
-        status: "success",
-        isClosable: true,
+        type: "success",
+        closable: true,
         duration: 6000,
       });
     } catch (error) {
-      toast({
+      toaster.create({
         title: `Error while deleting message with id ${messageToDelete}!`,
         description: `${error}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
@@ -175,7 +172,6 @@ export const UI: React.FC<{
     refreshActiveMessages,
     refreshPlannedMessages,
     refreshPastMessages,
-    toast,
   ]);
 
   return (

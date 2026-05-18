@@ -1,4 +1,4 @@
-import { Steps, Box, HStack, Text } from "@chakra-ui/react";
+import { Box, HStack, Text } from "@chakra-ui/react";
 import React, { type PropsWithChildren } from "react";
 import { FiBatteryCharging, FiWifi } from "react-icons/fi";
 

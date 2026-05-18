@@ -1,5 +1,4 @@
 import {
-  Steps,
   Avatar,
   Box,
   Button,

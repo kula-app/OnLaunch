@@ -4,7 +4,7 @@ import type { App } from "@/models/app";
 import type { Message } from "@/models/message";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Steps, Button, Heading, VStack, type BoxProps } from "@chakra-ui/react";
+import { Button, Heading, VStack, type BoxProps } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
 export const ConclusionFormStep: React.FC<

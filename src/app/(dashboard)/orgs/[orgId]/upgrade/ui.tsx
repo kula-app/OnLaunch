@@ -6,7 +6,8 @@ import ProductCard from "@/components/product-card";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Steps, Container, Flex, Heading, Skeleton, useToast } from "@chakra-ui/react";
+import { Container, Flex, Heading, Skeleton } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -14,7 +15,6 @@ export const UI: React.FC<{
   orgId: Org["id"];
 }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
   const stripeConfig = loadClientConfig().stripeConfig;
 
   useEffect(() => {
@@ -30,16 +30,16 @@ export const UI: React.FC<{
   const { products, isError, isLoading } = useProducts();
   useEffect(() => {
     if (isError) {
-      toast({
+      toaster.create({
         title: "Error!",
         description:
           "An error occurred while loading the paid subscriptions, please come back later or choose the free subscription.",
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: null,
       });
     }
-  }, [isError, toast]);
+  }, [isError]);
 
   return (
     <>

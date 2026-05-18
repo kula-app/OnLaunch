@@ -2,7 +2,8 @@
 
 import { updatePassword } from "@/app/actions/update-password";
 import { ServerError } from "@/errors/server-error";
-import { Box, Button, Card, Heading, Input, useToast, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Input, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
   Field,
@@ -25,8 +26,6 @@ const changePasswordSchema = Yup.object({
 type ChangePasswordValues = Yup.InferType<typeof changePasswordSchema>;
 
 export const ChangePasswordCard: React.FC = () => {
-  const toast = useToast();
-
   const formRef = useRef<FormikProps<ChangePasswordValues>>(null);
   const initialValues: ChangePasswordValues = {
     passwordOld: "",
@@ -60,13 +59,13 @@ export const ChangePasswordCard: React.FC = () => {
                     );
                   }
 
-                  toast({
-                    status: "success",
+                  toaster.create({
+                    type: "success",
                     title: "Password changed!",
                   });
                 } catch (error) {
-                  toast({
-                    status: "error",
+                  toaster.create({
+                    type: "error",
                     title: "Failed to change password!",
                     description: (error as Error).message,
                   });

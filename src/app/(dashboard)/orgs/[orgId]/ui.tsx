@@ -8,7 +8,6 @@ import { OrgRole } from "@/models/org-role";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
-  Steps,
   Alert,
   Box,
   Button,

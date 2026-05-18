@@ -2,20 +2,19 @@
 
 import { getRequestHistoryOfApp } from "@/app/actions/get-request-history-of-app";
 import RequestsChart from "@/components/request-chart";
+import { toaster } from "@/components/ui/toaster";
 import { ServerError } from "@/errors/server-error";
 import type { App } from "@/models/app";
 import type { Org } from "@/models/org";
 import type { RequestHistory } from "@/models/request-history";
 import { RequestHistoryItem } from "@/models/request-history-item";
-import { Steps, Button, Card, Text, useToast } from "@chakra-ui/react";
+import { Button, Card, Text } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
 export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
   orgId,
   appId,
 }) => {
-  const toast = useToast();
-
   const [history, setHistory] = useState<RequestHistory | null>();
   const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
   const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
@@ -33,15 +32,15 @@ export const AppMetrics: React.FC<{ orgId: Org["id"]; appId: App["id"] }> = ({
       }
       setHistory(response.value);
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "Failed to fetch dashboard data!",
         description: error.message,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
-  }, [orgId, toast, appId]);
+  }, [orgId, appId]);
 
   useEffect(() => {
     if (!history) {

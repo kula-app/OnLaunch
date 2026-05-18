@@ -5,12 +5,11 @@ import RequestsChart from "@/components/request-chart";
 import { ServerError } from "@/errors/server-error";
 import type { RequestHistory } from "@/models/request-history";
 import { RequestHistoryItem } from "@/models/request-history-item";
-import { Steps, Button, Card, Text, useToast } from "@chakra-ui/react";
+import { Button, Card, Text } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { useCallback, useEffect, useState } from "react";
 
 export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
-  const toast = useToast();
-
   const [history, setHistory] = useState<RequestHistory | null>();
   const [currentPeriodStart, setCurrentPeriodStart] = useState<Date>();
   const [periodStartDayCount, setPeriodStartDayCount] = useState<number>();
@@ -27,15 +26,15 @@ export const OrgMetrics: React.FC<{ orgId: number }> = ({ orgId }) => {
       }
       setHistory(response.value);
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "Failed to fetch dashboard data!",
         description: error.message,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
-  }, [orgId, toast]);
+  }, [orgId]);
 
   useEffect(() => {
     if (!history) {

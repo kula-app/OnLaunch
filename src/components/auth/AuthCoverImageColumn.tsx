@@ -1,7 +1,7 @@
 "use client";
 
 import { Routes } from "@/routes/routes";
-import { Steps, Flex, Link, Text, VStack } from "@chakra-ui/react";
+import { Flex, Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
 

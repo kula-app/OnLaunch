@@ -10,7 +10,8 @@ import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import { Routes } from "@/routes/routes";
-import { Steps, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Box, Button, Flex, HStack, Link, Text, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import NextLink from "next/link";
@@ -26,8 +27,6 @@ const SignupFormSchema = Yup.object().shape({
 });
 
 const UI: NextPage = () => {
-  const toast = useToast();
-
   return (
     <HStack gap={0} align={"stretch"}>
       <AuthCoverImageColumn />
@@ -104,11 +103,11 @@ const UI: NextPage = () => {
                           isWaitingVerificationForEmail: values.email,
                         });
                       } catch (error: any) {
-                        toast({
+                        toaster.create({
                           title: "Error while creating user",
                           description: `${error.message}`,
-                          status: "error",
-                          isClosable: true,
+                          type: "error",
+                          closable: true,
                           duration: 6000,
                         });
                       }
@@ -154,7 +153,7 @@ const UI: NextPage = () => {
                               />
                               <Button
                                 type="submit"
-                                variant="brand"
+                                colorPalette="brand"
                                 w="100%"
                                 minH="50"
                                 loading={props.isSubmitting}

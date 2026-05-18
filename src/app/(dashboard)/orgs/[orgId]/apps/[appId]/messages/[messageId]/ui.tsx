@@ -5,7 +5,7 @@ import { MessageEditor } from "@/components/message-editor/message-editor";
 import type { App } from "@/models/app";
 import { Message } from "@/models/message";
 import type { Org } from "@/models/org";
-import { Steps, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 
 export const UI: React.FC<{
   orgId: Org["id"];

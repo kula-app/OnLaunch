@@ -10,7 +10,8 @@ import { ServerError } from "@/errors/server-error";
 import { useCooldown } from "@/hooks/useCooldown";
 import { Routes } from "@/routes/routes";
 import { Logger } from "@/util/logger";
-import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 
@@ -18,7 +19,6 @@ const logger = new Logger(__filename);
 
 const SuspenseBody: React.FC = () => {
   const router = useRouter();
-  const toast = useToast();
 
   const searchParams = useSearchParams();
   const token = searchParams?.get("token");
@@ -63,17 +63,17 @@ const SuspenseBody: React.FC = () => {
           throw new ServerError(result.error.name, result.error.message);
         }
       } catch (error: any) {
-        toast({
+        toaster.create({
           title: "An unexpected error occured",
           description: `${error.message}`,
-          status: "error",
-          isClosable: true,
+          type: "error",
+          closable: true,
           duration: 6000,
         });
       }
       setIsLoading(false);
     },
-    [toast, verifyCooldown],
+    [verifyCooldown],
   );
 
   useEffect(() => {
@@ -92,19 +92,19 @@ const SuspenseBody: React.FC = () => {
       }
       resendLinkCooldown.start();
 
-      toast({
+      toaster.create({
         title: "Success!",
         description: "Link was sent again.",
-        status: "success",
-        isClosable: true,
+        type: "success",
+        closable: true,
         duration: 6000,
       });
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Error while sending verification link!",
         description: `${error}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
@@ -164,7 +164,7 @@ const SuspenseBody: React.FC = () => {
                           below.
                         </Text>
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type="submit"
                           w="100%"
                           minH="50"
@@ -195,7 +195,7 @@ const SuspenseBody: React.FC = () => {
                         You can now log in with your email and password.
                       </Text>
                       <Button
-                        variant="brand"
+                        colorPalette="brand"
                         type={"button"}
                         w="100%"
                         minH="50"
@@ -227,7 +227,7 @@ const SuspenseBody: React.FC = () => {
                         one below.
                       </Text>
                       <Button
-                        variant="brand"
+                        colorPalette="brand"
                         type="submit"
                         w="100%"
                         minH="50"

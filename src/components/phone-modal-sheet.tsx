@@ -1,4 +1,4 @@
-import { Steps, Box, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import React, { type PropsWithChildren } from "react";
 
 export const PhoneModalSheet: React.FC<PropsWithChildren> = ({ children }) => {

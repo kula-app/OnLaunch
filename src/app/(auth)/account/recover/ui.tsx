@@ -6,7 +6,8 @@ import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { Routes } from "@/routes/routes";
-import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
@@ -18,7 +19,6 @@ const LoginFormSchema = Yup.object().shape({
 
 const UI: NextPage = () => {
   const router = useRouter();
-  const toast = useToast();
 
   return (
     <HStack gap={0} align={"stretch"}>
@@ -77,11 +77,11 @@ const UI: NextPage = () => {
                         isSent: values.email,
                       });
                     } catch (error: any) {
-                      toast({
+                      toaster.create({
                         title: "Error while creating user",
                         description: `${error.message}`,
-                        status: "error",
-                        isClosable: true,
+                        type: "error",
+                        closable: true,
                         duration: 6000,
                       });
                     }
@@ -120,7 +120,7 @@ const UI: NextPage = () => {
                               autoComplete={"username"}
                             />
                             <Button
-                              variant="brand"
+                              colorPalette="brand"
                               type="submit"
                               w="100%"
                               minH="50"
@@ -134,7 +134,7 @@ const UI: NextPage = () => {
                         {props.status.isSent && (
                           <VStack gap={"16px"} w="100%">
                             <Button
-                              variant={"brand"}
+                              colorPalette={"brand"}
                               w="100%"
                               minH="50"
                               onClick={() =>

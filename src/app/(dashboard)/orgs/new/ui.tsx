@@ -2,6 +2,7 @@
 
 import { createOrg } from "@/app/actions/create-org";
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
+import { toaster } from "@/components/ui/toaster";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import { ServerError } from "@/errors/server-error";
 import { Routes } from "@/routes/routes";
@@ -14,7 +15,6 @@ import {
   Input,
   Spacer,
   Text,
-  useToast,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
@@ -39,7 +39,6 @@ const createOrgSchema = Yup.object<CreateOrgFormValues>().shape({
 
 export default function NewOrgPage() {
   const router = useRouter();
-  const toast = useToast();
 
   const initialValues: CreateOrgFormValues = {
     name: "",
@@ -99,11 +98,11 @@ export default function NewOrgPage() {
                         result.error.message,
                       );
                     }
-                    toast({
+                    toaster.create({
                       title: "Success!",
                       description: "New organisation created.",
-                      status: "success",
-                      isClosable: true,
+                      type: "success",
+                      closable: true,
                       duration: 6000,
                     });
 
@@ -119,11 +118,11 @@ export default function NewOrgPage() {
                       router.push(Routes.apps({ orgId: result.value }));
                     }
                   } catch (error) {
-                    toast({
+                    toaster.create({
                       title: "Error while creating new organisation!",
                       description: `${error}`,
-                      status: "error",
-                      isClosable: true,
+                      type: "error",
+                      closable: true,
                       duration: 6000,
                     });
                   }

@@ -14,10 +14,10 @@ import {
   HStack,
   Input,
   Text,
-  useToast,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
   Field,
@@ -39,8 +39,6 @@ export const ChangeEmailCard: React.FC<{
   user: User | null;
   refreshUser: () => void;
 }> = ({ user, refreshUser }) => {
-  const toast = useToast();
-
   const formRef = useRef<FormikProps<ChangeEmailValues>>(null);
   const initialValues: ChangeEmailValues = {
     email: user?.email ?? "",
@@ -60,20 +58,20 @@ export const ChangeEmailCard: React.FC<{
         }
         refreshUser();
 
-        toast({
+        toaster.create({
           title: "Success!",
           description: "Please check your mails.",
-          status: "success",
+          type: "success",
         });
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while sending request!",
           description: `${error}`,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [refreshUser, toast],
+    [refreshUser],
   );
   const onSubmitResend = useCallback(async () => {
     setIsResending(true);
@@ -84,21 +82,21 @@ export const ChangeEmailCard: React.FC<{
         throw new ServerError(response.error.name, response.error.message);
       }
 
-      toast({
+      toaster.create({
         title: "Success!",
         description: "Please check your mails.",
-        status: "success",
+        type: "success",
       });
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Failed to send email!",
         description: `${error}`,
-        status: "error",
+        type: "error",
       });
     } finally {
       setIsResending(false);
     }
-  }, [toast, resendCooldown]);
+  }, [resendCooldown]);
 
   return (
     <Box w={"full"}>

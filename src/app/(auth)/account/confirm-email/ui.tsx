@@ -7,7 +7,8 @@ import { AuthHeader } from "@/components/auth/AuthHeader";
 import { CustomErrorNames } from "@/errors/custom-error-names";
 import { ServerError } from "@/errors/server-error";
 import { Routes } from "@/routes/routes";
-import { Steps, Alert, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Alert, Box, Button, Flex, HStack, Link, Text, VStack } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
@@ -16,7 +17,6 @@ export const UI: React.FC<{
   token: string;
 }> = ({ token }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const { data: session, status: sessionStatus } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -67,16 +67,16 @@ export const UI: React.FC<{
           throw new ServerError(response.error.name, response.error.message);
         }
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while request!",
           description: `${error}`,
-          status: "error",
+          type: "error",
         });
       } finally {
         setIsLoading(false);
       }
     },
-    [session, toast],
+    [session],
   );
   useEffect(() => {
     if (token && token && !isAttempted && sessionStatus !== "loading") {
@@ -139,7 +139,7 @@ export const UI: React.FC<{
                       </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type={"button"}
                           w={"full"}
                           mt={"6px"}
@@ -165,7 +165,7 @@ export const UI: React.FC<{
                       </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type={"button"}
                           w={"full"}
                           mt={"6px"}
@@ -190,7 +190,7 @@ export const UI: React.FC<{
                       </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type={"button"}
                           w={"full"}
                           mt={"6px"}
@@ -224,7 +224,7 @@ export const UI: React.FC<{
                       </Alert.Root>
                       <Link href={Routes.profile} w={"full"}>
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type={"button"}
                           w="100%"
                           mt={"6px"}
@@ -243,7 +243,7 @@ export const UI: React.FC<{
                         You can now log in with your new email and password.
                       </Text>
                       <Button
-                        variant="brand"
+                        colorPalette="brand"
                         type={"button"}
                         w={"full"}
                         mt={"6px"}
@@ -279,7 +279,7 @@ export const UI: React.FC<{
                         w={"full"}
                       >
                         <Button
-                          variant="brand"
+                          colorPalette="brand"
                           type={"button"}
                           w="100%"
                           mt={"6px"}
@@ -302,7 +302,7 @@ export const UI: React.FC<{
                         )}
                       </Text>
                       <Button
-                        variant="brand"
+                        colorPalette="brand"
                         type={"button"}
                         w="100%"
                         minH="50"

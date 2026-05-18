@@ -5,7 +5,8 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Button, Card, Flex, Heading, Input, Text, useToast, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Input, Text, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
   Field,
@@ -29,7 +30,6 @@ export const UI: React.FC<{
   orgId: Org["id"];
 }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const initialValues: CreateAppFormValues = {
     name: "",
@@ -93,11 +93,11 @@ export const UI: React.FC<{
                         result.error.message,
                       );
                     }
-                    toast({
+                    toaster.create({
                       title: "Success!",
                       description: "New app created.",
-                      status: "success",
-                      isClosable: true,
+                      type: "success",
+                      closable: true,
                       duration: 6000,
                     });
 
@@ -108,11 +108,11 @@ export const UI: React.FC<{
                       }),
                     );
                   } catch (error) {
-                    toast({
+                    toaster.create({
                       title: "Error while creating new app!",
                       description: `${error}`,
-                      status: "error",
-                      isClosable: true,
+                      type: "error",
+                      closable: true,
                       duration: 6000,
                     });
                   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Steps, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import React from "react";
 import { SimpleFiltersAppVersionFilter } from "./simple-filters-app-version-filter";
 import { SimpleLanguageFilter } from "./simple-filters-language-filter";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Routes } from "@/routes/routes";
-import { Steps, Box, Card, Icon, Text } from "@chakra-ui/react";
+import { Box, Card, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { FiPlus } from "react-icons/fi";

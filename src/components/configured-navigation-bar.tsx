@@ -11,7 +11,7 @@ import type { App } from "@/models/app";
 import type { Message } from "@/models/message";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Steps, useToast } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { useCallback, useEffect, useState } from "react";
 
 export type ConfiguredNavigationBarItem =
@@ -74,8 +74,6 @@ export type ConfiguredNavigationBarItem =
 export const ConfiguredNavigationBar: React.FC<{
   items: ConfiguredNavigationBarItem[];
 }> = ({ items }) => {
-  const toast = useToast();
-
   const [isLoadingOrg, setIsLoadingOrg] = useState(false);
   const [org, setOrg] = useState<Org | null>(null);
   const [orgError, setOrgError] = useState<Error | null>(null);
@@ -91,15 +89,15 @@ export const ConfiguredNavigationBar: React.FC<{
         setOrgError(null);
       } catch (error: any) {
         setOrgError(error);
-        toast({
+        toaster.create({
           title: "Failed to fetch organization",
           description: error.message,
-          status: "error",
+          type: "error",
         });
       }
       setIsLoadingOrg(false);
     },
-    [toast, setOrg],
+    [setOrg],
   );
 
   const [isLoadingApp, setIsLoadingApp] = useState(false);
@@ -117,15 +115,15 @@ export const ConfiguredNavigationBar: React.FC<{
         setAppError(null);
       } catch (error: any) {
         setAppError(error);
-        toast({
+        toaster.create({
           title: "Failed to fetch app",
           description: error.message,
-          status: "error",
+          type: "error",
         });
       }
       setIsLoadingApp(false);
     },
-    [toast, setApp],
+    [setApp],
   );
 
   const [navigationItems, setNavigationItems] = useState<NavigationBarItem[]>();

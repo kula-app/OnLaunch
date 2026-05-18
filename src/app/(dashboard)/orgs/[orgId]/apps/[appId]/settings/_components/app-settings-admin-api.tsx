@@ -1,13 +1,13 @@
 "use client";;
 import { createAppAdminToken } from "@/app/actions/create-app-admin-token";
 import { deleteAppAdminToken } from "@/app/actions/delete-app-admin-token";
+import { toaster } from "@/components/ui/toaster";
 import { loadClientConfig } from "@/config/loadClientConfig";
 import { useAppAdminTokens } from "@/hooks/use-app-admin-tokens";
 import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import { App } from "@/models/app";
 import type { AppAdminToken } from "@/models/app-admin-token";
 import {
-  Steps,
   Alert,
   Box,
   Button,
@@ -17,13 +17,11 @@ import {
   IconButton,
   Input,
   InputGroup,
-  InputRightElement,
   Link,
   Skeleton,
   Spacer,
   Text,
   useDisclosure,
-  useToast,
   VStack,
   Icon,
 } from "@chakra-ui/react";
@@ -44,7 +42,6 @@ import { LuExternalLink } from 'react-icons/lu';
 export const AppSettingsAdminAPI: React.FC<{
   appId: App["id"];
 }> = ({ appId }) => {
-  const toast = useToast();
   const config = loadClientConfig();
 
   const { tokens, error, isLoading, refresh } = useAppAdminTokens(appId);
@@ -84,7 +81,7 @@ export const AppSettingsAdminAPI: React.FC<{
           </Text>
         </VStack>
         <Spacer />
-        <Button variant={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
+        <Button colorPalette={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
                   </Button>
       </HStack>
       <Box mt={4}>
@@ -125,14 +122,11 @@ export const AppSettingsAdminAPI: React.FC<{
                     </HStack>
                   )}
                 </Text>
-                <InputGroup w={"full"} maxW={"400px"} variant={"brand-on-card"}>
-                  <Input
-                    flexGrow={1}
-                    value={token.token}
-                    readOnly
-                    type={visibleTokens.has(token.id) ? "text" : "password"}
-                  />
-                  <InputRightElement>
+                <InputGroup
+                  w={"full"}
+                  maxW={"400px"}
+                  variant={"brand-on-card"}
+                  endElement={
                     <IconButton
                       variant={"ghost"}
                       colorPalette={"whiteAlpha"}
@@ -149,7 +143,14 @@ export const AppSettingsAdminAPI: React.FC<{
                           );
                         }
                       }}>{visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />}</IconButton>
-                  </InputRightElement>
+                  }
+                >
+                  <Input
+                    flexGrow={1}
+                    value={token.token}
+                    readOnly
+                    type={visibleTokens.has(token.id) ? "text" : "password"}
+                  />
                 </InputGroup>
                 <Tooltip content="Copy Token">
                   <IconButton
@@ -157,9 +158,9 @@ export const AppSettingsAdminAPI: React.FC<{
                     aria-label={"Copy Token"}
                     onClick={() => {
                       navigator.clipboard.writeText(token.token);
-                      toast({
+                      toaster.create({
                         title: "Token copied to clipboard.",
-                        status: "info",
+                        type: "info",
                       });
                     }}
                     rounded={"full"}><FaCopy /></IconButton>
@@ -192,16 +193,16 @@ export const AppSettingsAdminAPI: React.FC<{
             });
             refresh();
 
-            toast({
+            toaster.create({
               title: "Success!",
               description: "App admin token has been deleted!",
-              status: "success",
+              type: "success",
             });
           } catch (error) {
-            toast({
+            toaster.create({
               title: `Failed to delete app admin token!`,
               description: `${error}`,
-              status: "error",
+              type: "error",
             });
           }
         }}
@@ -215,16 +216,16 @@ export const AppSettingsAdminAPI: React.FC<{
             await createAppAdminToken({ appId, label, expirationDate });
             refresh();
 
-            toast({
+            toaster.create({
               title: "Success!",
               description: "Created new app admin token",
-              status: "success",
+              type: "success",
             });
           } catch (error) {
-            toast({
+            toaster.create({
               title: "Failed to create app admin token!",
               description: `${error}`,
-              status: "error",
+              type: "error",
             });
           }
         }}

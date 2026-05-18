@@ -1,5 +1,6 @@
+import { toaster } from "@/components/ui/toaster";
 import { loadClientConfig } from "@/config/loadClientConfig";
-import { Steps, Button, Heading, Spinner, Stack, useToast } from "@chakra-ui/react";
+import { Button, Heading, Spinner, Stack } from "@chakra-ui/react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -8,7 +9,6 @@ import styles from "../styles/Home.module.css";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const toast = useToast();
   const stripeConfig = loadClientConfig().stripeConfig;
 
   const [loading, setLoading] = useState(true);
@@ -43,18 +43,18 @@ export default function ProfilePage() {
     if (!router.isReady) return;
 
     if (success && orgId) {
-      toast({
+      toaster.create({
         title: "Success!",
         description: "Enjoy your new abo!",
-        status: "success",
-        isClosable: true,
+        type: "success",
+        closable: true,
         duration: 6000,
       });
       navigateToOrgDetailsPage(orgId as unknown as number);
     }
 
     setLoading(false);
-  }, [router.isReady, router, toast, canceled, orgId, success]);
+  }, [router.isReady, router, canceled, orgId, success]);
 
   return (
     <>

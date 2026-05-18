@@ -1,5 +1,5 @@
 "use client";
-import { Steps, Button, Link } from "@chakra-ui/react";
+import { Button, Link } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa6";
 

@@ -2,7 +2,7 @@
 
 import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar";
 import { useAuthenticatedUser } from "@/hooks/use-authenticated-user";
-import { Steps, Alert, Container, Flex, Heading, Skeleton, Text, VStack } from "@chakra-ui/react";
+import { Alert, Container, Flex, Heading, Skeleton, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import { ChangeEmailCard } from "./_components/change-email-card";
 import { ChangePasswordCard } from "./_components/change-password-card";

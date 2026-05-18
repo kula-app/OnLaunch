@@ -1,4 +1,4 @@
-import { Steps, Collapsible, Flex, Icon, Link, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { Collapsible, Flex, Icon, Link, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode";
 import { MdExpandMore } from "react-icons/md";
 import { Routes } from "../routes/routes";

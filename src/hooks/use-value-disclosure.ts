@@ -1,4 +1,4 @@
-import { Steps, useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
+import { useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 interface UseValueDisclosureReturn<T>

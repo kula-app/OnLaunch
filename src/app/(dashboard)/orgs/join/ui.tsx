@@ -6,7 +6,6 @@ import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import {
-  Steps,
   Button,
   ButtonGroup,
   Card,
@@ -14,8 +13,8 @@ import {
   Flex,
   Heading,
   Text,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { getDirectInviteByToken } from "./actions/get-direct-invite-by-token";
@@ -28,7 +27,6 @@ export const UI: React.FC<{
   inviteToken: string | undefined;
 }> = ({ directInviteToken, inviteToken }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const [isAccepting, setIsAccepting] = useState(false);
   const [org, setOrg] = useState<Pick<Org, "id" | "name"> | null>(null);
@@ -62,11 +60,11 @@ export const UI: React.FC<{
         return;
       }
 
-      toast({
+      toaster.create({
         title: "Success!",
         description: `You joined the organisation.`,
-        status: "success",
-        isClosable: true,
+        type: "success",
+        closable: true,
         duration: 6000,
       });
       router.push(
@@ -77,10 +75,10 @@ export const UI: React.FC<{
       );
     } catch (error: any) {
       if (error.name === CustomErrorNames.UserAlreadyJoinedOrgError) {
-        toast({
+        toaster.create({
           title: "You already joined this organisation!",
           description: "Redirecting...",
-          status: "info",
+          type: "info",
         });
         router.push(
           Routes.organization({
@@ -88,10 +86,10 @@ export const UI: React.FC<{
           }),
         );
       } else {
-        toast({
+        toaster.create({
           title: "Failed to accept invitation",
           description: error.message,
-          status: "error",
+          type: "error",
         });
       }
     }
@@ -110,14 +108,14 @@ export const UI: React.FC<{
       } catch (error: any) {
         setOrg(null);
         setFetchError(error.message);
-        toast({
+        toaster.create({
           title: "Failed to fetch invite",
           description: error.message,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [toast],
+    [],
   );
 
   const fetchDirectInviteByToken = useCallback(
@@ -132,14 +130,14 @@ export const UI: React.FC<{
       } catch (error: any) {
         setOrg(null);
         setFetchError(error.message);
-        toast({
+        toaster.create({
           title: "Failed to fetch invite",
           description: error.message,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [toast],
+    [],
   );
 
   useEffect(() => {

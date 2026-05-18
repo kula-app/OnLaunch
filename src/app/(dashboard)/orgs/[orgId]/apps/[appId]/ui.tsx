@@ -6,7 +6,6 @@ import { useApp } from "@/hooks/use-app";
 import { useMessages } from "@/hooks/use-messages";
 import { Routes } from "@/routes/routes";
 import {
-  Steps,
   Box,
   Button,
   Container,

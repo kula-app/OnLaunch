@@ -2,7 +2,6 @@
 
 import { Routes } from "@/routes/routes";
 import {
-  Steps,
   Avatar,
   Box,
   Breadcrumb,
@@ -12,11 +11,7 @@ import {
   Icon,
   Link,
   Menu,
-  MenuButton,
-  MenuDivider,
-  MenuGroup,
-  MenuItem,
-  MenuList,
+  Portal,
   SkeletonText,
   Text,
 } from "@chakra-ui/react";
@@ -90,55 +85,101 @@ export const NavigationBar: React.FC<{
       </Flex>
       <Flex gap={2}>
         <GitHubStargazersButton />
-        <Menu>
-          <MenuButton
-            rounded={"full"}
-            variant={"link"}
-            cursor={"pointer"}
-            asChild
-          ><Button>
-              <Avatar.Root bg={"white"} color={"black"} size={"sm"}><Avatar.Fallback name={session?.data?.user?.name} /></Avatar.Root>
-            </Button></MenuButton>
-          <MenuList alignItems={"center"} maxW={64}>
-            <Box px={3} py={1.5}>
-              <HStack color={"white"}>
-                <Avatar.Root bg={"brand.400"} color={"white"} size={"sm"}><Avatar.Fallback name={session?.data?.user?.name} /></Avatar.Root>
-                <Text
-                  fontWeight={"medium"}
-                  lineClamp={1}
-                  wordBreak={"break-all"}
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <Button rounded={"full"} variant={"plain"} cursor={"pointer"}>
+              <Avatar.Root bg={"white"} color={"black"} size={"sm"}>
+                <Avatar.Fallback name={session?.data?.user?.name} />
+              </Avatar.Root>
+            </Button>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content alignItems={"center"} maxW={64}>
+                <Box px={3} py={1.5}>
+                  <HStack color={"white"}>
+                    <Avatar.Root bg={"brand.400"} color={"white"} size={"sm"}>
+                      <Avatar.Fallback name={session?.data?.user?.name} />
+                    </Avatar.Root>
+                    <Text
+                      fontWeight={"medium"}
+                      lineClamp={1}
+                      wordBreak={"break-all"}
+                    >
+                      {session?.data?.user?.name}
+                    </Text>
+                  </HStack>
+                </Box>
+                <Menu.Separator />
+                <Menu.ItemGroup>
+                  <Menu.ItemGroupLabel>Profile</Menu.ItemGroupLabel>
+                  <Menu.Item value="profile" asChild>
+                    <NextLink href={Routes.profile}>
+                      <Icon boxSize={4} asChild>
+                        <FiUser />
+                      </Icon>
+                      Your Profile
+                    </NextLink>
+                  </Menu.Item>
+                  <Menu.Item value="organizations" asChild>
+                    <NextLink href={Routes.organizations}>
+                      <Icon boxSize={4} asChild>
+                        <FiUsers />
+                      </Icon>
+                      Your Organizations
+                    </NextLink>
+                  </Menu.Item>
+                </Menu.ItemGroup>
+                <Menu.Separator />
+                <Menu.ItemGroup>
+                  <Menu.ItemGroupLabel>Help</Menu.ItemGroupLabel>
+                  <Menu.Item value="github-repo" asChild>
+                    <NextLink
+                      href={"https://github.com/kula-app/OnLaunch"}
+                      target={"_blank"}
+                    >
+                      <Icon boxSize={4} asChild>
+                        <FiGithub />
+                      </Icon>
+                      GitHub Repo
+                    </NextLink>
+                  </Menu.Item>
+                  <Menu.Item value="github-docs" asChild>
+                    <NextLink
+                      href={"https://kula-app.github.io/OnLaunch/"}
+                      target={"_blank"}
+                    >
+                      <Icon boxSize={4} asChild>
+                        <FiBookOpen />
+                      </Icon>
+                      GitHub Docs
+                    </NextLink>
+                  </Menu.Item>
+                  <Menu.Item value="support" asChild>
+                    <NextLink href={"https://kula.app/contact"} target={"_blank"}>
+                      <Icon boxSize={4} asChild>
+                        <FiHelpCircle />
+                      </Icon>
+                      Support
+                    </NextLink>
+                  </Menu.Item>
+                </Menu.ItemGroup>
+                <Menu.Separator />
+                <Menu.Item
+                  value="signout"
+                  onClick={() => {
+                    signOut();
+                  }}
                 >
-                  {session?.data?.user?.name}
-                </Text>
-              </HStack>
-            </Box>
-            <MenuDivider />
-            <MenuGroup title={"Profile"}>
-              <MenuItem icon={<Icon boxSize={4} asChild><FiUser /></Icon>} asChild><NextLink href={Routes.profile}>Your Profile
-                              </NextLink></MenuItem>
-              <MenuItem icon={<Icon boxSize={4} asChild><FiUsers /></Icon>} asChild><NextLink href={Routes.organizations}>Your Organizations
-                              </NextLink></MenuItem>
-            </MenuGroup>
-            <MenuDivider />
-            <MenuGroup title={"Help"}>
-              <MenuItem icon={<Icon boxSize={4} asChild><FiGithub /></Icon>} asChild><NextLink href={"https://github.com/kula-app/OnLaunch"} target={"_blank"}>GitHub Repo
-                              </NextLink></MenuItem>
-              <MenuItem icon={<Icon boxSize={4} asChild><FiBookOpen /></Icon>} asChild><NextLink href={"https://kula-app.github.io/OnLaunch/"} target={"_blank"}>GitHub Docs
-                              </NextLink></MenuItem>
-              <MenuItem icon={<Icon boxSize={4} asChild><FiHelpCircle /></Icon>} asChild><NextLink href={"https://kula.app/contact"} target={"_blank"}>Support
-                              </NextLink></MenuItem>
-            </MenuGroup>
-            <MenuDivider />
-            <MenuItem
-              onClick={() => {
-                signOut();
-              }}
-              icon={<Icon boxSize={4} asChild><FiLogOut /></Icon>}
-            >
-              Sign out
-            </MenuItem>
-          </MenuList>
-        </Menu>
+                  <Icon boxSize={4} asChild>
+                    <FiLogOut />
+                  </Icon>
+                  Sign out
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
       </Flex>
     </Flex>
   );

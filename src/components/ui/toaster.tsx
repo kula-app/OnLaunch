@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  Steps,
   Toaster as ChakraToaster,
   Portal,
   Spinner,

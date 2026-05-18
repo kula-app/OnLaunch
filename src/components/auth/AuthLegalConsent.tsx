@@ -1,4 +1,4 @@
-import { Steps, Link, Text } from "@chakra-ui/react";
+import { Link, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export const AuthLegalConsent: React.FC<{ action: "sign-in" | "sign-up" }> = ({

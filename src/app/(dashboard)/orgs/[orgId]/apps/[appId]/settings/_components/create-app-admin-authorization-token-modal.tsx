@@ -4,13 +4,8 @@ import {
   Button,
   HStack,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
+  Dialog,
+  Portal,
   Spacer,
   Text,
   Field as ChakraField,
@@ -98,171 +93,175 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Create Authorization Token</ModalHeader>
-        <ModalCloseButton />
-        <Formik
-          initialValues={initialValues}
-          validationSchema={createTokenFormValuesSchema}
-          onSubmit={async (values) => {
-            const expirationDate =
-              values.expiresIn === "unlimited"
-                ? undefined
-                : values.expiresIn === "custom"
-                  ? values.customExpirationDate
-                  : new Date(Date.now() + values.expiresIn);
-            await onSubmit(values.label, expirationDate);
-            onClose();
-          }}
-        >
-          {(props) => (
-            <>
-              <ModalBody>
-                <Text>
-                  Define a label for the token, so you can identify it later.
-                </Text>
-                <Field name="label">
-                  {({
-                    field,
-                    form,
-                  }: FieldProps<string, CreateTokenFormValues>) => {
-                    const isFieldInvalid =
-                      !!form.errors?.label && !!form.touched?.label;
+    <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="center">
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.CloseTrigger />
+            <Dialog.Header>Create Authorization Token</Dialog.Header>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={createTokenFormValuesSchema}
+              onSubmit={async (values) => {
+                const expirationDate =
+                  values.expiresIn === "unlimited"
+                    ? undefined
+                    : values.expiresIn === "custom"
+                      ? values.customExpirationDate
+                      : new Date(Date.now() + values.expiresIn);
+                await onSubmit(values.label, expirationDate);
+                onClose();
+              }}
+            >
+              {(props) => (
+                <>
+                  <Dialog.Body>
+                    <Text>
+                      Define a label for the token, so you can identify it later.
+                    </Text>
+                    <Field name="label">
+                      {({
+                        field,
+                        form,
+                      }: FieldProps<string, CreateTokenFormValues>) => {
+                        const isFieldInvalid =
+                          !!form.errors?.label && !!form.touched?.label;
 
-                    return (
-                      <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                        <ChakraField.Label htmlFor={field.name}>Token Label</ChakraField.Label>
-                        <Input
-                          {...field}
-                          id={field.name}
-                          placeholder="New Token"
-                          w={"full"}
-                        />
-                        <ErrorMessage
-                          name={field.name}
-                          render={(errorMessage) => (
-                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
-                          )}
-                        />
-                      </ChakraField.Root>
-                    );
-                  }}
-                </Field>
-                <Field name={"expiresIn"}>
-                  {({
-                    field,
-                    form,
-                  }: FieldProps<number, CreateTokenFormValues>) => {
-                    const isFieldInvalid =
-                      !!form.errors?.expiresIn && !!form.touched?.expiresIn;
+                        return (
+                          <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                            <ChakraField.Label htmlFor={field.name}>Token Label</ChakraField.Label>
+                            <Input
+                              {...field}
+                              id={field.name}
+                              placeholder="New Token"
+                              w={"full"}
+                            />
+                            <ErrorMessage
+                              name={field.name}
+                              render={(errorMessage) => (
+                                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
+                              )}
+                            />
+                          </ChakraField.Root>
+                        );
+                      }}
+                    </Field>
+                    <Field name={"expiresIn"}>
+                      {({
+                        field,
+                        form,
+                      }: FieldProps<number, CreateTokenFormValues>) => {
+                        const isFieldInvalid =
+                          !!form.errors?.expiresIn && !!form.touched?.expiresIn;
 
-                    return (
-                      <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                        <ChakraField.Label htmlFor={field.name}>Expires In</ChakraField.Label>
-                        <Input
-                          {...field}
-                          onChange={(e) => {
-                            if (
-                              e.target.value === "unlimited" ||
-                              e.target.value === "custom"
-                            ) {
-                              form.setFieldValue(field.name, e.target.value);
-                            } else {
-                              form.setFieldValue(
-                                field.name,
-                                parseInt(e.target.value, 10),
-                              );
+                        return (
+                          <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
+                            <ChakraField.Label htmlFor={field.name}>Expires In</ChakraField.Label>
+                            <Input
+                              {...field}
+                              onChange={(e) => {
+                                if (
+                                  e.target.value === "unlimited" ||
+                                  e.target.value === "custom"
+                                ) {
+                                  form.setFieldValue(field.name, e.target.value);
+                                } else {
+                                  form.setFieldValue(
+                                    field.name,
+                                    parseInt(e.target.value, 10),
+                                  );
+                                }
+                              }}
+                              id={field.name}
+                              placeholder="Select an expiration time"
+                              w={"full"}
+                              as={"select"}
+                            >
+                              {options.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Input>
+                            <ErrorMessage
+                              name={field.name}
+                              render={(errorMessage) => (
+                                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
+                              )}
+                            />
+                          </ChakraField.Root>
+                        );
+                      }}
+                    </Field>
+                    <Field name={"customExpirationDate"}>
+                      {({
+                        field,
+                        form,
+                      }: FieldProps<Date, CreateTokenFormValues>) => {
+                        const isFieldInvalid =
+                          !!form.errors?.customExpirationDate &&
+                          !!form.touched?.customExpirationDate;
+
+                        return (
+                          <ChakraField.Root
+                            w={"full"}
+                            invalid={isFieldInvalid}
+                            mt={4}
+                            display={
+                              form.values.expiresIn === "custom" ? "block" : "none"
                             }
-                          }}
-                          id={field.name}
-                          placeholder="Select an expiration time"
-                          w={"full"}
-                          as={"select"}
-                        >
-                          {options.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Input>
-                        <ErrorMessage
-                          name={field.name}
-                          render={(errorMessage) => (
-                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
-                          )}
-                        />
-                      </ChakraField.Root>
-                    );
-                  }}
-                </Field>
-                <Field name={"customExpirationDate"}>
-                  {({
-                    field,
-                    form,
-                  }: FieldProps<Date, CreateTokenFormValues>) => {
-                    const isFieldInvalid =
-                      !!form.errors?.customExpirationDate &&
-                      !!form.touched?.customExpirationDate;
-
-                    return (
-                      <ChakraField.Root
-                        w={"full"}
-                        invalid={isFieldInvalid}
-                        mt={4}
-                        display={
-                          form.values.expiresIn === "custom" ? "block" : "none"
-                        }
+                          >
+                            <ChakraField.Label htmlFor={field.name}>
+                              Custom Expiration Date
+                            </ChakraField.Label>
+                            <Input
+                              {...field}
+                              value={moment(field.value).format("YYYY-MM-DDTHH:mm")}
+                              onChange={(e) => {
+                                form.setFieldValue(
+                                  field.name,
+                                  new Date(e.target.value),
+                                );
+                              }}
+                              id={field.name}
+                              placeholder="Select a custom expiration date"
+                              type={"datetime-local"}
+                              min={moment().format("YYYY-MM-DDTHH:mm")}
+                              w={"full"}
+                            />
+                            <ErrorMessage
+                              name={field.name}
+                              render={(errorMessage) => (
+                                <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
+                              )}
+                            />
+                          </ChakraField.Root>
+                        );
+                      }}
+                    </Field>
+                  </Dialog.Body>
+                  <Dialog.Footer>
+                    <HStack>
+                      <Spacer />
+                      <Button variant="solid" colorPalette="gray" onClick={onClose}>
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="solid"
+                        colorPalette="brand"
+                        onClick={props.submitForm}
                       >
-                        <ChakraField.Label htmlFor={field.name}>
-                          Custom Expiration Date
-                        </ChakraField.Label>
-                        <Input
-                          {...field}
-                          value={moment(field.value).format("YYYY-MM-DDTHH:mm")}
-                          onChange={(e) => {
-                            form.setFieldValue(
-                              field.name,
-                              new Date(e.target.value),
-                            );
-                          }}
-                          id={field.name}
-                          placeholder="Select a custom expiration date"
-                          type={"datetime-local"}
-                          min={moment().format("YYYY-MM-DDTHH:mm")}
-                          w={"full"}
-                        />
-                        <ErrorMessage
-                          name={field.name}
-                          render={(errorMessage) => (
-                            <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
-                          )}
-                        />
-                      </ChakraField.Root>
-                    );
-                  }}
-                </Field>
-              </ModalBody>
-              <ModalFooter>
-                <HStack>
-                  <Spacer />
-                  <Button variant="solid" colorPalette="gray" onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="solid"
-                    colorPalette="brand"
-                    onClick={props.submitForm}
-                  >
-                    Create
-                  </Button>
-                </HStack>
-              </ModalFooter>
-            </>
-          )}
-        </Formik>
-      </ModalContent>
-    </Modal>
+                        Create
+                      </Button>
+                    </HStack>
+                  </Dialog.Footer>
+                </>
+              )}
+            </Formik>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };

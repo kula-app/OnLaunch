@@ -3,7 +3,6 @@
 import { useApp } from "@/hooks/use-app";
 import type { App } from "@/models/app";
 import {
-  Steps,
   Alert,
   Flex,
   Grid,
@@ -12,11 +11,10 @@ import {
   IconButton,
   Input,
   InputGroup,
-  InputRightElement,
-  useToast,
   VStack,
   Field,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { FaCopy } from "react-icons/fa6";
 import { FetchMessagesFromAPISection } from "./fetch-messages-from-api-section";
 import { SDKCard } from "./sdk-card";
@@ -24,7 +22,6 @@ import { SDKCard } from "./sdk-card";
 export const AppSettingsSDKKeys: React.FC<{
   appId: App["id"];
 }> = ({ appId }) => {
-  const toast = useToast();
   const { app, error: appError } = useApp({ appId });
 
   const sdks: {
@@ -79,14 +76,9 @@ export const AppSettingsSDKKeys: React.FC<{
           <Field.Root color="white" w={"full"}>
             <Field.Label fontWeight={"bold"}>App Public Key</Field.Label>
             <HStack>
-              <InputGroup variant={"brand-on-card"}>
-                <Input
-                  id="invite"
-                  value={app?.publicKey ?? ""}
-                  readOnly
-                  fontSize={"sm"}
-                />
-                <InputRightElement>
+              <InputGroup
+                variant={"brand-on-card"}
+                endElement={
                   <IconButton
                     colorPalette={"whiteAlpha"}
                     aria-label="Copy Public Key"
@@ -94,12 +86,19 @@ export const AppSettingsSDKKeys: React.FC<{
                     roundedRight={"full"}
                     onClick={() => {
                       navigator.clipboard.writeText(app?.publicKey ?? "");
-                      toast({
+                      toaster.create({
                         title: "Public key copied to clipboard.",
-                        status: "info",
+                        type: "info",
                       });
                     }}><FaCopy /></IconButton>
-                </InputRightElement>
+                }
+              >
+                <Input
+                  id="invite"
+                  value={app?.publicKey ?? ""}
+                  readOnly
+                  fontSize={"sm"}
+                />
               </InputGroup>
             </HStack>
             <Field.HelperText color={"gray.200"}>

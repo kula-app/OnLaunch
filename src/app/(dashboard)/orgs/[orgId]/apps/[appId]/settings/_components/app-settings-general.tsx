@@ -2,6 +2,7 @@
 
 import { deleteApp } from "@/app/actions/delete-app";
 import { updateApp } from "@/app/actions/update-app";
+import { toaster } from "@/components/ui/toaster";
 import { ServerError } from "@/errors/server-error";
 import { useApp } from "@/hooks/use-app";
 import { useAuthenticatedUserRole } from "@/hooks/use-authenticated-user-role";
@@ -20,7 +21,6 @@ import {
   Text,
   Tooltip,
   useDisclosure,
-  useToast,
   VStack,
   Dialog,
   Portal,
@@ -52,7 +52,6 @@ export const AppSettingsGeneral: React.FC<{
   appId: App["id"];
 }> = ({ orgId, appId }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const { role, error: authenticatedUserRoleError } = useAuthenticatedUserRole({
     orgId,
@@ -108,18 +107,18 @@ export const AppSettingsGeneral: React.FC<{
               }
               refreshApp();
 
-              toast({
+              toaster.create({
                 title: "Success!",
                 description: "App has been updated.",
-                status: "success",
-                isClosable: true,
+                type: "success",
+                closable: true,
                 duration: 6000,
               });
             } catch (error) {
-              toast({
+              toaster.create({
                 title: "Failed to update app!",
                 description: `${error}`,
-                status: "error",
+                type: "error",
               });
             }
           }}
@@ -206,21 +205,21 @@ export const AppSettingsGeneral: React.FC<{
               );
             }
 
-            toast({
+            toaster.create({
               title: "Success!",
               description: `App with id '${appId}' has been deleted!`,
-              status: "success",
-              isClosable: true,
+              type: "success",
+              closable: true,
               duration: 6000,
             });
 
             router.push(Routes.dashboard);
           } catch (error) {
-            toast({
+            toaster.create({
               title: `Error while deleting app with id ${appId}!`,
               description: `${error}`,
-              status: "error",
-              isClosable: true,
+              type: "error",
+              closable: true,
               duration: 6000,
             });
           }

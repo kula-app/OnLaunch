@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Flex, Switch, Tag, Wrap, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -110,22 +110,22 @@ const IncludedLangageFilter: React.FC = () => {
             <ChakraField.Label>Which languages should be included?</ChakraField.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
-                <Tag
+                <Tag.Root
                   size={"md"}
                   key={language}
                   borderRadius="full"
                   variant="solid"
                   colorScheme="green"
                 >
-                  <TagLabel>{language}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label>{language}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => {
                       const newLanguages = (field.value ?? [])?.slice();
                       newLanguages.splice(idx, 1);
                       form.setFieldValue(field.name, newLanguages);
                     }}
                   />
-                </Tag>
+                </Tag.Root>
               ))}
               <AddTagButton
                 values={Object.values(SimpleFiltersLanguage)
@@ -197,22 +197,22 @@ const ExcludedLangageFilter: React.FC = () => {
             <ChakraField.Label>Which languages should be excluded?</ChakraField.Label>
             <Wrap>
               {field.value?.map((language, idx) => (
-                <Tag
+                <Tag.Root
                   size={"md"}
                   key={language}
                   borderRadius="full"
                   variant="solid"
                   colorScheme="red"
                 >
-                  <TagLabel>{language}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label>{language}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => {
                       const newLanguages = (field.value ?? []).slice();
                       newLanguages.splice(idx, 1);
                       form.setFieldValue(field.name, newLanguages);
                     }}
                   />
-                </Tag>
+                </Tag.Root>
               ))}
               <AddTagButton
                 values={Object.values(SimpleFiltersLanguage)

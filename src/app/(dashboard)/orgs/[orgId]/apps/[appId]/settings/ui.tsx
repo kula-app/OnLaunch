@@ -5,15 +5,10 @@ import { App } from "@/models/app";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import {
-  Steps,
   Card,
   Container,
   Flex,
   Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Tabs,
   VStack,
 } from "@chakra-ui/react";
@@ -102,29 +97,28 @@ export const UI: React.FC<{
                   w={"full"}
                   variant={"brand-on-card"}
                   colorPalette="brand"
-                  value={tabIndex}
-                  onValueChange={handleTabIndexChange}
+                  defaultValue={SettingTab.GENERAL}
                 >
                   <Tabs.List>
                     {orderedTabs.map((tab) => (
-                      <Tab key={tab.id}>{tab.name}</Tab>
+                      <Tabs.Trigger key={tab.id} value={tab.id}>
+                        {tab.name}
+                      </Tabs.Trigger>
                     ))}
                   </Tabs.List>
-                  <TabPanels>
-                    {orderedTabs.map((tab) => (
-                      <TabPanel key={tab.id}>
-                        {tab.id === SettingTab.GENERAL && (
-                          <AppSettingsGeneral appId={appId} orgId={orgId} />
-                        )}
-                        {tab.id === SettingTab.SDK_KEYS && (
-                          <AppSettingsSDKKeys appId={appId} />
-                        )}
-                        {tab.id === SettingTab.ADMIN_API && (
-                          <AppSettingsAdminAPI appId={appId} />
-                        )}
-                      </TabPanel>
-                    ))}
-                  </TabPanels>
+                  {orderedTabs.map((tab) => (
+                    <Tabs.Content key={tab.id} value={tab.id}>
+                      {tab.id === SettingTab.GENERAL && (
+                        <AppSettingsGeneral appId={appId} orgId={orgId} />
+                      )}
+                      {tab.id === SettingTab.SDK_KEYS && (
+                        <AppSettingsSDKKeys appId={appId} />
+                      )}
+                      {tab.id === SettingTab.ADMIN_API && (
+                        <AppSettingsAdminAPI appId={appId} />
+                      )}
+                    </Tabs.Content>
+                  ))}
                 </Tabs.Root>
               </Card.Body>
             </Card.Root>

@@ -1,4 +1,4 @@
-import { Steps, HStack, Link, Text, VStack } from "@chakra-ui/react";
+import { HStack, Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export const AuthFooter: React.FC = () => {

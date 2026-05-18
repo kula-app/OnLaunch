@@ -1,6 +1,6 @@
 "use client";
 
-import { Steps, Box, Button, Checkbox, Flex, Text, Separator } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Flex, Text, Separator } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import createCheckoutSession from "../api/stripe/createCheckoutSession";

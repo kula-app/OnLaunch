@@ -8,7 +8,8 @@ import { AuthSocialLogin } from "@/components/auth/AuthSocialLogin";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { AuthVerificationEmailSent } from "@/components/auth/AuthVerificationEmailSent";
 import { Routes } from "@/routes/routes";
-import { Steps, Box, Button, Flex, HStack, Link, Text, useToast, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Box, Button, Flex, HStack, Link, Text, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { signIn } from "next-auth/react";
@@ -25,7 +26,6 @@ type LoginFormValues = Yup.InferType<typeof LoginFormSchema>;
 
 const UI: NextPage = () => {
   const router = useRouter();
-  const toast = useToast();
 
   let [initialValues, setInitialValues] = useState<LoginFormValues>({
     email: "",
@@ -127,11 +127,11 @@ const UI: NextPage = () => {
                         throw new Error("Unknown error occurred");
                       }
                     } catch (error: any) {
-                      toast({
+                      toaster.create({
                         title: "Error while creating user",
                         description: `${error.message}`,
-                        status: "error",
-                        isClosable: true,
+                        type: "error",
+                        closable: true,
                         duration: 6000,
                       });
                     }
@@ -177,7 +177,7 @@ const UI: NextPage = () => {
                                                               </NextLink></Link>
                             </VStack>
                             <Button
-                              variant="brand"
+                              colorPalette="brand"
                               type="submit"
                               w="100%"
                               minH="50"

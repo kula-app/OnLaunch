@@ -1,4 +1,4 @@
-import { Steps, Box, Flex, Icon, Link, Popover, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Icon, Link, Popover, Stack, Text } from "@chakra-ui/react";
 import { useColorModeValue } from "./ui/color-mode";
 import { MdChevronRight } from "react-icons/md";
 import { Routes } from "../routes/routes";

@@ -6,7 +6,8 @@ import { AuthFooter } from "@/components/auth/AuthFooter";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthTextField } from "@/components/auth/AuthTextField";
 import { Routes } from "@/routes/routes";
-import { Steps, Box, Button, Flex, HStack, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,7 +22,6 @@ const AccountRecoverConfirmFormSchema = Yup.object().shape({
 
 const SuspenseBody: React.FC = () => {
   const router = useRouter();
-  const toast = useToast();
 
   const searchParams = useSearchParams();
   const token = searchParams?.get("token");
@@ -54,11 +54,11 @@ const SuspenseBody: React.FC = () => {
               }),
             );
           } catch (error: any) {
-            toast({
+            toaster.create({
               title: "Error while resetting password!",
               description: `${error.message}`,
-              status: "error",
-              isClosable: true,
+              type: "error",
+              closable: true,
               duration: 6000,
             });
           }
@@ -92,7 +92,7 @@ const SuspenseBody: React.FC = () => {
                   autoComplete={"new-password"}
                 />
                 <Button
-                  variant="brand"
+                  colorPalette="brand"
                   type="submit"
                   w="100%"
                   minH="50"

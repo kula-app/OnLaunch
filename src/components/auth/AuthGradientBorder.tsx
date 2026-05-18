@@ -1,4 +1,4 @@
-import { Steps, Flex, HTMLChakraProps } from "@chakra-ui/react";
+import { Flex, HTMLChakraProps } from "@chakra-ui/react";
 
 export const AuthGradientBorder: React.FC<HTMLChakraProps<"div">> = ({
   children,

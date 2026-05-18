@@ -7,20 +7,16 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Dialog,
   Flex,
   Heading,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
+  Portal,
   Select,
   Text,
   useDisclosure,
   VStack,
   type BoxProps,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import {
   ErrorMessage,
@@ -87,11 +83,11 @@ export const FormStepFilters: React.FC<
                   const isFieldInvalid =
                     !!form.errors?.isAll && !!form.touched?.isAll;
                   return (
-                    <Field.Root color={"white"} invalid={isFieldInvalid}>
+                    <ChakraField.Root color={"white"} invalid={isFieldInvalid}>
                       <Flex flexDir={"row"} align={"center"}>
-                        <Field.Label my={0} htmlFor={field.name}>
+                        <ChakraField.Label my={0} htmlFor={field.name}>
                           Do you want to show this message to all users?
-                        </Field.Label>
+                        </ChakraField.Label>
                         <Select
                           {...field}
                           value={field.value ? "true" : "false"}
@@ -112,10 +108,10 @@ export const FormStepFilters: React.FC<
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
-                          <Field.ErrorText>{errorMessage}</Field.ErrorText>
+                          <ChakraField.ErrorText>{errorMessage}</ChakraField.ErrorText>
                         )}
                       />
-                    </Field.Root>
+                    </ChakraField.Root>
                   );
                 }}
               </Field>
@@ -188,39 +184,43 @@ export const FormStepFilters: React.FC<
                 </>
               )}
             </VStack>
-            <Modal
-              isOpen={isOpenDiscardModal}
-              onClose={onCloseDiscardModal}
-              onEsc={onCloseDiscardModal}
-              isCentered
+            <Dialog.Root
+              open={isOpenDiscardModal}
+              onOpenChange={(e) => !e.open && onCloseDiscardModal()}
+              placement="center"
             >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Discard Advanced Filters?</ModalHeader>
-                <ModalBody>
-                  <Text>
-                    You changed the advanced filters. Switching to simple
-                    filters will discard these changes. <br />
-                    Are you sure you want to switch?
-                  </Text>
-                </ModalBody>
-                <ModalFooter display={"flex"} flexDir={"row"} gap={2}>
-                  <Button onClick={onCloseDiscardModal}>
-                    Keep Advanced Filters
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      onCloseDiscardModal();
-                      props.setFieldValue("kind", FilterKind.SIMPLE);
-                    }}
-                    variant={"solid"}
-                    colorPalette={"red"}
-                  >
-                    Switch To Simple Filters
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
+              <Portal>
+                <Dialog.Backdrop />
+                <Dialog.Positioner>
+                  <Dialog.Content>
+                    <Dialog.CloseTrigger />
+                    <Dialog.Header>Discard Advanced Filters?</Dialog.Header>
+                    <Dialog.Body>
+                      <Text>
+                        You changed the advanced filters. Switching to simple
+                        filters will discard these changes. <br />
+                        Are you sure you want to switch?
+                      </Text>
+                    </Dialog.Body>
+                    <Dialog.Footer display={"flex"} flexDir={"row"} gap={2}>
+                      <Button onClick={onCloseDiscardModal}>
+                        Keep Advanced Filters
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          onCloseDiscardModal();
+                          props.setFieldValue("kind", FilterKind.SIMPLE);
+                        }}
+                        variant={"solid"}
+                        colorPalette={"red"}
+                      >
+                        Switch To Simple Filters
+                      </Button>
+                    </Dialog.Footer>
+                  </Dialog.Content>
+                </Dialog.Positioner>
+              </Portal>
+            </Dialog.Root>
           </Box>
         );
       }}

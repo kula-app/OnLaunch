@@ -1,5 +1,5 @@
 "use client";
-import { Steps, Box, Heading, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
+import { Box, Heading, Tabs, VStack } from "@chakra-ui/react";
 
 export const FetchMessagesFromAPISection: React.FC<{
   apiKey: string | null | undefined;
@@ -11,44 +11,48 @@ export const FetchMessagesFromAPISection: React.FC<{
       <Heading size={"md"} color={"white"} w={"full"}>
         Fetch directly from API
       </Heading>
-      <Tabs.Root w={"full"} variant={"soft-rounded"} colorPalette="teal">
+      <Tabs.Root
+        w={"full"}
+        variant={"soft-rounded"}
+        colorPalette="teal"
+        defaultValue={"curl"}
+      >
         <Tabs.List>
-          <Tab>cURL</Tab>
-          <Tab>JavaScript</Tab>
-          <Tab>Python</Tab>
+          <Tabs.Trigger value={"curl"}>cURL</Tabs.Trigger>
+          <Tabs.Trigger value={"javascript"}>JavaScript</Tabs.Trigger>
+          <Tabs.Trigger value={"python"}>Python</Tabs.Trigger>
         </Tabs.List>
 
-        <TabPanels>
-          <TabPanel>
-            <Box
-              as="pre"
-              backgroundColor={"gray.900"}
-              color={"white"}
-              border={"1px solid"}
-              borderColor={"gray.600"}
-              p={4}
-              borderRadius={"md"}
-              fontSize={"xs"}
-              overflowX={"scroll"}
-              overflowY={"hidden"}
-            >
-              {`curl "${endpoint}" \\\n  -H "X-API-Key: ${apiKey}"`}
-            </Box>
-          </TabPanel>
-          <TabPanel>
-            <Box
-              as="pre"
-              backgroundColor={"gray.900"}
-              color={"white"}
-              border={"1px solid"}
-              borderColor={"gray.600"}
-              p={4}
-              borderRadius={"md"}
-              fontSize={"xs"}
-              overflowX={"scroll"}
-              overflowY={"hidden"}
-            >
-              {`fetch("${endpoint}", {
+        <Tabs.Content value={"curl"}>
+          <Box
+            as="pre"
+            backgroundColor={"gray.900"}
+            color={"white"}
+            border={"1px solid"}
+            borderColor={"gray.600"}
+            p={4}
+            borderRadius={"md"}
+            fontSize={"xs"}
+            overflowX={"scroll"}
+            overflowY={"hidden"}
+          >
+            {`curl "${endpoint}" \\\n  -H "X-API-Key: ${apiKey}"`}
+          </Box>
+        </Tabs.Content>
+        <Tabs.Content value={"javascript"}>
+          <Box
+            as="pre"
+            backgroundColor={"gray.900"}
+            color={"white"}
+            border={"1px solid"}
+            borderColor={"gray.600"}
+            p={4}
+            borderRadius={"md"}
+            fontSize={"xs"}
+            overflowX={"scroll"}
+            overflowY={"hidden"}
+          >
+            {`fetch("${endpoint}", {
   headers: {
     "X-API-Key": "${apiKey}"
   }
@@ -56,22 +60,22 @@ export const FetchMessagesFromAPISection: React.FC<{
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`}
-            </Box>
-          </TabPanel>
-          <TabPanel>
-            <Box
-              as="pre"
-              backgroundColor={"gray.900"}
-              color={"white"}
-              border={"1px solid"}
-              borderColor={"gray.600"}
-              p={4}
-              borderRadius={"md"}
-              fontSize={"xs"}
-              overflowX={"scroll"}
-              overflowY={"hidden"}
-            >
-              {`import requests
+          </Box>
+        </Tabs.Content>
+        <Tabs.Content value={"python"}>
+          <Box
+            as="pre"
+            backgroundColor={"gray.900"}
+            color={"white"}
+            border={"1px solid"}
+            borderColor={"gray.600"}
+            p={4}
+            borderRadius={"md"}
+            fontSize={"xs"}
+            overflowX={"scroll"}
+            overflowY={"hidden"}
+          >
+            {`import requests
 
 url = "${endpoint}"
 headers = {
@@ -80,9 +84,8 @@ headers = {
 
 response = requests.get(url, headers=headers)
 print(response.json())`}
-            </Box>
-          </TabPanel>
-        </TabPanels>
+          </Box>
+        </Tabs.Content>
       </Tabs.Root>
     </VStack>
   );

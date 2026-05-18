@@ -3,12 +3,12 @@
 import { useProducts } from "@/api/stripe/useProducts";
 import { createCustomerPortalSession } from "@/app/actions/create-customer-portal-session";
 import ProductCard from "@/components/product-card";
+import { toaster } from "@/components/ui/toaster";
 import { ServerError } from "@/errors/server-error";
 import { useOrgSubscriptions } from "@/hooks/use-org-subscriptions";
 import type { Org } from "@/models/org";
 import { getColorLabel, translateSubName } from "@/util/nameTag";
 import {
-  Steps,
   Alert,
   Box,
   Button,
@@ -23,7 +23,6 @@ import {
   Th,
   Thead,
   Tr,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -35,7 +34,6 @@ export const OrgSettingsBilling: React.FC<{
   orgId: Org["id"];
 }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const { subscriptions, isLoading, error } = useOrgSubscriptions({ orgId });
   const { products, isError, isLoading: isLoadingProducts } = useProducts();
@@ -51,14 +49,14 @@ export const OrgSettingsBilling: React.FC<{
       }
       router.push(response.value.url);
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "Error while creating session for customer portal",
         description: error.message,
-        status: "error",
+        type: "error",
       });
     }
     setIsLoadingCustomerPortalSession(false);
-  }, [orgId, router, toast]);
+  }, [orgId, router]);
 
   return (
     <VStack align={"start"}>

@@ -28,7 +28,6 @@ import {
   IconButton,
   Input,
   InputGroup,
-  InputRightElement,
   Select,
   Table,
   TableContainer,
@@ -39,10 +38,10 @@ import {
   Thead,
   Tooltip,
   Tr,
-  useToast,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -60,7 +59,6 @@ export const OrgSettingsUsers: React.FC<{
   orgId: Org["id"];
 }> = ({ orgId }) => {
   const router = useRouter();
-  const toast = useToast();
 
   const { data: session } = useSession();
 
@@ -94,24 +92,24 @@ export const OrgSettingsUsers: React.FC<{
         });
         refreshUsers();
 
-        toast({
+        toaster.create({
           title: "Success!",
           description: `Role for user '${user.firstName + " " + user.lastName}' has been changed.`,
-          status: "success",
-          isClosable: true,
+          type: "success",
+          closable: true,
           duration: 6000,
         });
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while updating user role!",
           description: `${error}`,
-          status: "error",
-          isClosable: true,
+          type: "error",
+          closable: true,
           duration: 6000,
         });
       }
     },
-    [orgId, refreshUsers, toast],
+    [orgId, refreshUsers],
   );
   const onChangeUserInvitationRole = useCallback(
     async (invitation: OrgUserInvitation, role: OrgRole) => {
@@ -123,20 +121,20 @@ export const OrgSettingsUsers: React.FC<{
         });
         refreshInvitations();
 
-        toast({
+        toaster.create({
           title: "Success!",
           description: `Role for invitation with email ${invitation.email} has been changed.`,
-          status: "success",
+          type: "success",
         });
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while updating user role!",
           description: `${error}`,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [orgId, refreshInvitations, toast],
+    [orgId, refreshInvitations],
   );
   const onRemoveUser = useCallback(
     async (userId: OrgUser["id"]) => {
@@ -147,20 +145,20 @@ export const OrgSettingsUsers: React.FC<{
         });
         refreshUsers();
 
-        toast({
+        toaster.create({
           title: "Success",
           description: "User has been removed from organisation!",
-          status: "success",
+          type: "success",
         });
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while removing user!",
           description: `${error}`,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [orgId, refreshUsers, toast],
+    [orgId, refreshUsers],
   );
   const onDeleteInvitation = useCallback(
     async (invitationId: OrgUserInvitation["id"]) => {
@@ -171,20 +169,20 @@ export const OrgSettingsUsers: React.FC<{
         });
         refreshUsers();
 
-        toast({
+        toaster.create({
           title: "Success",
           description: "Invitation has been deleted!",
-          status: "success",
+          type: "success",
         });
       } catch (error) {
-        toast({
+        toaster.create({
           title: "Error while deleting invitation!",
           description: `${error}`,
-          status: "error",
+          type: "error",
         });
       }
     },
-    [orgId, refreshUsers, toast],
+    [orgId, refreshUsers],
   );
   const onLeaveOrg = useCallback(async () => {
     try {
@@ -198,13 +196,13 @@ export const OrgSettingsUsers: React.FC<{
       });
       router.push(Routes.dashboard);
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Error while leaving organisation!",
         description: `${error}`,
-        status: "error",
+        type: "error",
       });
     }
-  }, [orgId, router, session?.user.id, toast]);
+  }, [orgId, router, session?.user.id]);
 
   return (
     <VStack direction={"column"} w={"full"} align={"start"} gap={8}>
@@ -449,8 +447,6 @@ const InviteUserForm: React.FC<{
   orgId: Org["id"];
   onSubmitted: () => void;
 }> = ({ orgId, onSubmitted }) => {
-  const toast = useToast();
-
   const initialValues: InviteUserFormValues = {
     email: "",
   };
@@ -467,21 +463,21 @@ const InviteUserForm: React.FC<{
             email: values.email,
           });
 
-          toast({
+          toaster.create({
             title: "Success!",
             description: "User has been invited.",
-            status: "success",
-            isClosable: true,
+            type: "success",
+            closable: true,
             duration: 6000,
           });
 
           onSubmitted();
         } catch (error) {
-          toast({
+          toaster.create({
             title: "Error while inviting new user!",
             description: `${error}`,
-            status: "error",
-            isClosable: true,
+            type: "error",
+            closable: true,
             duration: 6000,
           });
         }
@@ -542,7 +538,6 @@ const InvitationLinkForm: React.FC<{
   invitationToken: string;
 }> = ({ orgId, invitationToken }) => {
   const config = loadClientConfig();
-  const toast = useToast();
 
   async function onResetInvitationToken() {
     try {
@@ -550,19 +545,19 @@ const InvitationLinkForm: React.FC<{
         orgId,
       });
 
-      toast({
+      toaster.create({
         title: "Success!",
         description: "Invitation link has been changed.",
-        status: "success",
-        isClosable: true,
+        type: "success",
+        closable: true,
         duration: 6000,
       });
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Error while changing invitation link!",
         description: `${error}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
@@ -577,9 +572,9 @@ const InvitationLinkForm: React.FC<{
       <ChakraField.Root color="white" w={"full"}>
         <ChakraField.Label>Invitation Link</ChakraField.Label>
         <HStack>
-          <InputGroup variant={"brand-on-card"}>
-            <Input id="invite" value={invitationUrl} readOnly fontSize={"sm"} />
-            <InputRightElement>
+          <InputGroup
+            variant={"brand-on-card"}
+            endElement={
               <IconButton
                 colorScheme={"whiteAlpha"}
                 aria-label="Copy invitation link"
@@ -588,14 +583,16 @@ const InvitationLinkForm: React.FC<{
                 roundedRight={"full"}
                 onClick={() => {
                   navigator.clipboard.writeText(invitationUrl);
-                  toast({
+                  toaster.create({
                     title: "Success!",
                     description: "Invitation link copied to clipboard.",
-                    status: "success",
+                    type: "success",
                   });
                 }}
               />
-            </InputRightElement>
+            }
+          >
+            <Input id="invite" value={invitationUrl} readOnly fontSize={"sm"} />
           </InputGroup>
           <Button
             colorPalette={"orange"}

@@ -1,22 +1,21 @@
-import { Steps, Flex, HStack, Icon, Text, useToast, VStack, Separator } from "@chakra-ui/react";
+import { Flex, HStack, Icon, Text, VStack, Separator } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { getProviders, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { AuthGradientBorder } from "./AuthGradientBorder";
 
 export const AuthSocialLogin: React.FC<{}> = ({}) => {
-  const toast = useToast();
-
   async function loginWithGitHub() {
     try {
       await signIn("github");
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "An error occurred",
         description: error.message,
-        status: "error",
+        type: "error",
         duration: 9000,
-        isClosable: true,
+        closable: true,
       });
     }
   }
@@ -25,12 +24,12 @@ export const AuthSocialLogin: React.FC<{}> = ({}) => {
     try {
       await signIn("google");
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "An error occurred",
         description: error.message,
-        status: "error",
+        type: "error",
         duration: 9000,
-        isClosable: true,
+        closable: true,
       });
     }
   }

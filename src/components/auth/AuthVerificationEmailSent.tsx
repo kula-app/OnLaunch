@@ -1,6 +1,7 @@
 import { requestAccountVerificationEmail } from "@/app/actions/request-account-verification-email";
 import { useCooldown } from "@/hooks/useCooldown";
-import { Steps, Box, Button, Heading, Text, useToast, VStack } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 export const AuthVerificationEmailSent: React.FC<{
@@ -8,8 +9,6 @@ export const AuthVerificationEmailSent: React.FC<{
   isBackButtonVisible?: boolean;
   onBackButtonClick?: () => void;
 }> = ({ email, isBackButtonVisible, onBackButtonClick }) => {
-  const toast = useToast();
-
   const [isLoading, setIsLoading] = useState(false);
   const cooldown = useCooldown(60);
 
@@ -19,11 +18,11 @@ export const AuthVerificationEmailSent: React.FC<{
       await requestAccountVerificationEmail(email);
       cooldown.start();
     } catch (error: any) {
-      toast({
+      toaster.create({
         title: "Error while resending verification email",
         description: `${error.message}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }
@@ -51,7 +50,7 @@ export const AuthVerificationEmailSent: React.FC<{
       </Box>
       <VStack gap={"16px"} w="100%">
         <Button
-          variant="brand"
+          colorPalette="brand"
           w="100%"
           minH="50"
           onClick={() => resendVerificationEmail(email)}

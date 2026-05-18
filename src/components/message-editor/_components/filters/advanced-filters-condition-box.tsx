@@ -8,7 +8,7 @@ import {
   IconButton,
   Input,
   Select,
-  Field,
+  Field as ChakraField,
 } from "@chakra-ui/react";
 import { Field, type FieldProps } from "formik";
 import { FaTrash } from "react-icons/fa6";
@@ -40,7 +40,7 @@ export const AdvancedFiltersConditionBox: React.FC<
         {({
           field,
         }: FieldProps<AdvancedFiltersRuleCondition["systemVariable"]>) => (
-          <Field.Root w={"auto"}>
+          <ChakraField.Root w={"auto"}>
             <Select
               {...field}
               onChange={(e) => {
@@ -61,7 +61,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 </option>
               ))}
             </Select>
-          </Field.Root>
+          </ChakraField.Root>
         )}
       </Field>
       <Field name={keypath.concat(["operator"]).join(".")}>
@@ -69,7 +69,7 @@ export const AdvancedFiltersConditionBox: React.FC<
           field,
           form,
         }: FieldProps<AdvancedFiltersRuleCondition["comparator"]>) => (
-          <Field.Root w={"auto"} flexGrow={1}>
+          <ChakraField.Root w={"auto"} flexGrow={1}>
             <Select
               {...field}
               onChange={(e) => {
@@ -86,7 +86,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 </option>
               ))}
             </Select>
-          </Field.Root>
+          </ChakraField.Root>
         )}
       </Field>
       <Field name={keypath.concat(["userVariable"]).join(".")}>
@@ -99,7 +99,7 @@ export const AdvancedFiltersConditionBox: React.FC<
             form.values,
           );
           return (
-            <Field.Root
+            <ChakraField.Root
               w={"auto"}
               flexGrow={1}
               hidden={isUnaryOperator(parent.operator)}
@@ -116,7 +116,7 @@ export const AdvancedFiltersConditionBox: React.FC<
                 size={"xs"}
                 placeholder={"Enter a value..."}
               />
-            </Field.Root>
+            </ChakraField.Root>
           );
         }}
       </Field>

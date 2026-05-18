@@ -3,24 +3,21 @@
 import { deleteUser } from "@/app/actions/delete-user";
 import { ServerError } from "@/errors/server-error";
 import {
-  Steps,
   Box,
   Button,
   Card,
   Heading,
   Text,
   useDisclosure,
-  useToast,
   VStack,
   Dialog,
   Portal,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { signOut } from "next-auth/react";
 import { useRef } from "react";
 
 export const DeleteProfileCard: React.FC = () => {
-  const toast = useToast();
-
   const { open, onOpen: openDeleteDialog, onClose } = useDisclosure();
   const cancelRef = useRef(null);
 
@@ -33,11 +30,11 @@ export const DeleteProfileCard: React.FC = () => {
 
       signOut();
     } catch (error) {
-      toast({
+      toaster.create({
         title: "Error while sending request!",
         description: `${error}`,
-        status: "error",
-        isClosable: true,
+        type: "error",
+        closable: true,
         duration: 6000,
       });
     }

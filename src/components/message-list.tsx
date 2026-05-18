@@ -2,7 +2,6 @@
 import { Message } from "@/models/message";
 import { truncateString } from "@/util/truncate-string";
 import {
-  Steps,
   Card,
   HStack,
   IconButton,

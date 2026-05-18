@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Switch, Tag, TagCloseButton, TagLabel, Wrap, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Flex, Switch, Tag, Wrap, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -118,22 +118,22 @@ export const IncludedRegionFilter: React.FC = () => {
             <ChakraField.Label>Which regions should be included?</ChakraField.Label>
             <Wrap>
               {field.value?.map((region, idx) => (
-                <Tag
+                <Tag.Root
                   size={"md"}
                   key={region}
                   variant="solid"
                   borderRadius="full"
                   colorScheme="green"
                 >
-                  <TagLabel>{region}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label>{region}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => {
                       const newRegions = (field.value ?? []).slice();
                       newRegions.splice(idx, 1);
                       form.setFieldValue(field.name, newRegions);
                     }}
                   />
-                </Tag>
+                </Tag.Root>
               ))}
               <AddTagButton
                 values={availableRegionsToAdd}
@@ -207,22 +207,22 @@ export const ExcludedRegionFilter: React.FC = () => {
             <ChakraField.Label>Which regions should be excluded?</ChakraField.Label>
             <Wrap>
               {(field.value ?? []).map((region, idx) => (
-                <Tag
+                <Tag.Root
                   size={"md"}
                   key={region}
                   borderRadius="full"
                   variant="solid"
                   colorScheme="red"
                 >
-                  <TagLabel>{region}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label>{region}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => {
                       const newRegions = (field.value ?? []).slice();
                       newRegions.splice(idx, 1);
                       form.setFieldValue(field.name, newRegions);
                     }}
                   />
-                </Tag>
+                </Tag.Root>
               ))}
               <AddTagButton
                 values={availableRegionsToAdd}

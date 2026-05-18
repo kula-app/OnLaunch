@@ -7,7 +7,6 @@ import { useValueDisclosure } from "@/hooks/use-value-disclosure";
 import type { Org } from "@/models/org";
 import type { OrgAdminToken } from "@/models/org-admin-token";
 import {
-  Steps,
   Alert,
   Box,
   Button,
@@ -17,16 +16,15 @@ import {
   IconButton,
   Input,
   InputGroup,
-  InputRightElement,
   Link,
   Skeleton,
   Spacer,
   Text,
   useDisclosure,
-  useToast,
   VStack,
   Icon,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { Tooltip } from '@/components/ui/tooltip';
 import React, { useState } from "react";
 import { FaCopy, FaEye, FaEyeSlash, FaPlus, FaTrash } from "react-icons/fa6";
@@ -37,7 +35,6 @@ import { LuExternalLink } from 'react-icons/lu';
 export const OrgSettingsAdminAPI: React.FC<{
   orgId: Org["id"];
 }> = ({ orgId }) => {
-  const toast = useToast();
   const config = loadClientConfig();
 
   const { tokens, error, isLoading, refresh } = useOrgAdminTokens({ orgId });
@@ -77,7 +74,7 @@ export const OrgSettingsAdminAPI: React.FC<{
           </Text>
         </VStack>
         <Spacer />
-        <Button variant={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
+        <Button colorPalette={"brand"} onClick={onCreateTokenOpen} rounded={"full"}><FaPlus />Create Token
                   </Button>
       </HStack>
       <Box mt={4}>
@@ -105,14 +102,10 @@ export const OrgSettingsAdminAPI: React.FC<{
                 <Text w={"20%"} color={"white"}>
                   {token.label}
                 </Text>
-                <InputGroup w={"full"} variant={"brand-on-card"}>
-                  <Input
-                    flexGrow={1}
-                    value={token.token}
-                    readOnly
-                    type={visibleTokens.has(token.id) ? "text" : "password"}
-                  />
-                  <InputRightElement>
+                <InputGroup
+                  w={"full"}
+                  variant={"brand-on-card"}
+                  endElement={
                     <IconButton
                       variant={"ghost"}
                       colorPalette={"whiteAlpha"}
@@ -129,7 +122,14 @@ export const OrgSettingsAdminAPI: React.FC<{
                           );
                         }
                       }}>{visibleTokens.has(token.id) ? <FaEyeSlash /> : <FaEye />}</IconButton>
-                  </InputRightElement>
+                  }
+                >
+                  <Input
+                    flexGrow={1}
+                    value={token.token}
+                    readOnly
+                    type={visibleTokens.has(token.id) ? "text" : "password"}
+                  />
                 </InputGroup>
                 <Tooltip content="Copy Token">
                   <IconButton
@@ -137,10 +137,10 @@ export const OrgSettingsAdminAPI: React.FC<{
                     aria-label={"Copy Token"}
                     onClick={() => {
                       navigator.clipboard.writeText(token.token);
-                      toast({
+                      toaster.create({
                         title: "Token copied to clipboard.",
-                        status: "info",
-                        isClosable: true,
+                        type: "info",
+                        closable: true,
                         duration: 3000,
                       });
                     }}
@@ -175,19 +175,19 @@ export const OrgSettingsAdminAPI: React.FC<{
             });
             refresh();
 
-            toast({
+            toaster.create({
               title: "Success!",
               description: "Organisation admin token has been deleted!",
-              status: "success",
-              isClosable: true,
+              type: "success",
+              closable: true,
               duration: 6000,
             });
           } catch (error) {
-            toast({
+            toaster.create({
               title: `Error while deleting org admin token!`,
               description: `${error}`,
-              status: "error",
-              isClosable: true,
+              type: "error",
+              closable: true,
               duration: 6000,
             });
           }
@@ -202,19 +202,19 @@ export const OrgSettingsAdminAPI: React.FC<{
             await createOrgAdminToken({ orgId, label });
             refresh();
 
-            toast({
+            toaster.create({
               title: "Success!",
               description: "Created new organisation admin token",
-              status: "success",
-              isClosable: true,
+              type: "success",
+              closable: true,
               duration: 6000,
             });
           } catch (error) {
-            toast({
+            toaster.create({
               title: "Error while sending createCustomerPortalSession request!",
               description: `${error}`,
-              status: "error",
-              isClosable: true,
+              type: "error",
+              closable: true,
               duration: 6000,
             });
           }

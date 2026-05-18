@@ -1,10 +1,9 @@
 "use client";
 
-import { TagSelect } from "@/components/tag-select";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
 import { MessageRuleSystemVariable } from "@/models/message-rule-system-variable";
-import { Steps, Box, Button, Flex, Spacer } from "@chakra-ui/react";
+import { Box, Button, Flex, NativeSelect, Spacer } from "@chakra-ui/react";
 import { Field, FieldArray, type FieldProps } from "formik";
 import { useEffect, useRef, useState } from "react";
 import { FaLayerGroup, FaPlus, FaTrash } from "react-icons/fa6";
@@ -115,25 +114,28 @@ const OperatorContainerBox: React.FC<{
             />
             {/* Operator */}
             <Box w={"full"} css={{ rotate: shouldRotate ? "-90deg" : "" }}>
-              <TagSelect
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e);
-                  setAdvancedFilterDirty();
-                }}
-                id={field.name}
+              <NativeSelect.Root
                 size={"xs"}
                 rounded={"full"}
                 zIndex="1"
                 background={backgroundColorPerValue[field.value] ?? "gray.500"}
                 w={14}
               >
-                {Object.values(MessageRuleGroupOperator).map((value) => (
-                  <option key={value} value={value}>
-                    {displayLabelOfAdvancedFiltersRuleGroupOperator(value)}
-                  </option>
-                ))}
-              </TagSelect>
+                <NativeSelect.Field
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setAdvancedFilterDirty();
+                  }}
+                  id={field.name}
+                >
+                  {Object.values(MessageRuleGroupOperator).map((value) => (
+                    <option key={value} value={value}>
+                      {displayLabelOfAdvancedFiltersRuleGroupOperator(value)}
+                    </option>
+                  ))}
+                </NativeSelect.Field>
+              </NativeSelect.Root>
             </Box>
           </Flex>
         );

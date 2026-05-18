@@ -1,7 +1,7 @@
 "use client";
 
 import type { OrgAdminToken } from "@/models/org-admin-token";
-import { Steps, Button, Dialog, Portal } from "@chakra-ui/react";
+import { Button, Dialog, Portal } from "@chakra-ui/react";
 import React from "react";
 
 export const DeleteOrgAdminAuthorizationTokenDialog: React.FC<{

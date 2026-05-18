@@ -1,5 +1,5 @@
 import { Routes } from "@/routes/routes";
-import { Steps, Link, Text, VStack } from "@chakra-ui/react";
+import { Link, Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export const AuthHeader: React.FC = () => {

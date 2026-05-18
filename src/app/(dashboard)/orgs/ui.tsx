@@ -6,7 +6,6 @@ import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
-  Steps,
   Alert,
   ProgressCircle,
   Container,
@@ -17,7 +16,6 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputRightElement,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -60,19 +58,22 @@ export const UI: React.FC = () => {
               Organizations
             </Heading>
 
-            <InputGroup w={"auto"} color={"white"}>
+            <InputGroup
+              w={"auto"}
+              color={"white"}
+              endElement={
+                searchFilter.length > 0 ? (
+                  <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
+                ) : (
+                  <Icon color={"gray.200"} asChild><FiSearch /></Icon>
+                )
+              }
+            >
               <Input
                 placeholder="Search"
                 value={searchFilter}
                 onValueChange={(e) => setSearchFilter(e.currentTarget.value)}
               />
-              <InputRightElement>
-                {searchFilter.length > 0 ? (
-                  <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
-                ) : (
-                  <Icon color={"gray.200"} asChild><FiSearch /></Icon>
-                )}
-              </InputRightElement>
             </InputGroup>
           </Flex>
           <Text color={"gray.200"} mb={4}>

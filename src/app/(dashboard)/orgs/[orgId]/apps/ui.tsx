@@ -7,7 +7,6 @@ import { OrgRole } from "@/models/org-role";
 import { Routes } from "@/routes/routes";
 import { rainbowColors } from "@/theme/rainbow-colors";
 import {
-  Steps,
   Box,
   ProgressCircle,
   Container,
@@ -18,7 +17,6 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputRightElement,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
@@ -69,19 +67,22 @@ export const UI: React.FC<{ orgId: number }> = ({ orgId }) => {
                 Apps
               </Heading>
 
-              <InputGroup w={"auto"} color={"white"}>
+              <InputGroup
+                w={"auto"}
+                color={"white"}
+                endElement={
+                  searchFilter.length > 0 ? (
+                    <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
+                  ) : (
+                    <Icon color={"gray.200"} asChild><FiSearch /></Icon>
+                  )
+                }
+              >
                 <Input
                   placeholder="Search"
                   value={searchFilter}
                   onValueChange={(e) => setSearchFilter(e.currentTarget.value)}
                 />
-                <InputRightElement>
-                  {searchFilter.length > 0 ? (
-                    <Icon aria-label="Clear search" color={"gray.200"} cursor={"pointer"} asChild><FiX onClick={() => setSearchFilter("")} /></Icon>
-                  ) : (
-                    <Icon color={"gray.200"} asChild><FiSearch /></Icon>
-                  )}
-                </InputRightElement>
               </InputGroup>
             </Flex>
             <Grid templateColumns="repeat(4, 1fr)" gap={6}>
