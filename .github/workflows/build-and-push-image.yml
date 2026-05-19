@@ -132,7 +132,7 @@ jobs:
 
       - name: Create Docker Metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             docker.io/kula/${{ inputs.image-name }}
