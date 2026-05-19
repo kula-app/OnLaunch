@@ -52,7 +52,7 @@
     "next-auth": "4.24.14",
     "next-swagger-doc": "0.4.1",
     "nodemailer": "8.0.5",
-    "postcss": "8.5.10",
+    "postcss": "8.5.14",
     "ramda": "0.32.0",
     "react": "19.2.6",
     "react-chartjs-2": "5.3.1",
