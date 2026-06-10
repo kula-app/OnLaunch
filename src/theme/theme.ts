@@ -20,73 +20,6 @@ const buttonRecipe = defineRecipe({
   },
 });
 
-const inputRecipe = defineSlotRecipe({
-  slots: ["root", "field"],
-  variants: {
-    variant: {
-      "brand-on-card": {
-        field: {
-          color: "white",
-          bg: "rgb(19,21,54)",
-          borderRadius: "20px",
-          border: "0.0625rem solid rgb(86, 87, 122)",
-          _invalid: { borderColor: "red.400" },
-          _focus: { borderColor: "blue.400" },
-          _active: { borderColor: "blue.400" },
-        },
-      },
-    },
-  },
-});
-
-const selectRecipe = defineSlotRecipe({
-  slots: ["root", "field", "icon"],
-  variants: {
-    variant: {
-      "brand-on-card": {
-        field: {
-          bg: "rgb(19,21,54)",
-          borderRadius: "20px",
-          border: "0.0625rem solid rgb(86, 87, 122)",
-        },
-        icon: { color: "white" },
-      },
-    },
-  },
-});
-
-const tableRecipe = defineSlotRecipe({
-  slots: ["root", "header", "columnHeader"],
-  variants: {
-    variant: {
-      "brand-on-card": {
-        root: { color: "white" },
-        header: { borderBottom: "1px solid" },
-        columnHeader: { pb: 4 },
-      },
-    },
-  },
-});
-
-const tabsRecipe = defineSlotRecipe({
-  slots: ["trigger"],
-  variants: {
-    variant: {
-      "brand-on-card": {
-        trigger: {
-          borderRadius: "full",
-          fontWeight: "semibold",
-          color: "white",
-          _selected: {
-            color: "colorPalette.700",
-            bg: "colorPalette.100",
-          },
-        },
-      },
-    },
-  },
-});
-
 const alertRecipe = defineSlotRecipe({
   slots: ["root"],
   base: {
@@ -169,10 +102,6 @@ export const system = createSystem(defaultConfig, {
       button: buttonRecipe,
     },
     slotRecipes: {
-      input: inputRecipe,
-      nativeSelect: selectRecipe,
-      table: tableRecipe,
-      tabs: tabsRecipe,
       alert: alertRecipe,
       card: cardRecipe,
       menu: menuRecipe,

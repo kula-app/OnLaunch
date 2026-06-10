@@ -134,7 +134,7 @@ export const UI: React.FC<{
   ]);
 
   const {
-    isOpen,
+    open: isOpen,
     onClose,
     value: messageToDelete,
     setValue: setMessageToDelete,
@@ -261,7 +261,7 @@ export const UI: React.FC<{
       </Flex>
       <Dialog.Root
         open={isOpen}
-        motionPreset="slideInBottom"
+        motionPreset="slide-in-bottom"
         initialFocusEl={() => cancelRef.current}
         placement='center'
         role='alertdialog'

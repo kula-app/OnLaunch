@@ -130,7 +130,7 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
 
                         return (
                           <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                            <ChakraField.Label htmlFor={field.name}>Token Label</ChakraField.Label>
+                            <ChakraField.Label>Token Label</ChakraField.Label>
                             <Input
                               {...field}
                               id={field.name}
@@ -157,7 +157,7 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
 
                         return (
                           <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                            <ChakraField.Label htmlFor={field.name}>Expires In</ChakraField.Label>
+                            <ChakraField.Label>Expires In</ChakraField.Label>
                             <Input
                               {...field}
                               onChange={(e) => {
@@ -212,7 +212,7 @@ export const CreateAppAdminAuthorizationTokenModal: React.FC<{
                               form.values.expiresIn === "custom" ? "block" : "none"
                             }
                           >
-                            <ChakraField.Label htmlFor={field.name}>
+                            <ChakraField.Label>
                               Custom Expiration Date
                             </ChakraField.Label>
                             <Input

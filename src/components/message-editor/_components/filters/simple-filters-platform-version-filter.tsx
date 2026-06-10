@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, Flex, Select, Switch, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Flex, Switch, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { BrandSelect } from "@/components/ui/brand-select";
 import {
   ErrorMessage,
   Field,
@@ -108,7 +109,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <Field name="simple.platformVersionFilter.android.comparator">
                 {({ field }: FieldProps) => (
                   <VStack align={"start"} gap={0}>
-                    <Select {...field} variant={"brand-on-card"} w={"auto"}>
+                    <BrandSelect {...field} w={"auto"}>
                       {Object.values(SimpleFiltersComparator).map(
                         (comparator) => (
                           <option key={comparator} value={comparator}>
@@ -116,7 +117,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                           </option>
                         ),
                       )}
-                    </Select>
+                    </BrandSelect>
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
@@ -129,7 +130,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <Field name="simple.platformVersionFilter.android.version">
                 {({ field }: FieldProps) => (
                   <VStack align={"start"} gap={0}>
-                    <Select {...field} variant={"brand-on-card"} w={"auto"}>
+                    <BrandSelect {...field} w={"auto"}>
                       {Object.values(SimpleFiltersAndroidVersion).map(
                         (version) => (
                           <option key={version} value={version}>
@@ -137,7 +138,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                           </option>
                         ),
                       )}
-                    </Select>
+                    </BrandSelect>
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
@@ -159,7 +160,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <Field name="simple.platformVersionFilter.ios.comparator">
                 {({ field }: FieldProps) => (
                   <VStack align={"start"} gap={0}>
-                    <Select {...field} variant={"brand-on-card"} w={"auto"}>
+                    <BrandSelect {...field} w={"auto"}>
                       {Object.values(SimpleFiltersComparator).map(
                         (comparator) => (
                           <option key={comparator} value={comparator}>
@@ -167,7 +168,7 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
                           </option>
                         ),
                       )}
-                    </Select>
+                    </BrandSelect>
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (
@@ -180,13 +181,13 @@ export const SimpleFiltersPlatformVersionFilter: React.FC<{}> = ({}) => {
               <Field name="simple.platformVersionFilter.ios.version">
                 {({ field }: FieldProps) => (
                   <VStack align={"start"} gap={0}>
-                    <Select {...field} variant={"brand-on-card"} w={"auto"}>
+                    <BrandSelect {...field} w={"auto"}>
                       {Object.values(SimpleFiltersIosVersion).map((version) => (
                         <option key={version} value={version}>
                           {displayTextForIosVersion(version)}
                         </option>
                       ))}
-                    </Select>
+                    </BrandSelect>
                     <ErrorMessage
                       name={field.name}
                       render={(errorMessage) => (

@@ -2,7 +2,8 @@
 
 import { updatePassword } from "@/app/actions/update-password";
 import { ServerError } from "@/errors/server-error";
-import { Box, Button, Card, Heading, Input, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Button, Card, Heading, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
@@ -85,16 +86,15 @@ export const ChangePasswordCard: React.FC = () => {
 
                       return (
                         <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                          <ChakraField.Label htmlFor={field.name}>
+                          <ChakraField.Label>
                             Current password
                           </ChakraField.Label>
-                          <Input
+                          <BrandInput
                             {...field}
                             id={field.name}
                             type={"password"}
                             autoComplete={"current-password"}
                             w={"full"}
-                            variant={"brand-on-card"}
                           />
                           <ErrorMessage
                             name={field.name}
@@ -119,16 +119,15 @@ export const ChangePasswordCard: React.FC = () => {
 
                       return (
                         <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                          <ChakraField.Label htmlFor={field.name}>
+                          <ChakraField.Label>
                             New password
                           </ChakraField.Label>
-                          <Input
+                          <BrandInput
                             {...field}
                             id={field.name}
                             type={"password"}
                             autoComplete={"new-password"}
                             w={"full"}
-                            variant={"brand-on-card"}
                           />{" "}
                           <ErrorMessage
                             name={field.name}
@@ -154,16 +153,15 @@ export const ChangePasswordCard: React.FC = () => {
 
                       return (
                         <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                          <ChakraField.Label htmlFor={field.name}>
+                          <ChakraField.Label>
                             Confirm new password
                           </ChakraField.Label>
-                          <Input
+                          <BrandInput
                             {...field}
                             id={field.name}
                             type={"password"}
                             autoComplete={"new-password"}
                             w={"full"}
-                            variant={"brand-on-card"}
                           />{" "}
                           <ErrorMessage
                             name={field.name}

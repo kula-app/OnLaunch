@@ -28,19 +28,13 @@ import {
   IconButton,
   Input,
   InputGroup,
-  Select,
   Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandSelect } from "@/components/ui/brand-select";
 import { toaster } from "@/components/ui/toaster";
 import { ErrorMessage, Field, Formik, type FieldProps } from "formik";
 import { useSession } from "next-auth/react";
@@ -239,30 +233,30 @@ export const OrgSettingsUsers: React.FC<{
             <Alert.Description>{userError.message}</Alert.Description>
           </Alert.Root>
         )}
-        <TableContainer w={"full"}>
-          <Table w={"full"} variant={"brand-on-card"}>
-            <Thead>
-              <Tr>
-                <Th>{/* Initials */}</Th>
-                <Th>Name</Th>
-                <Th>Email</Th>
-                <Th>Role</Th>
-                <Th>{/* Actions */}</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
+        <Table.ScrollArea w={"full"}>
+          <Table.Root w={"full"} variant={"brand-on-card"}>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>{/* Initials */}</Table.ColumnHeader>
+                <Table.ColumnHeader>Name</Table.ColumnHeader>
+                <Table.ColumnHeader>Email</Table.ColumnHeader>
+                <Table.ColumnHeader>Role</Table.ColumnHeader>
+                <Table.ColumnHeader>{/* Actions */}</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
               {users?.map((user, index) => {
                 return (
-                  <Tr key={index}>
-                    <Td w={6}>
+                  <Table.Row key={index}>
+                    <Table.Cell w={6}>
                       <Avatar.Root size={"sm"}><Avatar.Fallback name={user.firstName + " " + user.lastName} /></Avatar.Root>
-                    </Td>
-                    <Td>{user.firstName + " " + user.lastName}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>
+                    </Table.Cell>
+                    <Table.Cell>{user.firstName + " " + user.lastName}</Table.Cell>
+                    <Table.Cell>{user.email}</Table.Cell>
+                    <Table.Cell>
                       {authenticatedUserRole === OrgRole.ADMIN && (
                         <Flex>
-                          <Select
+                          <BrandSelect
                             value={user.role}
                             onChange={(e) =>
                               onChangeUserRole(
@@ -271,7 +265,6 @@ export const OrgSettingsUsers: React.FC<{
                               )
                             }
                             disabled={user.id === session?.user?.id}
-                            variant={"brand-on-card"}
                           >
                             {Object.values(OrgRole).map((value) => {
                               return (
@@ -280,11 +273,11 @@ export const OrgSettingsUsers: React.FC<{
                                 </option>
                               );
                             })}
-                          </Select>
+                          </BrandSelect>
                         </Flex>
                       )}
-                    </Td>
-                    <Td>
+                    </Table.Cell>
+                    <Table.Cell>
                       <HStack w={"full"} justify={"end"}>
                         {user.id !== session?.user.id &&
                           authenticatedUserRole === OrgRole.ADMIN && (
@@ -312,13 +305,13 @@ export const OrgSettingsUsers: React.FC<{
                           </Tooltip>
                         )}
                       </HStack>
-                    </Td>
-                  </Tr>
+                    </Table.Cell>
+                  </Table.Row>
                 );
               })}
-            </Tbody>
-          </Table>
-        </TableContainer>
+            </Table.Body>
+          </Table.Root>
+        </Table.ScrollArea>
       </VStack>
       <VStack gap={4} align={"start"} w={"full"}>
         <Heading as={"h2"} size={"md"} color={"white"}>
@@ -375,24 +368,23 @@ export const OrgSettingsUsers: React.FC<{
           </Alert.Root>
         )}
         {invitations && invitations.length > 0 && (
-          <TableContainer w={"full"}>
-            <Table w={"full"} variant={"brand-on-card"}>
-              <Thead>
-                <Tr>
-                  <Th>Email</Th>
-                  <Th>Role</Th>
-                  <Th>{/* Actions */}</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
+          <Table.ScrollArea w={"full"}>
+            <Table.Root w={"full"} variant={"brand-on-card"}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Email</Table.ColumnHeader>
+                  <Table.ColumnHeader>Role</Table.ColumnHeader>
+                  <Table.ColumnHeader>{/* Actions */}</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
                 {invitations?.map((invitation, index) => {
                   return (
-                    <Tr key={index}>
-                      <Td>{invitation.email}</Td>
-                      <Td>
-                        <Select
+                    <Table.Row key={index}>
+                      <Table.Cell>{invitation.email}</Table.Cell>
+                      <Table.Cell>
+                        <BrandSelect
                           value={invitation.role}
-                          variant={"brand-on-card"}
                           onChange={(event) =>
                             onChangeUserInvitationRole(
                               invitation,
@@ -407,9 +399,9 @@ export const OrgSettingsUsers: React.FC<{
                               </option>
                             );
                           })}
-                        </Select>
-                      </Td>
-                      <Td>
+                        </BrandSelect>
+                      </Table.Cell>
+                      <Table.Cell>
                         {authenticatedUserRole === OrgRole.ADMIN && (
                           <Tooltip label={"Delete Invitation"}>
                             <IconButton
@@ -420,13 +412,13 @@ export const OrgSettingsUsers: React.FC<{
                             />
                           </Tooltip>
                         )}
-                      </Td>
-                    </Tr>
+                      </Table.Cell>
+                    </Table.Row>
                   );
                 })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+              </Table.Body>
+            </Table.Root>
+          </Table.ScrollArea>
         )}
       </VStack>
     </VStack>
@@ -497,7 +489,7 @@ const InviteUserForm: React.FC<{
                     w={"full"}
                     invalid={isFieldInvalid}
                   >
-                    <ChakraField.Label htmlFor={field.name}>
+                    <ChakraField.Label>
                       Invite user by email
                     </ChakraField.Label>
                     <HStack>

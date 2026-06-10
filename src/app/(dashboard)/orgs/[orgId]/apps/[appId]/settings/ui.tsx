@@ -95,7 +95,6 @@ export const UI: React.FC<{
                 <Tabs.Root
                   fitted
                   w={"full"}
-                  variant={"brand-on-card"}
                   colorPalette="brand"
                   defaultValue={SettingTab.GENERAL}
                 >

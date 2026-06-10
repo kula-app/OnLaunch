@@ -7,7 +7,7 @@ import {
   Icon,
   IconButton,
   Input,
-  Select,
+  NativeSelect,
   Field as ChakraField,
 } from "@chakra-ui/react";
 import { Field, type FieldProps } from "formik";
@@ -41,26 +41,26 @@ export const AdvancedFiltersConditionBox: React.FC<
           field,
         }: FieldProps<AdvancedFiltersRuleCondition["systemVariable"]>) => (
           <ChakraField.Root w={"auto"}>
-            <Select
-              {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                setAdvancedFilterDirty();
-              }}
-              id={field.name}
-              rounded={"full"}
-              size={"xs"}
-            >
-              {Object.values(MessageRuleSystemVariable).map((value) => (
-                <option
-                  key={value}
-                  value={value}
-                  disabled={!availableSystemVariables.has(value)}
-                >
-                  {displayTextForAdvancedFilterRulesSystemVariable(value)}
-                </option>
-              ))}
-            </Select>
+            <NativeSelect.Root rounded={"full"} size={"xs"}>
+              <NativeSelect.Field
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  setAdvancedFilterDirty();
+                }}
+                id={field.name}
+              >
+                {Object.values(MessageRuleSystemVariable).map((value) => (
+                  <option
+                    key={value}
+                    value={value}
+                    disabled={!availableSystemVariables.has(value)}
+                  >
+                    {displayTextForAdvancedFilterRulesSystemVariable(value)}
+                  </option>
+                ))}
+              </NativeSelect.Field>
+            </NativeSelect.Root>
           </ChakraField.Root>
         )}
       </Field>
@@ -70,22 +70,22 @@ export const AdvancedFiltersConditionBox: React.FC<
           form,
         }: FieldProps<AdvancedFiltersRuleCondition["comparator"]>) => (
           <ChakraField.Root w={"auto"} flexGrow={1}>
-            <Select
-              {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                setAdvancedFilterDirty();
-              }}
-              id={field.name}
-              rounded={"full"}
-              size={"xs"}
-            >
-              {Object.values(MessageRuleComparator).map((value) => (
-                <option key={value} value={value}>
-                  {displayTextForAdvancedFiltersRuleOperator(value)}
-                </option>
-              ))}
-            </Select>
+            <NativeSelect.Root rounded={"full"} size={"xs"}>
+              <NativeSelect.Field
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  setAdvancedFilterDirty();
+                }}
+                id={field.name}
+              >
+                {Object.values(MessageRuleComparator).map((value) => (
+                  <option key={value} value={value}>
+                    {displayTextForAdvancedFiltersRuleOperator(value)}
+                  </option>
+                ))}
+              </NativeSelect.Field>
+            </NativeSelect.Root>
           </ChakraField.Root>
         )}
       </Field>

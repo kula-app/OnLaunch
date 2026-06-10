@@ -1,6 +1,8 @@
 "use client";
 
-import { Box, Flex, Input, Select, Switch, Text, Field as ChakraField } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
+import { BrandSelect } from "@/components/ui/brand-select";
+import { Box, Flex, Switch, Text, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -132,7 +134,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                   const isFieldInvalid = !!errors && !!touched;
                   return (
                     <ChakraField.Root invalid={isFieldInvalid} w={"auto"}>
-                      <Select {...field} variant={"brand-on-card"}>
+                      <BrandSelect {...field}>
                         {Object.values(SimpleFiltersComparator).map(
                           (comparator) => (
                             <option key={comparator} value={comparator}>
@@ -140,7 +142,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                             </option>
                           ),
                         )}
-                      </Select>
+                      </BrandSelect>
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
@@ -182,11 +184,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                   const isFieldInvalid = !!errors && !!touched;
                   return (
                     <ChakraField.Root invalid={isFieldInvalid} w={"auto"}>
-                      <Input
+                      <BrandInput
                         {...field}
                         value={field.value ?? ""}
                         placeholder="Enter a version..."
-                        variant={"brand-on-card"}
                         w={"auto"}
                       />
                       <ErrorMessage
@@ -242,7 +243,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                   const isFieldInvalid = !!errors && !!touched;
                   return (
                     <ChakraField.Root invalid={isFieldInvalid} w={"auto"}>
-                      <Select {...field} variant={"brand-on-card"}>
+                      <BrandSelect {...field}>
                         {Object.values(SimpleFiltersComparator).map(
                           (comparator) => (
                             <option key={comparator} value={comparator}>
@@ -250,7 +251,7 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                             </option>
                           ),
                         )}
-                      </Select>
+                      </BrandSelect>
                       <ErrorMessage
                         name={field.name}
                         render={(errorMessage) => (
@@ -292,11 +293,10 @@ export const SimpleFiltersAppVersionFilter: React.FC = () => {
                   const isFieldInvalid = !!errors && !!touched;
                   return (
                     <ChakraField.Root invalid={isFieldInvalid} w={"auto"}>
-                      <Input
+                      <BrandInput
                         {...field}
                         value={field.value ?? ""}
                         placeholder="Enter a version..."
-                        variant={"brand-on-card"}
                         w={"auto"}
                       />
                       <ErrorMessage

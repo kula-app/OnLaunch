@@ -14,7 +14,7 @@ export const DeleteOrgAdminAuthorizationTokenDialog: React.FC<{
   return (
     <Dialog.Root
       open={isOpen}
-      motionPreset="slideInBottom"
+      motionPreset="slide-in-bottom"
       initialFocusEl={() => cancelTokenDeletionRef.current}
       placement='center'
       role='alertdialog'

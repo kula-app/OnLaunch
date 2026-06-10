@@ -47,8 +47,7 @@ export const OrgSettingsAdminAPI: React.FC<{
   const {
     value: tokenToDelete,
     setValue: setTokenToDelete,
-    isOpen: isTokenDeletionOpen,
-    onClose: onTokenDeletionClose,
+    open: isTokenDeletionOpen,    onClose: onTokenDeletionClose,
   } = useValueDisclosure<OrgAdminToken>();
 
   const [visibleTokens, setVisibleTokens] = useState<Set<OrgAdminToken["id"]>>(
@@ -62,7 +61,7 @@ export const OrgSettingsAdminAPI: React.FC<{
           <Heading as={"h2"} color={"white"} size={"md"}>
             Authorization Tokens
           </Heading>
-          <Text variant={"small"} color={"gray.400"}>
+          <Text textStyle="sm" color={"gray.400"}>
             These tokens are used to authenticate with the{" "}
             <Link
               color={"brand.200"}

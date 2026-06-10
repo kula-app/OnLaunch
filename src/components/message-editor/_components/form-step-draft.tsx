@@ -1,6 +1,7 @@
 "use client";
 
 import { FormikChangeHandler } from "@/components/formik-change-handler";
+import { BrandInput } from "@/components/ui/brand-input";
 import { ActionButtonDesign } from "@/models/action-button-design";
 import { MessageActionType } from "@/models/message-action-type";
 import {
@@ -10,7 +11,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Input,
   Switch,
   Text,
   Textarea,
@@ -87,13 +87,12 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
 
                     return (
                       <ChakraField.Root color="white" invalid={isFieldValid}>
-                        <ChakraField.Label htmlFor={field.name}>Title</ChakraField.Label>
-                        <Input
+                        <ChakraField.Label>Title</ChakraField.Label>
+                        <BrandInput
                           {...field}
                           id={field.name}
                           type={"text"}
                           placeholder="Title of the message..."
-                          variant={"brand-on-card"}
                           minH={"50px"}
                         />
                         <ErrorMessage
@@ -113,7 +112,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
 
                     return (
                       <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                        <ChakraField.Label htmlFor={field.name}>Body</ChakraField.Label>
+                        <ChakraField.Label>Body</ChakraField.Label>
                         <Textarea
                           {...field}
                           id={field.name}
@@ -154,7 +153,7 @@ export const FormStepDraft: React.FC<FormStepDraftProps> = ({
                               id={field.name}
                               size={"md"}
                             />
-                            <ChakraField.Label htmlFor={field.name} mb={0} ml={2}>
+                            <ChakraField.Label mb={0} ml={2}>
                               Require user to use action?
                             </ChakraField.Label>
                           </HStack>

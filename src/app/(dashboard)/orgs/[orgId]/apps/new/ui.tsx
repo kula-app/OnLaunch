@@ -5,7 +5,8 @@ import { ConfiguredNavigationBar } from "@/components/configured-navigation-bar"
 import { ServerError } from "@/errors/server-error";
 import type { Org } from "@/models/org";
 import { Routes } from "@/routes/routes";
-import { Button, Card, Flex, Heading, Input, Text, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text, VStack, Field as ChakraField } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
@@ -139,13 +140,12 @@ export const UI: React.FC<{
                               w={"full"}
                               invalid={isFieldInvalid}
                             >
-                              <ChakraField.Label htmlFor={field.name}>Name</ChakraField.Label>
-                              <Input
+                              <ChakraField.Label>Name</ChakraField.Label>
+                              <BrandInput
                                 {...field}
                                 id={field.name}
                                 placeholder="e.g. My First App"
                                 w={"full"}
-                                variant={"brand-on-card"}
                                 minH={"50px"}
                               />
                               <ErrorMessage

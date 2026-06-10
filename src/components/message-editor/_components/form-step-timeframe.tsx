@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, Heading, HStack, Input, Text, VStack, type BoxProps, Field as ChakraField } from "@chakra-ui/react";
+import { Box, Heading, HStack, Text, VStack, type BoxProps, Field as ChakraField } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import {
   ErrorMessage,
   Field,
@@ -47,8 +48,8 @@ export const FormStepTimeframe: React.FC<
 
                       return (
                         <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                          <ChakraField.Label htmlFor={field.name}>Start Date</ChakraField.Label>
-                          <Input
+                          <ChakraField.Label>Start Date</ChakraField.Label>
+                          <BrandInput
                             {...field}
                             value={moment(field.value).format(
                               "YYYY-MM-DDTHH:mm",
@@ -62,7 +63,6 @@ export const FormStepTimeframe: React.FC<
                             id={field.name}
                             type="datetime-local"
                             placeholder="Select start date and time"
-                            variant={"brand-on-card"}
                             textColor={isFieldInvalid ? "red.400" : "white"}
                             css={{
                               colorScheme: "dark",
@@ -94,8 +94,8 @@ export const FormStepTimeframe: React.FC<
 
                       return (
                         <ChakraField.Root color="white" invalid={isFieldInvalid}>
-                          <ChakraField.Label htmlFor={field.name}>End Date</ChakraField.Label>
-                          <Input
+                          <ChakraField.Label>End Date</ChakraField.Label>
+                          <BrandInput
                             {...field}
                             value={moment(field.value).format(
                               "YYYY-MM-DDTHH:mm",
@@ -109,7 +109,6 @@ export const FormStepTimeframe: React.FC<
                             id={field.name}
                             type="datetime-local"
                             placeholder="Select end date and time"
-                            variant={"brand-on-card"}
                             textColor={isFieldInvalid ? "red.400" : "white"}
                             css={{
                               colorScheme: "dark",

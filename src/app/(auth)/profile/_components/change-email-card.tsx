@@ -12,11 +12,11 @@ import {
   Card,
   Heading,
   HStack,
-  Input,
   Text,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
@@ -125,13 +125,12 @@ export const ChangeEmailCard: React.FC<{
                         w={"full"}
                         invalid={isFieldInvalid}
                       >
-                        <ChakraField.Label htmlFor={field.name}>Email</ChakraField.Label>
-                        <Input
+                        <ChakraField.Label>Email</ChakraField.Label>
+                        <BrandInput
                           {...field}
                           id={field.name}
                           placeholder="name@email.com"
                           w={"full"}
-                          variant={"brand-on-card"}
                         />
                         <ErrorMessage
                           name={field.name}

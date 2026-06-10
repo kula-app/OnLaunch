@@ -1,6 +1,7 @@
 "use client";
 
-import { Flex, Select, Field as ChakraField } from "@chakra-ui/react";
+import { BrandSelect } from "@/components/ui/brand-select";
+import { Flex, Field as ChakraField } from "@chakra-ui/react";
 import {
   ErrorMessage,
   Field,
@@ -36,10 +37,9 @@ export const SimpleFiltersPlatformFilter: React.FC = () => {
               <ChakraField.Label my={0} htmlFor={field.name}>
                 Which platform should see this message?
               </ChakraField.Label>
-              <Select
+              <BrandSelect
                 {...field}
                 id={field.name}
-                variant={"brand-on-card"}
                 w={"auto"}
               >
                 {Object.values(SimpleFiltersPlatform).map((platform) => (
@@ -47,7 +47,7 @@ export const SimpleFiltersPlatformFilter: React.FC = () => {
                     {displayTextForSimpleFiltersPlatform(platform)}
                   </option>
                 ))}
-              </Select>
+              </BrandSelect>
             </Flex>
             <ErrorMessage
               name={field.name}

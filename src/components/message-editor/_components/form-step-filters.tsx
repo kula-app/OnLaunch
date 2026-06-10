@@ -11,13 +11,13 @@ import {
   Flex,
   Heading,
   Portal,
-  Select,
   Text,
   useDisclosure,
   VStack,
   type BoxProps,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandSelect } from "@/components/ui/brand-select";
 import {
   ErrorMessage,
   Field,
@@ -48,8 +48,7 @@ export const FormStepFilters: React.FC<
   }
 > = ({ formRef, initialValues, ...boxProps }) => {
   const {
-    isOpen: isOpenDiscardModal,
-    onOpen: onOpenDiscardModal,
+    open: isOpenDiscardModal,    onOpen: onOpenDiscardModal,
     onClose: onCloseDiscardModal,
   } = useDisclosure();
 
@@ -88,7 +87,7 @@ export const FormStepFilters: React.FC<
                         <ChakraField.Label my={0} htmlFor={field.name}>
                           Do you want to show this message to all users?
                         </ChakraField.Label>
-                        <Select
+                        <BrandSelect
                           {...field}
                           value={field.value ? "true" : "false"}
                           onChange={(e) =>
@@ -98,12 +97,11 @@ export const FormStepFilters: React.FC<
                             )
                           }
                           id="filter.isAll"
-                          variant={"brand-on-card"}
                           w={"auto"}
                         >
                           <option value={"true"}>Yes</option>
                           <option value={"false"}>No</option>
-                        </Select>
+                        </BrandSelect>
                       </Flex>
                       <ErrorMessage
                         name={field.name}

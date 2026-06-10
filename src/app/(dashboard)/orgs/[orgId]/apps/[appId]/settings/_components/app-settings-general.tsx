@@ -17,7 +17,6 @@ import {
   Heading,
   HStack,
   IconButton,
-  Input,
   Text,
   Tooltip,
   useDisclosure,
@@ -27,6 +26,7 @@ import {
   Separator,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import {
   ErrorMessage,
   Field,
@@ -68,8 +68,7 @@ export const AppSettingsGeneral: React.FC<{
 
   const formRef = useRef<FormikProps<UpdateAppFormValues>>(null);
   const {
-    isOpen: isAppDeletionOpen,
-    onOpen: onAppDeletionOpen,
+    open: isAppDeletionOpen,    onOpen: onAppDeletionOpen,
     onClose: onAppDeletionClose,
   } = useDisclosure();
 
@@ -136,13 +135,12 @@ export const AppSettingsGeneral: React.FC<{
                       w={"full"}
                       invalid={isFieldInvalid}
                     >
-                      <ChakraField.Label htmlFor={field.name}>App Name</ChakraField.Label>
-                      <Input
+                      <ChakraField.Label>App Name</ChakraField.Label>
+                      <BrandInput
                         {...field}
                         id={field.name}
                         placeholder="e.g. My First App"
                         w={"full"}
-                        variant={"brand-on-card"}
                         minH={"50px"}
                         isDisabled={isAppLoading}
                         readOnly={role !== OrgRole.ADMIN}
@@ -239,7 +237,7 @@ export const DeleteAppAlert: React.FC<{
   return (
     <Dialog.Root
       open={isOpen}
-      motionPreset="slideInBottom"
+      motionPreset="slide-in-bottom"
       initialFocusEl={() => cancelAppDeletionRef.current}
       placement='center'
       role='alertdialog'

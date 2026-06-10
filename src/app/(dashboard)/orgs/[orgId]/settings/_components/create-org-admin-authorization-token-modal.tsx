@@ -63,7 +63,7 @@ export const CreateOrgAdminAuthorizationTokenModal: React.FC<{
 
                         return (
                           <ChakraField.Root w={"full"} invalid={isFieldInvalid} mt={4}>
-                            <ChakraField.Label htmlFor={field.name}>Token Label</ChakraField.Label>
+                            <ChakraField.Label>Token Label</ChakraField.Label>
                             <Input
                               {...field}
                               id={field.name}

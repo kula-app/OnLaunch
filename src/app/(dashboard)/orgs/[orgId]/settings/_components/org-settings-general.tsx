@@ -15,7 +15,6 @@ import {
   Heading,
   HStack,
   IconButton,
-  Input,
   Text,
   Tooltip,
   useDisclosure,
@@ -25,6 +24,7 @@ import {
   Separator,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import { toaster } from "@/components/ui/toaster";
 import {
   ErrorMessage,
@@ -65,8 +65,7 @@ export const OrgSettingsGeneral: React.FC<{
   const formRef = useRef<FormikProps<UpdateOrgFormValues>>(null);
 
   const {
-    isOpen: isOrgDeletionOpen,
-    onOpen: onOrgDeletionOpen,
+    open: isOrgDeletionOpen,    onOpen: onOrgDeletionOpen,
     onClose: onOrgDeletionClose,
   } = useDisclosure();
 
@@ -134,15 +133,14 @@ export const OrgSettingsGeneral: React.FC<{
                       w={"full"}
                       invalid={isFieldInvalid}
                     >
-                      <ChakraField.Label htmlFor={field.name}>
+                      <ChakraField.Label>
                         Organization Name
                       </ChakraField.Label>
-                      <Input
+                      <BrandInput
                         {...field}
                         id={field.name}
                         placeholder="e.g. kula app GmbH"
                         w={"full"}
-                        variant={"brand-on-card"}
                         minH={"50px"}
                         isDisabled={isOrgLoading}
                         readOnly={role !== OrgRole.ADMIN}
@@ -243,7 +241,7 @@ export const DeleteOrgAlert: React.FC<{
   return (
     <Dialog.Root
       open={isOpen}
-      motionPreset="slideInBottom"
+      motionPreset="slide-in-bottom"
       initialFocusEl={() => cancelOrgDeletionRef.current}
       placement='center'
       role='alertdialog'

@@ -61,8 +61,8 @@ export const DeleteProfileCard: React.FC = () => {
         </Card.Root>
       </Box>
       <Dialog.Root
-        open={isOpen}
-        motionPreset="slideInBottom"
+        open={open}
+        motionPreset="slide-in-bottom"
         initialFocusEl={() => cancelRef.current}
         placement='center'
         role='alertdialog'

@@ -15,14 +15,8 @@ import {
   Grid,
   Heading,
   Table,
-  TableContainer,
   Tag,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";

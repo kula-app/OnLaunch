@@ -9,12 +9,7 @@ import {
   Spacer,
   Stack,
   Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
 import { Tooltip } from '@/components/ui/tooltip';
 import React from "react";
@@ -37,7 +32,7 @@ export const MessageList: React.FC<{
           </Text>
         )}
         {messages.length > 0 && (
-          <Table.Root w={"full"} variant={"brand-on-card"} size={"sm"}>
+          <Table.Root w={"full"} size={"sm"}>
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>Title</Table.ColumnHeader>

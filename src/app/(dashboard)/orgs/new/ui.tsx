@@ -12,12 +12,12 @@ import {
   Flex,
   Heading,
   HStack,
-  Input,
   Spacer,
   Text,
   VStack,
   Field as ChakraField,
 } from "@chakra-ui/react";
+import { BrandInput } from "@/components/ui/brand-input";
 import {
   ErrorMessage,
   Field,
@@ -149,13 +149,12 @@ export default function NewOrgPage() {
                               w={"full"}
                               invalid={isFieldInvalid}
                             >
-                              <ChakraField.Label htmlFor={field.name}>Name</ChakraField.Label>
-                              <Input
+                              <ChakraField.Label>Name</ChakraField.Label>
+                              <BrandInput
                                 {...field}
                                 id={field.name}
                                 placeholder="e.g. kula app GmbH"
                                 w={"full"}
-                                variant={"brand-on-card"}
                                 minH={"50px"}
                               />
                               <ErrorMessage
