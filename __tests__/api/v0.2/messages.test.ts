@@ -1391,7 +1391,7 @@ describe("/api/v0.2/messages", () => {
           });
         });
 
-        it("should omit link field when link is null", async () => {
+        it("should omit the action when link is null", async () => {
           // -- Arrange --
           jest.useFakeTimers().setSystemTime(new Date(1000));
           const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
@@ -1433,13 +1433,12 @@ describe("/api/v0.2/messages", () => {
 
           // -- Assert --
           expect(res.statusCode).toEqual(StatusCodes.OK);
-          const action = (
-            res._getJSONData() as { actions: { link?: unknown }[] }[]
-          )[0].actions[0];
-          expect(action).not.toHaveProperty("link");
+          const actions = (res._getJSONData() as { actions: unknown[] }[])[0]
+            .actions;
+          expect(actions).toStrictEqual([]);
         });
 
-        it("should omit link field when linkTarget is null", async () => {
+        it("should omit the action when linkTarget is null", async () => {
           // -- Arrange --
           jest.useFakeTimers().setSystemTime(new Date(1000));
           const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
@@ -1481,13 +1480,12 @@ describe("/api/v0.2/messages", () => {
 
           // -- Assert --
           expect(res.statusCode).toEqual(StatusCodes.OK);
-          const action = (
-            res._getJSONData() as { actions: { link?: unknown }[] }[]
-          )[0].actions[0];
-          expect(action).not.toHaveProperty("link");
+          const actions = (res._getJSONData() as { actions: unknown[] }[])[0]
+            .actions;
+          expect(actions).toStrictEqual([]);
         });
 
-        it("should omit link field when both link and linkTarget are null", async () => {
+        it("should omit the action when both link and linkTarget are null", async () => {
           // -- Arrange --
           jest.useFakeTimers().setSystemTime(new Date(1000));
           const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
@@ -1529,10 +1527,9 @@ describe("/api/v0.2/messages", () => {
 
           // -- Assert --
           expect(res.statusCode).toEqual(StatusCodes.OK);
-          const action = (
-            res._getJSONData() as { actions: { link?: unknown }[] }[]
-          )[0].actions[0];
-          expect(action).not.toHaveProperty("link");
+          const actions = (res._getJSONData() as { actions: unknown[] }[])[0]
+            .actions;
+          expect(actions).toStrictEqual([]);
         });
       });
 

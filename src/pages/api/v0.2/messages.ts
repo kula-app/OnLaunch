@@ -466,12 +466,18 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
               default:
                 target = undefined;
             }
-            if (action.link != null && target != null) {
-              link = {
-                link: action.link,
-                target: target,
-              };
+            if (action.link == null || target == null) {
+              // Skip LINK actions that are missing a URL or target, as they
+              // would render an unactionable button on the client.
+              logger.warn(
+                `Skipping LINK action with missing link or target in message(id = ${message.id})`,
+              );
+              return prev;
             }
+            link = {
+              link: action.link,
+              target: target,
+            };
             break;
           }
           default:
