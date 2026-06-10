@@ -9,6 +9,7 @@ import { Logger } from "@/util/logger";
 import { Prisma } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
+import { flattenValidationErrors } from "@/util/validators/flattenValidationErrors";
 import { StatusCodes } from "http-status-codes";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -129,10 +130,17 @@ const logger = new Logger(__filename);
  *           type: string
  *         actionType:
  *           type: string
- *           enum: [DISMISS, OPEN_APP_IN_APP_STORE]
+ *           enum: [DISMISS, OPEN_APP_IN_APP_STORE, OPEN_LINK]
  *         buttonDesign:
  *           type: string
  *           enum: [FILLED, TEXT]
+ *         link:
+ *           type: string
+ *           description: The URL to open. Required when actionType is OPEN_LINK.
+ *         linkTarget:
+ *           type: string
+ *           enum: [IN_APP_BROWSER, SHARE_SHEET, SYSTEM_BROWSER]
+ *           description: Where the link should be opened. Required when actionType is OPEN_LINK.
  *
  */
 export default async function handler(
@@ -199,6 +207,8 @@ async function getHandler(
       title: action.title,
       actionType: action.actionType,
       buttonDesign: action.buttonDesign,
+      link: action.link ?? undefined,
+      linkTarget: action.linkTarget ?? undefined,
     }),
   );
   const dto: MessageDto = {
@@ -279,13 +289,7 @@ async function putHandler(
   const validationErrors = await validate(updateMessageDto);
 
   if (validationErrors.length > 0) {
-    const errors = validationErrors
-      .flatMap((error) =>
-        error.constraints
-          ? Object.values(error.constraints)
-          : ["An unknown error occurred"],
-      )
-      .join(", ");
+    const errors = flattenValidationErrors(validationErrors).join(", ");
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json(getErrorDto(`Validation failed: ${errors}`));
@@ -334,6 +338,8 @@ async function putHandler(
           title: action.title,
           actionType: action.actionType,
           buttonDesign: action.buttonDesign,
+          link: action.link ?? undefined,
+          linkTarget: action.linkTarget ?? undefined,
         }),
       );
     }

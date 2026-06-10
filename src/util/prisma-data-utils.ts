@@ -1,4 +1,5 @@
-import { ActionButtonDesign } from "@/models/action-button-design";
+import { MessageActionButtonDesign } from "@/models/message-action-button-design";
+import { MessageActionLinkTarget } from "@/models/message-action-link-target";
 import { MessageActionType } from "@/models/message-action-type";
 import { MessageRuleComparator } from "@/models/message-rule-comparator";
 import { MessageRuleGroupOperator } from "@/models/message-rule-group-operator";
@@ -173,24 +174,24 @@ export class PrismaDataUtils {
 
   static mapButtonDesignFromPrisma(
     design: PrismaClient.ButtonDesign,
-  ): ActionButtonDesign | undefined {
+  ): MessageActionButtonDesign | undefined {
     switch (design) {
       case PrismaClient.ButtonDesign.FILLED:
-        return ActionButtonDesign.FILLED;
+        return MessageActionButtonDesign.FILLED;
       case PrismaClient.ButtonDesign.TEXT:
-        return ActionButtonDesign.OUTLINE;
+        return MessageActionButtonDesign.OUTLINE;
       default:
         return undefined;
     }
   }
 
   static mapButtonDesignToPrisma(
-    design: ActionButtonDesign,
+    design: MessageActionButtonDesign,
   ): PrismaClient.ButtonDesign | undefined {
     switch (design) {
-      case ActionButtonDesign.FILLED:
+      case MessageActionButtonDesign.FILLED:
         return PrismaClient.ButtonDesign.FILLED;
-      case ActionButtonDesign.OUTLINE:
+      case MessageActionButtonDesign.OUTLINE:
         return PrismaClient.ButtonDesign.TEXT;
       default:
         return undefined;
@@ -205,6 +206,8 @@ export class PrismaDataUtils {
         return MessageActionType.DISMISS;
       case PrismaClient.ActionType.OPEN_APP_IN_APP_STORE:
         return MessageActionType.OPEN_APP_IN_APP_STORE;
+      case PrismaClient.ActionType.OPEN_LINK:
+        return MessageActionType.OPEN_LINK;
       default:
         return undefined;
     }
@@ -218,6 +221,38 @@ export class PrismaDataUtils {
         return PrismaClient.ActionType.DISMISS;
       case MessageActionType.OPEN_APP_IN_APP_STORE:
         return PrismaClient.ActionType.OPEN_APP_IN_APP_STORE;
+      case MessageActionType.OPEN_LINK:
+        return PrismaClient.ActionType.OPEN_LINK;
+      default:
+        return undefined;
+    }
+  }
+
+  static mapMessageActionLinkTargetFromPrisma(
+    target: PrismaClient.MessageActionLinkTarget,
+  ): MessageActionLinkTarget | undefined {
+    switch (target) {
+      case PrismaClient.MessageActionLinkTarget.IN_APP_BROWSER:
+        return MessageActionLinkTarget.IN_APP_BROWSER;
+      case PrismaClient.MessageActionLinkTarget.SHARE_SHEET:
+        return MessageActionLinkTarget.SHARE_SHEET;
+      case PrismaClient.MessageActionLinkTarget.SYSTEM_BROWSER:
+        return MessageActionLinkTarget.SYSTEM_BROWSER;
+      default:
+        return undefined;
+    }
+  }
+
+  static mapMessageActionLinkTargetToPrisma(
+    target: MessageActionLinkTarget,
+  ): PrismaClient.MessageActionLinkTarget | undefined {
+    switch (target) {
+      case MessageActionLinkTarget.IN_APP_BROWSER:
+        return PrismaClient.MessageActionLinkTarget.IN_APP_BROWSER;
+      case MessageActionLinkTarget.SHARE_SHEET:
+        return PrismaClient.MessageActionLinkTarget.SHARE_SHEET;
+      case MessageActionLinkTarget.SYSTEM_BROWSER:
+        return PrismaClient.MessageActionLinkTarget.SYSTEM_BROWSER;
       default:
         return undefined;
     }

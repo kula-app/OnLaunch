@@ -3,7 +3,11 @@ import prisma from "@/services/db";
 import { Logger } from "@/util/logger";
 import { createRuleEvaluationContextFromHeaders } from "@/util/rule-evaluation/rule-evaluation-context";
 import { RuleEvaluator } from "@/util/rule-evaluation/rule-evaluator";
-import { ActionType, ButtonDesign } from "@prisma/client";
+import {
+  ActionType,
+  ButtonDesign,
+  MessageActionLinkTarget,
+} from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject, ValidationError } from "class-validator";
 import { StatusCodes } from "http-status-codes";
@@ -14,7 +18,9 @@ import { MessagesRequestHeadersDto } from "@/api-dtos/v0.2/messages-request-head
 import {
   MessageActionButtonDesign,
   MessageActionDtoType,
+  MessageActionLinkDtoTarget,
   type MessageActionDto,
+  type MessageActionLinkDto,
   type MessageDto,
   type MessagesResponseDto,
 } from "@/api-dtos/v0.2/messages-response-dto";
@@ -161,6 +167,7 @@ const logger = new Logger(__filename);
  *                           enum:
  *                             - DISMISS
  *                             - OPEN_APP_IN_APP_STORE
+ *                             - LINK
  *                         title:
  *                           type: string
  *                         buttonDesign:
@@ -168,6 +175,17 @@ const logger = new Logger(__filename);
  *                           enum:
  *                             - FILLED
  *                             - TEXT
+ *                         link:
+ *                           type: object
+ *                           properties:
+ *                             link:
+ *                               type: string
+ *                             target:
+ *                               type: string
+ *                               enum:
+ *                                 - IN_APP_BROWSER
+ *                                 - SHARE_SHEET
+ *                                 - SYSTEM_BROWSER
  *       400:
  *         description: Bad request. See response body for validation errors.
  *       404:
@@ -424,6 +442,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       (prev, action): MessageActionDto[] => {
         // Filter out actions that are not supported
         let actionType: MessageActionDtoType;
+        let link: MessageActionLinkDto | undefined;
         switch (action.actionType) {
           case ActionType.DISMISS:
             actionType = MessageActionDtoType.DISMISS;
@@ -431,6 +450,36 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
           case ActionType.OPEN_APP_IN_APP_STORE:
             actionType = MessageActionDtoType.OPEN_APP_IN_APP_STORE;
             break;
+          case ActionType.OPEN_LINK: {
+            actionType = MessageActionDtoType.LINK;
+            let target: MessageActionLinkDtoTarget | undefined;
+            switch (action.linkTarget) {
+              case MessageActionLinkTarget.IN_APP_BROWSER:
+                target = MessageActionLinkDtoTarget.IN_APP_BROWSER;
+                break;
+              case MessageActionLinkTarget.SHARE_SHEET:
+                target = MessageActionLinkDtoTarget.SHARE_SHEET;
+                break;
+              case MessageActionLinkTarget.SYSTEM_BROWSER:
+                target = MessageActionLinkDtoTarget.SYSTEM_BROWSER;
+                break;
+              default:
+                target = undefined;
+            }
+            if (action.link == null || target == null) {
+              // Skip LINK actions that are missing a URL or target, as they
+              // would render an unactionable button on the client.
+              logger.warn(
+                `Skipping LINK action with missing link or target in message(id = ${message.id})`,
+              );
+              return prev;
+            }
+            link = {
+              link: action.link,
+              target: target,
+            };
+            break;
+          }
           default:
             logger.warn(
               `Unsupported action type in message(id = ${message.id}): ${action.actionType}`,
@@ -451,13 +500,15 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
             );
             return prev;
         }
-        return prev.concat([
-          {
-            actionType: actionType,
-            buttonDesign: buttonDesign,
-            title: action.title,
-          },
-        ]);
+        const dto: MessageActionDto = {
+          actionType: actionType,
+          buttonDesign: buttonDesign,
+          title: action.title,
+        };
+        if (link) {
+          dto.link = link;
+        }
+        return prev.concat([dto]);
       },
       new Array<MessageActionDto>(),
     );

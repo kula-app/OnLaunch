@@ -8,6 +8,7 @@ import prisma from "@/services/db";
 import { createAuthenticatedServerAction } from "@/util/create-authenticated-server-action";
 import { Logger } from "@/util/logger";
 import { PrismaDataUtils } from "@/util/prisma-data-utils";
+import type * as PrismaClient from "@prisma/client";
 
 const logger = new Logger(`actions/update-message`);
 
@@ -16,7 +17,7 @@ type ActionDto = Omit<Message, "appId">;
 export const updateMessage = createAuthenticatedServerAction(
   async (session, dto: ActionDto) => {
     logger.log(`Updating message with id '${dto.id}'`);
-    prisma.$transaction(async () => {
+    await prisma.$transaction(async () => {
       logger.verbose(`Fetch message with id '${dto.id}'`);
       const message = await prisma.message.findUnique({
         where: {
@@ -103,6 +104,21 @@ export const updateMessage = createAuthenticatedServerAction(
           );
         }
 
+        let mappedLinkTarget:
+          | PrismaClient.MessageActionLinkTarget
+          | undefined;
+        if (action.link) {
+          mappedLinkTarget = PrismaDataUtils.mapMessageActionLinkTargetToPrisma(
+            action.link.target,
+          );
+          if (!mappedLinkTarget) {
+            throw new BadRequestError(
+              `Unknown link target: ${action.link.target}`,
+            );
+          }
+        }
+        const mappedLink = action.link?.link ?? null;
+
         await prisma.messageAction.upsert({
           where: {
             id: action.id,
@@ -112,6 +128,8 @@ export const updateMessage = createAuthenticatedServerAction(
             title: action.title,
             actionType: mappedActionType,
             buttonDesign: mappedButtonDesign,
+            link: mappedLink,
+            linkTarget: mappedLinkTarget ?? null,
           },
           create: {
             id: action.id,
@@ -120,6 +138,8 @@ export const updateMessage = createAuthenticatedServerAction(
             title: action.title,
             actionType: mappedActionType,
             buttonDesign: mappedButtonDesign,
+            link: mappedLink,
+            linkTarget: mappedLinkTarget,
           },
         });
       }
