@@ -97,8 +97,17 @@ const logger = new Logger(__filename);
  *           type: string
  *         actionType:
  *           type: string
+ *           enum: [DISMISS, OPEN_APP_IN_APP_STORE, OPEN_LINK]
  *         buttonDesign:
  *           type: string
+ *           enum: [FILLED, TEXT]
+ *         link:
+ *           type: string
+ *           description: The URL to open. Required when actionType is OPEN_LINK.
+ *         linkTarget:
+ *           type: string
+ *           enum: [IN_APP_BROWSER, SHARE_SHEET, SYSTEM_BROWSER]
+ *           description: Where the link should be opened. Required when actionType is OPEN_LINK.
  *     CreateMessageDto:
  *       type: object
  *       required:
