@@ -26,7 +26,7 @@ import { timeframeSchema } from "../_models/timeframe/timeframe-form-schema";
 
 export const FormStepTimeframe: React.FC<
   BoxProps & {
-    formRef: RefObject<FormikProps<TimeframeFormData>>;
+    formRef: RefObject<FormikProps<TimeframeFormData> | null>;
     initialValues: TimeframeFormData;
   }
 > = ({ formRef, initialValues, ...boxProps }) => {

@@ -49,7 +49,7 @@ import { SimpleFiltersEditor } from "./filters/simple-filters-editor";
 
 export const FormStepFilters: React.FC<
   BoxProps & {
-    formRef: RefObject<FormikProps<FilterFormData>>;
+    formRef: RefObject<FormikProps<FilterFormData> | null>;
     initialValues: FilterFormData;
   }
 > = ({ formRef, initialValues, ...boxProps }) => {

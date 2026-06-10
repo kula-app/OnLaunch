@@ -72,7 +72,7 @@ jobs:
         run: yarn test:ci
 
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: codecov-umbrella
@@ -121,7 +121,7 @@ jobs:
         run: yarn prisma migrate reset -f
 
       - name: Cypress run
-        uses: cypress-io/github-action@v3
+        uses: cypress-io/github-action@v7.3.0
         with:
           project: ./
           browser: chrome
