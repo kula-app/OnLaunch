@@ -1,0 +1,10 @@
+version = 1
+agents = ["claude", "cursor", "codex"]
+
+[trust]
+github_orgs = [ "kula-app", "getsentry" ]
+
+
+[[skills]]
+name = "dotagents"
+source = "getsentry/dotagents"
