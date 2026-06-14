@@ -4347,7 +4347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:3.7.2, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 10c0/680de03adc54ff925eaa6c7bb9a47a0690e8b5de60f4792604aae8ed618c65e6b63a7893b57ca924beaf53eee69c5af4f8314148c08124c550fe1df1add897d2
@@ -9094,10 +9094,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lazy-ass@npm:1.6.0":
-  version: 1.6.0
-  resolution: "lazy-ass@npm:1.6.0"
-  checksum: 10c0/4af6cb9a333fbc811268c745f9173fba0f99ecb817cc9c0fae5dbf986b797b730ff525504128f6623b91aba32b02124553a34b0d14de3762b637b74d7233f3bd
+"lazy-ass@npm:2.0.3":
+  version: 2.0.3
+  resolution: "lazy-ass@npm:2.0.3"
+  checksum: 10c0/2a3cf18fe892212dc410529e5e0186952df352aaf738cae648712223fc466c16a5962439c5c31652cf2b3a737e49dd62b86f7db57f2aa7344a7208bb8631b9de
   languageName: node
   linkType: hard
 
@@ -10445,7 +10445,7 @@ __metadata:
     redoc: "npm:2.5.2"
     reflect-metadata: "npm:0.2.2"
     request-ip: "npm:3.3.0"
-    start-server-and-test: "npm:3.0.5"
+    start-server-and-test: "npm:3.0.11"
     stripe: "npm:17.7.0"
     styled-components: "npm:6.4.1"
     swr: "npm:2.4.1"
@@ -12532,23 +12532,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"start-server-and-test@npm:3.0.5":
-  version: 3.0.5
-  resolution: "start-server-and-test@npm:3.0.5"
+"start-server-and-test@npm:3.0.11":
+  version: 3.0.11
+  resolution: "start-server-and-test@npm:3.0.11"
   dependencies:
     arg: "npm:5.0.2"
-    bluebird: "npm:3.7.2"
     check-more-types: "npm:2.24.0"
     debug: "npm:4.4.3"
     execa: "npm:5.1.1"
-    lazy-ass: "npm:1.6.0"
+    lazy-ass: "npm:2.0.3"
     tree-kill: "npm:1.2.2"
     wait-on: "npm:9.0.10"
   bin:
     server-test: src/bin/start.js
     start-server-and-test: src/bin/start.js
     start-test: src/bin/start.js
-  checksum: 10c0/579bf00fe5babbb90279e7f7706e76d6001d93472c907c7b757ae767708ba004c96e743b71613a8524d5a0c890597529ffca315ebd5d6a34182566776caa213d
+  checksum: 10c0/b3e02e0563eed05a3a28ae59c202be20c5a56e8d09baa354e508cdf37367fcdd2501506d2635b6805fbcf1377847c67e9d4101edd4c7f4a2c405784219a810a3
   languageName: node
   linkType: hard
 
