@@ -10447,7 +10447,7 @@ __metadata:
     request-ip: "npm:3.3.0"
     start-server-and-test: "npm:3.0.5"
     stripe: "npm:17.7.0"
-    styled-components: "npm:6.4.1"
+    styled-components: "npm:6.4.2"
     swr: "npm:2.4.1"
     tailwindcss: "npm:3.4.19"
     ts-node: "npm:10.9.2"
@@ -12838,9 +12838,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:6.4.1":
-  version: 6.4.1
-  resolution: "styled-components@npm:6.4.1"
+"styled-components@npm:6.4.2":
+  version: 6.4.2
+  resolution: "styled-components@npm:6.4.2"
   dependencies:
     "@emotion/is-prop-valid": "npm:1.4.0"
     css-to-react-native: "npm:3.2.0"
@@ -12858,7 +12858,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 10c0/33b43f55be02cecc4dd1904f0f4397c8a9f245ee67cd12893c9117651048a442555b527fdd25b4db8a0365701713cb0e91b09df16a4d46e175e3990041b45099
+  checksum: 10c0/28a021222157ad2cb07b4e4bfb499c27fd85a5d654b97f6faefef79a7b7b10fc3a9db2b3fbc7dc926db64e8e70f86ec2e5188e711b7942585d8c173cb51e6f42
   languageName: node
   linkType: hard
 
