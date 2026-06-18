@@ -27,7 +27,7 @@
     "@opentelemetry/sdk-trace-base": "2.7.1",
     "@prisma/client": "6.19.3",
     "@prisma/instrumentation": "6.19.3",
-    "@sentry/cli": "3.4.2",
+    "@sentry/cli": "3.5.1",
     "@sentry/nextjs": "10.53.1",
     "@stripe/react-stripe-js": "3.10.0",
     "@stripe/stripe-js": "7.9.0",
