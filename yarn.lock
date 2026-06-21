@@ -8866,6 +8866,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-yaml@npm:4.1.1":
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 10c0/561c7d7088c40a9bb53cc75becbfb1df6ae49b34b5e6e5a81744b14ae8667ec564ad2527709d1a6e7d5e5fa6d483aa0f373a50ad98d42fde368ec4a190d4fae7
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:4.2.0":
   version: 4.2.0
   resolution: "js-yaml@npm:4.2.0"
@@ -10069,10 +10080,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:8.0.7":
-  version: 8.0.7
-  resolution: "nodemailer@npm:8.0.7"
-  checksum: 10c0/f1580263ad7fba64a493c47c4d78f06679c0da9cc3becbe6b628311a16474c07286fc4e530006ea262537594ccc475dc569fd519275222fd01f99c315976aeac
+"nodemailer@npm:9.0.1":
+  version: 9.0.1
+  resolution: "nodemailer@npm:9.0.1"
+  checksum: 10c0/4213f01aa211127c1ce33243c5e45e7f831601a933d03fa864cd827b1bd5ea2782cb4b43722bee7028cbc193733d9802dad1120fe67181448eb0b7de52218a37
   languageName: node
   linkType: hard
 
@@ -10447,7 +10458,7 @@ __metadata:
     next-router-mock: "npm:1.0.5"
     next-swagger-doc: "npm:0.4.1"
     node-mocks-http: "npm:1.17.2"
-    nodemailer: "npm:8.0.7"
+    nodemailer: "npm:9.0.1"
     pinst: "npm:3.0.0"
     postcss: "npm:8.5.14"
     prettier: "npm:3.8.4"
