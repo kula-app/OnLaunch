@@ -1,3 +1,4 @@
+import { loadServerConfig } from "@/config/loadServerConfig";
 import { Product } from "@/models/product";
 import { getProducts } from "@/pages/api/frontend/v0.1/stripe/products";
 import prisma from "@/services/db";
@@ -237,8 +238,25 @@ export async function reportOrgToStripe(
     logger.log(
       `Reporting usage of ${sumOfRequests} requests for org with id '${org.id}' to stripe`,
     );
-    await stripe.subscriptionItems.createUsageRecord(meteredSubItem.subItemId, {
-      quantity: sumOfRequests,
+    const meterEventName = loadServerConfig().stripeConfig.meterEventName;
+    if (!meterEventName) {
+      throw new Error(
+        "Stripe meter event name is not configured (STRIPE_METER_EVENT_NAME)",
+      );
+    }
+    if (!org.stripeCustomerId) {
+      throw new Error(
+        `No Stripe customer id found for org with id '${org.id}'`,
+      );
+    }
+    // Legacy usage records were removed by Stripe, usage is reported as
+    // billing meter events which are aggregated per customer by the meter
+    await stripe.billing.meterEvents.create({
+      event_name: meterEventName,
+      payload: {
+        stripe_customer_id: org.stripeCustomerId,
+        value: String(sumOfRequests),
+      },
     });
 
     await prisma.loggedUsageReport.create({

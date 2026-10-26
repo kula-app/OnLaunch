@@ -80,7 +80,7 @@ export function loadServerConfig(): ServerConfig {
       useAutomaticTax:
         parseBooleanEnvValue(env.STRIPE_USE_AUTOMATIC_TAX) ?? false,
       taxRates: parseStringArrayEnvValue(env.STRIPE_TAX_RATES),
-      dynamicTaxRates: parseStringArrayEnvValue(env.STRIPE_DYNAMIC_TAX_RATES),
+      meterEventName: env.STRIPE_METER_EVENT_NAME || undefined,
     },
     signup: {
       isEnabled: parseBooleanEnvValue(env.SIGNUPS_ENABLED) ?? false,

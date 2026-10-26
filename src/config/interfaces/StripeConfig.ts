@@ -3,6 +3,6 @@ export interface StripeConfig {
   webhookSecret?: string;
   secretKey?: string;
   useAutomaticTax?: boolean;
-  dynamicTaxRates?: Array<string>;
   taxRates?: Array<string>;
+  meterEventName?: string;
 }
