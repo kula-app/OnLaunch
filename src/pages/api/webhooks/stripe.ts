@@ -21,6 +21,30 @@ async function buffer(req: NextApiRequest) {
   return Buffer.concat(chunks);
 }
 
+/**
+ * Billing periods are tracked per subscription item by Stripe. All items of a
+ * subscription share the same billing cycle, so the period of the subscription
+ * spans from the earliest item period start to the latest item period end.
+ */
+function getSubscriptionPeriod(sub: Stripe.Subscription): {
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+} {
+  const items = sub.items.data;
+  if (items.length === 0) {
+    throw new Error(`Subscription '${sub.id}' has no items`);
+  }
+  // stripe timestamps are in seconds, while node handles them in miliseconds
+  return {
+    currentPeriodStart: new Date(
+      Math.min(...items.map((item) => item.current_period_start)) * 1000,
+    ),
+    currentPeriodEnd: new Date(
+      Math.max(...items.map((item) => item.current_period_end)) * 1000,
+    ),
+  };
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -126,7 +150,7 @@ export default async function handler(
             const transformedItems = items.map((item) => {
               return {
                 subItemId: item.id,
-                metered: item.plan.aggregate_usage === "sum",
+                metered: item.price.recurring?.usage_type === "metered",
                 productId: item.price.product as string,
               };
             });
@@ -141,8 +165,7 @@ export default async function handler(
                 subItems: {
                   create: [...transformedItems],
                 },
-                currentPeriodStart: new Date(sub.current_period_start * 1000),
-                currentPeriodEnd: new Date(sub.current_period_end * 1000),
+                ...getSubscriptionPeriod(sub),
               },
             });
 
@@ -207,8 +230,14 @@ export default async function handler(
 
         case "customer.subscription.updated":
           logger.log("Customer subscription updated!");
-          const updatedSub = event.data.object as Stripe.Subscription;
+          const updatedSubData = event.data.object as Stripe.Subscription;
           try {
+            // Retrieve the subscription from the API, so its shape matches the
+            // pinned API version regardless of the webhook endpoint version
+            const updatedSub = await stripe.subscriptions.retrieve(
+              updatedSubData.id,
+            );
+
             const updatedSubFromDb = await prisma.subscription.findUnique({
               where: {
                 subId: updatedSub.id,
@@ -224,13 +253,10 @@ export default async function handler(
               });
             }
 
-            // stripe timestamps are in seconds, while node handles them in miliseconds
-            const stripeCurrentPeriodStart = new Date(
-              updatedSub.current_period_start * 1000,
-            );
-            const stripeCurrentPeriodEnd = new Date(
-              updatedSub.current_period_end * 1000,
-            );
+            const {
+              currentPeriodStart: stripeCurrentPeriodStart,
+              currentPeriodEnd: stripeCurrentPeriodEnd,
+            } = getSubscriptionPeriod(updatedSub);
 
             // Check if new billing period started
             if (

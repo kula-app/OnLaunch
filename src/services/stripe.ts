@@ -8,6 +8,6 @@ export function createStripeClient() {
     throw new Error("Stripe secret key is not configured");
   }
   return new Stripe(stripeConfig.secretKey, {
-    apiVersion: "2025-02-24.acacia",
+    apiVersion: "2026-09-30.endive",
   });
 }

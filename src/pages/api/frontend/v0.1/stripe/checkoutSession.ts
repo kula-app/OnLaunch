@@ -98,12 +98,8 @@ async function postHandler(
         price: product.priceId,
       };
 
-      if (!stripeConfig.useAutomaticTax) {
-        if (stripeConfig.dynamicTaxRates) {
-          lineItem.dynamic_tax_rates = stripeConfig.dynamicTaxRates;
-        } else if (stripeConfig.taxRates) {
-          lineItem.tax_rates = stripeConfig.taxRates;
-        }
+      if (!stripeConfig.useAutomaticTax && stripeConfig.taxRates) {
+        lineItem.tax_rates = stripeConfig.taxRates;
       }
 
       // if quantity is provided, include it in the line item

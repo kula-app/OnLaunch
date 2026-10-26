@@ -124,11 +124,11 @@ In the config, `SMTP_FROM_EMAIL_ADDRESS` is used in the templates and is the ema
 
 `STRIPE_TAX_RATES`: If you're not using automatic tax calculations, you might specify fixed tax rates that apply to your transactions. This variable could be used to store IDs of tax rates configured in your Stripe dashboard.
 
-`STRIPE_DYNAMIC_TAX_RATES`: For more complex tax scenarios, Stripe supports dynamic tax rates that can be applied based on the customer's location and the type of product being sold. This variable could be used to manage such dynamic tax scenarios, though implementing this feature requires careful consideration of tax laws and regulations.
+`STRIPE_METER_EVENT_NAME`: The `event_name` of the Stripe [billing meter](https://docs.stripe.com/billing/subscriptions/usage-based/meters/configure) that backs the metered (usage-based) price. Usage reports are sent to Stripe as meter events with this name, using the default payload keys `stripe_customer_id` and `value`. Required when metered billing is used.
 
 ### Usage Reporting
 
-As we implemented metered billing for Stripe, we have to periodically report the usage to Stripe. To do so, you can set up a cron job that calls the `/api/usageReport` endpoint with the `CRON_JOB_USAGE_REPORT_API_KEY` token provided in the config.
+As we implemented metered billing for Stripe, we have to periodically report the usage to Stripe. Usage is reported as billing meter events (see `STRIPE_METER_EVENT_NAME`), so the metered price in Stripe must be backed by a meter. To do so, you can set up a cron job that calls the `/api/usageReport` endpoint with the `CRON_JOB_USAGE_REPORT_API_KEY` token provided in the config.
 
 ### Health Check
 
