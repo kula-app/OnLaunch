@@ -87,13 +87,13 @@ FROM dl AS dl-sentry-cli
 ARG SENTRY_CLI_VERSION="2.43.0"
 RUN <<EOT ash
 if [ "${TARGETARCH}" = "amd64" ]; then
-  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-x64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+  curl -L --fail --retry 5 --retry-all-errors --retry-delay 5 https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-x64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
 elif [ "${TARGETARCH}" = "arm64" ]; then
-  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+  curl -L --fail --retry 5 --retry-all-errors --retry-delay 5 https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm64-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
 elif [ "${TARGETARCH}" = "arm" ] || [ "${TARGETARCH}" = "armv7" ]; then
-  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+  curl -L --fail --retry 5 --retry-all-errors --retry-delay 5 https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-arm-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
 elif [ "${TARGETARCH}" = "386" ] || [ "${TARGETARCH}" = "i386" ] || [ "${TARGETARCH}" = "i686" ]; then
-  curl -L --fail https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-i686-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
+  curl -L --fail --retry 5 --retry-all-errors --retry-delay 5 https://github.com/getsentry/sentry-cli/releases/download/${SENTRY_CLI_VERSION}/sentry-cli-linux-i686-${SENTRY_CLI_VERSION}.tgz -o sentry-cli.tar.gz
 else
   echo "Unsupported target architecture: ${TARGETARCH}"
   exit 1
